@@ -1,5 +1,5 @@
 - name: find driver package with distribution
-  shell: find ~/resources/ -type f -name "*driver*`uname -m`*run" | grep {{ansible_local.npu_info.driver_keyword}} | grep {{ansible_distribution.lower()}}
+  shell: find ~/resources/ -type f -name "*driver*`uname -m`*run" | grep {{ansible_local.npu_info.driver_keyword}} | grep {{ansible_distribution.lower()}} | grep {{os_version}}
   register: driver_pkg
   ignore_errors: yes
 
