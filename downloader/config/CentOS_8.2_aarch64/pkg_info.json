@@ -3,9 +3,6 @@
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "kernel-headers", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "glibc-headers", "used_by": [ "driver", "cann", "framework" ]
     },
     {

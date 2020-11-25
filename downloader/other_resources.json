@@ -10,6 +10,16 @@
         "dest":"resources/CentOS_8.2_aarch64"
     },
     {
+        "filename":"kernel-devel-4.18.0-193.el8.x86_64.rpm",
+        "url":"https://mirrors.huaweicloud.com/centos/8/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.el8.x86_64.rpm",
+        "dest":"resources/CentOS_8.2_x86_64"
+    },
+    {
+        "filename":"kernel-headers-4.18.0-193.el8.x86_64.rpm",
+        "url":"https://mirrors.huaweicloud.com/centos/8/BaseOS/x86_64/os/Packages/kernel-headers-4.18.0-193.el8.x86_64.rpm",
+        "dest":"resources/CentOS_8.2_x86_64"
+    },
+    {
         "filename":"Python-3.7.5.tar.xz",
         "url":"https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tar.xz",
         "dest":"resources"
