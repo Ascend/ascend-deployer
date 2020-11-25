@@ -1,0 +1,16 @@
+- hosts: localhost
+  tasks:
+    - name: make tar package
+      shell: tar -cf ../resources.tar ../resources
+
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: copy to hosts
+      copy:
+        src: ../resources.tar
+        dest: ~/
+    - name: uncompress
+      unarchive:
+        src: ~/resources.tar
+        dest: ~/
+        copy: no

@@ -1,0 +1,5 @@
+[base]
+baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+
+[epel]
+baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64

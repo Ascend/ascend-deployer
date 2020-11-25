@@ -1,0 +1,216 @@
+#!{{ ansible_python.executable }}
+import glob
+import json
+import os
+import platform
+import shlex
+import subprocess
+import sys
+
+
+class ChipMetaData():
+    "metadata includes vid, did, svid, sdid, arch"
+
+    def __init__(self, vid, did, svid, sdid, arch):
+        self.vid = vid
+        self.did = did
+        self.svid = svid
+        self.sdid = sdid
+        self.arch = arch
+
+    def __hash__(self):
+        return hash((self.vid, self.did, self.svid, self.sdid, self.arch))
+
+    def __eq__(self, other):
+        return (self.vid, self.did, self.svid, self.sdid, self.arch) == (
+            other.vid, other.did, other.svid, other.sdid, other.arch)
+
+
+CHIPS_DICT = {
+    ChipMetaData('0x19e5', '0xd100', '0x0200', '0x0100', 'x86_64'): 'A300-3010',
+    ChipMetaData('0x19e5', '0xd100', '0x0200', '0x0100',
+                 'aarch64'): 'A300-3000',
+    ChipMetaData('0x19e5', '0xd801', '0x0200', '0x0100',
+                 'aarch64'): 'A300T-9000',
+    ChipMetaData('0x19e5', '0xd801', '0x0200', '0x0100',
+                 'x86_64'): 'A300T-9000',
+}
+FIND_METADATA = 'grep 0x1200 /sys/bus/pci/devices/*/class | awk -F \/ \'{print $6}\''
+FIND_PRODUCT_CMD = 'dmidecode -t 1'
+FIND_PRODUCT = 'dmidecode -t 1 | grep Product | awk -F: \'{print $2}\''
+
+
+def get_profile_model(arch, model):
+    if model == '--':
+        return 'unknown'
+
+    if 'Atlas' in model and 'Model' in model:
+        model = "A" + model.split("(")[0].split()[1].strip() + \
+                "-" + model.split(")")[0].split("Model")[1].strip()
+
+    if model == 'A300T-9000':
+        if arch == 'aarch64':
+            model = 'A800-9000'
+        else:
+            model = 'A800-9010'
+
+    if model in ['A500-3000', 'A800-3000']:
+        model = 'A300-3000'
+    if model == 'A800-3010':
+        model = 'A300-3010'
+
+    return model
+
+
+def get_scene(profile_model):
+    scene = ''
+    if profile_model in ['A300-3000', 'A300-3010']:
+        scene = 'infer'
+    if profile_model in ['A800-9000', 'A800-9010']:
+        scene = 'train'
+
+    return scene
+
+
+def get_chip_info(vid, did, svid, sdid, arch):
+    chip_meta_data = ChipMetaData(vid, did, svid, sdid, arch)
+    return CHIPS_DICT.get(chip_meta_data, '--')
+
+
+def check_metadata_file_existance(bdf_path):
+    metadata_file = os.path.join(bdf_path, 'vendor')
+    ret = os.path.exists(metadata_file)
+    if not ret:
+        return False
+
+    metadata_file = os.path.join(bdf_path, 'device')
+    ret = os.path.exists(metadata_file)
+    if not ret:
+        return False
+
+    metadata_file = os.path.join(bdf_path, 'subsystem_device')
+    ret = os.path.exists(metadata_file)
+    if not ret:
+        return False
+
+    metadata_file = os.path.join(bdf_path, 'subsystem_vendor')
+    ret = os.path.exists(metadata_file)
+    if not ret:
+        return False
+
+    return True
+
+
+def get_metadatas(bdf_path):
+    metadata_file = os.path.join(bdf_path, 'device')
+    with open(metadata_file) as f:
+        did = f.read().replace('\t', '').replace('\n', '')
+        if not did:
+            return {}
+
+    metadata_file = os.path.join(bdf_path, 'vendor')
+    with open(metadata_file) as f:
+        vid = f.read().replace('\t', '').replace('\n', '')
+        if not vid:
+            return {}
+
+    metadata_file = os.path.join(bdf_path, 'subsystem_device')
+    with open(metadata_file) as f:
+        sdid = f.read().replace('\t', '').replace('\n', '')
+        if not sdid:
+            return {}
+
+    metadata_file = os.path.join(bdf_path, 'subsystem_vendor')
+    with open(metadata_file) as f:
+        svid = f.read().replace('\t', '').replace('\n', '')
+        if not svid:
+            return {}
+
+    return dict(did=did, vid=vid, sdid=sdid, svid=svid)
+
+
+def get_model():
+    bdf_file_path = ''
+    DEVNULL = open(os.devnull, 'w')
+    for candidate_dir in glob.glob('/sys/bus/pci/devices/*'):
+        find_metadata_cmd = ["grep", "0x1200",
+                             os.path.join(candidate_dir, "class")]
+        return_code = subprocess.call(find_metadata_cmd, shell=False,
+                                      stdout=DEVNULL, stderr=subprocess.STDOUT)
+        if return_code == 0:
+            bdf_file_path = candidate_dir
+            break
+
+    ret = check_metadata_file_existance(bdf_file_path)
+    if not ret:
+        return '--'
+
+    metadata_dict = get_metadatas(bdf_file_path)
+    if not metadata_dict:
+        return '--'
+
+    arch = platform.machine()
+
+    chip_info = get_chip_info(
+        metadata_dict['vid'], metadata_dict['did'], metadata_dict['svid'],
+        metadata_dict['sdid'], arch)
+    if chip_info == '--':
+        return '--'
+
+    try:
+        cp = subprocess.Popen(args=shlex.split(FIND_PRODUCT_CMD),
+                              shell=False,
+                              universal_newlines=True,
+                              stdin=subprocess.PIPE,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+    except Exception:
+        return chip_info
+    dmi_info_lines = cp.stdout.readlines()
+    raw_product = ""
+    for item in dmi_info_lines:
+        if 'Product' in item:
+            product_infos = item.split(':')
+            if len(product_infos) < 2:
+                return chip_info
+            raw_product = product_infos[1]
+    product = raw_product.replace('\t', '').replace('\n', '')
+    if 'Atlas' in product:
+        return product.strip()
+
+    return chip_info
+
+def get_driver_keyword(model):
+    keyword_dict = {
+        'Atlas 800 (Model 9000)': 'A800-9000',
+        'Atlas 800 (Model 9010)': 'A800-9010',
+        'Atlas 900 (Model 9000)': 'A900-9000',
+        'A300T-9000': 'A300t-9000',
+        'Atlas 800 (Model 3000)': 'A800-3000',
+        'Atlas 800 (Model 3010)': 'A800-3010',
+        'Atlas 500 Pro (Model 3000)': 'A300-3000',
+        'Atlas 500 Pro(Model 3000)': 'A300-3000',
+        'A300-3010': 'A300-3010',
+        'A300-3000': 'A300-3000'
+    }
+    if model in keyword_dict.keys():
+        return keyword_dict[model]
+    return ""
+
+
+def main():
+    arch = platform.machine()
+    model = get_model()
+    profile_model = get_profile_model(arch, model)
+    scene = get_scene(profile_model)
+
+    ret = {
+        "model": model,
+        "scene": scene,
+        "python375_installed": os.path.exists('/usr/local/python3.7.5'),
+        "driver_keyword": get_driver_keyword(model)
+    }
+    json.dump(ret, sys.stdout, indent=2)
+
+
+main()

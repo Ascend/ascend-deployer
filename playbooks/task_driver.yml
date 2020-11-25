@@ -1,0 +1,35 @@
+- name: find driver package with distribution
+  shell: find ~/resources/ -type f -name "*driver*`uname -m`*run" | grep {{ansible_local.npu_info.driver_keyword}} | grep {{ansible_distribution.lower()}}
+  register: driver_pkg
+  ignore_errors: yes
+
+- debug:
+    var: driver_pkg
+    verbosity: 1
+
+- name: add driver permission
+  shell: chmod +x {{driver_pkg.stdout}}
+  when: "'run' in driver_pkg.stdout"
+
+- name: install driver
+  shell: "{{driver_pkg.stdout}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: rr
+  failed_when: "'install success' not in rr.stdout"
+  when: "'run' in driver_pkg.stdout"
+
+- name: start driver service
+  shell: service host_sys_init start
+  when: "'run' in driver_pkg.stdout"
+
+- name: check npu-smi info
+  shell: npu-smi info
+  register: npu_smi_info
+  when: "'run' in driver_pkg.stdout"
+
+- debug:
+    var: npu_smi_info
+    verbosity: 1
+
+- name: install driver package for common linux
+  import_tasks: task_driver_linux.yml
+  when: "'run' not in driver_pkg.stdout"

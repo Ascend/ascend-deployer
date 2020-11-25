@@ -1,0 +1,17 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find tfplugin package
+      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep tfplugin
+      register: tfplugin
+
+    - name: add tfplugin permission
+      shell: chmod +x {{tfplugin.stdout}}
+      when: "'run' in tfplugin.stdout"
+
+    - name: install tfplugin
+      shell: "{{tfplugin.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      register: tfplugin_result
+      when: "'run' in tfplugin.stdout"
+      failed_when: "'install success' not in tfplugin_result.stdout"
+
+    - debug: var=tfplugin_result

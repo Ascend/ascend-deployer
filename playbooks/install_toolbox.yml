@@ -1,0 +1,17 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find toolbox package
+      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep toolbox
+      register: toolbox
+      ignore_errors: yes
+
+    - name: add toolbox permission
+      shell: chmod +x {{toolbox.stdout}}
+      when: "'run' in toolbox.stdout"
+
+    - name: install toolbox
+      shell: "{{toolbox.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      register: toolbox_result
+      when: "'run' in toolbox.stdout"
+
+    - debug: var=toolbox_result

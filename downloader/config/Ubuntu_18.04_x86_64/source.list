@@ -1,0 +1,3 @@
+deb http://mirrors.huaweicloud.com/ubuntu/ bionic main multiverse restricted universe
+deb http://mirrors.huaweicloud.com/ubuntu/ bionic-updates main multiverse restricted universe
+deb http://mirrors.huaweicloud.com/ubuntu/ bionic-security main multiverse restricted universe

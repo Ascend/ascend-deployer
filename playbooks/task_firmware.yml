@@ -1,0 +1,30 @@
+- name: find firmware package
+  shell: find ~/resources/ -type f -name "*.run" | grep {{ ansible_local.npu_info.driver_keyword }} | grep firmware
+  register: firmware_pkg
+  ignore_errors: yes
+
+- debug:
+    var: firmware_pkg
+    verbosity: 1
+
+- name: add firmware permission
+  shell: chmod +x {{firmware_pkg.stdout}}
+  when: "'run' in firmware_pkg.stdout"
+
+- name: install firmware
+  shell: "{{firmware_pkg.stdout}} --full --quiet"
+  register: install_firmware_result
+  when: "'run' in firmware_pkg.stdout"
+
+- debug:
+    var: install_firmware_result
+    verbosity: 1
+
+- name: check firmware
+  shell: /usr/local/Ascend/driver/tools/upgrade-tool --device_index -1 --system_version
+  register: upgrade_tool_result
+  when: "'run' in firmware_pkg.stdout"
+
+- debug:
+    var: upgrade_tool_result
+    verbosity: 1

@@ -1,0 +1,6 @@
+[ascend]
+localhost ansible_connection='local'
+
+[ascend:vars]
+user=HwHiAiUser
+group=HwHiAiUser

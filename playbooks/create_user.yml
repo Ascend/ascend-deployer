@@ -1,0 +1,12 @@
+- name: test user exist
+  shell: getent passwd "{{user}}" | wc -l
+  register: user_test
+
+- name: add usergroup
+  shell: groupadd {{group}}
+  ignore_errors: yes
+  when: "'0' in user_test.stdout"
+
+- name: add user
+  shell: useradd -g {{group}} -d /home/{{user}} -m {{user}}
+  when: "'0' in user_test.stdout"

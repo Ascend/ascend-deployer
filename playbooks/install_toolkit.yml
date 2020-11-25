@@ -1,0 +1,22 @@
+- hosts: '{{ hosts_name }}'
+  become_user: root
+  tasks:
+    - name: find toolkit package
+      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep toolkit
+      register: toolkit
+      ignore_errors: yes
+
+    - name: add toolkit permission
+      shell: chmod +x {{toolkit.stdout}}
+      when: "'run' in toolkit.stdout"
+
+    - name: install toolkit
+      shell: "{{toolkit.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      register: toolkit_result
+      when: "'run' in toolkit.stdout"
+      failed_when: "'install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout"
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
+        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+
+    - debug: var=toolkit_result

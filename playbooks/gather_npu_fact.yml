@@ -1,0 +1,50 @@
+- name: group hosts by distribution
+  hosts: all
+  gather_facts: True
+  vars:
+    need_test: yes
+    temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
+    os_version: "{{ temp[0] }}"
+    os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
+
+  tasks:
+    - name: mkdir resources
+      shell: mkdir -p ~/resources
+
+    - name: scp libpython-selinux
+      shell: /usr/bin/sshpass -p "{{ansible_password}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_user}}@{{ansible_default_ipv4.address}}:~/resources
+      delegate_to: localhost
+      when: ansible_connection != "local" and (ansible_pkg_mgr == 'yum')
+
+    - name: cp libpython-selinux for localhost
+      shell: cp -f ../resources/{{os_and_arch}}/libselinux*.rpm ~/resources
+      delegate_to: localhost
+      when: ansible_connection == "local" and (ansible_pkg_mgr == 'yum')
+
+    - name: rm libselinux-devel
+      shell: rm -f ~/resources/libselinux-devel*
+      when:
+          - ansible_pkg_mgr == 'yum'
+
+    - name: install libpython-selinux
+      shell: rpm -ivh --force --nodeps ~/resources/libselinux*.rpm
+      when:
+          - ansible_pkg_mgr == 'yum'
+
+    - name: create facts.d folder
+      file:
+        path: /etc/ansible/facts.d/
+        state: directory
+        mode: 0750
+        recurse: yes
+
+    - name: copy npu_info.fact to host
+      template:
+        src: facts/npu_info.fact.j2
+        dest: /etc/ansible/facts.d/npu_info.fact
+        owner: "root"
+        group: "root"
+        mode: "0500"
+
+    - name: gather facts again
+      setup:

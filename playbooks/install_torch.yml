@@ -1,0 +1,52 @@
+- hosts: '{{ hosts_name }}'
+  gather_facts: True
+  vars:
+    temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
+    os_version: "{{ temp[0] }}"
+  tasks:
+    - name: stat gcc-7.3.0
+      stat:
+        path: /usr/local/gcc7.3.0
+      register: gcc_stat
+
+    - name: install gcc 7.3 for centos 7.6 if not exist
+      import_tasks: task_gcc.yml
+      when:
+        - not gcc_stat.stat.exists
+        - "os_version == '7.6'"
+
+    - name: upgrade pip
+      shell: python3.7 -m pip install --upgrade pip --no-index --find-links ~/resources/`uname -m`
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+      register: upgrade_pip
+
+    - debug: var=upgrade_pip
+
+    - name: show pip version
+      shell: python3.7 -m pip --version
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+      register: pip_version
+
+    - debug: var=pip_version
+
+    - name: install torch
+      shell: python3.7 -m pip install torch --no-index --find-links ~/resources/`uname -m`
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+      register: torch_result
+
+    - debug: var=torch_result
+
+    - name: check torch
+      shell: python3.7 -c "import torch; print(torch.__version__)"
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+      register: torch_check_result
+
+    - debug: var=torch_check_result

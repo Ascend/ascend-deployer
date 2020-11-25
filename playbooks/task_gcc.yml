@@ -1,0 +1,48 @@
+- name: uncompress gcc
+  shell: tar -xvf ~/resources/gcc-7.3.0.tar.gz -C ~/resources
+
+- name: cp mpfr-3.1.4.tar.bz2
+  shell: cp ~/resources/mpfr-3.1.4.tar.bz2 ~/resources/gcc-7.3.0/
+
+- name: cp mpc-1.0.3.tar.gz
+  shell: cp ~/resources/mpc-1.0.3.tar.gz ~/resources/gcc-7.3.0/
+
+- name: cp gmp-6.1.0.tar.bz2
+  shell: cp ~/resources/gmp-6.1.0.tar.bz2 ~/resources/gcc-7.3.0/
+
+- name: cp isl-0.16.1.tar.bz2
+  shell: cp ~/resources/isl-0.16.1.tar.bz2 ~/resources/gcc-7.3.0/
+
+- name: download_prerequisites
+  shell: cd ~/resources/gcc-7.3.0; ./contrib/download_prerequisites
+
+- name: check makefile exist
+  stat:
+    path: ~/resources/gcc-7.3.0/Makefile
+  register: makefile_stat
+
+- name: make distclean
+  shell: cd ~/resources/gcc-7.3.0; make distclean
+  when: makefile_stat.stat.exists
+  register: configure_result
+
+- name: configure gcc
+  shell: cd ~/resources/gcc-7.3.0; ./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix=/usr/local/gcc7.3.0
+  register: configure_result
+
+- name: check libstdc++.so exist
+  shell: find ~/resources/gcc-7.3.0 -name libstdc++.so | wc -l
+  register: cxx
+
+- name: make gcc
+  shell: cd ~/resources/gcc-7.3.0; make -j20
+  register: make_result
+  when: "'0' in cxx.stdout"
+  ignore_errors: yes
+
+- name: make install
+  shell: cd ~/resources/gcc-7.3.0; make install
+  when: "'0' in cxx.stdout"
+  register: install_result
+
+- debug: var=install_result

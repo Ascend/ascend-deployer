@@ -1,0 +1,11 @@
+[base]
+baseurl=http://mirrors.huaweicloud.com/centos/8/BaseOS/x86_64/os
+
+[powertool]
+baseurl=http://mirrors.huaweicloud.com/centos/8/PowerTools/x86_64/os
+
+[AppStream]
+baseurl=http://mirrors.huaweicloud.com/centos/8/AppStream/x86_64/os/
+
+[Everyting]
+baseurl=http://mirrors.huaweicloud.com/epel/8/Everything/x86_64

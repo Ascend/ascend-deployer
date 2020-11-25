@@ -1,0 +1,456 @@
+[
+    {
+        "name": "gcc-7-base",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libasan4",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libubsan0",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgcc-7-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cpp-7",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gcc-7",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libstdc++-7-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "g++-7",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "make",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjsoncpp1",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libuv1",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake-data",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name":"libarchive13",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name":"librhash0",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "zlib1g",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "zlib1g-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsqlite3-0",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsqlite3-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "openssl",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libssl1.1",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libssl-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libffi-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "unzip",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpci3",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pciutils",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "net-tools",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libblas-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgfortran-7-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gfortran-7",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name":"libgfortran4",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libblas3",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libopenblas-base",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libopenblas-dev",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "liblzo2-2",
+        "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "sshpass", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsz2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5-helpers", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-100", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-cpp-100", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg8-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg8", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg-turbo8-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg-turbo8", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pkg-config", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libc6-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libc6",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "dpkg-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libdpkg-perl",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libgomp1",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libitm1",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libatomic1",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "liblsan0",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libisl19",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libmpc3",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "binutils",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libtsan0",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "linux-libc-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libc-dev-bin",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libcc1-0",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "binutils-aarch64-linux-gnu",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libbinutils",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "binutils-common",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "gcc-8-base",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libselinux1",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libselinux1-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "python3-selinux",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libsepol1-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libpcre3-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libpcre16-3",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libpcre32-3",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libpcrecpp0v5",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "dkms",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "gcc",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "cpp",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "gcc-base",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libgcc-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "libstdc++-dev",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    },
+    {
+        "name": "g++",
+        "used_by": [
+            "driver",
+            "cann",
+            "framework"
+        ]
+    }
+]

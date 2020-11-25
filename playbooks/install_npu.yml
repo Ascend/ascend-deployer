@@ -1,0 +1,28 @@
+- hosts: '{{ hosts_name }}'
+  gather_facts: True
+  vars:
+    temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
+    os_version: "{{ temp[0] }}"
+  tasks:
+    - name: test driver exist
+      shell: npu-smi info
+      register: smi_info
+      ignore_errors: yes
+
+    - debug:
+        var: smi_info
+        verbosity: 1
+
+    - name: create user if not exist
+      import_tasks: create_user.yml
+
+    - name: install firmware
+      import_tasks: task_firmware.yml
+      when: smi_info.rc == 0
+
+    - name: install driver
+      import_tasks: task_driver.yml
+
+    - name: install firmware
+      import_tasks: task_firmware.yml
+      when: smi_info.rc != 0

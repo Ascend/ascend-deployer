@@ -1,0 +1,18 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find nnae package
+      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep nnae
+      register: nnae
+      ignore_errors: yes
+
+    - name: add nnae permission
+      shell: chmod +x {{nnae.stdout}}
+      when: "'run' in nnae.stdout"
+
+    - name: install nnae
+      shell: "{{nnae.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      register: nnae_result
+      when: "'run' in nnae.stdout"
+      failed_when: "'install success' not in nnae_result.stdout"
+
+    - debug: var=nnae_result

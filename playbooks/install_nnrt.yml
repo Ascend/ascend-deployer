@@ -1,0 +1,18 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find nnrt package
+      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep nnrt
+      register: nnrt
+      ignore_errors: yes
+
+    - name: add nnrt permission
+      shell: chmod +x {{nnrt.stdout}}
+      when: "'run' in nnrt.stdout"
+
+    - name: install nnrt
+      shell: "{{nnrt.stdout}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
+      register: nnrt_result
+      when: "'run' in nnrt.stdout"
+      failed_when: "'install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout"
+
+    - debug: var=nnrt_result
