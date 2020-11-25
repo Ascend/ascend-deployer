@@ -8,28 +8,12 @@
     os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
 
   tasks:
-    - name: mkdir resources
-      shell: mkdir -p ~/resources
+    - local_action: stat path={{os_and_arch}}.yml
+      register: optional_file
 
-    - name: scp libpython-selinux
-      shell: /usr/bin/sshpass -p "{{ansible_password}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_user}}@{{ansible_default_ipv4.address}}:~/resources
-      delegate_to: localhost
-      when: ansible_connection != "local" and (ansible_pkg_mgr == 'yum')
-
-    - name: cp libpython-selinux for localhost
-      shell: cp -f ../resources/{{os_and_arch}}/libselinux*.rpm ~/resources
-      delegate_to: localhost
-      when: ansible_connection == "local" and (ansible_pkg_mgr == 'yum')
-
-    - name: rm libselinux-devel
-      shell: rm -f ~/resources/libselinux-devel*
-      when:
-          - ansible_pkg_mgr == 'yum'
-
-    - name: install libpython-selinux
-      shell: rpm -ivh --force --nodeps ~/resources/libselinux*.rpm
-      when:
-          - ansible_pkg_mgr == 'yum'
+    - name: prepare
+      include_tasks: "{{os_and_arch}}.yml"
+      when: optional_file.stat.exists
 
     - name: create facts.d folder
       file:
