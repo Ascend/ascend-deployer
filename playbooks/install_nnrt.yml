@@ -18,7 +18,7 @@
     - name: install nnrt
       shell: "{{nnrt.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
       register: nnrt_result
-      when: "'run' in nnrt.stdout"
+      when: nnrt.matched > 0
       failed_when: "'install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout"
 
     - debug: var=nnrt_result

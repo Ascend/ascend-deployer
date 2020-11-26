@@ -18,7 +18,7 @@
     - name: install nnae
       shell: "{{nnae.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
       register: nnae_result
-      when: "'run' in nnae.stdout"
+      when: nnae.matched > 0
       failed_when: "'install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout"
 
     - debug: var=nnae_result
