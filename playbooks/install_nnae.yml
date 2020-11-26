@@ -1,18 +1,24 @@
 - hosts: '{{ hosts_name }}'
   tasks:
     - name: find nnae package
-      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep nnae
+      find:
+        paths: ~/resources/
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*nnae.*{{ansible_architecture}}.run"
       register: nnae
-      ignore_errors: yes
 
-    - name: add nnae permission
-      shell: chmod +x {{nnae.stdout}}
-      when: "'run' in nnae.stdout"
+    - name: add run permission for nnae
+      file:
+        path: "{{nnae.files[0].path}}"
+        mode: a+x
+      when: nnae.matched > 0
 
     - name: install nnae
-      shell: "{{nnae.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      shell: "{{nnae.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
       register: nnae_result
       when: "'run' in nnae.stdout"
-      failed_when: "'install success' not in nnae_result.stdout"
+      failed_when: "'install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout"
 
     - debug: var=nnae_result
