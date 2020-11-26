@@ -180,21 +180,38 @@ def get_model():
 
     return chip_info
 
-def get_driver_keyword(model):
-    keyword_dict = {
-        'Atlas 800 (Model 9000)': 'A800-9000',
-        'Atlas 800 (Model 9010)': 'A800-9010',
-        'Atlas 900 (Model 9000)': 'A900-9000',
-        'A300T-9000': 'A300t-9000',
-        'Atlas 800 (Model 3000)': 'A800-3000',
-        'Atlas 800 (Model 3010)': 'A800-3010',
-        'Atlas 500 Pro (Model 3000)': 'A300-3000',
-        'Atlas 500 Pro(Model 3000)': 'A300-3000',
-        'A300-3010': 'A300-3010',
-        'A300-3000': 'A300-3000'
+def get_product(model):
+    product_dict = {
+        'Atlas 800 (Model 9000)': 'A800',
+        'Atlas 800 (Model 9010)': 'A800',
+        'Atlas 900 (Model 9000)': 'A900',
+        'A300T-9000': 'A300t',
+        'Atlas 800 (Model 3000)': 'A800',
+        'Atlas 800 (Model 3010)': 'A800',
+        'Atlas 500 Pro (Model 3000)': 'A300',
+        'Atlas 500 Pro(Model 3000)': 'A300',
+        'A300-3010': 'A300',
+        'A300-3000': 'A300'
     }
-    if model in keyword_dict.keys():
-        return keyword_dict[model]
+    if model in product_dict.keys():
+        return product_dict[model]
+    return ""
+
+def get_model_number(model):
+    model_dict = {
+        'Atlas 800 (Model 9000)': '9000',
+        'Atlas 800 (Model 9010)': '9010',
+        'Atlas 900 (Model 9000)': '9000',
+        'A300T-9000': '9000',
+        'Atlas 800 (Model 3000)': '3000',
+        'Atlas 800 (Model 3010)': '3010',
+        'Atlas 500 Pro (Model 3000)': '3000',
+        'Atlas 500 Pro(Model 3000)': '3000',
+        'A300-3010': '3010',
+        'A300-3000': '3000'
+    }
+    if model in model_dict.keys():
+        return model_dict[model]
     return ""
 
 
@@ -208,7 +225,8 @@ def main():
         "model": model,
         "scene": scene,
         "python375_installed": os.path.exists('/usr/local/python3.7.5'),
-        "driver_keyword": get_driver_keyword(model)
+        "product": get_product(model),
+        "model_number": get_model_number(model)
     }
     json.dump(ret, sys.stdout, indent=2)
 

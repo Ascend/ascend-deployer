@@ -1,35 +1,51 @@
 - name: find driver package with distribution
-  shell: find ~/resources/ -type f -name "*driver*`uname -m`*run" | grep {{ansible_local.npu_info.driver_keyword}} | grep {{ansible_distribution.lower()}} | grep {{os_version}}
+  find:
+    path: ~/resources/
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg
-  ignore_errors: yes
 
 - debug:
     var: driver_pkg
     verbosity: 1
 
-- name: add driver permission
-  shell: chmod +x {{driver_pkg.stdout}}
-  when: "'run' in driver_pkg.stdout"
+- name: find driver package for common linux
+  find:
+    path: ~/resources/
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+  when: driver_pkg.matched == 0
+
+- debug:
+    var: driver_pkg
+    verbosity: 1
+
+- name: add run permission for toolbox
+  file:
+    path: "{{driver_pkg.files[0].path}}"
+    mode: a+x
+  when: driver_pkg.matched > 0
 
 - name: install driver
-  shell: "{{driver_pkg.stdout}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  register: rr
-  failed_when: "'install success' not in rr.stdout"
-  when: "'run' in driver_pkg.stdout"
+  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: driver_result
+  failed_when: "'install success' not in driver_result.stdout"
+  when: driver_pkg.matched > 0
 
 - name: start driver service
   shell: service host_sys_init start
-  when: "'run' in driver_pkg.stdout"
+  when: driver_pkg.matched > 0
 
 - name: check npu-smi info
   shell: npu-smi info
   register: npu_smi_info
-  when: "'run' in driver_pkg.stdout"
+  when: driver_pkg.matched > 0
 
 - debug:
     var: npu_smi_info
     verbosity: 1
-
-- name: install driver package for common linux
-  import_tasks: task_driver_linux.yml
-  when: "'run' not in driver_pkg.stdout"
