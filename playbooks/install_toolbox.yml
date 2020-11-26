@@ -1,18 +1,24 @@
 - hosts: '{{ hosts_name }}'
   tasks:
     - name: find toolbox package
-      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep toolbox
+      find:
+        paths: ~/resources/
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*toolbox.*{{ansible_architecture}}.run"
       register: toolbox
-      ignore_errors: yes
 
-    - name: add toolbox permission
-      shell: chmod +x {{toolbox.stdout}}
-      when: "'run' in toolbox.stdout"
+    - name: add run permission for toolbox
+      file:
+        path: "{{toolbox.files[0].path}}"
+        mode: a+x
+      when: toolbox.matched > 0
 
     - name: install toolbox
-      shell: "{{toolbox.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      shell: "{{toolbox.files[0].path}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
       register: toolbox_result
-      when: "'run' in toolbox.stdout"
+      when: toolbox.matched > 0
 
     - name: execute ascend-dmi -i
       shell: ascend-dmi -i
@@ -20,6 +26,6 @@
         PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:"{{lookup('env', 'PATH')}}"
         LD_LIBRARY_PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi
       register: ascend_dmi_info
-      when: "'run' in toolbox.stdout"
+      when: toolbox.matched > 0
 
     - debug: var=ascend_dmi_info
