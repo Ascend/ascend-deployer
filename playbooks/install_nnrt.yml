@@ -6,17 +6,17 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*nnrt.*{{ansible_architecture}}.run"
+        patterns: ".*nnrt.*{{ ansible_architecture }}.run"
       register: nnrt
 
-    - name: add run permission for nnrt
+    - name: add run permission for {{ nnrt.files[0].path }}
       file:
-        path: "{{nnrt.files[0].path}}"
+        path: "{{ nnrt.files[0].path }}"
         mode: a+x
       when: nnrt.matched > 0
 
-    - name: install nnrt
-      shell: "{{nnrt.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
+    - name: install nnrt {{ nnrt.files[0].path }}
+      shell: "{{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: nnrt_result
       when: nnrt.matched > 0
       failed_when: "'install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout"

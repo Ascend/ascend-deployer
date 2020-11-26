@@ -6,17 +6,17 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*toolbox.*{{ansible_architecture}}.run"
+        patterns: ".*toolbox.*{{ ansible_architecture }}.run"
       register: toolbox
 
-    - name: add run permission for toolbox
+    - name: add run permission for {{ toolbox.files[0].path }}
       file:
-        path: "{{toolbox.files[0].path}}"
+        path: "{{ toolbox.files[0].path }}"
         mode: a+x
       when: toolbox.matched > 0
 
-    - name: install toolbox
-      shell: "{{toolbox.files[0].path}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+    - name: install toolbox {{ toolbox.files[0].path }}
+      shell: "{{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: toolbox_result
       when: toolbox.matched > 0
 

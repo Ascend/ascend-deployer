@@ -25,19 +25,19 @@
     var: driver_pkg
     verbosity: 1
 
-- name: add run permission for toolbox
+- name: add run permission for {{ driver_pkg.files[0].path }}
   file:
     path: "{{driver_pkg.files[0].path}}"
     mode: a+x
   when: driver_pkg.matched > 0
 
-- name: install driver
+- name: install driver {{ driver_pkg.files[0].path }}
   shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
   when: driver_pkg.matched > 0
 
-- name: start driver service
+- name: service host_sys_init start
   shell: service host_sys_init start
   when: driver_pkg.matched > 0
 

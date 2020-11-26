@@ -6,17 +6,17 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*nnae.*{{ansible_architecture}}.run"
+        patterns: ".*nnae.*{{ ansible_architecture }}.run"
       register: nnae
 
-    - name: add run permission for nnae
+    - name: add run permission for {{ nnae.files[0].path }}
       file:
-        path: "{{nnae.files[0].path}}"
+        path: "{{ nnae.files[0].path }}"
         mode: a+x
       when: nnae.matched > 0
 
-    - name: install nnae
-      shell: "{{nnae.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
+    - name: install nnae {{ nnae.files[0].path }}
+      shell: "{{ nnae.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: nnae_result
       when: nnae.matched > 0
       failed_when: "'install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout"

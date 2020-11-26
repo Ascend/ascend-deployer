@@ -9,14 +9,14 @@
         patterns: ".*tfplugin.*{{ansible_architecture}}.run"
       register: tfplugin
 
-    - name: add run permission for tfplugin
+    - name: add run permission for {{ tfplugin.files[0].path }}
       file:
-        path: "{{tfplugin.files[0].path}}"
+        path: "{{ tfplugin.files[0].path }}"
         mode: a+x
       when: tfplugin.matched > 0
 
-    - name: install tfplugin
-      shell: "{{tfplugin.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
+    - name: install tfplugin {{ tfplugin.files[0].path }}
+      shell: "{{ tfplugin.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
