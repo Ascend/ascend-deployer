@@ -19,7 +19,7 @@
       shell: "{{toolkit.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
-        PATH: /usr/local/python3.7.5/bin:"{{lookup('env', 'PATH')}}"
+        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
       register: toolkit_result
       when: toolkit.matched > 0
       failed_when: "'install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout"

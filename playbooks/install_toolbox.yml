@@ -23,7 +23,7 @@
     - name: execute ascend-dmi -i
       shell: ascend-dmi -i
       environment:
-        PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:"{{lookup('env', 'PATH')}}"
+        PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi
       register: ascend_dmi_info
       when: toolbox.matched > 0
