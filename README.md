@@ -54,11 +54,17 @@ ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
 
 执行ansible ping测试其他设备连通性
 ```bash
-ansible remote -i ./inventory_file -m ping
+export PATH=/usr/local/python3.7.5/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+ansible all -i ./inventory_file -m ping
 ip_address_1 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
+```
+如果之前没有安装过ansible可以执行./install.sh --check
+```bash
+./install.sh --check
 ```
 如果所有设备都success，表示所有设备都能正常连接。如有设备失败，请检查该设备的网络连接和sshd服务是否开启
 
