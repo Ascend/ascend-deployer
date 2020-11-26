@@ -25,17 +25,48 @@
 
 将CANN软件包软件包放到resources目录下
 
+```
+atlas-deployer
+|- install.sh
+|- ansible.cfg
+|- playbooks
+|- scenes
+`- resources/
+   |- centos_7.6_aarch64
+   |- centos_7.6_x86_64
+   |- ...
+   |- aarch64
+   |- x86_64
+   |- A300-3000-npu-driver_xxx.run
+   |- A300-3000-npu-firmware_xxx.run
+   |- Ascend-cann-nnrt-xxx.run
+   |- ...
+   `- Ascend-cann-toolkit-xxx.run
+```
+
 - **步骤 3**
 
 使用filezilla等工具，将整个目录上从到待安装设备上
 
 - **步骤 4**
+执行install.sh --help仔细阅读参数说明
+```bash
+./install.sh --help
+```
 
-运行install.sh启动安装
+- **步骤 5**
+
+运行install.sh安装组件或按场景安装,例如：
+
+```bash
+./install.sh --install=driver      // 安装driver
+./install.sh --install=npu         // 安装driver和firmware
+./install.sh --install-scene=auto  // 自动安装所有能找到的软件包
+```
 
 ## 批量安装
 
-在单机安装完成后按如下步骤执行
+在单机安装执行安装之前配置inventor_file文件指定待安装设备。下载和上传之服务器的过程与单机相同。
 
 - **步骤 1**
 
@@ -68,18 +99,19 @@ ip_address_1 | SUCCESS => {
 ```
 如果所有设备都success，表示所有设备都能正常连接。如有设备失败，请检查该设备的网络连接和sshd服务是否开启
 
-- **步骤 3**
+- **步骤 4**
 执行install.sh --help仔细阅读参数说明
 ```bash
 ./install.sh --help
 ```
 
-- **步骤 4**
+- **步骤 5**
 
-执行install.sh启动批量安装,例如
+执行install.sh启动批量安装。过程与单机安装基本相同，例如：
 ```bash
-./install.sh --install=driver
-./install.sh --install-scene=auto
+./install.sh --install=driver      // 安装driver
+./install.sh --install=npu         // 安装driver和firmware
+./install.sh --install-scene=auto  // 自动安装所有能找到的软件包
 ```
 
 # 离线安装工具详细说明
