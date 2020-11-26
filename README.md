@@ -184,9 +184,8 @@ resources/
 |-- centos_8.2_x86_64
 |-- ubuntu_18.04_aarch64
 |-- ubuntu_18.04_x86_64
-`-- python_package
-    |-- aarch64
-    `-- x86_64
+|-- aarch64
+`-- x86_64
 ```
 
 2.下载OS系统依赖组件  
@@ -207,11 +206,32 @@ port=8080
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
+### Driver,Frimware和CANN层软件安装
 
-### 安全注意事项
+Driver,Firmware,CANN层软件需要使用run包。 将相关软件包放置在resources目录下即可，例如：
+```
+atlas-deployer
+|- install.sh
+|- ansible.cfg
+|- playbooks
+|- scenes
+`- resources/
+   |- centos_7.6_aarch64
+   |- centos_7.6_x86_64
+   |- ...
+   |- aarch64
+   |- x86_64
+   |- A300-3000-npu-driver_xxx.run
+   |- A300-3000-npu-firmware_xxx.run
+   |- Ascend-cann-nnrt-xxx.run
+   |- ...
+   `- Ascend-cann-toolkit-xxx.run
+```
+
+# 安全注意事项
 
 1. 由于需要使用dpkg， rpm等包管理器，只能使用root账号运行
 
 2. inventory文件中会配置远程机器的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除
    
-   参考[http://www.ansible.com.cn/docs/playbooks_vault.html]
+   参考文档[http://www.ansible.com.cn/docs/playbooks_vault.html](http://www.ansible.com.cn/docs/playbooks_vault.html)
