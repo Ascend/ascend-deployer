@@ -1,17 +1,27 @@
 - hosts: '{{ hosts_name }}'
   tasks:
     - name: find tfplugin package
-      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep tfplugin
+      find:
+        paths: ~/resources/
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*tfplugin.*{{ansible_architecture}}.run"
       register: tfplugin
 
-    - name: add tfplugin permission
-      shell: chmod +x {{tfplugin.stdout}}
-      when: "'run' in tfplugin.stdout"
+    - name: add run permission for tfplugin
+      file:
+        path: "{{tfplugin.files[0].path}}"
+        mode: a+x
+      when: tfplugin.matched > 0
 
     - name: install tfplugin
-      shell: "{{tfplugin.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
+      shell: "{{tfplugin.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
+        PATH: /usr/local/python3.7.5/bin:"{{lookup('env', 'PATH')}}"
       register: tfplugin_result
-      when: "'run' in tfplugin.stdout"
-      failed_when: "'install success' not in tfplugin_result.stdout"
+      when: tfplugin.matched > 0
+      failed_when: "'install success' not in tfplugin_result.stdout and 'already installed' not in tfplugin_result.stdout"
 
     - debug: var=tfplugin_result

@@ -1,22 +1,27 @@
 - hosts: '{{ hosts_name }}'
-  become_user: root
   tasks:
     - name: find toolkit package
-      shell: find ~/resources/ -type f -name "*.run" | grep `uname -m`|grep toolkit
+      find:
+        paths: ~/resources/
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*toolkit.*{{ansible_architecture}}.run"
       register: toolkit
-      ignore_errors: yes
 
-    - name: add toolkit permission
-      shell: chmod +x {{toolkit.stdout}}
-      when: "'run' in toolkit.stdout"
+    - name: add run permission for toolkit
+      file:
+        path: "{{toolkit.files[0].path}}"
+        mode: a+x
+      when: toolkit.matched > 0
 
     - name: install toolkit
-      shell: "{{toolkit.stdout}} --install --quiet --install-username={{user}} --install-usergroup={{group}}"
-      register: toolkit_result
-      when: "'run' in toolkit.stdout"
-      failed_when: "'install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout"
+      shell: "{{toolkit.files[0].path}} --install --quiet  --install-username={{user}} --install-usergroup={{group}}"
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
-        PATH: /usr/local/python3.7.5/bin:'{{lookup('env', 'PATH')}}'
+        PATH: /usr/local/python3.7.5/bin:"{{lookup('env', 'PATH')}}"
+      register: toolkit_result
+      when: toolkit.matched > 0
+      failed_when: "'install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout"
 
     - debug: var=toolkit_result
