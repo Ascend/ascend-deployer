@@ -24,7 +24,7 @@
 
     - name: centos stat /usr/lib64/libhdf5.so
       stat:
-        path: /usr/lib64/libhdf5/so
+        path: /usr/lib64/libhdf5.so
       register: centos_libhdf5
       when: ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
 
