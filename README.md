@@ -169,11 +169,11 @@ baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 表示同时启用了base源和epel源，下载centos的依赖是会从这两个源中查询和下载。默认使用华为源，根据需要修改。
-修改源通常只需要修改其中host部分，即mirrors.tools.huawei.com部分。如需修改后面部门，请确保理解centos的源配置
+修改源通常只需要修改其中host部分，即mirrors.huaweicloud.com部分。如需修改后面部分，请确保理解centos的源配置
 
 _注意:_ centos的依赖软件需要在base和epel一起才能包含完整。如果需删除源，可能造成依赖下载不完整。
 
-centos 8.2的源结构与7.2差异较大,例如aarch下源配置为：
+centos 8.2的源结构与7.2差异较大,例如CentOS 8.2 aarch64下源配置为：
 ```buildoutcfg
 [base]
 baseurl=http://mirrors.huaweicloud.com/centos/8/BaseOS/aarch64/os
