@@ -131,10 +131,10 @@ downloader/config/centos_7.6_aarch64/source.repo
 centos 7.6的源配置文件内容如下:
 ```
 [base]
-baseurl=http://mirrors.tools.huawei.com/centos-altarch/7/os/aarch64
+baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 
 [epel]
-baseurl=http://mirrors.tools.huawei.com/epel/7/aarch64
+baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 表示同时启用了base源和epel源，下载centos的依赖是会从这两个源中查询和下载。默认使用华为源，根据需要修改。
 修改源通常只需要修改其中host部分，即mirrors.tools.huawei.com部分。如需修改后面部门，请确保理解centos的源配置
