@@ -422,30 +422,6 @@
         ]
     },
     {
-        "name": "gcc-base",
-        "used_by": [
-            "driver",
-            "cann",
-            "framework"
-        ]
-    },
-    {
-        "name": "libgcc-dev",
-        "used_by": [
-            "driver",
-            "cann",
-            "framework"
-        ]
-    },
-    {
-        "name": "libstdc++-dev",
-        "used_by": [
-            "driver",
-            "cann",
-            "framework"
-        ]
-    },
-    {
         "name": "g++",
         "used_by": [
             "driver",
