@@ -233,7 +233,7 @@
         "name": "libxcrypt", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "libasn", "used_by": [ "driver", "cann", "framework" ]
+        "name": "libasan", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libatomic", "used_by": [ "driver", "cann", "framework" ]
