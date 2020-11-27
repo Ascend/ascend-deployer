@@ -4,7 +4,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
   register: firmware_pkg
 
 - debug:

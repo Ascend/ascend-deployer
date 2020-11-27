@@ -4,7 +4,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg
 
 - debug:
@@ -17,7 +17,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg_linux
   when: driver_pkg.matched == 0
 
