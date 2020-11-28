@@ -25,6 +25,6 @@
           - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
 
     - name: install deb by dpkg
-      shell: export DEBIAN_FRONTEND=nointeractive && export DEBIAN_PRIORITY=critical; dpkg -i ~/resources/{{ ansible_distribution }}_{{ os_version}}_{{ ansible_architecture }}/*.deb
+      shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ~/resources/{{ ansible_distribution }}_{{ os_version}}_{{ ansible_architecture }}/*.deb
       when:
           - ansible_pkg_mgr == 'apt'

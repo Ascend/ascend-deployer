@@ -21,7 +21,7 @@ function install_sys_packages()
     elif [ ${have_dnf} -eq 1 ]; then
         dnf install ~/resources/${os_ver}_`uname -m`/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg -i ~/resources/${os_ver}_`uname -m`/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ~/resources/${os_ver}_`uname -m`/*.deb
     fi
 }
 

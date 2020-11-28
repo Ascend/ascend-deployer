@@ -77,8 +77,12 @@ class Apt():
 
     def fetch_packages(self, packages_url):
         resp = DOWNLOAD_INST.urlopen(packages_url)
-        html = resp.read()
-        return gzip.decompress(html).decode('utf-8')
+        if resp is not None:
+            html = resp.read()
+            return gzip.decompress(html).decode('utf-8')
+        else:
+            print('resp is None')
+            return ''
 
     @staticmethod
     def version_compare(ver_a, ver_b):

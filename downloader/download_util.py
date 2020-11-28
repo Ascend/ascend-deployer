@@ -18,6 +18,7 @@
 import os
 import configparser
 import socket
+import time
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
@@ -133,6 +134,10 @@ class DownloadUtil:
             except socket.timeout as timeout:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
+            finally:
+                if retry > 1:
+                    print('please wait for a moment...')
+                    time.sleep(retry * 2)
         return False
 
     @classmethod
@@ -149,6 +154,10 @@ class DownloadUtil:
             except socket.timeout as timeout:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
+            finally:
+                if retry > 1:
+                    print('please wait for a moment...')
+                    time.sleep(retry * 2)
         return None
 
     @staticmethod
