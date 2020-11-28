@@ -1,16 +1,29 @@
 - hosts: localhost
+  vars:
+    host_count: "{{ groups[hosts_name] | length }}"
+    first_host: "{{ groups[hosts_name][0] }}"
   tasks:
-    - name: make tar package
-      shell: tar -cf ../resources.tar ../resources
+    - name: link to local
+      file:
+        src: "{{ playbook_dir }}/../resources"
+        dest: ~/resources
+        state: link
+
+    - name: make tar package for remote
+      shell: tar -cf ~/resources.tar ../resources
+      when: not (host_count == "1" and first_host == "localhost")
 
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: copy to hosts
+    - name: copy to remote hosts
       copy:
-        src: ../resources.tar
+        src: ~/resources.tar
         dest: ~/
-    - name: uncompress
+      when: ansible_connection != "local"
+
+    - name: uncompress on remote
       unarchive:
         src: ~/resources.tar
         dest: ~/
         copy: no
+      when: ansible_connection != "local"
