@@ -196,6 +196,7 @@ main()
     fi
     export PATH=/usr/local/python3.7.5/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+    unset DISPLAY
     have_ansible=`command -v ansible | wc -l`
     have_rpm=`command -v rpm | wc -l`
     have_gcc=`command -v gcc | wc -l`

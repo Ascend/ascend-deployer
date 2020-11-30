@@ -45,6 +45,11 @@
         "dest":"resources/x86_64"
     },
     {
+        "filename":"tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
+        "url":"https://mytf.obs.cn-southwest-2.myhuaweicloud.com/tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
+        "dest":"resources/aarch64"
+    },
+    {
         "filename":"gcc-7.3.0.tar.gz",
         "url":"https://mirrors.huaweicloud.com/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz",
         "dest":"resources/"
