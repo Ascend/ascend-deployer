@@ -3,11 +3,10 @@
     host_count: "{{ groups[hosts_name] | length }}"
     first_host: "{{ groups[hosts_name][0] }}"
   tasks:
-    - name: link to local
-      file:
-        src: "{{ playbook_dir }}/../resources"
-        dest: ~/resources
-        state: link
+    - name: set resouces_dir locally
+      set_fact:
+        resources_dir: "../resources"
+        cacheable: yes
 
     - name: make tar package for remote
       shell: tar -cf ~/resources.tar ../resources
@@ -15,6 +14,12 @@
 
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: set resouces_dir remote
+      set_fact:
+        resources_dir: "~/resources"
+        cacheable: yes
+      when: ansible_connection != "local"
+
     - name: copy to remote hosts
       copy:
         src: ~/resources.tar

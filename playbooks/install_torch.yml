@@ -16,7 +16,7 @@
         - "os_version == '7.6'"
 
     - name: upgrade pip
-      shell: python3.7 -m pip install --upgrade pip --no-index --find-links ~/resources/`uname -m`
+      shell: python3.7 -m pip install --upgrade pip --no-index --find-links {{ resources_dir }}/`uname -m`
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
@@ -34,7 +34,7 @@
     - debug: var=pip_version
 
     - name: install torch
-      shell: python3.7 -m pip install torch --no-index --find-links ~/resources/`uname -m`
+      shell: python3.7 -m pip install torch --no-index --find-links {{ resources_dir }}/`uname -m`
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64

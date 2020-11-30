@@ -1,10 +1,12 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: mkdir build directory
+      shell: mkdir -p ~/build
     - name: install python3.7.5 unarchive
-      shell: tar -xvf ./resources/Python-3.7.5.tar.xz -C resources
+      shell: tar -xvf {{ resources_dir }}/Python-3.7.5.tar.xz -C ~/build
     - name: install python3.7.5 config
-      shell: cd ./resources/Python-3.7.5; ./configure --enable-shared --prefix=/usr/local/python3.7.5
+      shell: cd ~/build/Python-3.7.5; ./configure --enable-shared --prefix=/usr/local/python3.7.5
     - name: install python3.7.5 make
-      shell: cd ./resources/Python-3.7.5; make -j4
+      shell: cd ~/build/Python-3.7.5; make -j4
     - name: install python3.7.5 make install
-      shell: cd ./resources/Python-3.7.5; make install
+      shell: cd ~/build/Python-3.7.5; make install

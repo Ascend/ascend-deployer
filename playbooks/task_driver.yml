@@ -1,6 +1,6 @@
 - name: find driver package with distribution
   find:
-    path: ~/resources/
+    path: "{{ resources_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
@@ -13,7 +13,7 @@
 
 - name: find driver package for common linux
   find:
-    path: ~/resources/
+    path: "{{ resources_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
