@@ -1,5 +1,33 @@
 #!/bin/bash
 
+readonly TRUE=1
+readonly FALSE=0
+
+function have_no_python_module
+{
+    ret=`python3.7 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
+    return ${ret}
+}
+
+function check_python375()
+{
+    module_list="bz2 sqlite3 lzma"
+    if [ ! -d /usr/local/python3.7.5 ];then
+        echo "Warning: no python3.7.5 installed"
+        return ${FALSE}
+    fi
+    for module in ${module_list}
+    do
+        have_no_python_module ${module}
+        ret=$?
+        if [ ${ret} == ${TRUE} ];then
+            echo "Warning: python3.7 have no moudle ${module}"
+            return ${FALSE}
+        fi
+    done
+    return ${TRUE}
+}
+
 function install_sys_packages()
 {
     echo "install sys dependencies"
@@ -17,11 +45,11 @@ function install_sys_packages()
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        rpm -ivh --force --replacepkgs ~/resources/${os_ver}_`uname -m`/*.rpm
+        rpm -ivh --force --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        dnf install ~/resources/${os_ver}_`uname -m`/*.rpm
+        dnf install ./resources/${os_ver}_`uname -m`/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ~/resources/${os_ver}_`uname -m`/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_`uname -m`/*.deb
     fi
 }
 
@@ -37,8 +65,9 @@ function install_python375()
         echo "python 3.7.5 already installed"
         return
     fi
-    tar -xvf ./resources/Python-3.7.5.tar.xz -C ~/
-    cd ~/Python-3.7.5
+    mkdir -p ~/build
+    tar -xvf ./resources/Python-3.7.5.tar.xz -C ~/build
+    cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=/usr/local/python3.7.5
     make -j4
     make install
@@ -147,8 +176,8 @@ function parse_script_args() {
             check_flag=y
             shift
             ;;
-        --chean)
-            chean_flag=y
+        --clean)
+            clean_flag=y
             shift
             ;;
         *)
@@ -199,11 +228,11 @@ main()
     unset DISPLAY
     have_ansible=`command -v ansible | wc -l`
     have_rpm=`command -v rpm | wc -l`
-    have_gcc=`command -v gcc | wc -l`
-    if [ ! -d /usr/local/python3.7.5 ];then
-        if [ ${have_gcc} -eq 0 ];then
-            install_sys_packages
-        fi
+
+    check_python375
+    py37_status=$?
+    if [ ${py37_status} == ${FALSE} ];then
+        install_sys_packages
         install_python375
     fi
 
@@ -225,7 +254,7 @@ main()
     if [ "x${check_flag}" == "xy" ]; then
         check
     fi
-    if [ "x${chean}" == "xy" ]; then
+    if [ "x${clean_flag}" == "xy" ]; then
         chean_resouces
     fi
 }
