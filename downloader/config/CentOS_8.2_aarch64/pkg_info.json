@@ -6,8 +6,7 @@
         "name": "glibc-headers", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "glibc-devel",
-        "used_by": [ "driver", "cann", "framework" ]
+        "name": "glibc-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libgcc", "used_by": [ "driver", "cann", "framework" ]
@@ -16,8 +15,7 @@
         "name": "libgomp", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "gcc",
-        "used_by": [ "driver", "cann", "framework" ]
+        "name": "gcc", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libstdc++", "used_by": [ "driver", "cann", "framework" ]
@@ -41,6 +39,15 @@
         "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake-filesystem", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake-rpm-macros", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "libuv", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -57,21 +64,6 @@
     },
     {
         "name": "python36", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpkgconf", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "pkgconf", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "pkgconf-m4", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "pkgconf-pkg-config", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "unzip", "used_by": [ "driver", "cann", "framework" ]
@@ -128,9 +120,6 @@
         "name": "krb5-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "pcre-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "openssl-libs", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -174,6 +163,9 @@
     },
     {
         "name": "openblas-threads64_", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "openblas-srpm-macros", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "openblas", "used_by": [ "driver", "cann", "framework" ]
@@ -242,6 +234,12 @@
         "name": "libubsan", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "xz-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "dkms", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -251,9 +249,63 @@
         "name": "elfutils-libelf-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "pcre2-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pcre2-utf16", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pcre2-utf32", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "perl-interpreter", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "perl-macros", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "perl-libs", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Carp", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Errno", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Exporter", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-File-Path", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-IO", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-PathTools", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Scalar-List-Utils", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Socket", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Text-Tabs+Wrap", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-Unicode-Normalize", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-constant", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-parent", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-threads", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-threads-shared", "used_by": [ "driver", "cann", "framework" ]
     }
 ]
