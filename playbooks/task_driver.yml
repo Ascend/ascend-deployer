@@ -21,6 +21,17 @@
   register: driver_pkg_linux
   when: driver_pkg.matched == 0
 
+- name: find driver package for BigCloud Linux 7.6
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+  register: driver_pkg_linux
+  when: driver_pkg.matched == 0
+
+
 - debug:
     var: driver_pkg
     verbosity: 1
