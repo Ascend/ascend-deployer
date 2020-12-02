@@ -54,7 +54,7 @@
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
-        PYTHON_PATH: /usr/local/Ascend/tfplugin/latest/tfplugin/python/site-packages
+        PYTHONPATH: /usr/local/Ascend/tfplugin/latest/tfplugin/python/site-packages
       register: tensorflow_check_result
 
     - debug: var=tensorflow_check_result

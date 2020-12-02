@@ -4,12 +4,12 @@
 - name: scp libpython-selinux
   shell: /usr/bin/sshpass -p "{{ansible_password}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_user}}@{{ansible_default_ipv4.address}}:~/libselinux
   delegate_to: localhost
-  when: ansible_connection != "local"
+  when: inventory_hostname != "localhost"
 
 - name: cp libpython-selinux for localhost
   shell: cp -f ../resources/{{os_and_arch}}/libselinux*.rpm ~/libselinux
   delegate_to: localhost
-  when: ansible_connection == "local"
+  when: inventory_hostname == "localhost"
 
 - name: rm libselinux-devel
   shell: rm -f ~/libselinux/libselinux-devel*
