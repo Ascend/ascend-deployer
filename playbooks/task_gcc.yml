@@ -17,20 +17,20 @@
   shell: "cp {{ resources_dir }}/isl-0.16.1.tar.bz2 ~/build/gcc-7.3.0/"
 
 - name: download_prerequisites
-  shell: cd ~/gcc_install/gcc-7.3.0/; ./contrib/download_prerequisites
+  shell: cd ~/build/gcc-7.3.0/; ./contrib/download_prerequisites
 
 - name: check makefile exist
   stat:
-    path: "{{ resources_dir }}/gcc-7.3.0/Makefile"
+    path: "~/build/gcc-7.3.0/Makefile"
   register: makefile_stat
 
 - name: make distclean
-  shell: "cd {{ resources_dir }}/gcc-7.3.0; make distclean"
+  shell: "cd ~/build/gcc-7.3.0; make distclean"
   when: makefile_stat.stat.exists
   register: configure_result
 
 - name: configure gcc
-  shell: "cd {{ resources_dir }}/gcc-7.3.0; ./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix=/usr/local/gcc7.3.0"
+  shell: "cd ~/build/gcc-7.3.0; ./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix=/usr/local/gcc7.3.0"
   register: configure_result
 
 - name: check libstdc++.so exist
@@ -38,13 +38,13 @@
   register: cxx
 
 - name: make gcc
-  shell: "cd {{ resources_dir }}/gcc-7.3.0; make -j20"
+  shell: "cd ~/build/gcc-7.3.0; make -j20"
   register: make_result
   when: "'0' in cxx.stdout"
   ignore_errors: yes
 
 - name: make install
-  shell: "cd {{ resources_dir }}/gcc-7.3.0; make install"
+  shell: "cd ~/build/gcc-7.3.0; make install"
   when: "'0' in cxx.stdout"
   register: install_result
 
