@@ -229,5 +229,11 @@
     },
     {
         "name": "libselinux-python", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "xz-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
     }
 ]
