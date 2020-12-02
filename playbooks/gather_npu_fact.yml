@@ -11,13 +11,13 @@
     - name: set resources_dir local
       set_fact:
         resources_dir: "../resources"
-      cacheable: yes
+        cacheable: yes
       when: ansible_connection == "local"
 
     - name: set resources_dir remote
       set_fact:
         resources_dir: "~/resources"
-      cacheable: yes
+        cacheable: yes
       when: ansible_connection != "local"
 
     - local_action: stat path={{os_and_arch}}.yml
