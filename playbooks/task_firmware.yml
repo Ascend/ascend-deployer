@@ -11,13 +11,13 @@
     var: firmware_pkg
     verbosity: 1
 
-- name: add run permission for {{ firmware_pkg.files[0].path }}
+- name: add run permission for firmware
   file:
     path: "{{ firmware_pkg.files[0].path }}"
     mode: a+x
   when: firmware_pkg.matched > 0
 
-- name: install firmware {{ firmware_pkg.files[0].path }}
+- name: install firmware
   shell: "{{ firmware_pkg.files[0].path }} --full --quiet"
   register: firmware_result
   when: firmware_pkg.matched > 0

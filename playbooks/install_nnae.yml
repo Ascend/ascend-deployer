@@ -9,13 +9,13 @@
         patterns: ".*nnae.*{{ ansible_architecture }}.run"
       register: nnae
 
-    - name: add run permission for {{ nnae.files[0].path }}
+    - name: add run permission for nnae
       file:
         path: "{{ nnae.files[0].path }}"
         mode: a+x
       when: nnae.matched > 0
 
-    - name: install nnae {{ nnae.files[0].path }}
+    - name: install nnae
       shell: "{{ nnae.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: nnae_result
       when: nnae.matched > 0

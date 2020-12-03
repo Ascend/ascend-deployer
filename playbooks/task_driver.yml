@@ -36,25 +36,25 @@
     var: driver_pkg
     verbosity: 1
 
-- name: add run permission for {{ driver_pkg.files[0].path }}
+- name: add run permission for driver package
   file:
     path: "{{driver_pkg.files[0].path}}"
     mode: a+x
   when: driver_pkg.matched > 0
 
-- name: add run permission for {{ driver_pkg_linux.files[0].path }}
+- name: add run permission for common linux driver package
   file:
     path: "{{driver_pkg_linux.files[0].path}}"
     mode: a+x
   when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
 
-- name: install driver {{ driver_pkg.files[0].path }}
+- name: install driver for specific os
   shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
   when: driver_pkg.matched > 0
 
-- name: install driver common linux {{ driver_pkg_linux.files[0].path }}
+- name: install driver for common linux
   shell: "{{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
