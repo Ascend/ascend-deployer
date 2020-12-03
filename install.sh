@@ -11,11 +11,11 @@ function have_no_python_module
 
 function check_python375()
 {
-    module_list="bz2 sqlite3 lzma"
     if [ ! -d /usr/local/python3.7.5 ];then
         echo "Warning: no python3.7.5 installed"
         return ${FALSE}
     fi
+    module_list="ctypes bz2 sqlite3 lzma"
     for module in ${module_list}
     do
         have_no_python_module ${module}
@@ -81,8 +81,20 @@ function install_ansible()
     python3.7 -m pip install ansible --no-index --find-links ./resources/`uname -m`
 }
 
-function install_target()
+function process_install()
 {
+    IFS=','
+    unsupport=${FALSE}
+    for target in ${install_target}
+    do
+        if [ ! -f playbooks/install_${target}.yml ];then
+            echo "Error: not support install for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        exit 1
+    fi
     ping_all
     echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
     ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
@@ -94,11 +106,15 @@ function install_target()
     if [ "x${debug_flag}" == "xy" ];then
         debug_cmd="-v"
     fi
-    echo "ansible-playbook -i ./inventory_file playbooks/install_${install_target}.yml -e hosts_name=ascend ${debug_cmd}"
-    ansible-playbook -i ./inventory_file playbooks/install_${install_target}.yml -e "hosts_name=ascend" ${debug_cmd}
+    for target in ${install_target}
+    do
+        echo "ansible-playbook -i ./inventory_file playbooks/install_${target}.yml -e hosts_name=ascend ${debug_cmd}"
+        ansible-playbook -i ./inventory_file playbooks/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+    done
+    unset IFS
 }
 
-function install_scene()
+function process_scene()
 {
     ping_all
     echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
@@ -125,21 +141,19 @@ function print_usage()
     echo "--nocopy                       do not copy resouces"
     echo "--debug                        enable debug"
     echo "--install=<package_name>       Install specific package:"
-    echo "                               npu        install dirver and firmware toghter"
-    echo "                               driver"
-    echo "                               firmware"
-    echo "                               nnrt"
-    echo "                               nnae"
-    echo "                               toolbox"
-    echo "                               toolkit"
-    echo "                               tfplugin"
-    echo "                               torch"
-    echo "                               tensorflow"
-    echo "                               sys_pkg    install system dependencies"
-    echo "                               gcc        install gcc 7.3.0"
-    echo "                               python375  install python 3.7.5"
-    echo "--install-scene=<username>     Install specific scene: auto, infer_dev, infer_run"
-    echo "                               train_dev, train_run, vmhost"
+    for target in `find playbooks/install_*.yml`
+    do
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "Then \"npu\" will install dirver and firmware toghter"
+    echo "--install-scene=<scene_name>     Install specific scene:"
+    for scene in `find scene/scene_*.yml`
+    do
+        tmp=${scene#*_}
+        echo "                               ${tmp%.*}"
+    done
+    exit 0
 }
 
 function parse_script_args() {
@@ -208,27 +222,20 @@ function ping_all()
     fi
 }
 
-function check()
+function process_check()
 {
     ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
 
-function chean_resouces()
+function process_chean()
 {
     ansible -i ./inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
 }
 
-main()
+function bootstrap()
 {
-    if [ -d ./facts_cache ];then
-        rm -rf ./facts_cache
-    fi
-    export PATH=/usr/local/python3.7.5/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
-    unset DISPLAY
     have_ansible=`command -v ansible | wc -l`
     have_rpm=`command -v rpm | wc -l`
-
     check_python375
     py37_status=$?
     if [ ${py37_status} == ${FALSE} ];then
@@ -237,25 +244,34 @@ main()
     fi
 
     if [ ${have_ansible} -eq 0 ];then
+        echo "no ansible"
         install_ansible
     fi
+}
 
+main()
+{
     parse_script_args $*
     check_script_args
+    if [ -d ./facts_cache ];then
+        rm -rf ./facts_cache
+    fi
+    export PATH=/usr/local/python3.7.5/bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+    unset DISPLAY
+    bootstrap
 
     if [ "x${install_target}" != "x" ];then
-        install_target ${install_target}
+        process_install ${install_target}
     fi
-
     if [ "x${install_scene}" != "x" ];then
-        install_scene ${install_scene}
+        process_scene ${install_scene}
     fi
-
     if [ "x${check_flag}" == "xy" ]; then
-        check
+        process_check
     fi
     if [ "x${clean_flag}" == "xy" ]; then
-        chean_resouces
+        process_chean
     fi
 }
 
