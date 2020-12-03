@@ -2,7 +2,7 @@
   shell: mkdir -p ~/libselinux
 
 - name: scp libpython-selinux
-  shell: /usr/bin/sshpass -p "{{ansible_password}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_user}}@{{ansible_default_ipv4.address}}:~/libselinux
+  shell: /usr/bin/sshpass -p "{{ansible_ssh_pass}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
   delegate_to: localhost
   when: inventory_hostname != "localhost"
 
