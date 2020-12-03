@@ -15,7 +15,7 @@ function check_python375()
         echo "Warning: no python3.7.5 installed"
         return ${FALSE}
     fi
-    module_list="ctypes bz2 sqlite3 lzma"
+    module_list="ctypes sqlite3 lzma"
     for module in ${module_list}
     do
         have_no_python_module ${module}
@@ -98,8 +98,8 @@ function process_install()
     ping_all
     echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
     ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
-    echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
     if [ "x${nocopy_flag}" != "xy" ];then
+        echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
         ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
     fi
     debug_cmd=""

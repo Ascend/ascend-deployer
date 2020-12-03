@@ -1,18 +1,32 @@
-- name: mkdir resources
-  shell: mkdir -p ~/libselinux
+- name: check if python have selinux module
+  shell: "{{ discovered_interpreter_python }} -c \"import selinux\""
+  register: have_selinux
+  failed_when: false
+  changed_when: have_selinux.rc != 0
 
-- name: scp libpython-selinux
+- name: create libselinux directory
+  file:
+    path: ~/libselinux
+    state: directory
+    recurse: yes
+  when: have_selinux.rc != 0
+
+- name: scp libselinux-python to remote
   shell: /usr/bin/sshpass -p "{{ansible_ssh_pass}}" scp -o StrictHostKeyChecking=no ../resources/{{os_and_arch}}/libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
   delegate_to: localhost
-  when: inventory_hostname != "localhost"
+  when:
+    - inventory_hostname != "localhost"
+    - have_selinux.rc != 0
 
-- name: cp libpython-selinux for localhost
+- name: cp libselinux-python to localhost
   shell: cp -f ../resources/{{os_and_arch}}/libselinux*.rpm ~/libselinux
   delegate_to: localhost
-  when: inventory_hostname == "localhost"
+  when:
+    - inventory_hostname == "localhost"
+    - have_selinux.rc != 0
 
-- name: rm libselinux-devel
-  shell: rm -f ~/libselinux/libselinux-devel*
-
-- name: install libpython-selinux
-  shell: rpm -ivh --force --nodeps ~/libselinux/libselinux*.rpm
+# Usually the libselinux in the repository is newer than system
+# so here add --replacepkgs
+- name: install libselinux-python
+  shell: rpm -ivh --force --replacepkgs --nodeps ~/libselinux/libselinux*.rpm
+  when: have_selinux.rc != 0

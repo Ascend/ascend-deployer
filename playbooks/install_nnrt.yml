@@ -9,13 +9,13 @@
         patterns: ".*nnrt.*{{ ansible_architecture }}.run"
       register: nnrt
 
-    - name: add run permission for {{ nnrt.files[0].path }}
+    - name: add run permission for nnrt
       file:
         path: "{{ nnrt.files[0].path }}"
         mode: a+x
       when: nnrt.matched > 0
 
-    - name: install nnrt {{ nnrt.files[0].path }}
+    - name: install nnrt
       shell: "{{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: nnrt_result
       when: nnrt.matched > 0

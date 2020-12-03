@@ -4,10 +4,13 @@
     temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
     os_version: "{{ temp[0] }}"
   tasks:
-    - name: test driver exist
+    # check the driver, always success
+    # set changed when npu-smi info not work
+    - name: check if driver is already installed
       shell: npu-smi info
       register: smi_info
-      ignore_errors: yes
+      failed_when: false
+      changed_when: smi_info.rc != 0
 
     - debug:
         var: smi_info
