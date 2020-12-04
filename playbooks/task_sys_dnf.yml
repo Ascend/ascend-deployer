@@ -1,0 +1,14 @@
+- name: dnf test kernel-headers
+  shell: rpm -qa | grep kernel-headers
+  register: kernel_header_installed
+  ignore_errors: yes
+
+- name: dnf delete kernel-headers if installed
+  shell: rm -f {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/kernel-headers*.rpm
+  ignore_errors: yes
+  when:
+    - "kernel_header_installed.rc == 0 and 'kernel-headers' in kernel_header_installed.stdout"
+
+# currently dnf also use rpm to install
+- name: dnf install system packages
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/*.rpm

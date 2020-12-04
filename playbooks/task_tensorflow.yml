@@ -1,0 +1,58 @@
+- name: upgrade pip
+  shell: python3.7 -m pip install --upgrade pip --no-index --find-links {{ resources_dir }}/`uname -m`
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
+
+- name: install cython
+  shell: python3.7 -m pip install cython --no-index --find-links {{ resources_dir }}/`uname -m`
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
+
+- name: install pkgconfig
+  shell: python3.7 -m pip install pkgconfig --no-index --find-links {{ resources_dir }}/`uname -m`
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
+
+- name: link hdf5 for ubuntu
+  shell: ln -sf /usr/lib/`uname -m`-linux-gnu/libhdf5_serial.so /usr/lib/`uname -m`-linux-gnu/libhdf5.so
+  when: ansible_pkg_mgr == 'apt'
+
+- name: centos stat /usr/lib64/libhdf5.so
+  stat:
+    path: /usr/lib64/libhdf5.so
+  register: centos_libhdf5
+  when: ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
+
+- name: link hdf5 for centos
+  shell: ln -sf `find /usr/lib64/ -type f -name "libhdf5.so*"` /usr/lib64/libhdf5.so
+  when:
+    - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
+    - not centos_libhdf5.stat.exists
+
+- name: install tensorflow
+  shell: python3.7 -m pip install tensorflow --no-index --find-links {{ resources_dir }}/`uname -m`
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
+
+- name: check tensorflow
+  shell: python3.7 -c "import tensorflow as tf; print(tf.__version__)"
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+  register: tensorflow_check_result
+
+- debug: var=tensorflow_check_result
+
+- name: check tensorflow with npu_bridge
+  shell: python3.7 -c "import npu_bridge.estimator; import npu_bridge.hccl; from tensorflow.core.protobuf import rewriter_config_pb2"
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+    PYTHONPATH: /usr/local/Ascend/tfplugin/latest/tfplugin/python/site-packages
+  register: tensorflow_check_result
+
+- debug: var=tensorflow_check_result

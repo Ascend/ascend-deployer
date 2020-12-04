@@ -1,5 +1,4 @@
 - hosts: '{{ hosts_name }}'
-  gather_facts: True
   tasks:
     - name: install firmware
       import_tasks: task_firmware.yml

@@ -1,74 +1,13 @@
-- name: find driver package with distribution
-  find:
-    path: "{{ resources_dir }}"
-    recurse: no
-    file_type: file
-    use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
-  register: driver_pkg
+- name: check driver task for os
+  local_action: stat path=task_driver_{{os_and_arch}}.yml
+  register: special_driver_task
 
-- debug:
-    var: driver_pkg
-    verbosity: 1
+# if have dirver task for specific os, use the driver task for specific os
+- name: process driver for specific os
+  include_tasks: "task_driver_{{os_and_arch}}.yml"
+  when: special_driver_task.stat.exists
 
-- name: find driver package for common linux
-  find:
-    path: "{{ resources_dir }}"
-    recurse: no
-    file_type: file
-    use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
-  register: driver_pkg_linux
-  when: driver_pkg.matched == 0
-
-- name: find driver package for BigCloud Linux 7.6
-  find:
-    path: "{{ resources_dir }}"
-    recurse: no
-    file_type: file
-    use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
-  register: driver_pkg_linux
-  when: driver_pkg.matched == 0
-
-
-- debug:
-    var: driver_pkg
-    verbosity: 1
-
-- name: add run permission for driver package
-  file:
-    path: "{{driver_pkg.files[0].path}}"
-    mode: a+x
-  when: driver_pkg.matched > 0
-
-- name: add run permission for common linux driver package
-  file:
-    path: "{{driver_pkg_linux.files[0].path}}"
-    mode: a+x
-  when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
-
-- name: install driver for specific os
-  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  register: driver_result
-  failed_when: "'install success' not in driver_result.stdout"
-  when: driver_pkg.matched > 0
-
-- name: install driver for common linux
-  shell: "{{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  register: driver_result
-  failed_when: "'install success' not in driver_result.stdout"
-  when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
-
-- name: service host_sys_init start
-  shell: service host_sys_init start
-  when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
-
-- name: check npu-smi info
-  shell: npu-smi info
-  register: npu_smi_info
-  when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
-
-- debug:
-    var: npu_smi_info
-    verbosity: 1
+# if not dirver task for specific os, use the driver task for common
+- name: process driver for common
+  include_tasks: task_driver_common.yml
+  when: not special_driver_task.stat.exists
