@@ -8,6 +8,16 @@
     os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
 
   tasks:
+    - name: set fact os_version
+      set_fact:
+        os_version: "{{ os_version }}"
+        cacheable: yes
+
+    - name: set fact os_and_arch
+      set_fact:
+        os_and_arch: "{{ os_and_arch }}"
+        cacheable: yes
+
     - name: set resources_dir local
       set_fact:
         resources_dir: "../resources"
@@ -20,11 +30,12 @@
         cacheable: yes
       when: ansible_connection != "local"
 
-    - local_action: stat path={{os_and_arch}}.yml
+    - name: check if need prepare
+      local_action: stat path=prepare_{{os_and_arch}}.yml
       register: optional_file
 
-    - name: prepare
-      include_tasks: "{{os_and_arch}}.yml"
+    - name: process prepare
+      include_tasks: "prepare_{{os_and_arch}}.yml"
       when: optional_file.stat.exists
 
     - name: create facts.d folder

@@ -1,0 +1,11 @@
+# for suse use
+# suse also have the rpm tool
+
+- name: zypper check resource exist
+  stat:
+    path: "{{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}"
+  register: zypper_st
+
+- name: zypper install system packages rpm
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/*.rpm
+  when: zypper_st.stat.exists

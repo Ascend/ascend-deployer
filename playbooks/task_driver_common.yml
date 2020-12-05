@@ -1,0 +1,63 @@
+- name: find driver package for specific linux
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- name: find driver package for common linux
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg_linux
+  when: driver_pkg.matched == 0
+
+- debug:
+    var: driver_pkg
+    verbosity: 1
+
+- debug:
+    var: driver_pkg_linux
+    verbosity: 1
+
+- name: add run permission for specific linux driver package
+  file:
+    path: "{{driver_pkg.files[0].path}}"
+    mode: a+x
+  when: driver_pkg.matched > 0
+
+- name: add run permission for common linux driver package
+  file:
+    path: "{{driver_pkg_linux.files[0].path}}"
+    mode: a+x
+  when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
+
+- name: install driver for specific linux
+  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: driver_result
+  failed_when: "'install success' not in driver_result.stdout"
+  when: driver_pkg.matched > 0
+
+- name: install driver for common linux
+  shell: "{{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: driver_result
+  failed_when: "'install success' not in driver_result.stdout"
+  when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
+
+- name: service host_sys_init start
+  shell: service host_sys_init start
+  when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
+
+- name: check npu-smi info
+  shell: npu-smi info
+  register: npu_smi_info
+  when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
+
+- debug:
+    var: npu_smi_info
+    verbosity: 1

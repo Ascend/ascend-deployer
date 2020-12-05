@@ -1,0 +1,38 @@
+# BigCloud Linux 7.6 use the driver of CentOS 7.6
+- name: find driver package for BigCloud Linux 7.6
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- debug:
+    var: driver_pkg
+    verbosity: 1
+
+- name: add run permission for BigCloud Linux driver
+  file:
+    path: "{{driver_pkg.files[0].path}}"
+    mode: a+x
+  when: driver_pkg.matched > 0
+
+- name: install driver for BigCloud Linux
+  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: driver_result
+  failed_when: "'install success' not in driver_result.stdout"
+  when: driver_pkg.matched > 0
+
+- name: service host_sys_init start
+  shell: service host_sys_init start
+  when: driver_pkg.matched > 0
+
+- name: check npu-smi info
+  shell: npu-smi info
+  register: npu_smi_info
+  when: driver_pkg.matched > 0
+
+- debug:
+    var: npu_smi_info
+    verbosity: 1
