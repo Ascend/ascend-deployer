@@ -2,16 +2,6 @@
     {
         "filename":"kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
         "url":"https://vault.centos.org/altarch/7.6.1810/os/aarch64/Packages/kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
-        "dest":"resources/BigCloud_7.6_aarch64"
-    },
-    {
-        "filename":"kernel-headers-3.10.0-957.el7.x86_64.rpm",
-        "url":"https://vault.centos.org/7.6.1810/os/x86_64/Packages/kernel-headers-3.10.0-957.el7.x86_64.rpm",
-        "dest":"resources/BigCloud_7.6_x86_64"
-    },
-    {
-        "filename":"kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
-        "url":"https://vault.centos.org/altarch/7.6.1810/os/aarch64/Packages/kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
         "dest":"resources/CentOS_7.6_aarch64"
     },
     {

@@ -60,11 +60,6 @@ function install_python375()
         return
     fi
     echo "installing Python 3.7.5"
-    pyinstall_path="/usr/local/python3.7.5"
-    if [ -d ${pyinstall_path} ];then
-        echo "python 3.7.5 already installed"
-        return
-    fi
     mkdir -p ~/build
     tar -xvf ./resources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
@@ -127,7 +122,7 @@ function process_scene()
     if [ "x${debug_flag}" == "xy" ];then
         debug_cmd="-v"
     fi
-    echo "ansible-playbook -i ./inventory_file scene/scene_${install_scene}.yml -e hosts_name=ascendi ${debug_cmd}"
+    echo "ansible-playbook -i ./inventory_file scene/scene_${install_scene}.yml -e hosts_name=ascend ${debug_cmd}"
     ansible-playbook -i ./inventory_file scene/scene_${install_scene}.yml -e "hosts_name=ascend" ${debug_cmd}
 }
 
