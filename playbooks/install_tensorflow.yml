@@ -9,6 +9,18 @@
       changed_when: false
       register: import_tensorflow
 
+    - name: stat gcc-7.3.0
+      stat:
+        path: /usr/local/gcc7.3.0
+      register: gcc_stat
+
+    - name: install gcc 7.3 for centos 7.6 if not exist
+      import_tasks: task_gcc.yml
+      when:
+        - not gcc_stat.stat.exists
+        - "os_version == '7.6'"
+        - import_tensorflow.rc != 0
+
     - name: install tensorflow if import failed
       include_tasks: task_tensorflow.yml
       when: import_tensorflow.rc != 0
