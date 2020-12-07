@@ -63,6 +63,3 @@
 - name: make install
   shell: make -C ~/build/gcc-7.3.0 install
   when: "'0' in cxx.stdout"
-  register: install_result
-
-- debug: var=install_result

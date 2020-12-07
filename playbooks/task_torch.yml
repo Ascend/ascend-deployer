@@ -11,6 +11,12 @@
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
   register: torch_result
 
+- name: install apex
+  shell: python3.7 -m pip install apex --no-index --find-links {{ resources_dir }}/`uname -m`
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+
 - debug: var=torch_result
 
 - name: check torch
