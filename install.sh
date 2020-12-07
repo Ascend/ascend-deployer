@@ -91,8 +91,7 @@ function process_install()
         exit 1
     fi
     ping_all
-    echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    process_check
     if [ "x${nocopy_flag}" != "xy" ];then
         echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
         ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
@@ -112,8 +111,7 @@ function process_install()
 function process_scene()
 {
     ping_all
-    echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    process_check
     echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
     if [ "x${nocopy_flag}" != "xy" ];then
         ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
@@ -219,6 +217,8 @@ function ping_all()
 
 function process_check()
 {
+    ansible -i ./inventory_file all -m shell -a "rm -f /etc/ansible/facts.d/npu_info.fact"
+    echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
     ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
 
