@@ -22,6 +22,6 @@
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
       register: tfplugin_result
       when: tfplugin.matched > 0
-      failed_when: "'install success' not in tfplugin_result.stdout and 'already installed' not in tfplugin_result.stdout"
+      failed_when: "tfplugin_result.rc !=0 and ('install success' not in tfplugin_result.stdout and 'already installed' not in tfplugin_result.stdout)"
 
     - debug: var=tfplugin_result

@@ -22,6 +22,6 @@
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
       register: nnae_result
       when: nnae.matched > 0
-      failed_when: "'install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout"
+      failed_when: "nnae_result.rc != 0 and ('install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout)"
 
     - debug: var=nnae_result
