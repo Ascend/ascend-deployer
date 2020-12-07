@@ -19,6 +19,6 @@
       shell: "{{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       register: nnrt_result
       when: nnrt.matched > 0
-      failed_when: "'install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout"
+      failed_when: "nnrt_result.rc != 0 and ('install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout)"
 
     - debug: var=nnrt_result
