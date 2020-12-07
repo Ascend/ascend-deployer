@@ -20,7 +20,7 @@
 
     - name: set resources_dir local
       set_fact:
-        resources_dir: "../resources"
+        resources_dir: "{{ inventory_dir }}/resources"
         cacheable: yes
       when: ansible_connection == "local"
 

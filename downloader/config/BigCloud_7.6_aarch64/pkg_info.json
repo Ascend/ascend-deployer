@@ -63,6 +63,18 @@
         "name": "libffi-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libaec-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "keyutils-libs", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -117,6 +129,9 @@
         "name": "pciutils", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "pciutils-libs", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "net-tools", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -166,5 +181,11 @@
     },
     {
         "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "kernel-bek-headers", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "kernel-bek-devel", "used_by": [ "driver", "cann", "framework" ]
     }
 ]
