@@ -130,8 +130,35 @@ class Yum():
                 return url + '/' + result[0][0]
         return None
 
-    def download(self, name, dst_dir):
-        url = self.get_url_by_pkg_name(name)
+    def get_url(self, pkg_name, ver, release):
+        """
+        在数据库中查询包名对应的url
+        """
+        for name, url in self.sources.items():
+            db_file = os.path.join(self.cache_dir, name + '_primary.sqlite')
+            print('searching {0}'.format(db_file))
+            conn = sqlite3.connect(db_file)
+            cur = conn.cursor()
+            sql_param = {"name": pkg_name, "arch": self.arch,
+                    "version" : ver, "release" : release}
+            cur.execute(
+                "select location_href from packages \
+                where name = :name and (arch = :arch or arch= 'noarch') \
+                and version = :version and release = :release",
+                sql_param)
+            result = cur.fetchall()
+            print(result)
+            if len(result) > 0 and len(result[0]) > 0:
+                return url + '/' + result[0][0]
+        return None
+
+
+    def download(self, name, dst_dir, ver = None, release = None):
+        url = ""
+        if ver is not None and release is not None:
+            url = self.get_url(name, ver, release)
+        else:
+            url = self.get_url_by_pkg_name(name)
         if url is None:
             print('can not find {0}'.format(name))
             return
