@@ -166,5 +166,11 @@
     },
     {
         "name": "kernel-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "kernel-bek-headers", "version": "4.19.25", "release": "200.el7.bclinux"
+    },
+    {
+        "name": "kernel-bek-devel", "version": "4.19.25", "release": "200.el7.bclinux"
     }
 ]

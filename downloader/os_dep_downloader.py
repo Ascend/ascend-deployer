@@ -72,7 +72,10 @@ class OsDepDownloader:
             with open(config_file, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 for item in data:
-                    downloader.download(item['name'], dst_dir)
+                    if 'version' in item and 'release' in item:
+                        downloader.download(item['name'], dst_dir, item['version'], item['release'])
+                    else:
+                        downloader.download(item['name'], dst_dir)
 
 
 def main():
