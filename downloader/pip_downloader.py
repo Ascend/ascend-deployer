@@ -19,10 +19,17 @@ import os
 import configparser
 import urllib.request
 import xml.dom.minidom
+import http.client
+import time
 from download_util import DOWNLOAD_INST
+from download_util import calc_sha256
+from logger_config import get_logger
+
+LOG = get_logger(__file__)
 
 
-class MyPip():
+class MyPip(object):
+    """downloader for pip"""
     def __init__(self):
         self.cache = {}
         """读取配置"""
@@ -34,13 +41,30 @@ class MyPip():
 
     @staticmethod
     def file_download(url, dest):
+        """
+        file_download
+
+        :param url:
+        :param dest:
+        :return:
+        """
         if os.path.exists(dest):
             print('[{0}] exist'.format(dest))
+            LOG.info('[{0}] exist'.format(dest))
         else:
             DOWNLOAD_INST.download(url, dest)
 
     @staticmethod
     def is_wheel_match(full_name, version, platform, implement):
+        """
+        is_wheel_match
+
+        :param full_name:
+        :param version:
+        :param platform:
+        :param implement:
+        :return:
+        """
         try:
             elements = full_name.split('-')
             wheel_version = elements[1]
@@ -57,19 +81,39 @@ class MyPip():
 
         except IndexError as err:
             print(err)
+            LOG.error(err)
             return False
 
         return True
 
     def get_simple_index(self, distribution):
+        """
+        get_simple_index
+
+        :param distribution:
+        :return:
+        """
         if distribution in self.cache.keys():
             index = self.cache.get(distribution)
             print('get from cache')
+            LOG.info('get from cache')
         else:
             url = '{0}/{1}'.format(self.pypi_url, distribution.lower())
             print('pypi URL = [{0}]'.format(url))
-            resp = DOWNLOAD_INST.urlopen(url)
-            index = resp.read()
+            LOG.info('pypi URL = [{0}]'.format(url))
+            index = ''
+            for retry in [x + 1 for x in range(5)]:
+                success = False
+                try:
+                    resp = DOWNLOAD_INST.urlopen(url)
+                    index = resp.read()
+                    success = True
+                except http.client.HTTPException as e:
+                    print(e)
+                    LOG.error(e)
+                    time.sleep(2 * retry)
+                if success:
+                    break
             self.cache[distribution] = index
         dom_tree = xml.dom.minidom.parseString(index)
         collection = dom_tree.documentElement
@@ -77,6 +121,15 @@ class MyPip():
         return idx
 
     def wheel_filter(self, index, version, platform, implement):
+        """
+        wheel_filter
+
+        :param index:
+        :param version:
+        :param platform:
+        :param implement:
+        :return:
+        """
         pkg = ''
         url = ''
         for i in index:
@@ -91,6 +144,13 @@ class MyPip():
 
     @staticmethod
     def source_filter(index, version):
+        """
+        source_filter
+
+        :param index:
+        :param version:
+        :return:
+        """
         pkg = ''
         url = ''
         for i in index:
@@ -111,11 +171,17 @@ class MyPip():
         index = self.get_simple_index(distribution)
         file_name, url = self.wheel_filter(index, version, platform, implement)
         if len(url) == 0:
-            print('can find {0} for {1} {2}'.format(name, platform, implement))
+            print('can not find {0} for {1} {2}'.format(name, platform, implement))
+            LOG.error('can not find {0} for {1} {2}'.format(name, platform, implement))
             return False
         download_url = '{0}/{1}/{2}'.format(self.pypi_url, distribution, url)
         print("Download {0} from [{1}]".format(file_name, download_url))
+        LOG.info("Download {0} from [{1}]".format(file_name, download_url))
         file_path = os.path.join(dest_path, file_name)
+        if not self.need_download_again(file_path, url):
+            print('no need download again')
+            LOG.info('no need download again')
+            return True
         self.file_download(download_url, file_path)
         return True
 
@@ -130,11 +196,48 @@ class MyPip():
             return False
         download_url = '{0}/{1}/{2}'.format(self.pypi_url, distribution, url)
         print("Download {0} from [{1}]".format(file_name, download_url))
+        LOG.info("Download {0} from [{1}]".format(file_name, download_url))
         file_path = os.path.join(dest_path, file_name)
+        if not self.need_download_again(file_path, url):
+            print('no need download again')
+            LOG.info('no need download again')
+            return True
         self.file_download(download_url, file_path)
         return True
 
+    def need_download_again(self, dst_file, url_with_sha256):
+        """
+        need_download_again
+
+        :param dst_file:
+        :param url_with_sha256:
+        :return:
+        """
+        if url_with_sha256 is None or len(url_with_sha256) == 0:
+            return True
+        if not os.path.exists(dst_file):
+            return True
+        key_word = 'sha256='
+        if key_word not in url_with_sha256:
+            return True
+        index_of_sha256 = str(url_with_sha256).index(key_word) + len(key_word)
+        target_sha256 = url_with_sha256[index_of_sha256:]
+        file_sha256 = calc_sha256(dst_file)
+        if target_sha256 != file_sha256:
+            LOG.info('target sha256 in url : {}'.format(target_sha256))
+            LOG.info('sha256 of exists file : {}'.format(file_sha256))
+            print('target sha256 in url : {}'.format(target_sha256))
+            print('sha256 of exists file : {}'.format(file_sha256))
+        return target_sha256 != file_sha256
+
     def download_x86(self, name, dest_path):
+        """
+        download_x86
+
+        :param name:
+        :param dest_path:
+        :return:
+        """
         platform_list = ('manylinux1_x86_64', 'manylinux2010_x86_64',
                          'manylinux2014_x86_64')
         for platform in platform_list:
@@ -143,10 +246,24 @@ class MyPip():
         return False
 
     def download_arm(self, name, dest_path):
+        """
+        download_arm
+
+        :param name:
+        :param dest_path:
+        :return:
+        """
         platform = 'manylinux2014_aarch64'
         return self.download_wheel(name, platform, 'cp37', dest_path)
 
     def download(self, name, dest_path):
+        """
+        download
+
+        :param name:
+        :param dest_path:
+        :return:
+        """
         x86_64_path = os.path.join(dest_path, 'x86_64')
         aarch64_path = os.path.join(dest_path, 'aarch64')
         if not os.path.exists(x86_64_path):
@@ -162,6 +279,7 @@ class MyPip():
 
 
 def main():
+    """main"""
     my_pip = MyPip()
     my_pip.download('six==1.15.0', './')
 

@@ -17,11 +17,15 @@
 
 import os
 
+from logger_config import get_logger
 from pip_downloader import MyPip
 from os_dep_downloader import OsDepDownloader
 
+LOG = get_logger(__file__)
+
 
 def download_python_packages():
+    """download_python_packages"""
     script = os.path.realpath(__file__)
     require_file = os.path.join(os.path.dirname(script), 'requirements.txt')
     repo_path = os.path.join(os.path.dirname(script), '../resources')
@@ -32,10 +36,12 @@ def download_python_packages():
     with open(require_file) as file_content:
         for line in file_content.readlines():
             print('[{0}]'.format(line.strip()))
+            LOG.info('[{0}]'.format(line.strip()))
             pip.download(line.strip(), repo_path)
 
 
 def download_os_packages():
+    """download_os_packages"""
     os_dep = OsDepDownloader()
     os_dep.prepare_download_dir()
     os_dep.download_pkg_from_json()

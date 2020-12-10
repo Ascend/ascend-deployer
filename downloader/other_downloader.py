@@ -18,9 +18,17 @@
 import os
 import json
 from download_util import DOWNLOAD_INST
+from logger_config import get_logger
+
+LOG = get_logger(__file__)
 
 
 def download_other_packages():
+    """
+    download_other_packages
+
+    :return:
+    """
     script = os.path.realpath(__file__)
     script_dir = os.path.dirname(script)
     base_dir = os.path.dirname(script_dir)
@@ -30,6 +38,7 @@ def download_other_packages():
         for item in data:
             dest_file = os.path.join(base_dir, item['dest'], item['filename'])
             print('download[{0}] -> [{1}]'.format(item['url'], dest_file))
+            LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
             DOWNLOAD_INST.download(item['url'], dest_file)
 
 

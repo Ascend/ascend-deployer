@@ -220,24 +220,26 @@ resources/
 `-- x86_64
 ```
 
-2.下载OS系统依赖组件  
-```shell script
-# 清理下载文件及目录
-python os_dep_downloader.py clean
-# 执行下载
-python os_dep_downloader.py
-```
-
-3.代理配置  
+2.代理配置  
 ```editorconfig
 [proxy]
 enable=true         # 是否开启代理配置参数
+verify=true         # 是否校验https证书
 protocol=http
 hostname=openproxy.huawei.com
 port=8080
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
+
+3.下载行为配置
+```
+[download]
+os_list=CentOS_7.6, CentOS_8.2, Ubuntu_18.04, BigCloud_7.6   # 待安装部署的环境OS信息
+arch_list=aarch64, x86_64                                    # 待安装部署的环境Arch信息
+delete_exists=true                                           # 当重新下载时是否删除已下载的软件包
+```
+
 ### Driver,Frimware和CANN层软件安装
 
 Driver,Firmware,CANN层软件需要使用run包。 将相关软件包放置在resources目录下即可，例如：

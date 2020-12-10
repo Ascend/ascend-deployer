@@ -19,10 +19,13 @@ import os
 import configparser
 import socket
 import time
+import hashlib
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
+from logger_config import get_logger
 
+LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -62,6 +65,9 @@ class ConfigUtil:
         return [x.strip() for x in
                 self.config.get('download', 'arch_list').split(',')]
 
+    def get_download_delete_exists(self):
+        return self.config.getboolean('download', 'delete_exists')
+
 
 CONFIG_INST = ConfigUtil()
 
@@ -91,7 +97,8 @@ class ProxyUtil:
             }
             return request.ProxyHandler(proxy_option)
         else:
-            print(f'protocol[{self.protocol}] is invalid!')
+            print('protocol[{}] is invalid!'.format(self.protocol))
+            LOG.error('protocol[{}] is invalid!'.format(self.protocol))
 
     def build_proxy_handler(self):
         if self.enable:
@@ -99,6 +106,7 @@ class ProxyUtil:
             request.install_opener(opener)
         else:
             print('proxy is disabled')
+            LOG.info('proxy is disabled')
 
 
 class DownloadUtil:
@@ -109,35 +117,46 @@ class DownloadUtil:
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
             print("mkdir : {0}".format(parent_dir))
+            LOG.info("mkdir : {0}".format(parent_dir))
             os.makedirs(parent_dir)
         res = cls.download_with_retry(url, dst_file_name)
         if not res:
-            print(f'download {url} failed')
+            print('download {} failed'.format(url))
+            LOG.error('download {} failed'.format(url))
         else:
-            print(f'download {url} successfully')
+            print('download {} successfully'.format(url))
+            LOG.info('download {} successfully'.format(url))
 
     @classmethod
     def download_with_retry(cls, url: str, dst_file_name: str, retry_times=5):
         for retry in [ x + 1 for x in range(retry_times)]:
             try:
-                print(f'downloading try: {retry} from {url}')
+                print('downloading try: {} from {}'.format(retry, url))
+                LOG.info('downloading try: {} from {}'.format(retry, url))
+                if not self.check_download_necessary(dst_file_name):
+                    print('no need download again')
+                    LOG.info('no need download again')
+                    return True
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 local_file, _ = request.urlretrieve(url, dst_file_name)
                 if os.path.exists(local_file):
                     print('download successfully')
+                    LOG.info('download successfully')
                 return True
             except ContentTooShortError as ex:
                 print(ex)
+                LOG.error(ex)
             except URLError as err:
                 print(err)
+                LOG.error(err)
             except socket.timeout as timeout:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
-            finally:
-                if retry > 1:
-                    print('please wait for a moment...')
-                    time.sleep(retry * 2)
+                LOG.error(timeout)
+            print('please wait for a moment...')
+            LOG.info('please wait for a moment...')
+            time.sleep(retry * 2)
         return False
 
     @classmethod
@@ -149,23 +168,43 @@ class DownloadUtil:
                 return resp
             except ContentTooShortError as ex:
                 print(ex)
+                LOG.error(ex)
             except URLError as err:
                 print(err)
+                LOG.error(err)
             except socket.timeout as timeout:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
-            finally:
-                if retry > 1:
-                    print('please wait for a moment...')
-                    time.sleep(retry * 2)
+                LOG.error(timeout)
+            print('please wait for a moment...')
+            LOG.info('please wait for a moment...')
+            time.sleep(retry * 2)
         return None
+
+    @classmethod
+    def check_download_necessary(cls, dst_file_name):
+        if not os.path.exists(dst_file_name):
+            return True
+        return CONFIG_INST.get_download_delete_exists()
 
     @staticmethod
     def delete_if_exist(dst_file_name: str):
         if os.path.exists(dst_file_name):
-            print(f'{dst_file_name} already exists')
+            print('{} already exists'.format(dst_file_name))
+            LOG.info('{} already exists'.format(dst_file_name))
             os.remove(dst_file_name)
-            print(f'{dst_file_name} already deleted')
+            print('{} already deleted'.format(dst_file_name))
+            LOG.info('{} already deleted'.format(dst_file_name))
 
 
 DOWNLOAD_INST = DownloadUtil()
+
+
+def calc_sha256(file):
+    hash_val = None
+    with open() as hash_file:
+        sha256_obj = hashlib.sha256()
+        sha256_obj.update(hash_file.read())
+        hash_val = sha256_obj.hexdigest()
+    return hash_val
+
