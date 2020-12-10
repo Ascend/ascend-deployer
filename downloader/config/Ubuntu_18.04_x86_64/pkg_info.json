@@ -192,7 +192,7 @@
         "name": "libcc1-0", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "binutils-aarch64-linux-gnu", "used_by": [ "driver", "cann", "framework" ]
+        "name": "binutils-x86-64-linux-gnu", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libbinutils", "used_by": [ "driver", "cann", "framework" ]
