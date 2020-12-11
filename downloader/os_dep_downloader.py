@@ -22,7 +22,9 @@ import time
 from deb_downloader import Apt
 from rpm_downloader import Yum
 from download_util import CONFIG_INST
+from logger_config import get_logger
 
+LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -46,11 +48,13 @@ class OsDepDownloader:
             import shutil
             shutil.rmtree(self.resources_dir)
         print('clean resources directory successfully')
+        LOG.info('clean resources directory successfully')
 
     def download_pkg_from_json(self):
         for dir_item in self.dir_list:
             dst_dir = os.path.join(self.resources_dir, dir_item)
-            print(f'item:{dir_item} save dir: {dst_dir}')
+            print('item:{} save dir: {}'.format(dir_item, dst_dir))
+            LOG.info('item:{} save dir: {}'.format(dir_item, dst_dir))
             config_file = os.path.join(CUR_DIR,
                                        f'config/{dir_item}/pkg_info.json')
             downloader = None
@@ -82,12 +86,14 @@ def main():
     os_dep = OsDepDownloader()
     if len(sys.argv) == 2 and sys.argv[1] == 'clean':
         print('clean download dir...')
+        LOG.info('clean download dir...')
         os_dep.clean_download_dir()
     else:
         time_start = time.time()
         os_dep.prepare_download_dir()
         os_dep.download_pkg_from_json()
-        print(f'total time: {time.time() - time_start} seconds')
+        print('total time: {} seconds'.format(time.time() - time_start))
+        LOG.info('total time: {} seconds'.format(time.time() - time_start))
 
 
 if __name__ == "__main__":
