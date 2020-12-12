@@ -177,7 +177,7 @@ class Apt(object):
             file_name = os.path.basename(self.cache[name].get_filename())
             dst_file = os.path.join(dst_dir, file_name)
             target_sha256 = self.cache[name].get_sha256()
-            if not self.need_download_again(target_sha256, dst_dir):
+            if not self.need_download_again(target_sha256, dst_file):
                 LOG.info("no need download again")
                 return
             DOWNLOAD_INST.download(url, dst_file)
