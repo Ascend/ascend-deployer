@@ -1,0 +1,26 @@
+- name: test if driver installed
+  find:
+    path: /usr/local/Ascend/driver
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "Makefile"
+  register: driver
+
+- name: message
+  debug:
+    msg:
+    - "driver not installed"
+  when: driver.matched == 0
+
+- name: execute npu-smi info
+  shell: npu-smi info
+  environment:
+    PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64
+  when: driver.matched > 0
+  register: smi_info
+
+- name: print npu-smi info
+  debug: var=smi_info
+  when: driver.matched > 0

@@ -1,0 +1,23 @@
+- name: test if driver installed
+  find:
+    path: /usr/local/Ascend/driver
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "upgrade-tool"
+  register: upgrade_tool
+
+- name: message
+  debug:
+    msg:
+    - "can not find upgrade tool"
+  when: upgrade_tool.matched == 0
+
+- name: check firmware
+  shell: /usr/local/Ascend/driver/tools/upgrade-tool --device_index -1 --system_version
+  register: upgrade_tool_result
+  when: upgrade_tool.matched > 0
+
+- name: print upgrade tool output
+  debug: var=upgrade_tool_result
+  when: upgrade_tool.matched > 0

@@ -25,12 +25,3 @@
 - debug:
     var: firmware_result
     verbosity: 1
-
-- name: check firmware
-  shell: /usr/local/Ascend/driver/tools/upgrade-tool --device_index -1 --system_version
-  register: upgrade_tool_result
-  when: firmware_pkg.matched > 0
-
-- debug:
-    var: upgrade_tool_result
-    verbosity: 1

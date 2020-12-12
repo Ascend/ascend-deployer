@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: test ascend-dmi info
+      include_tasks: case_toolbox.yml

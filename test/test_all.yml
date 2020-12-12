@@ -1,0 +1,16 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test driver
+    include_tasks: case_driver.yml
+
+  - name: test firmware
+    include_tasks: case_firmware.yml
+
+  - name: test toolbox
+    include_tasks: case_toolbox.yml
+
+  - name: test tensorflow
+    include_tasks: case_tensorflow.yml
+
+  - name: test torch
+    include_tasks: case_torch.yml

@@ -108,6 +108,32 @@ function process_install()
     unset IFS
 }
 
+function process_test()
+{
+    IFS=','
+    unsupport=${FALSE}
+    for target in ${test_target}
+    do
+        if [ ! -f test/test_${target}.yml ];then
+            echo "Error: not support test for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        exit 1
+    fi
+    debug_cmd=""
+    if [ "x${debug_flag}" == "xy" ];then
+        debug_cmd="-v"
+    fi
+    for target in ${test_target}
+    do
+        echo "ansible-playbook -i ./inventory_file test/test_${target}.yml -e hosts_name=ascend ${debug_cmd}"
+        ansible-playbook -i ./inventory_file test/test_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+    done
+    unset IFS
+}
+
 function process_scene()
 {
     ping_all
@@ -146,6 +172,12 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
+    echo "--test=<target>                test the functions:"
+    for test in `find test/test_*.yml`
+    do
+        tmp=${test#*_}
+        echo "                               ${tmp%.*}"
+    done
     exit 0
 }
 
@@ -169,6 +201,10 @@ function parse_script_args() {
             ;;
         --install-scene=*)
             install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --test=*)
+            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
         --nocopy)
@@ -261,6 +297,9 @@ main()
     fi
     if [ "x${install_scene}" != "x" ];then
         process_scene ${install_scene}
+    fi
+    if [ "x${test_target}" != "x" ];then
+        process_test ${test_target}
     fi
     if [ "x${check_flag}" == "xy" ]; then
         process_check
