@@ -133,7 +133,7 @@ class DownloadUtil:
             try:
                 print('downloading try: {} from {}'.format(retry, url))
                 LOG.info('downloading try: {} from {}'.format(retry, url))
-                if not self.check_download_necessary(dst_file_name):
+                if not cls.check_download_necessary(dst_file_name):
                     print('no need download again')
                     LOG.info('no need download again')
                     return True
@@ -202,7 +202,9 @@ DOWNLOAD_INST = DownloadUtil()
 
 def calc_sha256(file):
     hash_val = None
-    with open() as hash_file:
+    if file is None or not os.path.exists(file):
+        return hash_val
+    with open(file, 'rb') as hash_file:
         sha256_obj = hashlib.sha256()
         sha256_obj.update(hash_file.read())
         hash_val = sha256_obj.hexdigest()
