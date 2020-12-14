@@ -1,12 +1,6 @@
 [
     {
-        "name": "libpci3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "glibc", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "glibc-devel", "used_by": [ "driver", "cann", "framework" ]
