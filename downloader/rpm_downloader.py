@@ -22,11 +22,20 @@ import gzip
 import bz2
 import sqlite3
 import lzma
+import xml.sax
+
 import logger_config
 from xml.dom import minidom
 from urllib.error import HTTPError
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
+from yum_metadata.gen_yum_metadata import YumMetadataSqlite
+from yum_metadata.gen_yum_metadata import YumPackageHandler
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
+
 
 LOG = logger_config.get_logger(__file__)
 
@@ -57,6 +66,27 @@ class Yum(object):
             print(config.get(item, 'baseurl'))
             LOG.info(config.get(item, 'baseurl'))
 
+    def build_primary_cache(self, primary_xml_file, cache_dir, source_name):
+        if primary_xml_file.endswith('.gz'):
+            xml_file = primary_xml_file.rstrip('.gz')
+            self.uncompress_file(primary_xml_file, xml_file)
+        else:
+            xml_file = primary_xml_file
+
+        db_file_name = source_name + '_primary.sqlite'
+        yum_meta_sqlite = YumMetadataSqlite(cache_dir, db_file_name)
+        yum_meta_sqlite.create_primary_db()
+
+        parser = xml.sax.make_parser()
+        parser.setFeature(xml.sax.handler.feature_namespaces, 0)
+        handler = YumPackageHandler()
+        parser.setContentHandler(handler)
+        parser.parse(xml_file)
+
+        for pkg in handler.packages:
+            pkg.dump_to_primary_sqlite(yum_meta_sqlite.primary_cur)
+        yum_meta_sqlite.primary_connection.commit()
+
     def make_cache(self):
         """
         make_cache
@@ -64,9 +94,9 @@ class Yum(object):
         :return:
         """ 
         for name, url in self.sources.items():
-            print('{0}:{1}'.format(name, url + '/repodata/repomd.xml'))
-            LOG.info('{0}:{1}'.format(name, url + '/repodata/repomd.xml'))
-            repomd_url = url + '/repodata/repomd.xml'
+            repomd_url = urljoin(url, 'repodata/repomd.xml')
+            print('{0}:{1}'.format(name, repomd_url))
+            LOG.info('{0}:{1}'.format(name, repomd_url))
             repomd_xml = name + '_repomd.xml'
             repomd_file = os.path.join(self.cache_dir, repomd_xml)
             db_file = os.path.join(self.cache_dir, name + '_primary.sqlite')
@@ -77,7 +107,21 @@ class Yum(object):
             self.download_file(repomd_url, repomd_file)
 
             # 解析repomod.xml文件，得到数据库文件的url
-            db_url = url + '/' + self.parse_repomd(repomd_file)
+            db_location_href = self.parse_repomd(repomd_file, 'primary_db')
+            if not db_location_href:
+                msg = "%s db_url is not exist, begin to build db." % name
+                print(msg)
+                LOG.warning(msg)
+                primary_xml_location_href = self.parse_repomd(repomd_file,
+                                                              'primary')
+                primary_xml_url = urljoin(url, primary_xml_location_href)
+                primary_xml_file_name = os.path.basename(primary_xml_url).split('-')[-1]
+                primary_xml_file = os.path.join(self.cache_dir, name + '_' + primary_xml_file_name)
+                self.download_file(primary_xml_url, primary_xml_file)
+                self.build_primary_cache(primary_xml_file, self.cache_dir, name)
+                continue
+
+            db_url = url + '/' + db_location_href
             url_file_name = os.path.basename(db_url).split('-')[1]
             compressed_file = os.path.join(self.cache_dir,
                                            name + '_' + url_file_name)
@@ -101,6 +145,13 @@ class Yum(object):
         if os.path.exists(dst_file):
             return
 
+        if compress_file.endswith('.gz'):
+            with gzip.GzipFile(compress_file) as gzip_file:
+                buf = gzip_file.read()
+                with open(dst_file, 'wb') as uncompress_file:
+                    uncompress_file.write(buf)
+            return
+
         if 'bz2' in compress_file:
             with bz2.BZ2File(compress_file, 'rb') as bz_file:
                 buf = bz_file.read()
@@ -112,14 +163,14 @@ class Yum(object):
                 with open(dst_file, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
 
-    def parse_repomd(self, file_name):
+    def parse_repomd(self, file_name, data_type):
         """
-        解析repomd.xml文件，得到primary数据文件的url
+        解析repomd.xml文件，得到data_type, 如primary_db url
         """
         dom = minidom.parse(file_name)
         data_elements = dom.getElementsByTagName('data')
         for i in data_elements:
-            if i.getAttribute('type') != 'primary_db':
+            if i.getAttribute('type') != data_type:
                 continue
             location = i.getElementsByTagName('location')[0]
             print(location.getAttribute('href'))
