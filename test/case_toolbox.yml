@@ -1,0 +1,26 @@
+- name: test if toolbox installed
+  find:
+    path: /usr/local/Ascend/toolbox
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "ascend-dmi"
+  register: ascend_dmi
+
+- name: message
+  debug:
+    msg:
+    - "toolbox not installed"
+  when: ascend_dmi.matched == 0
+
+- name: execute ascend-dmi -i
+  shell: ascend-dmi -i
+  environment:
+    PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64
+  when: ascend_dmi.matched > 0
+  register: ascend_dmi_info
+
+- name: print ascend_dmi info
+  debug: var=ascend_dmi_info
+  when: ascend_dmi.matched > 0

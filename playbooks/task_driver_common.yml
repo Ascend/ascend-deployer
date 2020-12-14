@@ -52,12 +52,3 @@
 - name: service host_sys_init start
   shell: service host_sys_init start
   when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
-
-- name: check npu-smi info
-  shell: npu-smi info
-  register: npu_smi_info
-  when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
-
-- debug:
-    var: npu_smi_info
-    verbosity: 1

@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test npu-smi info
+    include_tasks: case_driver.yml
