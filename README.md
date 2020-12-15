@@ -262,6 +262,17 @@ atlas-deployer
    `- Ascend-cann-toolkit-xxx.run
 ```
 
+### 环境变量配置
+
+1.python3.7.5
+
+如果待安装环境未安装python3.7.5，安装过程中会自动安装，为了不影响系统自带python(python2.x or python3.x)，
+要使用python3.7.5之前，需要配置以下环境变量:  
+```bash
+export PATH=/usr/local/python3.7.5/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+```
+
 # 安全注意事项
 
 1. 由于需要使用dpkg， rpm等包管理器，只能使用root账号运行

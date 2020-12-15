@@ -177,6 +177,9 @@
         "name": "libmpc3", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libmpfr6", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "binutils", "used_by": [ "driver", "cann", "framework" ]
     },
     {
