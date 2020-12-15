@@ -129,7 +129,7 @@ class DownloadUtil:
 
     @classmethod
     def download_with_retry(cls, url: str, dst_file_name: str, retry_times=5):
-        for retry in [ x + 1 for x in range(retry_times)]:
+        for retry in range(1, retry_times + 1):
             try:
                 print('downloading try: {} from {}'.format(retry, url))
                 LOG.info('downloading try: {} from {}'.format(retry, url))

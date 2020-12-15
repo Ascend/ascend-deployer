@@ -1,0 +1,32 @@
+
+- name: find driver package for common linux
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg_linux
+
+- debug:
+    var: driver_pkg_linux
+    verbosity: 1
+
+- name: set /etc/modprobe.d/10-unsupported-modules.conf allow_unsupported_modules 1
+  lineinfile:
+    dest: /etc/modprobe.d/10-unsupported-modules.conf
+    regexp: "^allow_unsupported_modules"
+    line: "allow_unsupported_modules 1"
+    state: present
+
+- name: add run permission for common linux driver package
+  file:
+    path: "{{driver_pkg_linux.files[0].path}}"
+    mode: a+x
+  when: driver_pkg_linux.matched > 0
+
+- name: install driver for common linux
+  shell: "{{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  register: driver_result
+  failed_when: "'install success' not in driver_result.stdout"
+  when: driver_pkg_linux.matched > 0
