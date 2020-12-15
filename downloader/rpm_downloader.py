@@ -94,7 +94,7 @@ class Yum(object):
         :return:
         """ 
         for name, url in self.sources.items():
-            repomd_url = urljoin(url, 'repodata/repomd.xml')
+            repomd_url = urljoin(url if url.endswith('/') else url + '/', 'repodata/repomd.xml')
             print('{0}:{1}'.format(name, repomd_url))
             LOG.info('{0}:{1}'.format(name, repomd_url))
             repomd_xml = name + '_repomd.xml'

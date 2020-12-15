@@ -30,16 +30,13 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class OsDepDownloader:
     def __init__(self):
-        arch_list = CONFIG_INST.get_download_arch_list()
-        os_list = CONFIG_INST.get_download_os_list()
-        self.dir_list = [f'{os_info}_{arch_info}'
-                         for os_info in os_list for arch_info in arch_list]
+        self.os_list = CONFIG_INST.get_download_os_list()
         self.project_dir = os.path.dirname(CUR_DIR)
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
     def prepare_download_dir(self):
-        for dir_item in self.dir_list:
-            dst_dir = os.path.join(self.resources_dir, dir_item)
+        for os_item in self.os_list:
+            dst_dir = os.path.join(self.resources_dir, os_item)
             if not os.path.exists(dst_dir):
                 os.makedirs(dst_dir, mode=0o755, exist_ok=True)
 
@@ -51,22 +48,22 @@ class OsDepDownloader:
         LOG.info('clean resources directory successfully')
 
     def download_pkg_from_json(self):
-        for dir_item in self.dir_list:
-            dst_dir = os.path.join(self.resources_dir, dir_item)
-            print('item:{} save dir: {}'.format(dir_item, dst_dir))
-            LOG.info('item:{} save dir: {}'.format(dir_item, dst_dir))
+        for os_item in self.os_list:
+            dst_dir = os.path.join(self.resources_dir, os_item)
+            print('item:{} save dir: {}'.format(os_item, dst_dir))
+            LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
             config_file = os.path.join(CUR_DIR,
-                                       f'config/{dir_item}/pkg_info.json')
+                                       f'config/{os_item}/pkg_info.json')
             downloader = None
-            if 'Ubuntu' in dir_item:
-                source_list_file = f'downloader/config/{dir_item}/source.list'
-                if 'aarch64' in dir_item:
+            if 'Ubuntu' in os_item:
+                source_list_file = f'downloader/config/{os_item}/source.list'
+                if 'aarch64' in os_item:
                     downloader = Apt(source_list_file, 'aarch64')
                 else:
                     downloader = Apt(source_list_file, 'x86_64')
             else:
-                source_repo_file = f'downloader/config/{dir_item}/source.repo'
-                if 'aarch64' in dir_item:
+                source_repo_file = f'downloader/config/{os_item}/source.repo'
+                if 'aarch64' in os_item:
                     downloader = Yum(source_repo_file, 'aarch64')
                 else:
                     downloader = Yum(source_repo_file, 'x86_64')
