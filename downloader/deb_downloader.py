@@ -145,6 +145,8 @@ class Apt(object):
 
             if "Filename:" in line:
                 filename = line.split(': ')[1]
+                
+            if len(line.strip()) == 0:
                 if package == 'cmake':
                     print('cmake =[{0}]'.format(filename))
                     LOG.info('cmake =[{0}]'.format(filename))
@@ -178,6 +180,7 @@ class Apt(object):
             dst_file = os.path.join(dst_dir, file_name)
             target_sha256 = self.cache[name].get_sha256()
             if not self.need_download_again(target_sha256, dst_file):
+                print("no need download again")
                 LOG.info("no need download again")
                 return
             DOWNLOAD_INST.download(url, dst_file)
