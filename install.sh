@@ -45,9 +45,9 @@ function install_sys_packages()
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        rpm -ivh --force --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
+        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        dnf install ./resources/${os_ver}_`uname -m`/*.rpm
+        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
         export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_`uname -m`/*.deb
     fi
