@@ -235,9 +235,7 @@ userpassword=none   # 代理密码
 3.下载行为配置
 ```
 [download]
-os_list=CentOS_7.6, CentOS_8.2, Ubuntu_18.04, BigCloud_7.6   # 待安装部署的环境OS信息
-arch_list=aarch64, x86_64                                    # 待安装部署的环境Arch信息
-delete_exists=true                                           # 当重新下载时是否删除已下载的软件包
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, SLES_12.4_x86_64  # 待安装部署的环境OS信息
 ```
 
 ### Driver,Frimware和CANN层软件安装

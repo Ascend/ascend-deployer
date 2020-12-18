@@ -39,6 +39,54 @@
         "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libcurl4", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libldap-2.4-2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgssapi3-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libasn1-8-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhcrypto4-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libheimbase1-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libheimntlm0-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libkrb5-26-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhx509-5-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libwind0-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libroken18-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsasl2-2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsasl2-modules-db", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libldap-common", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libnghttp2-14", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "librtmp1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name":"libarchive13", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -156,7 +204,25 @@
         "name": "dpkg-dev", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "patch", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "libdpkg-perl", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-base", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-modules-5.26", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libperl5.26", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgdbm-compat4", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libgomp1", "used_by": [ "driver", "cann", "framework" ]
@@ -244,6 +310,9 @@
     },
     {
         "name": "libbz2-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libbz2-1.0", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "liblzma-dev", "used_by": [ "driver", "cann", "framework" ]

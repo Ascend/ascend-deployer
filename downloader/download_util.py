@@ -65,9 +65,6 @@ class ConfigUtil:
         return [x.strip() for x in
                 self.config.get('download', 'arch_list').split(',')]
 
-    def get_download_delete_exists(self):
-        return self.config.getboolean('download', 'delete_exists')
-
 
 CONFIG_INST = ConfigUtil()
 
@@ -133,10 +130,6 @@ class DownloadUtil:
             try:
                 print('downloading try: {} from {}'.format(retry, url))
                 LOG.info('downloading try: {} from {}'.format(retry, url))
-                if not cls.check_download_necessary(dst_file_name):
-                    print('no need download again')
-                    LOG.info('no need download again')
-                    return True
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 local_file, _ = request.urlretrieve(url, dst_file_name)
