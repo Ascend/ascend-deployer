@@ -18,6 +18,12 @@
         "name": "gcc", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libquadmath", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libquadmath-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "libstdc++", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -37,6 +43,9 @@
     },
     {
         "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libzstd", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
