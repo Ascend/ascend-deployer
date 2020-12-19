@@ -275,6 +275,8 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 
 1. 由于需要使用dpkg， rpm等包管理器，只能使用root账号运行
 
-2. inventory文件中会配置远程机器的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除
+2. 由于需要安装大量开源软件，本工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自己根据情况修复，强烈建议使用官方源定期更新
+
+3. inventory文件中会配置远程机器的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除
    
    参考文档[http://www.ansible.com.cn/docs/playbooks_vault.html](http://www.ansible.com.cn/docs/playbooks_vault.html)
