@@ -177,6 +177,9 @@
         "name": "pciutils", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "pciutils-libs", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "net-tools", "used_by": [ "driver", "cann", "framework" ]
     },
     {
