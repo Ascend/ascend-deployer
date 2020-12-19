@@ -10,7 +10,7 @@ function get_python_cmd()
     fi
 
     # centos 8.2
-    platform_python="/usr/libexec/platfrom-python3.6"
+    platform_python="/usr/libexec/platform-python3.6"
     if [ -f ${platform_python} ];then
         echo ${platform_python}
         return 0
