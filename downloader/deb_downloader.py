@@ -157,7 +157,7 @@ class Apt(object):
                 else:
                     self.cache[package] = Package(package, filename, sha256)
 
-    def download(self, name, dst_dir):
+    def download(self, pkg, dst_dir):
         """
         download 
 
@@ -165,6 +165,9 @@ class Apt(object):
         :param dst_dir:
         :return:
         """
+        if 'name' not in pkg:
+            return
+        name = pkg['name']
         url = None
         if name in self.cache.keys():
             url = self.mirror_url + self.cache[name].get_filename()
@@ -174,16 +177,15 @@ class Apt(object):
             return
 
         try:
-            print('download from [{0}]'.format(url))
-            LOG.info('download from [{0}]'.format(url))
+            LOG.info('[{0}] download from [{1}]'.format(name, url))
             file_name = os.path.basename(self.cache[name].get_filename())
             dst_file = os.path.join(dst_dir, file_name)
             target_sha256 = self.cache[name].get_sha256()
             if not self.need_download_again(target_sha256, dst_file):
-                print("no need download again")
-                LOG.info("no need download again")
+                LOG.info("{0} no need download again".format(name))
                 return
             DOWNLOAD_INST.download(url, dst_file)
+            print(name.ljust(40), 'download success')
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[{0}]->{1}'.format(url, http_error))

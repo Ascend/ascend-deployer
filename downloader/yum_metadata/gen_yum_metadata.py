@@ -1,17 +1,80 @@
+#!/usr/bin/env python3
 # coding: utf-8
+# Copyright 2020 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ===========================================================================
 import os
 import sqlite3 as sqlite
 import xml.sax
 
+class Require(object):
+    def __init__(self, name):
+        self.name = name
+        self.flags = None
+        self.epoch = None
+        self.version = None
+        self.release = None
+        self.pkgKey = None
+        self.pre = False
+
+
+class Provide(object):
+    def __init__(self, name):
+        self.name = name
+        self.flags = None
+        self.epoch = None
+        self.version = None
+        self.release = None
+        self.pkgKey = None
 
 class YumPackageHandler(xml.sax.handler.ContentHandler):
+    """
+    parse xml of rpm packages
+    """
     def __init__(self):
+        self.super().__init__()
         self.CurrentData = ""
         self.CurrentAttributes = ""
+        self.checksum = None
+        self.name = None
+        self.arch = None
+        self.summary = None
+        self.description = None
+        self.url = None
+
+        self.version_attr = None
+        self.time_attr = None
+        self.size_attr = None
+        self.location_attr = None
+        self.checksum_attr = None
+        self.entry_attr = None
+        self.pkg = None
 
         self.packages = []
+        self.provide_list = []
+        self.require_list = []
+        self.provide_flag = False
+        self.require_flag = False
 
     def set_pkg(self, key, value):
+        """
+        set_pkg
+
+        :param key     key
+        :param value   value
+        :return:
+        """
         self.pkg.package[key] = value
 
     def startElement(self, tag, attributes):
@@ -30,6 +93,16 @@ class YumPackageHandler(xml.sax.handler.ContentHandler):
             self.location_attr = attributes
         elif tag == 'checksum':
             self.checksum_attr = attributes
+        elif tag == 'rpm:provides':
+            self.provide_flag = True
+            self.require_flag = False
+            self.provide_list = []
+        elif tag == 'rpm:requires':
+            self.require_flag = True
+            self.provide_flag = False
+            self.require_list = []
+        elif tag == 'rpm:entry':
+            self.entry_attr = attributes
 
     def endElement(self, tag):
         if self.CurrentData == "checksum":
@@ -64,6 +137,30 @@ class YumPackageHandler(xml.sax.handler.ContentHandler):
             self.set_pkg('location_href', self.location_attr.get('href'))
             self.set_pkg('location_base', self.location_attr.get('base'))
             self.location_attr = {}
+        elif tag == 'rpm:entry':
+            if self.provide_flag:
+                pro = Provide(self.entry_attr.get('name'))
+                pro.flags = self.entry_attr.get('flags')
+                pro.epoch = self.entry_attr.get('epoch')
+                pro.version = self.entry_attr.get('ver')
+                pro.release = self.entry_attr.get('rel')
+                self.provide_list.append(pro)
+            if self.require_flag:
+                req = Require(self.entry_attr.get('name'))
+                req.flags = self.entry_attr.get('flags')
+                req.epoch = self.entry_attr.get('epoch')
+                req.version = self.entry_attr.get('ver')
+                req.release = self.entry_attr.get('rel')
+                tmp = self.entry_attr.get('pre')
+                if tmp is not None and tmp == '1':
+                    req.pre = True
+                self.require_list.append(req)
+        elif tag == 'rpm:provides':
+            self.set_pkg('provides', self.provide_list)
+            self.provide_flag = False
+        elif tag == 'rpm:requires':
+            self.set_pkg('requires', self.require_list)
+            self.require_flag = False
 
     def characters(self, content):
         if self.CurrentData == 'checksum':
@@ -96,9 +193,24 @@ class YumPackage(object):
     def _get_sqlite_null(self, value):
         return None if not value else value
 
-    def dump_to_primary_sqlite(self, cur):
+    def dump_to_primary_sqlite(self, pkgKey, cur):
+        """
+        dump_to_primary_sqlite
+
+        :param pkgKey database key
+        :param cur    database cursor
+        :return:
+        """
+        self.dump_to_packages(pkgKey, cur)
+        if 'requires' in self.package:
+            self.dump_to_requires(pkgKey, cur)
+        if 'provides' in self.package:
+            self.dump_to_provides(pkgKey, cur)
+
+    def dump_to_packages(self, pkgKey, cur):
         """insert primary data"""
         fields = [
+            'pkgKey',
             'pkgId',
             'name',
             'arch',
@@ -126,18 +238,72 @@ class YumPackage(object):
             'checksum_type',
         ]
         keys = ','.join(fields)
-        values_placeholder = ','.join([":%s" % key for key in fields])
-        op = "insert into packages (%s) values (%s)" % (keys, values_placeholder)
+        values = ','.join([":%s" % key for key in fields])
+        sql = "INSERT INTO packages (%s) VALUES (%s)" % (keys, values)
 
-        packages = {
+        sql_param = {
             key: self._get_sqlite_null(self.package.get(key))
             for key in fields
         }
+        sql_param['pkgKey'] = pkgKey
+        cur.execute(sql, sql_param)
 
-        cur.execute(op, packages)
+    def dump_to_provides(self, pkgKey, cur):
+        """
+        dump_to_provides
+
+        :param pkgKey database key
+        :param cur    database cursor
+        :return:
+        """
+        fields = ['name', 'flags' 'epoch', 'version', 'release', 'pkgKey']
+        keys = ','.join(fields)
+        values = ','.join([":%s" % key for key in fields])
+        sql = "INSERT INTO provides (%s) VALUES (%s)" % (keys, values)
+
+        for provide in self.package.get('provides'):
+            sql_param = {
+                'name':    provide.name,
+                'flags':   provide.flags,
+                'epoch':   provide.epoch,
+                'version': provide.version,
+                'release': provide.release,
+                'pkgKey':  pkgKey
+            }
+            cur.execute(sql, sql_param)
+
+    def dump_to_requires(self, pkgKey, cur):
+        """
+        dump_to_requires
+
+        :param pkgKey database key
+        :param cur    database cursor
+        :return:
+        """
+        fields = ['name', 'flags' 'epoch', 'version', 'release', 'pkgKey', 'pre']
+        keys = ','.join(fields)
+        values = ','.join([":%s" % key for key in fields])
+        sql = "INSERT INTO requires (%s) VALUES (%s)" % (keys, values)
+
+        for require in self.package.get('requires'):
+            sql_param = {
+                'name':    require.name,
+                'flags':   require.flags,
+                'epoch':   require.epoch,
+                'version': require.version,
+                'release': require.release,
+                'pkgKey':  pkgKey,
+                'pre': False
+            }
+            cur.execute(sql, sql_param)
 
 
 class YumMetadataSqlite(object):
+    """
+    YumMetadataSqlite
+
+    create database for the repository
+    """
     def __init__(self, target_dir, db_file_name, overwrite=True):
         """
         connect db
@@ -158,15 +324,12 @@ class YumMetadataSqlite(object):
 
         self.primary_cur.executescript(sql_as_str)
 
-    def create_filelists_db(self):
-        pass
-
-    def create_other_db(self):
-        pass
-
 
 def main():
-    primary_xml_file = "/home/xxx/primary.xml"
+    """
+    main function
+    """
+    primary_xml_file = "test_primary.xml"
     primary_file_path = os.path.abspath(os.path.dirname(primary_xml_file))
     meta_sqlite = YumMetadataSqlite(primary_file_path, 'oss_primary.sqlite')
     meta_sqlite.create_primary_db()

@@ -102,7 +102,6 @@ class ProxyUtil:
             opener = request.build_opener(self.proxy_handler)
             request.install_opener(opener)
         else:
-            print('proxy is disabled')
             LOG.info('proxy is disabled')
 
 
@@ -113,7 +112,6 @@ class DownloadUtil:
     def download(cls, url: str, dst_file_name: str):
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
-            print("mkdir : {0}".format(parent_dir))
             LOG.info("mkdir : {0}".format(parent_dir))
             os.makedirs(parent_dir)
         res = cls.download_with_retry(url, dst_file_name)
@@ -121,21 +119,18 @@ class DownloadUtil:
             print('download {} failed'.format(url))
             LOG.error('download {} failed'.format(url))
         else:
-            print('download {} successfully'.format(url))
             LOG.info('download {} successfully'.format(url))
 
     @classmethod
     def download_with_retry(cls, url: str, dst_file_name: str, retry_times=5):
         for retry in range(1, retry_times + 1):
             try:
-                print('downloading try: {} from {}'.format(retry, url))
                 LOG.info('downloading try: {} from {}'.format(retry, url))
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 local_file, _ = request.urlretrieve(url, dst_file_name)
                 if os.path.exists(local_file):
-                    print('download successfully')
-                    LOG.info('download successfully')
+                    LOG.info('{0} download successfully'.format(url))
                 return True
             except ContentTooShortError as ex:
                 print(ex)
@@ -183,10 +178,8 @@ class DownloadUtil:
     @staticmethod
     def delete_if_exist(dst_file_name: str):
         if os.path.exists(dst_file_name):
-            print('{} already exists'.format(dst_file_name))
             LOG.info('{} already exists'.format(dst_file_name))
             os.remove(dst_file_name)
-            print('{} already deleted'.format(dst_file_name))
             LOG.info('{} already deleted'.format(dst_file_name))
 
 
