@@ -100,6 +100,12 @@
         "name": "gcc-c++", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "gcc7-c++", "used_by": [ "gcc-c++" ]
+    },
+    {
+        "name": "libstdc++6-devel-gcc7", "used_by": [ "gcc7-c++" ]
+    },
+    {
         "name": "libgfortran4", "used_by": [ "driver", "cann", "framework" ]
     },
     {
