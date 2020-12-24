@@ -23,4 +23,7 @@
   import_playbook: ../playbooks/install_torch.yml
 
 - name: install tensorflow
+  import_playbook: ../playbooks/install_tfplugin.yml
+
+- name: install tensorflow
   import_playbook: ../playbooks/install_tensorflow.yml
