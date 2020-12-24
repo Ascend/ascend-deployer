@@ -21,7 +21,6 @@
 
 - name: install tfplugin
   import_playbook: ../playbooks/install_tfplugin.yml
-  when: ansible_local.npu_info.scene == 'train'
 
 - name: install toolbox
   import_playbook: ../playbooks/install_toolbox.yml
