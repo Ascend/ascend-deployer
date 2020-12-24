@@ -24,6 +24,9 @@
         "name": "libffi7", "used_by": [ "libffi-devel" ]
     },
     {
+        "name": "libreadline7", "used_by": [ "python3.7.5" ]
+    },
+    {
         "name": "readline-devel", "used_by": [ "python3.7.5" ]
     },
     {
@@ -113,6 +116,15 @@
     },
     {
         "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "liblzma5", "used_by": [ "cmake" ]
+    },
+    {
+        "name": "librhash0", "used_by": [ "cmake" ]
+    },
+    {
+        "name": "libncurses6", "used_by": [ "cmake" ]
     },
     {
         "name": "libuv1", "used_by": [ "driver", "cann", "framework" ]
