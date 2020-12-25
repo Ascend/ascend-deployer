@@ -1,0 +1,14 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in toolbox
+      shell: find /usr/local/Ascend/toolbox/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_toolbox
+
+    - name: uninstall toolbox
+      shell: "{{ uninstall_toolbox.stdout }}"
+      become: yes
+      when:
+        - uninstall_toolbox.rc == 0
+        - uninstall_toolbox.stdout != ''
+

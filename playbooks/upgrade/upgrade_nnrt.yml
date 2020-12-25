@@ -1,0 +1,50 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find nnrt package
+      find:
+        paths: "{{ resources_dir }}"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*nnrt.*{{ ansible_architecture }}.run"
+      register: nnrt
+
+    - name: query current nnrt version
+      shell: cat /usr/local/Ascend/nnrt/latest/arm64-linux/ascend_nnrt_install.info | grep version | cut -d"=" -f2
+      register: cur_nnrt_ver_arm64
+      when: ansible_architecture == 'aarch64'
+
+    - name: query current nnrt version
+      shell: cat /usr/local/Ascend/nnrt/latest/x86_64-linux/ascend_nnrt_install.info | grep version | cut -d"=" -f2
+      register: cur_nnrt_ver_x86_64
+      when: ansible_architecture == 'x86_64'
+   
+    - debug: var=cur_nnrt_ver_arm64
+
+    - debug: var=cur_nnrt_ver_x86_64
+
+    - name: set fact for target_nnrt_version
+      set_fact:
+        target_nnrt_version: "{{ nnrt.files[0].path.split('/') | last | regex_replace('.*nnrt_(.*)_linux.*', '\\1') }}"
+
+    - debug: var=target_nnrt_version
+
+    - name: add run permission for nnrt
+      file:
+        path: "{{ nnrt.files[0].path }}"
+        mode: a+x
+      when: 
+        - nnrt.matched > 0
+        - (cur_nnrt_ver_arm64 is not skipped and cur_nnrt_ver_arm64.stdout != target_nnrt_version) or
+          (cur_nnrt_ver_x86_64 is not skipped and cur_nnrt_ver_x86_64.stdout != target_nnrt_version)
+
+    - name: upgrade nnrt
+      shell: "{{ nnrt.files[0].path }} --upgrade --quiet"
+      register: nnrt_result
+      when: 
+        - nnrt.matched > 0
+        - (cur_nnrt_ver_arm64 is not skipped and cur_nnrt_ver_arm64.stdout != target_nnrt_version) or
+          (cur_nnrt_ver_x86_64 is not skipped and cur_nnrt_ver_x86_64.stdout != target_nnrt_version)
+      failed_when: "nnrt_result.rc != 0 and 'upgrade success' not in nnrt_result.stdout"
+
+    - debug: var=nnrt_result

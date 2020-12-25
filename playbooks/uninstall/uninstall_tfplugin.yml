@@ -1,0 +1,14 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in tfplugin
+      shell: find /usr/local/Ascend/tfplugin/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_tfplugin
+
+    - name: uninstall tfplugin
+      shell: "{{ uninstall_tfplugin.stdout }}"
+      become: yes
+      when:
+        - uninstall_tfplugin.rc == 0
+        - uninstall_tfplugin.stdout != ''
+

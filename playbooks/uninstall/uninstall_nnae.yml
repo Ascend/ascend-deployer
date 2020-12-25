@@ -1,0 +1,13 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in nnae
+      shell: find /usr/local/Ascend/nnae/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_nnae
+
+    - name: uninstall nnae
+      shell: "{{ uninstall_nnae.stdout }}"
+      become: yes
+      when:
+        - uninstall_nnae.rc == 0
+        - uninstall_nnae.stdout != ''

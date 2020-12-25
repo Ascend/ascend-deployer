@@ -1,0 +1,89 @@
+- name: find driver package for specific linux
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- name: find driver package for common linux
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg_linux
+  when: driver_pkg.matched == 0
+
+- debug:
+    var: driver_pkg
+    verbosity: 1
+
+- debug:
+    var: driver_pkg_linux
+    verbosity: 1
+
+- name: query current driver version
+  shell: cat /usr/local/Ascend/driver/version.info | grep Version | cut -d"=" -f2
+  register: cur_driver_version
+
+- debug: var=cur_driver_version
+
+- name: set fact for target_driver_version
+  set_fact:
+    target_driver_version: "{{ driver_pkg.files[0].path.split('/') | last | regex_replace('.*npu-driver_(.*)_.*\\.run', '\\1') }}"
+  when: driver_pkg.matched != 0
+
+- name: set fact for target_driver_version_linux
+  set_fact:
+    target_driver_version_linux: "{{ driver_pkg_linux.files[0].path.split('/') | last | regex_replace('.*npu-driver_(.*)_.*\\.run', '\\1') }}"
+  when:
+    - driver_pkg.matched == 0
+    - driver_pkg_linux.matched != 0
+
+- debug: var=target_driver_version
+
+- debug: var=target_driver_version_linux
+
+- name: add run permission for specific linux driver package
+  file:
+    path: "{{driver_pkg.files[0].path}}"
+    mode: a+x
+  when:
+    - driver_pkg.matched > 0
+    - target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version
+
+- name: add run permission for common linux driver package
+  file:
+    path: "{{driver_pkg_linux.files[0].path}}"
+    mode: a+x
+  when: 
+    - driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
+    - target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux
+
+- name: upgrade driver for specific linux
+  shell: "{{driver_pkg.files[0].path}} --upgrade --quiet"
+  register: driver_result
+  failed_when: "'upgrade success' not in driver_result.stdout"
+  when: 
+    - driver_pkg.matched > 0
+    - target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version
+
+- name: upgrade driver for common linux
+  shell: "{{driver_pkg_linux.files[0].path}} --upgrade --quiet"
+  register: driver_result
+  failed_when: "'upgrade success' not in driver_result.stdout"
+  when: 
+    - driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
+    - target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux
+
+- debug: var=driver_result
+
+- name: service host_sys_init start
+  shell: service host_sys_init start
+  when: 
+    - driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
+    - (target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version) or
+      (target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux)

@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: upgrade firmware
+      import_tasks: task_upgrade_firmware.yml

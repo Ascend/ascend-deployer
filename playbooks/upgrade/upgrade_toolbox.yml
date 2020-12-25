@@ -1,0 +1,40 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find toolbox package
+      find:
+        paths: "{{ resources_dir }}"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*toolbox.*{{ ansible_architecture }}.run"
+      register: toolbox
+
+    - name: query current toolbox version
+      shell: cat /usr/local/Ascend/toolbox/latest/ascend_toolbox_install.info | grep version | cut -d"=" -f2
+      register: cur_toolbox_version
+
+    - debug: var=cur_toolbox_version
+
+    - name: set fact for target_toolbox_version
+      set_fact:
+        target_toolbox_version: "{{ toolbox.files[0].path.split('/') | last | regex_replace('.*toolbox_(.*)_linux.*', '\\1') }}"
+
+    - debug: var=target_toolbox_version
+
+    - name: add run permission for toolbox
+      file:
+        path: "{{ toolbox.files[0].path }}"
+        mode: a+x
+      when: 
+        - toolbox.matched > 0
+        - cur_toolbox_version.stdout != target_toolbox_version
+
+    - name: upgrade toolbox
+      shell: "{{ toolbox.files[0].path }} --upgrade --quiet"
+      register: toolbox_result
+      when: 
+        - toolbox.matched > 0
+        - cur_toolbox_version.stdout != target_toolbox_version
+      failed_when: "toolbox_result.rc != 0 and 'upgrade success' not in toolbox_result.stdout"
+
+    - debug: var=toolbox_result

@@ -13,7 +13,7 @@
         verbosity: 1
 
     - name: create user if not exist
-      import_tasks: create_user.yml
+      import_tasks: ../create_user.yml
 
     - name: install firmware
       import_tasks: task_firmware.yml

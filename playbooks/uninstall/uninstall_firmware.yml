@@ -1,0 +1,13 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in firmware
+      shell: find /usr/local/Ascend/firmware/ -type f | grep -E "/firmware/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_firmware
+
+    - name: uninstall firmware
+      shell: "{{ uninstall_firmware.stdout }}"
+      become: yes
+      when:
+        - uninstall_firmware.rc == 0
+        - uninstall_firmware.stdout != ''

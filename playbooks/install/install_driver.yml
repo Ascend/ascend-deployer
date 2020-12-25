@@ -1,6 +1,6 @@
 - hosts: '{{ hosts_name }}'
   tasks:
     - name: create user
-      import_tasks: create_user.yml
+      import_tasks: ../create_user.yml
     - name: install driver
       import_tasks: task_driver.yml
