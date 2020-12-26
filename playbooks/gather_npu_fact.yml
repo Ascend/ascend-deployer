@@ -8,6 +8,16 @@
     os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
 
   tasks:
+    - name: set os_version euler
+      set_fact:
+        os_version: "{{ ansible_distribution_version }}{{ ansible_distribution_release }}"
+      when: ansible_distribution == "EulerOS"
+
+    - name: set os_and_arch euler
+      set_fact:
+        os_and_arch: "{{ ansible_distribution }}_{{os_version}}_{{ ansible_architecture}}"
+      when: ansible_distribution == "EulerOS"
+
     - name: set fact os_version
       set_fact:
         os_version: "{{ os_version }}"
