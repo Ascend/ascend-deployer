@@ -4,14 +4,22 @@
 
 目前离线安装工具支持如下操作系统
 
-|操作系统 |版本|cpu架构    |
-|-------|-----|---------|
-|centos |7.6  |aarch64  |
-|centos |7.6  |x86_64   |
-|centos |8.2  |aarch64  |
-|centos |8.2  |x86_64   |
-|ubuntu |18.04|aarch64  |
-|ubuntu |18.04|x86_64   |
+|操作系统|版本 |cpu架构   |安装类型         |
+|-------|-----|---------|----------------|
+|centos |7.6  |aarch64  |镜像默认Minimal模式         |
+|centos |7.6  |x86_64   |镜像默认Minimal模式         |
+|centos |8.2  |aarch64  |镜像默认Minimal模式         |
+|centos |8.2  |x86_64   |镜像默认Minimal模式         |
+|ubuntu |18.04|aarch64  |SmartKit默认Standard模式、镜像默认Server模式|
+|ubuntu |18.04|x86_64   |SmartKit默认Standard模式、镜像默认Server模式|
+|BigCloud|7.6 |aarch64  |镜像默认Minimal模式         |
+|BigCloud|7.6 |x86_64   |镜像默认Minimal模式         |
+|SLES   |12.4 |x86_64   |镜像默认Minimal模式         |
+
+OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装
+
+环境限制：OS安装后没有额外安装或卸载过软件，是镜像安装成功后的默认环境；若卸载安装某些系统软件，导致与安装默认系统包不一致，离线安装部署不支持该场景，需要手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件
+
 
 # 离线安装工具操作指导
 
