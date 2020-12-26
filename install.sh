@@ -155,9 +155,9 @@ function print_usage()
     echo "Usage: ./install.sh [options]"
     echo " Options:"
     echo "--help  -h                     Print this message"
-    echo "--check                        check evironment"
-    echo "--clean                        clean resouces"
-    echo "--nocopy                       do not copy resouces"
+    echo "--check                        check environment"
+    echo "--clean                        clean resources"
+    echo "--nocopy                       do not copy resources"
     echo "--debug                        enable debug"
     echo "--install=<package_name>       Install specific package:"
     for target in `find playbooks/install_*.yml`
