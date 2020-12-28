@@ -1,5 +1,10 @@
 [
     {
+        "name": "kernel-headers-3.10.0-957.el7.x86_64.rpm",
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/centos-vault/7.6.1810/os/x86_64/Packages/kernel-headers-3.10.0-957.el7.x86_64.rpm",
+        "sha256": "26a4011aec80fb6cd37fec1817db1fe58697286e7f23cb839e8877a0a5771207"
+    },
+    {
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
     },
     {

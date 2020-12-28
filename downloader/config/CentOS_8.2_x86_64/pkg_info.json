@@ -1,5 +1,15 @@
 [
     {
+        "name": "kernel-devel-4.18.0-193.el8.x86_64.rpm",
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.el8.x86_64.rpm",
+        "sha256": "699c8a39829dbc651837a6d8f198f2d0db377c1bba764fe8420a98704e4ac302"
+    },
+    {
+        "name": "kernel-headers-4.18.0-193.el8.x86_64.rpm",
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/kernel-headers-4.18.0-193.el8.x86_64.rpm",
+        "sha256": "6d576177a437c0243bfe4eb4f2f4a2e21b46fed71d3ff0c8eceb477fef189c7a"
+    },
+    {
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
     },
     {
