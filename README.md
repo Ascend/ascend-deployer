@@ -20,6 +20,8 @@ OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系
 
 环境限制：OS安装后没有额外安装或卸载过软件，是镜像安装成功后的默认环境；若卸载安装某些系统软件，导致与安装默认系统包不一致，离线安装部署不支持该场景，需要手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件
 
+依赖限制：离线部署工具只能安装最基本的库，保证torch和tensorflow能够运行起来。如果需要运行比较复杂的推理或在训练模型，模型代码中可能包含具体业务相关的库，这些库需要自行安装。
+
 
 # 离线安装工具操作指导
 
@@ -31,7 +33,7 @@ OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系
 
 - **步骤 2**
 
-将CANN软件包软件包放到resources目录下
+将CANN软件包放到resources目录下
 
 ```
 atlas-deployer
@@ -54,12 +56,48 @@ atlas-deployer
 
 - **步骤 3**
 
-使用filezilla等工具，将整个目录上从到待安装设备上
+使用filezilla等工具，将整个目上传到待安装设备上
 
 - **步骤 4**
 执行install.sh --help仔细阅读参数说明
 ```bash
 ./install.sh --help
+Usage: ./install.sh [options]
+ Options:
+--help  -h                     Print this message
+--check                        check environment
+--clean                        clean resources
+--nocopy                       do not copy resources
+--debug                        enable debug
+--install=<package_name>       Install specific package:
+                               driver
+                               firmware
+                               gcc
+                               nnae
+                               nnrt
+                               npu
+                               python375
+                               sys_pkg
+                               tensorflow
+                               tfplugin
+                               toolbox
+                               toolkit
+                               torch
+Then "npu" will install dirver and firmware toghter
+--install-scene=<scene_name>   Install specific scene:
+                               auto
+                               infer_dev
+                               infer_run
+                               train_dev
+                               train_run
+                               vmhost
+--test=<target>                test the functions:
+                               all
+                               driver
+                               firmware
+                               tensorflow
+                               toolbox
+                               torch
 ```
 
 - **步骤 5**
@@ -67,10 +105,27 @@ atlas-deployer
 运行install.sh安装组件或按场景安装,例如：
 
 ```bash
-./install.sh --install=driver      // 安装driver
-./install.sh --install=npu         // 安装driver和firmware
-./install.sh --install-scene=auto  // 自动安装所有能找到的软件包
+./install.sh --install=driver       // 安装driver
+./install.sh --install=npu          // 安装driver和firmware
+./install.sh --install=nnrt,toolbox // 安装nnrt和toolbox
+./install.sh --install-scene=auto   // 自动安装所有能找到的软件包
 ```
+_注意:_ 如果安装或者升级了driver或firmware，请在安装完成后重启设备使驱动和固件生效
+
+_注意:_ 执行指定组件安装时请确保安装顺序正确。例如nnrt或nnae需要在driver和firmware安装之后，
+firmware必须在driver已经安装后才能安装，等等。
+
+
+- **步骤 6**
+
+运行检查，简单检查各个组件是否能够正常工作
+```bash
+./install.sh --test=driver         // 测试driver是否正常
+./install.sh --test=firmware       // 测试firmware是否正常
+./install.sh --test=torch          // 测试pytorch是否正常
+./install.sh --test=all            // 测试所有已安装组件
+```
+
 
 ## 批量安装
 
@@ -122,6 +177,46 @@ ip_address_1 | SUCCESS => {
 ./install.sh --install-scene=auto  // 自动安装所有能找到的软件包
 ```
 
+- **步骤 6**
+
+运行检查，与单机安装相同
+
+
+## 按场景安装
+
+离线部署工具提供几个基本安装场景
+
+|场景|安装的组件 |说明|
+|-------|-------------------------|-----|
+|infer_run |driver, firmware, nnrt, toolbox| 推理运行|
+|infer_dev |driver, firmware, nnrt, toolbox, toolkit, torch, tensorflow|推理开发|
+|train_run |driver, firmware, nnae, toolbox, toolkit|训练运行|
+|train_dev |driver, firmware, nnae, toolbox, toolkit, torch, tensorflow|训练开发|
+|vmhost |driver, firmware, toolbox|虚拟机host|
+|auto |all| 安装所有|
+
+
+- **场景定制**
+
+场景的配置文件位于scene目录，文件内容非常简单，例如文件scene/scene_infer_run.yml:
+```bash
+- hosts: '{{ hosts_name }}'
+
+- name: install system dependencies
+  import_playbook: ../playbooks/install_sys_pkg.yml
+
+- name: install driver and firmware
+  import_playbook: ../playbooks/install_npu.yml
+
+- name: install nnrt
+  import_playbook: ../playbooks/install_nnrt.yml
+
+- name: install toolbox
+  import_playbook: ../playbooks/install_toolbox.yml
+```
+如果有特殊需求需要定制场景，参考scene_infer_run.yml。对不同组件进行灵活组合即可。
+
+
 # 离线安装工具详细说明
 ### 下载工具使用
 
@@ -140,6 +235,8 @@ windows版本下载路径[python3.7.5](https://www.python.org/ftp/python/3.7.5/p
 |-- ansble.cfg
 ```
 在windows下运行start_download.bat启动下载，在linux下运行start_download.sh启动下载
+
+在windows下运行start_download_ui.bat可启动建议UI。可在简易UI中选择需要下载的OS组件。
 
 ### 下载工具配置
 
