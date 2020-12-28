@@ -1,0 +1,37 @@
+- name: check kernel headers
+  shell: rpm -q kernel-headers | grep {{ ansible_kernel }} | wc -l
+  register: kh_cnt
+  changed_when: false
+
+- name: find kernel headers rpm
+  find:
+    path: "{{ resources_dir }}"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "kernel-headers-{{ ansible_kernel }}.rpm"
+  register: kh_rpm
+  when: kh_cnt.stdout == "0"
+
+- name: install kernel headers rpm
+  shell: rpm -ivh --force --replacepkgs {{ kh_rpm.files[0].path }}
+  when: kh_cnt.stdout == "0" and kh_rpm.matched > 0
+
+- name: check kernel devel
+  shell: rpm -q kernel-devel | grep {{ ansible_kernel }} | wc -l
+  register: kd_cnt
+  changed_when: false
+
+- name: find kernel devel rpm
+  find:
+    path: "{{ resources_dir }}"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "kernel-devel-{{ ansible_kernel }}.rpm"
+  register: kd_rpm
+  when: kd_cnt.stdout == "0"
+
+- name: install kernel devel rpm
+  shell: rpm -ivh --force --replacepkgs {{ kd_rpm.files[0].path }}
+  when: kd_cnt.stdout == "0" and kd_rpm.matched > 0

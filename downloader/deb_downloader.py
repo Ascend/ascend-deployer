@@ -183,9 +183,10 @@ class Apt(object):
             target_sha256 = self.cache[name].get_sha256()
             if not self.need_download_again(target_sha256, dst_file):
                 LOG.info("{0} no need download again".format(name))
+                print(name.ljust(60), 'exists')
                 return
             DOWNLOAD_INST.download(url, dst_file)
-            print(name.ljust(40), 'download success')
+            print(name.ljust(60), 'download success')
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[{0}]->{1}'.format(url, http_error))

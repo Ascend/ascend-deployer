@@ -76,6 +76,7 @@ class Yum(object):
         script = os.path.realpath(__file__)
         self.base_dir = os.path.dirname(os.path.dirname(script))
         self.repo_file = os.path.join(self.base_dir, source_file)
+        self.resources_dir = os.path.join(self.base_dir, 'resources')
         config = configparser.ConfigParser()
         config.read(self.repo_file)
 
@@ -357,7 +358,6 @@ class Yum(object):
                 FROM packages \
                 WHERE name = :name AND (arch = :arch or arch = 'noarch') \
                 AND version = :version and release = :release"
-            print(type(name))
             sql_param = {"name": name, "arch": self.arch, "version": ver, "release": rel}
         cur = conn.cursor()
         cur.execute(sql_str, sql_param)
@@ -483,10 +483,15 @@ class Yum(object):
         name = pkg['name']
         ver = pkg['version'] if 'version' in pkg else None
         rel = pkg['release'] if 'release' in pkg else None
+        download_dir = dst_dir
+        if 'dst_dir' in pkg:
+            download_dir = os.path.join(self.resources_dir, pkg['dst_dir'])
+            if not os.path.exists(download_dir):
+                os.mkdirs(download_dir, mode=0o755, exist_ok=True)
 
         if 'url' in pkg:
             file_name = os.path.basename(pkg['url'])
-            dst_file = os.path.join(dst_dir, file_name)
+            dst_file = os.path.join(download_dir, file_name)
             checksum = pkg['sha256'] if 'sha256' in pkg else None
             if checksum and not self.need_download_again(checksum, dst_file):
                 print(file_name.ljust(60), 'exists')
@@ -496,9 +501,9 @@ class Yum(object):
             return
 
         if 'autodependency' in pkg and pkg['autodependency'] == 'true':
-            self.download_with_dep(name, dst_dir, ver, rel)
+            self.download_with_dep(name, download_dir, ver, rel)
         else:
-            self.download_without_dep(name, dst_dir, ver, rel)
+            self.download_without_dep(name, download_dir, ver, rel)
 
 
     @staticmethod

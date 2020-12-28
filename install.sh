@@ -2,6 +2,8 @@
 
 readonly TRUE=1
 readonly FALSE=0
+readonly kernel_version=$(uname -r)
+readonly arch=$(uname -m)
 
 function have_no_python_module
 {
@@ -28,12 +30,31 @@ function check_python375()
     return ${TRUE}
 }
 
+function install_kernel_header_devel()
+{
+    local have_rpm=$(command -v rpm | wc -l)
+    if [ ${have_rpm} -eq 0 ]; then
+        return
+    fi
+    local kh_rpm=./resources/kernel/kernel-headers-${kernel_version}.rpm
+    local kd_rpm=./resources/kernel/kernel-devel-${kernel_version}.rpm
+    local kh=$(rpm -q kernel-headers | grep ${kernel_version} | wc -l)
+    local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
+    if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
+        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+    fi
+    if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
+        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+    fi
+}
+
 function install_sys_packages()
 {
     echo "install sys dependencies"
-    have_rpm=`command -v rpm | wc -l`
-    have_dnf=`command -v dnf | wc -l`
-    have_dpkg=`command -v dpkg | wc -l`
+    install_kernel_header_devel
+    local have_rpm=$(command -v rpm | wc -l)
+    local have_dnf=$(command -v dnf | wc -l)
+    local have_dpkg=$(command -v dpkg | wc -l)
 
     os_ver=""
     if [ ${have_dpkg} -eq 1 ]; then
@@ -45,11 +66,11 @@ function install_sys_packages()
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
+        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_`uname -m`/*.rpm
+        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_`uname -m`/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_${arch}/*.deb
     fi
 }
 
