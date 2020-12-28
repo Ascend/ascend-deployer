@@ -1,0 +1,42 @@
+- name: create build directory
+  file:
+    path: ~/build
+    state: directory
+    recurse: yes
+
+- name: check current cmake version
+  shell: cmake --version
+  register: cur_cmake_version
+
+- debug: var=cur_cmake_version
+
+- name: uncompress cmake-3.5.2.tar.gz
+  unarchive:
+    src: "{{ resources_dir }}/cmake-3.5.2.tar.gz"
+    dest: ~/build
+    copy: no
+  when: cur_cmake_version.stdout < 'cmake version 3.5.2'
+
+- name: bootstrap cmake-3.5.2
+  shell: ./bootstrap --prefix=/usr/local
+  args:
+    chdir: ~/build/cmake-3.5.2/
+  register: cmake_bootstrap
+  when: cur_cmake_version.stdout < 'cmake version 3.5.2'
+
+- name: make cmake-3.5.2
+  shell: make -C ~/build/cmake-3.5.2/ -j20
+  ignore_errors: yes  
+  when: cur_cmake_version.stdout < 'cmake version 3.5.2'
+
+- name: make install cmake-3.5.2
+  shell: make -C ~/build/cmake-3.5.2/ install
+  become: yes
+  register: cmake_install
+  when: cur_cmake_version.stdout < 'cmake version 3.5.2'
+
+- name: check cmake install result
+  shell: cmake --version
+  register: cmake_version
+
+- debug: var=cmake_version
