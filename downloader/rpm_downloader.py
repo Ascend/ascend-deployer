@@ -487,6 +487,10 @@ class Yum(object):
         if 'url' in pkg:
             file_name = os.path.basename(pkg['url'])
             dst_file = os.path.join(dst_dir, file_name)
+            checksum = pkg['sha256'] if 'sha256' in pkg else None
+            if checksum and not self.need_download_again(checksum, dst_file):
+                print(file_name.ljust(60), 'exists')
+                return
             self.download_file(pkg['url'], dst_file)
             print(file_name.ljust(60), 'download success')
             return
