@@ -51,8 +51,10 @@ class MyPip(object):
         if os.path.exists(dest):
             print('[{0}] exist'.format(dest))
             LOG.info('[{0}] exist'.format(dest))
-        else:
-            DOWNLOAD_INST.download(url, dest)
+            os.remove(dest)
+            print('[{0}] deleted'.format(dest))
+            LOG.info('[{0}] deleted'.format(dest))
+        DOWNLOAD_INST.download(url, dest)
 
     @staticmethod
     def is_wheel_match(full_name, version, platform, implement):
