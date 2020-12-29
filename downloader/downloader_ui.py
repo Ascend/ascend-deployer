@@ -29,7 +29,12 @@ OS_LIST = [
 'Ubuntu_18.04_x86_64',
 'BigCloud_7.6_aarch64',
 'BigCloud_7.6_x86_64',
-'SLES_12.4_x86_64'
+'SLES_12.4_x86_64',
+'EulerOS_2.0SP8_aarch64',
+'EulerOS_2.0SP9_aarch64',
+'EulerOS_2.0SP9_x86_64',
+'Debian_9.9_aarch64',
+'Debain_9.9_x86_64'
 ]
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -45,7 +50,7 @@ class Win(object):
         self.config_file = os.path.join(CUR_DIR, 'config.ini')
         self.root = tk.Tk()
         self.root.title('离线安装下载器')
-        self.root.geometry('300x300')
+        self.root.geometry('300x450')
         self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
         self.check_list = []
         self.os_dict = {}
