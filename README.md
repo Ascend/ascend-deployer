@@ -70,6 +70,7 @@ Usage: ./install.sh [options]
 --nocopy                       do not copy resources
 --debug                        enable debug
 --install=<package_name>       Install specific package:
+                               cmake
                                driver
                                firmware
                                gcc
