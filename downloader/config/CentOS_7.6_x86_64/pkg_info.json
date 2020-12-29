@@ -53,9 +53,6 @@
         "name": "make", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "libuv", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -72,12 +69,6 @@
     },
     {
         "name": "python3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cmake3-data", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cmake3", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libzstd", "used_by": [ "driver", "cann", "framework" ]
