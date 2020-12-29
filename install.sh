@@ -30,6 +30,24 @@ function check_python375()
     return ${TRUE}
 }
 
+function get_os_name()
+{
+    local os_name=$(grep "^NAME=" /etc/os-release)
+    os_name="${os_name#*=}"
+    os_name="${os_name%\"}"
+    os_name="${os_name#\"}"
+    echo ${os_name}
+}
+
+function get_os_version()
+{
+    local ver=$(grep "^VERSION=" /etc/os-release)
+    ver="${ver#*=}"
+    ver="${ver%\"}"
+    ver="${ver#\"}"
+    echo ${ver}
+}
+
 function install_kernel_header_devel()
 {
     local have_rpm=$(command -v rpm | wc -l)
@@ -56,13 +74,29 @@ function install_sys_packages()
     local have_dnf=$(command -v dnf | wc -l)
     local have_dpkg=$(command -v dpkg | wc -l)
 
-    os_ver=""
-    if [ ${have_dpkg} -eq 1 ]; then
+    local os_name=$(get_os_name)
+    local os_version=$(get_os_version)
+    local os_ver=""
+    if [ ${os_name} == "Ubuntu" ]; then
         os_ver="Ubuntu_18.04"
-    elif [ ${have_dnf} -eq 1 ]; then
-        os_ver="CentOS_8.2"
-    elif [ ${have_rpm} -eq 1 ]; then
-        os_ver="CentOS_7.6"
+    elif [ -z "${os_name##*CentOS*}" ];then
+        if [ -z "${os_version##*7*}" ];then
+            os_ver="CentOS_7.6"
+        else
+            os_ver="CentOS_8.2"
+        fi
+    elif [ ${os_name} == "EulerOS" ]; then
+        if [ -z "${os_version##*SP8*}" ];then
+            os_ver="EulerOS_2.0SP8"
+        else
+            os_ver="EulerOS_2.0SP9"
+        fi
+    elif [ -z "${os_name##*BigCloud*}" ];then
+        os_ver="BigCloud_7.6"
+    elif [ -z "${os_name##*Debian*}" ];then
+        os_ver="Debian_9.9"
+    elif [ -z "${os_name##*SLES*}" ];then
+        os_ver="SLES_12.4"
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
@@ -90,6 +124,8 @@ function install_python375()
     cd -
     python3.7 -m ensurepip
     python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/`uname -m`
+    echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
+    echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
 }
 
 function install_ansible()
