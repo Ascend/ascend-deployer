@@ -1,0 +1,13 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in driver
+      shell: find /usr/local/Ascend/driver/ -type f | grep -E "/driver/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_driver
+
+    - name: uninstall driver
+      shell: "{{ uninstall_driver.stdout }}"
+      become: yes
+      when:
+        - uninstall_driver.rc == 0
+        - uninstall_driver.stdout != ''

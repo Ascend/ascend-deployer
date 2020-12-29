@@ -1,0 +1,13 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in nnrt
+      shell: find /usr/local/Ascend/nnrt/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_nnrt
+
+    - name: uninstall nnrt
+      shell: "{{ uninstall_nnrt.stdout }}"
+      become: yes
+      when:
+        - uninstall_nnrt.rc == 0
+        - uninstall_nnrt.stdout != ''

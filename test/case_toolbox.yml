@@ -16,8 +16,8 @@
 - name: execute ascend-dmi -i
   shell: ascend-dmi -i
   environment:
-    PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64:/usr/local/gcc7.3.0/lib64
+    PATH: /usr/local/python3.7.5/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64:/usr/local/gcc7.3.0/lib64
   when: ascend_dmi.matched > 0
   register: ascend_dmi_info
 

@@ -82,7 +82,7 @@ function process_install()
     unsupport=${FALSE}
     for target in ${install_target}
     do
-        if [ ! -f playbooks/install_${target}.yml ];then
+        if [ ! -f playbooks/install/install_${target}.yml ];then
             echo "Error: not support install for ${target}"
             unsupport=${TRUE}
         fi
@@ -103,7 +103,67 @@ function process_install()
     for target in ${install_target}
     do
         echo "ansible-playbook -i ./inventory_file playbooks/install_${target}.yml -e hosts_name=ascend ${debug_cmd}"
-        ansible-playbook -i ./inventory_file playbooks/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        ansible-playbook -i ./inventory_file playbooks/install/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+    done
+    unset IFS
+}
+
+function process_uninstall()
+{
+    IFS=','
+    not_supported=${FALSE}
+    for target in ${uninstall_target}
+    do
+        if [ ! -f playbooks/uninstall/uninstall_${target}.yml ]; then
+            echo "Error: not supported uninstall for ${target}"
+            not_supported=${TRUE}
+        fi
+    done
+    if [ "${not_supported}" == "${TRUE}" ]; then
+        exit 1
+    fi
+    ping_all
+    process_check
+    debug_cmd=""
+    if [ "x${debug_flag}" == "xy" ]; then
+        debug_cmd="-v"
+    fi
+    for target in ${uninstall_target}
+    do
+        echo "ansible-playbook -i ./inventory_file playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
+        ansible-playbook -i ./inventory_file playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+    done
+    unset IFS
+}
+
+function process_upgrade()
+{
+    IFS=','
+    not_supported=${FALSE}
+    for target in ${upgrade_target}
+    do
+        if [ ! -f playbooks/upgrade/upgrade_${target}.yml ]; then
+            echo "Error: not supported upgrade for ${target}"
+            not_supported=${TRUE}
+        fi
+    done
+    if [ "${not_supported}" == "${TRUE}" ]; then
+        exit 1
+    fi
+    ping_all
+    process_check
+    if [ "x${nocopy_flag}" != "xy" ];then
+        echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
+        ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
+    fi
+    debug_cmd=""
+    if [ "x${debug_flag}" == "xy" ]; then
+        debug_cmd="-v"
+    fi
+    for target in ${upgrade_target}
+    do
+        echo "ansible-playbook -i ./inventory_file playbooks/upgrade/upgrade_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
+        ansible-playbook -i ./inventory_file playbooks/upgrade/upgrade_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
     done
     unset IFS
 }
@@ -160,18 +220,32 @@ function print_usage()
     echo "--nocopy                       do not copy resources"
     echo "--debug                        enable debug"
     echo "--install=<package_name>       Install specific package:"
-    for target in `find playbooks/install_*.yml`
+    for target in `find playbooks/install/install_*.yml`
     do
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "Then \"npu\" will install dirver and firmware toghter"
+    echo "Then \"npu\" will install driver and firmware together"
     echo "--install-scene=<scene_name>   Install specific scene:"
     for scene in `find scene/scene_*.yml`
     do
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
+    echo "--uninstall=<package_name>     Install specific package:"
+    for target in `find playbooks/uninstall/uninstall_*.yml`
+    do
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "Then \"npu\" will uninstall driver and firmware together"
+    echo "--upgrade=<package_name>       Install specific package:"
+    for target in `find playbooks/upgrade/upgrade_*.yml`
+    do
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "Then \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find test/test_*.yml`
     do
@@ -201,6 +275,14 @@ function parse_script_args() {
             ;;
         --install-scene=*)
             install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --uninstall=*)
+            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --upgrade=*)
+            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
         --test=*)
@@ -306,6 +388,12 @@ main()
     fi
     if [ "x${clean_flag}" == "xy" ]; then
         process_chean
+    fi
+    if [ "x${uninstall_target}" != "x" ];then
+        process_uninstall ${uninstall_target}
+    fi
+    if [ "x${upgrade_target}" != "x" ];then
+        process_upgrade ${upgrade_target}
     fi
 }
 

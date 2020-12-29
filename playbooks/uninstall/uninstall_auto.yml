@@ -1,0 +1,20 @@
+- name: uninstall driver if installed
+  import_playbook: uninstall_driver.yml
+
+- name: uninstall firmware if installed
+  import_playbook: uninstall_firmware.yml
+
+- name: uninstall nnae if installed
+  import_playbook: uninstall_nnae.yml
+
+- name: uninstall nnrt if installed
+  import_playbook: uninstall_nnrt.yml
+
+- name: uninstall tfplugin if installed
+  import_playbook: uninstall_tfplugin.yml
+
+- name: uninstall toolbox if installed
+  import_playbook: uninstall_toolbox.yml
+
+- name: uninstall toolkit if installed
+  import_playbook: uninstall_toolkit.yml

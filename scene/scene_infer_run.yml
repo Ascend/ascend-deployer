@@ -1,13 +1,13 @@
 - hosts: '{{ hosts_name }}'
 
 - name: install system dependencies
-  import_playbook: ../playbooks/install_sys_pkg.yml
+  import_playbook: ../playbooks/install/install_sys_pkg.yml
 
 - name: install driver and firmware
-  import_playbook: ../playbooks/install_npu.yml
+  import_playbook: ../playbooks/install/install_npu.yml
 
 - name: install nnrt
-  import_playbook: ../playbooks/install_nnrt.yml
+  import_playbook: ../playbooks/install/install_nnrt.yml
 
 - name: install toolbox
-  import_playbook: ../playbooks/install_toolbox.yml
+  import_playbook: ../playbooks/install/install_toolbox.yml

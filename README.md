@@ -83,7 +83,7 @@ Usage: ./install.sh [options]
                                toolbox
                                toolkit
                                torch
-Then "npu" will install dirver and firmware toghter
+Then "npu" will install driver and firmware together
 --install-scene=<scene_name>   Install specific scene:
                                auto
                                infer_dev
@@ -91,6 +91,28 @@ Then "npu" will install dirver and firmware toghter
                                train_dev
                                train_run
                                vmhost
+--uninstall=<package_name>     Install specific package:
+                               auto
+                               driver
+                               firmware
+                               nnae
+                               nnrt
+                               npu
+                               tfplugin
+                               toolbox
+                               toolkit
+Then "npu" will uninstall driver and firmware together
+--upgrade=<package_name>       Install specific package:
+                               auto
+                               driver
+                               firmware
+                               nnae
+                               nnrt
+                               npu
+                               tfplugin
+                               toolbox
+                               toolkit
+Then "npu" will upgrade driver and firmware together
 --test=<target>                test the functions:
                                all
                                driver
@@ -375,6 +397,9 @@ atlas-deployer
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
+# 升级注意事项
+
+1.涉及1-2包(driver、firmware)的升级操作，需要手动reboot重启服务器，才能生效，即执行test接口验证前需要重启
 
 # 安全注意事项
 

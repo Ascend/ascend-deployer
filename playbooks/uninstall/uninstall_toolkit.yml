@@ -1,0 +1,14 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find uninstall.sh in toolkit
+      shell: find /usr/local/Ascend/ascend-toolkit/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      become: yes
+      register: uninstall_toolkit
+
+    - name: uninstall toolkit
+      shell: "{{ uninstall_toolkit.stdout }}"
+      become: yes
+      when:
+        - uninstall_toolkit.rc == 0
+        - uninstall_toolkit.stdout != ''
+

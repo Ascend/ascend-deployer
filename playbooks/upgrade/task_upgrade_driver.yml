@@ -1,0 +1,11 @@
+- name: check driver task for os
+  local_action: stat path=task_upgrade_driver_{{os_and_arch}}.yml
+  register: special_driver_task
+
+- name: process upgrade driver for special os
+  include_tasks: "task_upgrade_driver_{{os_and_arch}}.yml"
+  when: special_driver_task.stat.exists
+
+- name: process upgrade driver for common
+  include_tasks: "task_upgrade_driver_common.yml"
+  when: not special_driver_task.stat.exists

@@ -1,0 +1,25 @@
+- hosts: '{{ hosts_name }}'
+  gather_facts: True
+
+- name: upgrade firmware if installed
+  import_playbook: upgrade_firmware.yml
+
+- name: upgrade driver if installed
+  import_playbook: upgrade_driver.yml
+
+- name: upgrade nnae if installed
+  import_playbook: upgrade_nnae.yml
+  when: ansible_local.npu_info.scene == 'train'
+
+- name: upgrade nnrt if installed
+  import_playbook: upgrade_nnrt.yml
+  when: ansible_local.npu_info.scene == 'infer'
+
+- name: upgrade tfplugin if installed
+  import_playbook: upgrade_tfplugin.yml
+
+- name: upgrade toolbox if installed
+  import_playbook: upgrade_toolbox.yml
+
+- name: upgrade toolkit if installed
+  import_playbook: upgrade_toolkit.yml
