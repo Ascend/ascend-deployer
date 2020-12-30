@@ -27,9 +27,9 @@ OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系
 
 EulerOS：需要确保源存在和内核版本相同的kenrel-headers和kernel-devel版本。如果源中没有，需要自行准备对应的kernel-headers和kernel-devel软件包。
 
-远程安装：EulerOS等操作系统默认禁止root用户远程连接。因此，在这类操作系统中远程安装时需要提前配置sshd_conf中PermitRootLogin为yes。安装完成后再配置为no。
+远程安装：EulerOS等操作系统默认禁止root用户远程连接。因此，在这类操作系统中远程安装时需要提前配置sshd_config中PermitRootLogin为yes。安装完成后再配置为no。
 
-系统的内核版本可通过 _uname -r_命令查看
+系统的内核版本可通过 uname -r 命令查看
 
 
 # 离线安装工具操作指导
