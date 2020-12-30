@@ -22,7 +22,7 @@ setuptools==50.3.2
 werkzeug==1.0.1
 wheel==0.35.1
 termcolor==1.1.0
-tensorflow==1.15.0
+tensorflow-cpu==1.15.0
 cython==0.29.21
 cffi==1.14.0
 markupsafe==1.1.1
