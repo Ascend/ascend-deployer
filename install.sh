@@ -48,6 +48,32 @@ function get_os_version()
     echo ${ver}
 }
 
+function install_kernel_header_devel_euler()
+{
+    local os_name=$(get_os_name)
+    if [ ${os_name} != "EulerOS" ]; then
+        return
+    fi
+
+    local euler=""
+    if [ -z "${os_version##*SP8*}" ];then
+        euler="eulerosv2r8.${arch}"
+    else
+        euler="eulerosv2r9.${arch}"
+    fi
+
+    local kh=$(rpm -qa kernel-headers | wc -l)
+    local kd=$(rpm -qa kernel-devel | wc -l)
+    local kh_rpm=$(find ./resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
+    local kd_rpm=$(find ./resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
+    if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
+        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+    fi
+    if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
+        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+    fi
+}
+
 function install_kernel_header_devel()
 {
     local have_rpm=$(command -v rpm | wc -l)
@@ -70,6 +96,7 @@ function install_sys_packages()
 {
     echo "install sys dependencies"
     install_kernel_header_devel
+    install_kernel_header_devel_euler
     local have_rpm=$(command -v rpm | wc -l)
     local have_dnf=$(command -v dnf | wc -l)
     local have_dpkg=$(command -v dpkg | wc -l)
@@ -124,6 +151,7 @@ function install_python375()
     cd -
     python3.7 -m ensurepip
     python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/`uname -m`
+    python3.7 -m pip install selinux --no-index --find-links ./resources/`uname -m`
     echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
     echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
 }
