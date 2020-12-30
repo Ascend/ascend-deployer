@@ -22,6 +22,11 @@ OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系
 
 依赖限制：离线部署工具只能安装最基本的库，保证torch和tensorflow能够运行起来。如果需要运行比较复杂的推理或在训练模型，模型代码中可能包含具体业务相关的库，这些库需要自行安装。
 
+EulerOS：安装EulerOS时需要确保源中能找到对于的kenrel-headers和kernel-devel版本。如果源中没有，需要自行准备对于的kernel-headers和kernel-devel软件包。EulerOS默认无法使用root用户远程连接，因此
+使用需要远程在EulerOS系统中安装时需要配置sshd_conf中PermitRootLogin为yes。安装完成后再配置为no。
+
+系统的内核版本可通过 _uname -r_ 命令查看
+
 
 # 离线安装工具操作指导
 
@@ -137,6 +142,8 @@ _注意:_ 如果安装或者升级了driver或firmware，请在安装完成后�
 
 _注意:_ 执行指定组件安装时请确保安装顺序正确。例如nnrt或nnae需要在driver和firmware安装之后，
 firmware必须在driver已经安装后才能安装，等等。
+
+_注意:_ 部分组件存在运行时依赖，例如torch需要toolkit提供相应的运行时。tensorflow + npubridge需要tfplguin提供运行时
 
 
 - **步骤 6**
