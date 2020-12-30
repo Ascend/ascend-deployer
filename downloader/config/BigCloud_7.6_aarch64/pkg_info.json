@@ -42,9 +42,6 @@
         "name": "make", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "unzip", "used_by": [ "driver", "cann", "framework" ]
     },
     {

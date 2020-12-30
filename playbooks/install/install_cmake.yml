@@ -2,6 +2,5 @@
   become: yes
   become_user: root
   tasks:
-    - name: install cmake3.5.2 for BigCloud Linux 7.6
+    - name: install cmake3.5.2
       import_tasks: task_cmake.yml
-      when: os_and_arch == 'BigCloud_7.6_aarch64' or os_and_arch == 'BigCloud_7.6_x86_64'
