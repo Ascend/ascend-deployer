@@ -32,5 +32,9 @@
     { "name": "hdf5-devel", 
       "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/hdf5-devel-1.8.20-7.oe1.aarch64.rpm",
       "sha256": "ffbf8469ec817b232bcee7acc621e076cc090049b644707a1cb8ee5cfdedd75f",
-      "info": "tensorflow use" }
+      "info": "tensorflow use" },
+    { "name": "libaec", 
+      "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/libaec-1.0.4-1.oe1.aarch64.rpm",
+      "sha256": "e2c0245c8b9a261aa2ddb678abafea33179bf2d8c9f72e1f2faf4c8df1fb5a19",
+      "info": "hdf5 need" }
 ]
