@@ -21,5 +21,16 @@
     { "name": "xz-devel",       "autodependency":"true", "info": "python lzma" },
     { "name": "bzip2-devel",    "autodependency":"true", "info": "python bz2" },
     { "name": "sqlite-devel",   "autodependency":"true", "info": "python sqlite" },
-    { "name": "openssl-devel",  "autodependency":"true", "info": "python ssl" }
+    { "name": "openssl-devel",  "autodependency":"true", "info": "python ssl" },
+    { "name": "sshpass",
+      "url":"https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
+      "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336" },
+    { "name": "hdf5", 
+      "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/hdf5-1.8.20-7.oe1.aarch64.rpm",
+      "sha256": "6801cac9eeae57268fd55b9dfbcf7ff9caab5633046bca6c2cdc1963833fed37",
+      "info": "tensorflow use" },
+    { "name": "hdf5-devel", 
+      "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/hdf5-devel-1.8.20-7.oe1.aarch64.rpm",
+      "sha256": "ffbf8469ec817b232bcee7acc621e076cc090049b644707a1cb8ee5cfdedd75f",
+      "info": "tensorflow use" }
 ]
