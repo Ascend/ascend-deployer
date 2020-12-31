@@ -43,7 +43,7 @@ class YumPackageHandler(xml.sax.handler.ContentHandler):
     parse xml of rpm packages
     """
     def __init__(self):
-        self.super().__init__()
+        super(YumPackageHandler, self).__init__()
         self.CurrentData = ""
         self.CurrentAttributes = ""
         self.checksum = None
@@ -256,7 +256,7 @@ class YumPackage(object):
         :param cur    database cursor
         :return:
         """
-        fields = ['name', 'flags' 'epoch', 'version', 'release', 'pkgKey']
+        fields = ['name', 'flags', 'epoch', 'version', 'release', 'pkgKey']
         keys = ','.join(fields)
         values = ','.join([":%s" % key for key in fields])
         sql = "INSERT INTO provides (%s) VALUES (%s)" % (keys, values)
@@ -280,7 +280,7 @@ class YumPackage(object):
         :param cur    database cursor
         :return:
         """
-        fields = ['name', 'flags' 'epoch', 'version', 'release', 'pkgKey', 'pre']
+        fields = ['name', 'flags', 'epoch', 'version', 'release', 'pkgKey', 'pre']
         keys = ','.join(fields)
         values = ','.join([":%s" % key for key in fields])
         sql = "INSERT INTO requires (%s) VALUES (%s)" % (keys, values)
