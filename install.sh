@@ -323,14 +323,14 @@ function print_usage()
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "Then \"npu\" will uninstall driver and firmware together"
+    echo "The \"npu\" will uninstall driver and firmware together"
     echo "--upgrade=<package_name>       Install specific package:"
     for target in `find playbooks/upgrade/upgrade_*.yml`
     do
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "Then \"npu\" will upgrade driver and firmware together"
+    echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find test/test_*.yml`
     do
