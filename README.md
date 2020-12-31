@@ -6,10 +6,10 @@
 
 |操作系统|版本 |cpu架构   |安装类型         |
 |-------|-----|---------|----------------|
-|centos |7.6  |aarch64  |镜像默认Minimal模式         |
-|centos |7.6  |x86_64   |镜像默认Minimal模式         |
-|centos |8.2  |aarch64  |镜像默认Minimal模式         |
-|centos |8.2  |x86_64   |镜像默认Minimal模式         |
+|CentOS |7.6  |aarch64  |镜像默认Minimal模式         |
+|CentOS |7.6  |x86_64   |镜像默认Minimal模式         |
+|CentOS |8.2  |aarch64  |镜像默认Minimal模式         |
+|CentOS |8.2  |x86_64   |镜像默认Minimal模式         |
 |ubuntu |18.04|aarch64  |SmartKit默认Standard模式、镜像默认Server模式|
 |ubuntu |18.04|x86_64   |SmartKit默认Standard模式、镜像默认Server模式|
 |BigCloud|7.6 |aarch64  |镜像默认Minimal模式         |
@@ -291,15 +291,15 @@ index_url=http://mirrors.huaweicloud.com/pypi/simple
 
 - **Centos源配置**
 
-centos源在对应版本的配置目录中
+CentOS源在对应版本的配置目录中
 ```
-downloader/config/centos_{version}_{arch}/source.repo
+downloader/config/CentOS_{version}_{arch}/source.repo
 ```
-例如centos 7.6  aarch64第一的源配置在如下文件中 
+例如CentOS 7.6 aarch64第一的源配置在如下文件中 
 ```
-downloader/config/centos_7.6_aarch64/source.repo
+downloader/config/CentOS_7.6_aarch64/source.repo
 ```
-centos 7.6的源配置文件内容如下:
+CentOS 7.6的源配置文件内容如下:
 ```
 [base]
 baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
@@ -307,12 +307,12 @@ baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 [epel]
 baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
 ```
-表示同时启用了base源和epel源，下载centos的依赖是会从这两个源中查询和下载。默认使用华为源，根据需要修改。
-修改源通常只需要修改其中host部分，即mirrors.huaweicloud.com部分。如需修改后面部分，请确保理解centos的源配置
+表示同时启用了base源和epel源，下载CentOS的依赖是会从这两个源中查询和下载。默认使用华为源，根据需要修改。
+修改源通常只需要修改其中host部分，即mirrors.huaweicloud.com部分。如需修改后面部分，请确保理解CentOS的源配置
 
-_注意:_ centos的依赖软件需要在base和epel一起才能包含完整。如果需删除源，可能造成依赖下载不完整。
+_注意:_ CentOS的依赖软件需要在base和epel一起才能包含完整。如果需删除源，可能造成依赖下载不完整。
 
-centos 8.2的源结构与7.2差异较大,例如CentOS 8.2 aarch64下源配置为：
+CentOS 8.2的源结构与7.6差异较大,例如CentOS 8.2 aarch64下源配置为：
 ```buildoutcfg
 [base]
 baseurl=http://mirrors.huaweicloud.com/centos/8/BaseOS/aarch64/os
@@ -326,7 +326,7 @@ baseurl=http://mirrors.huaweicloud.com/centos/8/AppStream/aarch64/os/
 [Everything]
 baseurl=http://mirrors.huaweicloud.com/epel/8/Everything/aarch64
 ```
-包含4个子源。 修改规则与centos7.6相同
+包含4个子源。 修改规则与CentOS 7.6相同
 
 
 - **Ubuntu源配置**
