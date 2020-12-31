@@ -3,6 +3,10 @@
 - name: install system dependencies
   import_playbook: ../playbooks/install/install_sys_pkg.yml
 
+- name: install python3.7.5
+  import_playbook: ../playbooks/install/install_python375.yml
+  when: ansible_local.npu_info.python375_installed == False
+
 - name: install driver and firmware
   import_playbook: ../playbooks/install/install_npu.yml
 
@@ -14,3 +18,12 @@
 
 - name: install toolkit
   import_playbook: ../playbooks/install/install_toolkit.yml
+
+- name: install torch
+  import_playbook: ../playbooks/install/install_torch.yml
+
+- name: install tfplugin
+  import_playbook: ../playbooks/install/install_tfplugin.yml
+
+- name: install tensorflow
+  import_playbook: ../playbooks/install/install_tensorflow.yml
