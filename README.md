@@ -331,9 +331,9 @@ baseurl=http://mirrors.huaweicloud.com/epel/8/Everything/aarch64
 
 - **Ubuntu源配置**
 
-以ubuntu 18.04 aarch64为例，源配置文件为：
+以Ubuntu 18.04 aarch64为例，源配置文件为：
 ```buildoutcfg
-config/ubuntu_18.04_aarch64/source.list
+config/Ubuntu_18.04_aarch64/source.list
 ```
 内容如下：
 ```buildoutcfg
@@ -349,12 +349,12 @@ _注意_: 修改源时通常只建议修改url。 增加或删除源可能找出
 1.downloader下载保存的目录结构：  
 ```
 resources/
-|-- centos_7.6_aarch64
-|-- centos_7.6_x86_64
-|-- centos_8.2_aarch64
-|-- centos_8.2_x86_64
-|-- ubuntu_18.04_aarch64
-|-- ubuntu_18.04_x86_64
+|-- CentOS_7.6_aarch64
+|-- CentOS_7.6_x86_64
+|-- CentOS_8.2_aarch64
+|-- CentOS_8.2_x86_64
+|-- Ubuntu_18.04_aarch64
+|-- Ubuntu_18.04_x86_64
 |-- aarch64
 `-- x86_64
 ```
