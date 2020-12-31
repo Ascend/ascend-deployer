@@ -45,14 +45,14 @@ EulerOS：需要确保源存在和内核版本相同的kenrel-headers和kernel-d
 将CANN软件包放到resources目录下
 
 ```
-atlas-deployer
+ascend-deployer
 |- install.sh
 |- ansible.cfg
 |- playbooks
 |- scenes
 `- resources/
-   |- centos_7.6_aarch64
-   |- centos_7.6_x86_64
+   |- CentOS_7.6_aarch64
+   |- CentOS_7.6_x86_64
    |- ...
    |- aarch64
    |- x86_64
