@@ -331,7 +331,7 @@ baseurl=http://mirrors.huaweicloud.com/epel/8/Everything/aarch64
 
 - **Ubuntu源配置**
 
-已ubuntu 18.04 aarch64为例子，源配置文件为：
+以ubuntu 18.04 aarch64为例，源配置文件为：
 ```buildoutcfg
 config/ubuntu_18.04_aarch64/source.list
 ```
