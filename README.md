@@ -93,7 +93,7 @@ Usage: ./install.sh [options]
                                toolbox
                                toolkit
                                torch
-Then "npu" will install driver and firmware together
+The "npu" will install driver and firmware together
 --install-scene=<scene_name>   Install specific scene:
                                auto
                                infer_dev
@@ -111,7 +111,7 @@ Then "npu" will install driver and firmware together
                                tfplugin
                                toolbox
                                toolkit
-Then "npu" will uninstall driver and firmware together
+The "npu" will uninstall driver and firmware together
 --upgrade=<package_name>       Install specific package:
                                auto
                                driver
@@ -122,7 +122,7 @@ Then "npu" will uninstall driver and firmware together
                                tfplugin
                                toolbox
                                toolkit
-Then "npu" will upgrade driver and firmware together
+The "npu" will upgrade driver and firmware together
 --test=<target>                test the functions:
                                all
                                driver
