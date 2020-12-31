@@ -224,7 +224,7 @@ ip_address_1 | SUCCESS => {
 |-------|-------------------------|-----|
 |infer_run |driver, firmware, nnrt, toolbox| 推理运行|
 |infer_dev |driver, firmware, nnrt, toolbox, toolkit, torch, tfplugin, tensorflow|推理开发|
-|train_run |driver, firmware, nnae, toolbox, toolkit|训练运行|
+|train_run |driver, firmware, nnae, toolbox, toolkit, torch, tfplugin, tensorflow|训练运行|
 |train_dev |driver, firmware, nnae, toolbox, toolkit, torch, tfplugin, tensorflow|训练开发|
 |vmhost |driver, firmware, toolbox|虚拟机host|
 |auto |all| 安装所有|
