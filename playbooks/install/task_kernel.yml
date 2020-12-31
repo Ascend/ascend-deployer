@@ -14,8 +14,9 @@
   when: kh_cnt.stdout == "0"
 
 - name: install kernel headers rpm
-  shell: rpm -ivh --force --replacepkgs {{ kh_rpm.files[0].path }}
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ kh_rpm.files[0].path }}
   when: kh_cnt.stdout == "0" and kh_rpm.matched > 0
+  failed_when: false
 
 - name: check kernel devel
   shell: rpm -q kernel-devel | grep {{ ansible_kernel }} | wc -l
@@ -33,5 +34,6 @@
   when: kd_cnt.stdout == "0"
 
 - name: install kernel devel rpm
-  shell: rpm -ivh --force --replacepkgs {{ kd_rpm.files[0].path }}
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ kd_rpm.files[0].path }}
   when: kd_cnt.stdout == "0" and kd_rpm.matched > 0
+  failed_when: false
