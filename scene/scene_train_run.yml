@@ -16,9 +16,6 @@
 - name: install toolbox
   import_playbook: ../playbooks/install/install_toolbox.yml
 
-- name: install toolkit
-  import_playbook: ../playbooks/install/install_toolkit.yml
-
 - name: install torch
   import_playbook: ../playbooks/install/install_torch.yml
 
