@@ -310,7 +310,7 @@ function print_usage()
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "Then \"npu\" will install driver and firmware together"
+    echo "The \"npu\" will install driver and firmware together"
     echo "--install-scene=<scene_name>   Install specific scene:"
     for scene in `find scene/scene_*.yml`
     do
