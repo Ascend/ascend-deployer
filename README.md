@@ -381,14 +381,14 @@ os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x8
 
 Driver,Firmware,CANN层软件需要使用run包。 将相关软件包放置在resources目录下即可，例如：
 ```
-atlas-deployer
+ascend-deployer
 |- install.sh
 |- ansible.cfg
 |- playbooks
 |- scenes
 `- resources/
-   |- centos_7.6_aarch64
-   |- centos_7.6_x86_64
+   |- CentOS_7.6_aarch64
+   |- CentOS_7.6_x86_64
    |- ...
    |- aarch64
    |- x86_64
