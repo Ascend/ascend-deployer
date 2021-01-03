@@ -13,15 +13,50 @@
     - "torch for ascend not installed"
   when: torch_ascend.matched == 0
 
-- name: test import torch
+- name: check add_ons directory exists
+  shell: find /usr/local/Ascend -type d | grep add-ons | wc -l
+  register: add_ons_dir
+  when: torch_ascend.matched > 0
+
+- name: check add_ons directory contains libprotobuf.so
+  shell: find /usr/local/Ascend/add-ons/ -type f | grep libprotobuf.so | wc -l
+  register: add_ons_dir_protobuf
+  when:
+    - torch_ascend.matched > 0
+    - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
+
+- name: test import torch without add-ons
   shell: python3.7 -c "import torch; print(torch.__version__)"
   environment:
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64
   register: import_torch
-  when: torch_ascend.matched > 0
+  when:
+    - torch_ascend.matched > 0
+    - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
   changed_when: false
 
-- name: print import torch result
+- name: print import torch result without add-ons
   debug: var=import_torch
-  when: torch_ascend.matched > 0
+  when: 
+    - torch_ascend.matched > 0
+    - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
+
+- name: test import torch with add-ons
+  shell: python3.7 -c "import torch; print(torch.__version__)"
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:/usr/local/Ascend/add-ons/
+  register: import_torch_with_add_ons
+  when:
+    - torch_ascend.matched > 0
+    - add_ons_dir.stdout != '0'
+    - add_ons_dir_protobuf.stdout != '0'
+  changed_when: false
+
+- name: print import torch result with add-ons
+  debug: var=import_torch_with_add_ons
+  when:
+    - torch_ascend.matched > 0
+    - add_ons_dir.stdout != '0'
+    - add_ons_dir_protobuf.stdout != '0'
