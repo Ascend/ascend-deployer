@@ -5,6 +5,26 @@ readonly FALSE=0
 readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 
+function get_os_name()
+{
+    local os_name=$(grep "^NAME=" /etc/os-release)
+    os_name="${os_name#*=}"
+    os_name="${os_name%\"}"
+    os_name="${os_name#\"}"
+    echo ${os_name}
+}
+
+readonly g_os_name=$(get_os_name)
+
+function get_os_version()
+{
+    local ver=$(grep "^VERSION=" /etc/os-release)
+    ver="${ver#*=}"
+    ver="${ver%\"}"
+    ver="${ver#\"}"
+    echo ${ver}
+}
+
 function have_no_python_module
 {
     ret=`python3.7 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
@@ -30,28 +50,10 @@ function check_python375()
     return ${TRUE}
 }
 
-function get_os_name()
-{
-    local os_name=$(grep "^NAME=" /etc/os-release)
-    os_name="${os_name#*=}"
-    os_name="${os_name%\"}"
-    os_name="${os_name#\"}"
-    echo ${os_name}
-}
-
-function get_os_version()
-{
-    local ver=$(grep "^VERSION=" /etc/os-release)
-    ver="${ver#*=}"
-    ver="${ver%\"}"
-    ver="${ver#\"}"
-    echo ${ver}
-}
-
 function install_kernel_header_devel_euler()
 {
     local os_name=$(get_os_name)
-    if [ ${os_name} != "EulerOS" ]; then
+    if [ "${os_name}" != "EulerOS" ];then
         return
     fi
 
@@ -104,7 +106,7 @@ function install_sys_packages()
     local os_name=$(get_os_name)
     local os_version=$(get_os_version)
     local os_ver=""
-    if [ ${os_name} == "Ubuntu" ]; then
+    if [ "${os_name}" == "Ubuntu" ];then
         os_ver="Ubuntu_18.04"
     elif [ -z "${os_name##*CentOS*}" ];then
         if [ -z "${os_version##*7*}" ];then
@@ -151,7 +153,9 @@ function install_python375()
     cd -
     python3.7 -m ensurepip
     python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/`uname -m`
-    python3.7 -m pip install selinux --no-index --find-links ./resources/`uname -m`
+    if [ "${g_os_name}" == "EulerOS" ];then
+        python3.7 -m pip install selinux --no-index --find-links ./resources/`uname -m`
+    fi
     echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
     echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
 }
