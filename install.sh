@@ -152,9 +152,9 @@ function install_python375()
     make install
     cd -
     python3.7 -m ensurepip
-    python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/`uname -m`
+    python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/pylibs
     if [ "${g_os_name}" == "EulerOS" ];then
-        python3.7 -m pip install selinux --no-index --find-links ./resources/`uname -m`
+        python3.7 -m pip install selinux --no-index --find-links ./resources/pylibs
     fi
     echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
     echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
@@ -162,7 +162,7 @@ function install_python375()
 
 function install_ansible()
 {
-    python3.7 -m pip install ansible --no-index --find-links ./resources/`uname -m`
+    python3.7 -m pip install ansible --no-index --find-links ./resources/pylibs
 }
 
 function process_install()
