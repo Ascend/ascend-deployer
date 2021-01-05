@@ -148,6 +148,21 @@ class DownloadUtil:
         return False
 
     @classmethod
+    def download_no_retry(cls, url: str, dst_file_name: str):
+        try:
+            LOG.info('downloading from {}'.format(url))
+            cls.proxy_inst.build_proxy_handler()
+            local_file, _ = request.urlretrieve(url, dst_file_name)
+            return True
+        except ContentTooShortError as ex:
+            LOG.error(ex)
+        except URLError as err:
+            LOG.error(err)
+        except socket.timeout as timeout:
+            LOG.error(timeout)
+        return False
+
+    @classmethod
     def urlopen(cls, url: str, retry_times=5):
         for retry in [ x + 1 for x in range(retry_times)]:
             try:
