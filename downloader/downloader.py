@@ -46,4 +46,4 @@ def download_os_packages():
 
 if __name__ == "__main__":
     download_python_packages()
-    #download_os_packages()
+    download_os_packages()
