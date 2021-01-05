@@ -32,6 +32,7 @@ class MyPip(object):
     """downloader for pip"""
     def __init__(self):
         self.cache = {}
+        self.downloaded = []
         """读取配置"""
         script = os.path.realpath(__file__)
         config_file = os.path.join(os.path.dirname(script), 'config.ini')
@@ -49,10 +50,8 @@ class MyPip(object):
         :return:
         """
         if os.path.exists(dest):
-            print('[{0}] exist'.format(dest))
             LOG.info('[{0}] exist'.format(dest))
             os.remove(dest)
-            print('[{0}] deleted'.format(dest))
             LOG.info('[{0}] deleted'.format(dest))
         DOWNLOAD_INST.download(url, dest)
 
@@ -97,11 +96,8 @@ class MyPip(object):
         """
         if distribution in self.cache.keys():
             index = self.cache.get(distribution)
-            print('get from cache')
-            LOG.info('get from cache')
         else:
             url = '{0}/{1}'.format(self.pypi_url, distribution.lower())
-            print('pypi URL = [{0}]'.format(url))
             LOG.info('pypi URL = [{0}]'.format(url))
             index = ''
             for retry in [x + 1 for x in range(5)]:
@@ -173,18 +169,21 @@ class MyPip(object):
         index = self.get_simple_index(distribution)
         file_name, url = self.wheel_filter(index, version, platform, implement)
         if len(url) == 0:
-            print('can not find {0} for {1} {2}'.format(name, platform, implement))
             LOG.error('can not find {0} for {1} {2}'.format(name, platform, implement))
             return False
+        if file_name in self.downloaded:
+            return
         download_url = '{0}/{1}/{2}'.format(self.pypi_url, distribution, url)
-        print("Download {0} from [{1}]".format(file_name, download_url))
         LOG.info("Download {0} from [{1}]".format(file_name, download_url))
         file_path = os.path.join(dest_path, file_name)
         if not self.need_download_again(file_path, url):
-            print('no need download again')
+            print(file_name.ljust(60), "exists")
+            self.downloaded.append(file_name)
             LOG.info('no need download again')
             return True
         self.file_download(download_url, file_path)
+        print(file_name.ljust(60), "download success")
+        self.downloaded.append(file_name)
         return True
 
     def download_source(self, name, dest_path):
@@ -196,15 +195,20 @@ class MyPip(object):
         file_name, url = self.source_filter(index, version)
         if len(url) == 0:
             return False
+        if file_name in self.downloaded:
+            return
         download_url = '{0}/{1}/{2}'.format(self.pypi_url, distribution, url)
-        print("Download {0} from [{1}]".format(file_name, download_url))
+        #print("Download {0} from [{1}]".format(file_name, download_url))
         LOG.info("Download {0} from [{1}]".format(file_name, download_url))
         file_path = os.path.join(dest_path, file_name)
         if not self.need_download_again(file_path, url):
-            print('no need download again')
+            print(file_name.ljust(60), "exists")
             LOG.info('no need download again')
+            self.downloaded.append(file_name)
             return True
         self.file_download(download_url, file_path)
+        print(file_name.ljust(60), "download success")
+        self.downloaded.append(file_name)
         return True
 
     def need_download_again(self, dst_file, url_with_sha256):
@@ -228,8 +232,6 @@ class MyPip(object):
         if target_sha256 != file_sha256:
             LOG.info('target sha256 in url : {}'.format(target_sha256))
             LOG.info('sha256 of exists file : {}'.format(file_sha256))
-            print('target sha256 in url : {}'.format(target_sha256))
-            print('sha256 of exists file : {}'.format(file_sha256))
         return target_sha256 != file_sha256
 
     def download_x86(self, name, dest_path):
@@ -266,18 +268,20 @@ class MyPip(object):
         :param dest_path:
         :return:
         """
-        x86_64_path = os.path.join(dest_path, 'x86_64')
-        aarch64_path = os.path.join(dest_path, 'aarch64')
-        if not os.path.exists(x86_64_path):
-            os.mkdir(x86_64_path)
-        if not os.path.exists(aarch64_path):
-            os.mkdir(aarch64_path)
+        try:
+            if not os.path.exists(dest_path):
+                os.makedirs(dest_path)
 
-        if not self.download_x86(name, x86_64_path):
-            self.download_source(name, x86_64_path)
+            if self.download_wheel(name, "none", 'cp37', dest_path):
+                return
 
-        if not self.download_arm(name, aarch64_path):
-            self.download_source(name, aarch64_path)
+            if not self.download_x86(name, dest_path):
+                self.download_source(name, dest_path)
+
+            if not self.download_arm(name, dest_path):
+                self.download_source(name, dest_path)
+        except Exception as e:
+            pass
 
 
 def main():
