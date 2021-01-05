@@ -19,7 +19,7 @@
 |EulerOS|2.0SP9 |aarch64|镜像默认Minimal模式         |
 |EulerOS|2.0SP9 |x86_64 |镜像默认Minimal模式         |
 
-OS必装软件：OpenSSH Server，用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装
+OS必装软件：tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装
 
 环境限制：OS安装后没有额外安装或卸载过软件，是镜像安装成功后的默认环境；若卸载安装某些系统软件，导致与安装默认系统包不一致，离线安装部署不支持该场景，需要手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件
 
