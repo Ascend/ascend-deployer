@@ -22,7 +22,7 @@ import xml.dom.minidom
 import http.client
 import time
 from download_util import DOWNLOAD_INST
-from download_util import calc_sha256
+from download_util import calc_sha256, calc_md5
 from logger_config import get_logger
 
 LOG = get_logger(__file__)
@@ -45,8 +45,8 @@ class MyPip(object):
         """
         file_download
 
-        :param url:
-        :param dest:
+        :param url:  待下载文件的url
+        :param dest: 下载时本地文件名,带路径
         :return:
         """
         if os.path.exists(dest):
@@ -211,28 +211,37 @@ class MyPip(object):
         self.downloaded.append(file_name)
         return True
 
-    def need_download_again(self, dst_file, url_with_sha256):
+    def need_download_again(self, dst_file, url_with_hash):
         """
         need_download_again
+        校验目的文件的hash值与url中的hash值是否相等，来决定是否重新下载
 
-        :param dst_file:
-        :param url_with_sha256:
+        :param dst_file: 目的文件
+        :param url_with_hash:  带hash值的URL
         :return:
         """
-        if url_with_sha256 is None or len(url_with_sha256) == 0:
+        if url_with_hash is None or len(url_with_hash) == 0:
             return True
         if not os.path.exists(dst_file):
             return True
-        key_word = 'sha256='
-        if key_word not in url_with_sha256:
+
+        key_word = ''
+        file_hash = ''
+        if 'sha256=' in url_with_hash:
+            key_word = 'sha256='
+            file_hash = calc_sha256(dst_file)
+        elif 'md5=' in url_with_hash:
+            key_word = 'md5='
+            file_hash = calc_md5(dst_file)
+        else:
             return True
-        index_of_sha256 = str(url_with_sha256).index(key_word) + len(key_word)
-        target_sha256 = url_with_sha256[index_of_sha256:]
-        file_sha256 = calc_sha256(dst_file)
-        if target_sha256 != file_sha256:
-            LOG.info('target sha256 in url : {}'.format(target_sha256))
-            LOG.info('sha256 of exists file : {}'.format(file_sha256))
-        return target_sha256 != file_sha256
+
+        index_of_hash = str(url_with_hash).index(key_word) + len(key_word)
+        target_hash = url_with_hash[index_of_hash:]
+        if target_hash != file_hash:
+            LOG.info('hash {0} in url: {1} != file: {2}'.format(key_word,
+                target_hash, file_hash))
+        return target_hash != file_hash
 
     def download_x86(self, name, dest_path):
         """
@@ -281,7 +290,7 @@ class MyPip(object):
             if not self.download_arm(name, dest_path):
                 self.download_source(name, dest_path)
         except Exception as e:
-            pass
+            print(name.ljust(60), "download failed")
 
 
 def main():
