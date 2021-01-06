@@ -14,7 +14,7 @@
 - name: find upgrade tool
   find:
     path: /usr/local/Ascend/driver
-    recurse: no
+    recurse: yes
     file_type: file
     use_regex: yes
     patterns: "upgrade-tool"
@@ -24,7 +24,7 @@
   debug:
     msg:
     - "firmware install failed: driver not installed"
-  failed_when: ture
+  failed_when: true
   when: up_tool.matched == 0
 
 - name: add run permission for firmware
