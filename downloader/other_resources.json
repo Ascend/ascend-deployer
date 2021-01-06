@@ -5,19 +5,25 @@
         "dest":"resources"
     },
     {
+        "filename":"protobuf-python-3.11.3.tar.gz",
+        "url":"https://github.com/protocolbuffers/protobuf/releases/download/v3.11.3/protobuf-python-3.11.3.tar.gz",
+        "sha256":"a9c6c3821ece08f8db55392edbbec4d4a5392fa5df148188309ed6c5a842e3b7",
+        "dest":"resources"
+    },
+    {
         "filename":"torch-1.5.0+ascend-cp37-cp37m-linux_aarch64.whl",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/torch-1.5.0%2Bascend-cp37-cp37m-linux_aarch64.whl",
-        "dest":"resources/aarch64"
+        "dest":"resources/pylibs"
     },
     {
         "filename":"torch-1.5.0+ascend-cp37-cp37m-linux_x86_64.whl",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/torch-1.5.0%2Bascend-cp37-cp37m-linux_x86_64.whl",
-        "dest":"resources/x86_64"
+        "dest":"resources/pylibs"
     },
     {
         "filename":"tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
         "url":"https://mytf.obs.cn-southwest-2.myhuaweicloud.com/tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
-        "dest":"resources/aarch64"
+        "dest":"resources/pylibs"
     },
     {
         "filename":"gcc-7.3.0.tar.gz",
@@ -52,11 +58,11 @@
     {
         "filename":"apex-0.1+ascend-cp37-cp37m-linux_x86_64.whl",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_x86_64.whl",
-        "dest":"resources/x86_64"
+        "dest":"resources/pylibs"
     },
     {
         "filename":"apex-0.1+ascend-cp37-cp37m-linux_aarch64.whl",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_aarch64.whl",
-        "dest":"resources/aarch64"
+        "dest":"resources/pylibs"
     }
 ]

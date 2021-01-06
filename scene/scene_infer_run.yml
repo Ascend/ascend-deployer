@@ -14,3 +14,6 @@
 
 - name: install toolbox
   import_playbook: ../playbooks/install/install_toolbox.yml
+
+- name: install protobuf
+  import_playbook: ../playbooks/install/install_protobuf.yml
