@@ -25,7 +25,7 @@
     msg:
     - "firmware install failed: driver not installed"
   failed_when: true
-  when: up_tool.matched == 0
+  when: up_tool.matched == 0 and firmware_pkg.matched > 0
 
 - name: add run permission for firmware
   file:

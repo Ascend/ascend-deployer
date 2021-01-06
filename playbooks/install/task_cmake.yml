@@ -4,21 +4,21 @@
     state: directory
     recurse: yes
 
-- name: uncompress cmake-3.5.2.tar.gz
+- name: install cmake-3.5.2 unarchive
   unarchive:
     src: "{{ resources_dir }}/cmake-3.5.2.tar.gz"
     dest: ~/build
     copy: no
 
-- name: bootstrap cmake-3.5.2
+- name: install cmake-3.5.2 bootstrap
   shell: ./bootstrap --prefix=/usr/local
   args:
     chdir: ~/build/cmake-3.5.2/
 
-- name: make cmake-3.5.2
+- name: install cmake-3.5.2 make
   shell: make -C ~/build/cmake-3.5.2/ -j20
   ignore_errors: yes  
 
-- name: make install cmake-3.5.2
+- name: install cmake-3.5.2 make install
   shell: make -C ~/build/cmake-3.5.2/ install
   become: yes

@@ -21,4 +21,12 @@
       when: nnrt.matched > 0
       failed_when: "nnrt_result.rc != 0 and ('install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout)"
 
-    - debug: var=nnrt_result
+    - name: message
+      debug:
+        msg:
+          - "can not find nnrt package, nnrt install skipped"
+      when: "'skipped' in nnrt_result and nnrt_result.skipped and nnrt.matched == 0"
+
+    - name: message
+      debug: var=nnrt_result
+      when: nnrt_result.changed
