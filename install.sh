@@ -126,6 +126,10 @@ function install_sys_packages()
         os_ver="Debian_9.9"
     elif [ -z "${os_name##*SLES*}" ];then
         os_ver="SLES_12.4"
+    elif [ -z "${os_name##*Kylin*}" ];then
+        if [ -z "${os_version##*V10*Tercel*}" ];then
+            os_ver="Kylin_V10Tercel"
+        fi
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
