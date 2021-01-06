@@ -1,0 +1,17 @@
+- hosts: '{{ hosts_name }}'
+  become: yes
+  become_user: root
+  tasks:
+    - name: find protobuf
+      find:
+        paths: /usr/local/lib
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: "libprotobuf.so.*"
+      register: libprotobuf
+
+
+    - name: install protobuf 3.11.3
+      import_tasks: task_protobuf.yml
+      when: libprotobuf.matched == 0

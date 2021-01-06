@@ -32,3 +32,6 @@
 
 - name: install tensorflow
   import_playbook: ../playbooks/install/install_tensorflow.yml
+
+- name: install protobuf
+  import_playbook: ../playbooks/install/install_protobuf.yml
