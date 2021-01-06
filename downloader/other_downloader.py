@@ -17,7 +17,7 @@
 
 import os
 import json
-from download_util import DOWNLOAD_INST
+from download_util import DOWNLOAD_INST, calc_sha256
 from logger_config import get_logger
 
 LOG = get_logger(__file__)
@@ -37,9 +37,15 @@ def download_other_packages():
         data = json.load(json_file)
         for item in data:
             dest_file = os.path.join(base_dir, item['dest'], item['filename'])
-            print('download[{0}] -> [{1}]'.format(item['url'], dest_file))
+            if os.path.exists(dest_file) and 'sha256' in item:
+                file_hash = calc_sha256(dest_file)
+                url_hash = item['sha256']
+                if file_hash == url_hash:
+                    print(item['filename'].ljust(60), 'exists')
+                    continue
             LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
             DOWNLOAD_INST.download(item['url'], dest_file)
+            print(item['filename'].ljust(60), 'download success')
 
 
 if __name__ == '__main__':
