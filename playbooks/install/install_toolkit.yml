@@ -24,4 +24,12 @@
       when: toolkit.matched > 0
       failed_when: "toolkit_result.rc != 0 and ('install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout)"
 
-    - debug: var=toolkit_result
+    - name: message
+      debug:
+        msg:
+          - "can not find toolkit package, toolkit install skipped"
+      when: "'skipped' in toolkit_result and toolkit_result.skipped and toolkit.matched == 0"
+
+    - name: message
+      debug: var=toolkit_result
+      when: toolkit_result.changed

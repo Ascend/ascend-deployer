@@ -24,4 +24,12 @@
       when: nnae.matched > 0
       failed_when: "nnae_result.rc != 0 and ('install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout)"
 
-    - debug: var=nnae_result
+    - name: message
+      debug:
+        msg:
+          - "can not find nnae package, nnae install skipped"
+      when: "'skipped' in nnae_result and nnae_result.skipped and nnae.matched == 0"
+
+    - name: message
+      debug: var=nnae_result
+      when: nnae_result.changed
