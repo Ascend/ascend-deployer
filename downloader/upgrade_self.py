@@ -47,7 +47,7 @@ def upgrade_self():
                 continue
 
             remote = BASE_URL + full_path[len(deployer_dir):]
-            cache[full_path] = remote
+            cache[full_path] = remote.replace('\\', '/')
 
     for local, url in cache.items():
         if DOWNLOAD_INST.download_no_retry(url, local):
