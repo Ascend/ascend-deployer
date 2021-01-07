@@ -4,21 +4,21 @@
     state: directory
     recurse: yes
 
-- name: uncompress protobuf
+- name: install protobuf-python-3.11.3 unarchive
   unarchive:
     src: "{{ resources_dir }}/protobuf-python-3.11.3.tar.gz"
     dest: ~/build
     copy: no
 
-- name: configure protobuf
+- name: install protobuf-python-3.11.3 configure
   shell: ./configure --prefix=/usr/local
   args:
     chdir: ~/build/protobuf-3.11.3
 
-- name: make protobuf
+- name: install protobuf-python-3.11.3 make
   shell: make -C ~/build/protobuf-3.11.3 -j 10
   ignore_errors: yes  
 
-- name: make install protobuf
+- name: install protobuf-python-3.11.3 make install
   shell: make -C ~/build/protobuf-3.11.3 install
   become: yes
