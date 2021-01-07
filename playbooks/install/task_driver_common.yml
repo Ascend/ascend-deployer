@@ -51,4 +51,5 @@
 
 - name: service host_sys_init start
   shell: service host_sys_init start
+  failed_when: false
   when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
