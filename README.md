@@ -27,6 +27,8 @@ OS必装软件：tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH 
 
 EulerOS：需要确保源存在和内核版本相同的kenrel-headers和kernel-devel版本。如果源中没有，需要自行准备对应的kernel-headers和kernel-devel软件包。
 
+CentOS：CentOS 8.2使用DVD镜像安装时，需要勾选Additioanl Software for Selected Environment中的Standard，如未勾选，系统安装完成后可能缺少tar等基本命令。
+
 远程安装：EulerOS等操作系统默认禁止root用户远程连接。因此，在这类操作系统中远程安装时需要提前配置sshd_config中PermitRootLogin为yes。安装完成后再配置为no。
 
 系统的内核版本可通过 uname -r 命令查看
@@ -409,6 +411,11 @@ ascend-deployer
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
+
+### 更新离线部署工具
+
+离线部署工具中的upgrade_self.sh和upgrade_self.bat用于更新离线部署工具自身
+
 # 升级注意事项
 
 1.涉及1-2包(driver、firmware)的升级操作，需要手动reboot重启服务器，才能生效，即执行test接口验证前需要重启
