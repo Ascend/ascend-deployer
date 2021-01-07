@@ -33,7 +33,7 @@
 - name: check add_ons directory contains libprotobuf.so
   shell: find /usr/local/Ascend/add-ons/ -type f | grep libprotobuf.so | wc -l
   register: add_ons_dir_protobuf
-  when: add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
+  when: tf.matched > 0 and add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
 
 - name: test npu_bridge without add_ons
   shell: python3.7 -c "import npu_bridge.estimator; import npu_bridge.hccl; from tensorflow.core.protobuf import rewriter_config_pb2"
