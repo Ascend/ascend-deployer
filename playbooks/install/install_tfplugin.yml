@@ -24,4 +24,12 @@
       when: tfplugin.matched > 0
       failed_when: "tfplugin_result.rc !=0 and ('install success' not in tfplugin_result.stdout and 'already installed' not in tfplugin_result.stdout)"
 
-    - debug: var=tfplugin_result
+    - name: message
+      debug:
+        msg:
+          - "can not find tfplugin package, tfplugin install skipped"
+      when: "'skipped' in tfplugin_result and tfplugin_result.skipped and tfplugin.matched == 0"
+
+    - name: message
+      debug: var=tfplugin_result
+      when: tfplugin_result.changed
