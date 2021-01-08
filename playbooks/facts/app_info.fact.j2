@@ -1,0 +1,147 @@
+#!{{ ansible_python.executable }}
+#!/usr/bin/env python
+import json
+import os
+import platform
+import sys
+
+
+def get_info_from_config(pkg_name, config_file='/etc/ascend_install.info'):
+    if not os.path.exists(config_file):
+        return None
+    if pkg_name not in ['driver', 'firmware']:
+        return None
+    info_dict = {"name": pkg_name, "install_arch": platform.machine()}
+    install_path_pattern = pkg_name + "_install_path"
+    install_path = ''
+    with open(config_file) as config_f:
+        for line in config_f:
+            if install_path_pattern in line.lower():
+                install_path = line.strip().split('=')[-1]
+                break
+    if not install_path or len(install_path) == 0:
+        return None
+    info_dict['install_path'] = install_path
+
+    pkg_version = ''
+    version_file = os.path.join(install_path, pkg_name, 'version.info')
+    with open(version_file) as version_f:
+        for line in version_f:
+            if 'Version' in line.strip():
+                pkg_version = line.strip().split('=')[-1]
+
+                break
+    info_dict['version'] = pkg_version
+    return info_dict
+
+
+def get_info_dict_list(pkg_name, target_paths, target_file):
+    info_dict_list = []
+    for target_path in target_paths:
+        install_config_file = os.path.join(target_path, target_file)
+        info_dict = {"name": pkg_name}
+        install_arch = platform.machine()
+        pkg_version = ''
+        install_path = target_path
+        with open(install_config_file) as config_f:
+            for line in config_f:
+                if 'version' in line.lower():
+                    pkg_version = line.strip().split('=')[-1]
+                if 'arch' in line.lower():
+                    install_arch = line.strip().split('=')[-1]
+                if 'path' in line.lower():
+                    install_path = line.strip().split('=')[-1]
+
+        info_dict['install_path'] = install_path
+        info_dict['install_arch'] = install_arch
+        info_dict['version'] = pkg_version
+        info_dict_list.append(info_dict)
+
+    return info_dict_list
+
+
+def get_cann_info_from_config(pkg_name, root_path='/usr/local/Ascend'):
+    if not os.path.exists(root_path):
+        return None
+    if pkg_name not in ['nnrt', 'toolkit', 'nnae', 'tfplugin', 'toolbox']:
+        return None
+    first_path = os.path.join(root_path, pkg_name)
+    if pkg_name == 'toolkit':
+        first_path = os.path.join(root_path, 'ascend-toolkit')
+    target_file = "ascend_" + pkg_name + "_install.info"
+    target_paths = set()
+    for top, dirs, nodirs in os.walk(first_path):
+        for file_name in nodirs:
+            if file_name == target_file:
+                target_paths.add(top)
+                break
+    return get_info_dict_list(pkg_name, target_paths, target_file)
+
+
+def get_firmware_install_info():
+    return get_info_from_config("firmware")
+
+
+def get_driver_install_info():
+    return get_info_from_config("driver")
+
+
+def get_nnrt_install_info():
+    return get_cann_info_from_config('nnrt')
+
+
+def get_nnae_install_info():
+    return get_cann_info_from_config('nnae')
+
+
+def get_tfplugin_install_info():
+    return get_cann_info_from_config('tfplugin')
+
+
+def get_toolbox_install_info():
+    return get_cann_info_from_config('toolbox')
+
+
+def get_toolkit_install_info():
+    return get_cann_info_from_config('toolkit')
+
+
+def get_app_install_info(app_name='all'):
+    app_install_info = []
+    firmware = get_firmware_install_info()
+    if app_name in ['all', 'npu', 'firmware'] and firmware:
+        app_install_info.append(firmware)
+    driver = get_driver_install_info()
+    if app_name in ['all', 'npu', 'driver'] and driver:
+        app_install_info.append(driver)
+    nnrt = get_nnrt_install_info()
+    if app_name in ['all', 'nnrt'] and nnrt:
+        app_install_info.extend(nnrt)
+    nnae = get_nnae_install_info()
+    if app_name in ['all', 'nnae'] and nnae:
+        app_install_info.extend(nnae)
+    tfplugin = get_tfplugin_install_info()
+    if app_name in ['all', 'tfplugin'] and tfplugin:
+        app_install_info.extend(tfplugin)
+    toolbox = get_toolbox_install_info()
+    if app_name in ['all', 'toolbox'] and toolbox:
+        app_install_info.extend(toolbox)
+    toolkit = get_toolkit_install_info()
+    if app_name in ['all', 'toolkit'] and toolkit:
+        app_install_info.extend(toolkit)
+    return app_install_info
+
+
+def main():
+    ret = {
+        "progress": "1.0",
+        "operation": "app display",
+        "result": []
+    }
+
+    result = get_app_install_info("{{ app_name }}")
+    ret['result'] = result
+    json.dump(ret, sys.stdout, indent=4)
+
+
+main()
