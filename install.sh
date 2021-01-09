@@ -4,6 +4,7 @@ readonly TRUE=1
 readonly FALSE=0
 readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
+readonly PYTHON_PREFIX=/usr/local/python3.7.5
 
 function get_os_name()
 {
@@ -157,6 +158,8 @@ function install_python375()
     cd -
     python3.7 -m ensurepip
     python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/pylibs
+    # install wheel, if not pip will use legacy setup.py install for installation
+    python3.7 -m pip install wheel --no-index --find-links ./resources/pylibs
     if [ "${g_os_name}" == "EulerOS" ];then
         python3.7 -m pip install selinux --no-index --find-links ./resources/pylibs
     fi
@@ -166,7 +169,17 @@ function install_python375()
 
 function install_ansible()
 {
+    local ansible_path=${PYTHON_PREFIX}/lib/python3.7/site-packages/ansible
     python3.7 -m pip install ansible --no-index --find-links ./resources/pylibs
+    # patch the INTERPRETER_PYTHON_DISTRO_MAP, make it support EulerOS
+    if [ -f ${ansible_path}/config/base.yml ];then
+        eulercnt=$(grep euleros ${ansible_path}/config/base.yml | wc -l)
+        if [ ${eulercnt} == 0 ];then
+            # euler os use python3 as default python interpreter
+            sed -i "1526 i\    euleros:"                ${ansible_path}/config/base.yml
+            sed -i "1527 i\      '2': /usr/bin/python3" ${ansible_path}/config/base.yml
+        fi
+    fi
 }
 
 function process_install()
