@@ -1,24 +1,24 @@
 - name: create build directory
   file:
-    path: ~/build
+    path: "{{ build_dir }}"
     state: directory
     recurse: yes
 
 - name: install protobuf-python-3.11.3 unarchive
   unarchive:
     src: "{{ resources_dir }}/protobuf-python-3.11.3.tar.gz"
-    dest: ~/build
+    dest: "{{ build_dir }}"
     copy: no
 
 - name: install protobuf-python-3.11.3 configure
   shell: ./configure --prefix=/usr/local
   args:
-    chdir: ~/build/protobuf-3.11.3
+    chdir: "{{ build_dir }}/protobuf-3.11.3"
 
 - name: install protobuf-python-3.11.3 make
-  shell: make -C ~/build/protobuf-3.11.3 -j 10
-  ignore_errors: yes  
+  shell: "make -C {{ build_dir }}/protobuf-3.11.3 -j 10"
+  ignore_errors: yes
 
 - name: install protobuf-python-3.11.3 make install
-  shell: make -C ~/build/protobuf-3.11.3 install
+  shell: "make -C {{ build_dir }}/protobuf-3.11.3 install"
   become: yes

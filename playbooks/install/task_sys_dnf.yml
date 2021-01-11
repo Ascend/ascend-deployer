@@ -4,8 +4,10 @@
 # currently dnf also use rpm to install
 - name: dnf install system packages
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/*.rpm
+  become: yes
   when: "'Kylin' not in ansible_distribution"
 
 - name: dnf install system packages in kylin os v10sp1
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/Kylin_{{ os_version }}_{{ ansible_architecture }}/*.rpm
+  become: yes
   when: "'Kylin' in ansible_distribution"

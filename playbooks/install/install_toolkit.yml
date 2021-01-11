@@ -9,14 +9,9 @@
         patterns: ".*toolkit.*{{ ansible_architecture }}.run"
       register: toolkit
 
-    - name: add run permission for toolkit
-      file:
-        path: "{{ toolkit.files[0].path }}"
-        mode: a+x
-      when: toolkit.matched > 0
-
     - name: install toolkit
-      shell: "{{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      become: yes
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}

@@ -9,14 +9,9 @@
         patterns: ".*nnae.*{{ ansible_architecture }}.run"
       register: nnae
 
-    - name: add run permission for nnae
-      file:
-        path: "{{ nnae.files[0].path }}"
-        mode: a+x
-      when: nnae.matched > 0
-
     - name: install nnae
-      shell: "{{ nnae.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ nnae.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ansible_env.PATH}}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib

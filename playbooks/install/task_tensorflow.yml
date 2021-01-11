@@ -1,6 +1,7 @@
 - name: link hdf5 for ubuntu
   shell: ln -sf /usr/lib/`uname -m`-linux-gnu/libhdf5_serial.so /usr/lib/`uname -m`-linux-gnu/libhdf5.so
   when: ansible_pkg_mgr == 'apt'
+  become: yes
 
 - name: centos stat /usr/lib64/libhdf5.so
   stat:
@@ -13,6 +14,7 @@
   when:
     - ansible_pkg_mgr == 'yum' or ansible_pkg_mgr == 'dnf'
     - not centos_libhdf5.stat.exists
+  become: yes
 
 - name: install tensorflow
   shell: python3.7 -m pip install tensorflow --no-index --find-links {{ resources_dir }}/pylibs
@@ -20,6 +22,7 @@
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
   when: ansible_architecture == 'aarch64'
+  become: yes
 
 - name: install tensorflow_cpu
   shell: python3.7 -m pip install tensorflow_cpu --no-index --find-links {{ resources_dir }}/pylibs
@@ -27,3 +30,4 @@
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
   when: ansible_architecture == 'x86_64'
+  become: yes

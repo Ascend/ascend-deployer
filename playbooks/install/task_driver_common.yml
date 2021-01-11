@@ -25,31 +25,22 @@
     var: driver_pkg_linux
     verbosity: 1
 
-- name: add run permission for specific linux driver package
-  file:
-    path: "{{driver_pkg.files[0].path}}"
-    mode: a+x
-  when: driver_pkg.matched > 0
-
-- name: add run permission for common linux driver package
-  file:
-    path: "{{driver_pkg_linux.files[0].path}}"
-    mode: a+x
-  when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
-
 - name: install driver for specific linux
-  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
   when: driver_pkg.matched > 0
+  become: yes
 
 - name: install driver for common linux
-  shell: "{{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
   when: driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
+  become: yes
 
 - name: service host_sys_init start
   shell: service host_sys_init start
   failed_when: false
   when: driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
+  become: yes

@@ -4,7 +4,13 @@ readonly TRUE=1
 readonly FALSE=0
 readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
-readonly PYTHON_PREFIX=/usr/local/python3.7.5
+readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
+readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
+if [ ${UID} == 0 ];then
+    readonly PYTHON_PREFIX=/usr/local/python3.7.5
+else
+    readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
+fi
 
 function get_os_name()
 {
@@ -34,7 +40,7 @@ function have_no_python_module
 
 function check_python375()
 {
-    if [ ! -d /usr/local/python3.7.5 ];then
+    if [ ! -d ${PYTHON_PREFIX} ];then
         echo "Warning: no python3.7.5 installed"
         return ${FALSE}
     fi
@@ -70,10 +76,10 @@ function install_kernel_header_devel_euler()
     local kh_rpm=$(find ./resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
     local kd_rpm=$(find ./resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
-        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
-        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
     fi
 }
 
@@ -88,10 +94,10 @@ function install_kernel_header_devel()
     local kh=$(rpm -q kernel-headers | grep ${kernel_version} | wc -l)
     local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
-        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
-        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
     fi
 }
 
@@ -134,11 +140,11 @@ function install_sys_packages()
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_${arch}/*.deb
+        sudo export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_${arch}/*.deb
     fi
 }
 
@@ -152,25 +158,30 @@ function install_python375()
     mkdir -p ~/build
     tar -xvf ./resources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
-    ./configure --enable-shared --prefix=/usr/local/python3.7.5
+    ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j4
     make install
     cd -
     python3.7 -m ensurepip
-    python3.7 -m pip install --upgrade pip --no-index --find-links ./resources/pylibs
+    python3.7 -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
     # install wheel, if not pip will use legacy setup.py install for installation
-    python3.7 -m pip install wheel --no-index --find-links ./resources/pylibs
+    python3.7 -m pip install wheel --no-index --find-links ${PYLIB_PATH}
     if [ "${g_os_name}" == "EulerOS" ];then
-        python3.7 -m pip install selinux --no-index --find-links ./resources/pylibs
+        python3.7 -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
-    echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
-    echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
+    if [ ${UID} == 0 ];then
+        echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
+        echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
+    else
+        echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > ${HOME}/.local/ascendrc 2>/dev/null
+        echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> ${HOME}/.local/ascendrc 2>/dev/null
+    fi
 }
 
 function install_ansible()
 {
     local ansible_path=${PYTHON_PREFIX}/lib/python3.7/site-packages/ansible
-    python3.7 -m pip install ansible --no-index --find-links ./resources/pylibs
+    python3.7 -m pip install ansible --no-index --find-links ${PYLIB_PATH}
     # patch the INTERPRETER_PYTHON_DISTRO_MAP, make it support EulerOS
     if [ -f ${ansible_path}/config/base.yml ];then
         eulercnt=$(grep euleros ${ansible_path}/config/base.yml | wc -l)
@@ -424,7 +435,7 @@ function ping_all()
 
 function process_check()
 {
-    ansible -i ./inventory_file all -m shell -a "rm -f /etc/ansible/facts.d/npu_info.fact"
+    ansible -i ./inventory_file all -m shell -b -a "rm -f /etc/ansible/facts.d/npu_info.fact"
     echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
     ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
@@ -458,8 +469,13 @@ main()
     if [ -d ./facts_cache ];then
         rm -rf ./facts_cache
     fi
-    export PATH=/usr/local/python3.7.5/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+    if [ ${UID} == 0 ];then
+        export PATH=/usr/local/python3.7.5/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+    else
+        export PATH=${HOME}/.local/python3.7.5/bin:$PATH
+        export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
+    fi
     unset DISPLAY
     bootstrap
 

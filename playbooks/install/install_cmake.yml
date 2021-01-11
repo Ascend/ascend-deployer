@@ -1,6 +1,4 @@
 - hosts: '{{ hosts_name }}'
-  become: yes
-  become_user: root
   tasks:
     - name: install cmake3.5.2
       import_tasks: task_cmake.yml

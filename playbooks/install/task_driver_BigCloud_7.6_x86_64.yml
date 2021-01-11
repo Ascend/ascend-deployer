@@ -12,14 +12,9 @@
     var: driver_pkg
     verbosity: 1
 
-- name: add run permission for BigCloud Linux driver
-  file:
-    path: "{{driver_pkg.files[0].path}}"
-    mode: a+x
-  when: driver_pkg.matched > 0
-
 - name: install driver for BigCloud Linux
-  shell: "{{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  become: yes
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
   when: driver_pkg.matched > 0

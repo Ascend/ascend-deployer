@@ -37,6 +37,7 @@
   shell: "{{ firmware_pkg.files[0].path }} --full --quiet"
   register: firmware_result
   when: firmware_pkg.matched > 0
+  become: yes
 
 - debug:
     var: firmware_result

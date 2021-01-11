@@ -9,14 +9,9 @@
         patterns: ".*nnrt.*{{ ansible_architecture }}.run"
       register: nnrt
 
-    - name: add run permission for nnrt
-      file:
-        path: "{{ nnrt.files[0].path }}"
-        mode: a+x
-      when: nnrt.matched > 0
-
     - name: install nnrt
-      shell: "{{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      become: yes
       register: nnrt_result
       when: nnrt.matched > 0
       failed_when: "nnrt_result.rc != 0 and ('install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout)"
