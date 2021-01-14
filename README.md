@@ -8,10 +8,10 @@
 |-------|-----|---------|----------------|
 |CentOS |7.6  |aarch64  |镜像默认Minimal模式         |
 |CentOS |7.6  |x86_64   |镜像默认Minimal模式         |
-|CentOS |8.2  |aarch64  |镜像默认Minimal模式         |
-|CentOS |8.2  |x86_64   |镜像默认Minimal模式         |
-|ubuntu |18.04|aarch64  |SmartKit默认Standard模式、镜像默认Server模式|
-|ubuntu |18.04|x86_64   |SmartKit默认Standard模式、镜像默认Server模式|
+|CentOS |8.2  |aarch64  |镜像默认Minimal模式, 软件选择standard或更多 |
+|CentOS |8.2  |x86_64   |镜像默认Minimal模式, 软件选择standard或更多 |
+|Ubuntu |18.04|aarch64  |SmartKit默认Standard模式、镜像默认Server模式，软件选择建议勾选OpenSSH Server|
+|Ubuntu |18.04|x86_64   |SmartKit默认Standard模式、镜像默认Server模式，软件选择建议勾选OpenSSH Server|
 |BigCloud|7.6 |aarch64  |镜像默认Minimal模式         |
 |BigCloud|7.6 |x86_64   |镜像默认Minimal模式         |
 |SLES   |12.4 |x86_64   |镜像默认Minimal模式         |
