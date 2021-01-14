@@ -175,12 +175,14 @@ function install_ansible()
     if [ -f ${ansible_path}/config/base.yml ];then
         eulercnt=$(grep euleros ${ansible_path}/config/base.yml | wc -l)
         if [ ${eulercnt} == 0 ];then
+            # euler os 2 is recoginized as centos 2
+            sed -i "1515 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
             # euler os use python3 as default python interpreter
-            sed -i "1526 i\    euleros:"                    ${ansible_path}/config/base.yml
-            sed -i "1527 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1527 i\    euleros:"                    ${ansible_path}/config/base.yml
+            sed -i "1528 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
             # kylin should use python3. if selinux enalbed, the default python have no selinux
-            sed -i "1528 i\    kylin:"                      ${ansible_path}/config/base.yml
-            sed -i "1529 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            sed -i "1529 i\    kylin:"                      ${ansible_path}/config/base.yml
+            sed -i "1530 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
         fi
     fi
 }
@@ -325,8 +327,8 @@ function print_usage()
     echo " Options:"
     echo "--help  -h                     Print this message"
     echo "--check                        check environment"
-    echo "--clean                        clean resources"
-    echo "--nocopy                       do not copy resources"
+    echo "--clean                        clean resources on remote servers"
+    echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--debug                        enable debug"
     echo "--install=<package_name>       Install specific package:"
     for target in `find playbooks/install/install_*.yml`
@@ -341,20 +343,6 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--uninstall=<package_name>     Install specific package:"
-    for target in `find playbooks/uninstall/uninstall_*.yml`
-    do
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will uninstall driver and firmware together"
-    echo "--upgrade=<package_name>       Install specific package:"
-    for target in `find playbooks/upgrade/upgrade_*.yml`
-    do
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find test/test_*.yml`
     do
@@ -384,14 +372,6 @@ function parse_script_args() {
             ;;
         --install-scene=*)
             install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            shift
-            ;;
-        --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            shift
-            ;;
-        --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
         --test=*)
