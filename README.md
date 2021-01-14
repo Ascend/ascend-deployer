@@ -1,6 +1,6 @@
 # 离线安装工具说明
 
-离线安装工具提供系统依赖、python依赖自动下载工具的和一键式安装所有依赖的脚本
+离线安装工具提供系统依赖、python依赖自动下载工具和一键式安装所有依赖的脚本
 
 目前离线安装工具支持如下操作系统
 
@@ -23,15 +23,17 @@ OS必装软件：tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH 
 
 环境限制：OS安装后没有额外安装或卸载过软件，是镜像安装成功后的默认环境；若卸载安装某些系统软件，导致与安装默认系统包不一致，离线安装部署不支持该场景，需要手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件
 
-依赖限制：离线部署工具只能安装最基本的库，保证torch和tensorflow能够运行起来。如果需要运行比较复杂的推理或在训练模型，模型代码中可能包含具体业务相关的库，这些库需要自行安装。
+依赖限制：离线部署工具只能安装最基本的库，保证torch和tensorflow能够运行起来。如果需要运行比较复杂的推理或者训练模型，模型代码中可能包含具体业务相关的库，这些库需要自行安装。
 
 EulerOS：需要确保源存在和内核版本相同的kenrel-headers和kernel-devel版本。如果源中没有，需要自行准备对应的kernel-headers和kernel-devel软件包。
 
-CentOS：CentOS 8.2使用DVD镜像安装时，需要勾选Additioanl Software for Selected Environment中的Standard，如未勾选，系统安装完成后可能缺少tar等基本命令。
+CentOS：CentOS 8.2安装时，需要勾选Additioanl Software for Selected Environment中的Standard等选项，如未勾选，系统安装完成后可能缺少tar等基本命令。
 
 远程安装：EulerOS等操作系统默认禁止root用户远程连接。因此，在这类操作系统中远程安装时需要提前配置sshd_config中PermitRootLogin为yes。安装完成后再配置为no。
 
 系统的内核版本可通过 uname -r 命令查看
+
+toolkit: 安装toolkit时可能需要配置sudoer用户。详细配置步骤请参考昇腾社区中异构计算框架CANN相关文档《软件安装指南（开发&运行场景，通过命令行方式）》配置安装用户权限章节
 
 
 # 离线安装工具操作指导
@@ -77,8 +79,8 @@ Usage: ./install.sh [options]
  Options:
 --help  -h                     Print this message
 --check                        check environment
---clean                        clean resources
---nocopy                       do not copy resources
+--clean                        clean resources on remote servers
+--nocopy                       do not copy resources to remote servers when install for remote
 --debug                        enable debug
 --install=<package_name>       Install specific package:
                                cmake
@@ -103,27 +105,6 @@ The "npu" will install driver and firmware together
                                train_dev
                                train_run
                                vmhost
---uninstall=<package_name>     Install specific package:
-                               auto
-                               driver
-                               firmware
-                               nnae
-                               nnrt
-                               npu
-                               tfplugin
-                               toolbox
-                               toolkit
-The "npu" will uninstall driver and firmware together
---upgrade=<package_name>       Install specific package:
-                               auto
-                               driver
-                               firmware
-                               nnae
-                               nnrt
-                               npu
-                               tfplugin
-                               toolbox
-                               toolkit
 The "npu" will upgrade driver and firmware together
 --test=<target>                test the functions:
                                all
@@ -149,7 +130,7 @@ _注意:_ 如果安装或者升级了driver或firmware，请在安装完成后�
 _注意:_ 执行指定组件安装时请确保安装顺序正确。例如nnrt或nnae需要在driver和firmware安装之后，
 firmware必须在driver已经安装后才能安装，等等。
 
-_注意:_ 部分组件存在运行时依赖，例如torch需要toolkit提供相应的运行时。tensorflow + npubridge需要tfplguin提供运行时
+_注意:_ 部分组件存在运行时依赖，例如torch需要toolkit提供相应的运行时依赖。tensorflow + npubridge需要tfplguin提供运行时依赖。
 
 
 - **步骤 6**
@@ -165,7 +146,7 @@ _注意:_ 部分组件存在运行时依赖，例如torch需要toolkit提供相�
 
 ## 批量安装
 
-在单机安装执行安装之前配置inventory_file文件指定待安装设备。下载和上传之服务器的过程与单机相同。
+在单机安装执行安装之前配置inventory_file文件指定待安装设备。下载和上传到服务器的过程与单机相同。
 
 - **步骤 1**
 
@@ -265,10 +246,12 @@ windows版本下载路径[python3.7.5](https://www.python.org/ftp/python/3.7.5/p
 |-- downloader
 |-- playbooks
 |-- start_download.bat
+|-- start_download_ui.bat
 |-- start_download.sh
 |-- install.sh
 |-- resources
 |-- ansble.cfg
+|-- ...
 ```
 在windows下运行start_download.bat启动下载，在linux下运行start_download.sh启动下载
 
@@ -335,7 +318,7 @@ baseurl=http://mirrors.huaweicloud.com/epel/8/Everything/aarch64
 
 以Ubuntu 18.04 aarch64为例，源配置文件为：
 ```buildoutcfg
-config/Ubuntu_18.04_aarch64/source.list
+downloader/config/Ubuntu_18.04_aarch64/source.list
 ```
 内容如下：
 ```buildoutcfg
@@ -343,7 +326,7 @@ deb http://mirrors.huaweicoud.com/ubuntu-ports/ bionic main multiverse restricte
 deb http://mirrors.huaweicloud.com/ubuntu-ports/ bionic-updates main multiverse restricted universe
 deb http://mirrors.huaweicloud.com/ubuntu-ports/ bionic-security main multiverse restricted universe
 ```
-配置文件格式和ubuntu的/etc/apt.d/source.list基本相同。默认使用华为源，可根据实际情况修改。
+配置文件格式和ubuntu的/etc/apt/source.list基本相同。默认使用华为源，可根据实际情况修改。
 
 _注意_: 修改源时通常只建议修改url。 增加或删除源可能找出依赖下载失败或依赖版本不匹配。
 
@@ -361,7 +344,9 @@ resources/
 `-- x86_64
 ```
 
-2.代理配置  
+2.代理配置
+
+在文件downloader/config.ini文件中配置代理
 ```editorconfig
 [proxy]
 enable=true         # 是否开启代理配置参数
@@ -374,6 +359,8 @@ userpassword=none   # 代理密码
 ```
 
 3.下载行为配置
+
+在文件downloader/config.ini文件中配置下载项
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, SLES_12.4_x86_64  # 待安装部署的环境OS信息
@@ -406,7 +393,7 @@ ascend-deployer
 1.python3.7.5
 
 如果待安装环境未安装python3.7.5，安装过程中会自动安装，为了不影响系统自带python(python2.x or python3.x)，
-要使用python3.7.5之前，需要配置以下环境变量:  
+要使用python3.7.5之前，需要配置以下环境变量:
 ```bash
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
@@ -426,6 +413,6 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 
 2. 由于需要安装大量开源软件，本工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自己根据情况修复，强烈建议使用官方源定期更新
 
-3. inventory文件中会配置远程机器的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除
-   
+3. inventory_file文件中会配置远程机器的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除
+
    参考文档[http://www.ansible.com.cn/docs/playbooks_vault.html](http://www.ansible.com.cn/docs/playbooks_vault.html)
