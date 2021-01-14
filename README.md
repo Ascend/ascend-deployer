@@ -105,7 +105,6 @@ The "npu" will install driver and firmware together
                                train_dev
                                train_run
                                vmhost
-The "npu" will upgrade driver and firmware together
 --test=<target>                test the functions:
                                all
                                driver
