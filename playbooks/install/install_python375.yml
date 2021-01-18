@@ -2,27 +2,31 @@
   tasks:
     - name: create build directory
       file:
-        path: ~/build
+        path: "{{ build_dir }}"
         state: directory
         recurse: yes
 
     - name: install python3.7.5 unarchive
       unarchive:
         src: "{{ resources_dir }}/Python-3.7.5.tar.xz"
-        dest: ~/build
+        dest: "{{ build_dir }}"
         copy: no
 
     - name: install python3.7.5 config
-      shell: cd ~/build/Python-3.7.5; ./configure --enable-shared --prefix=/usr/local/python3.7.5
+      shell: ./configure --enable-shared --prefix=/usr/local/python3.7.5
+      args:
+        chdir: "{{ build_dir }}/Python-3.7.5"
 
     - name: install python3.7.5 make
-      shell: make -C ~/build/Python-3.7.5 -j4
+      shell: "make -C {{ build_dir }}/Python-3.7.5 -j4"
 
     - name: install python3.7.5 make install
-      shell: make -C ~/build/Python-3.7.5 install
+      shell: "make -C {{ build_dir }}/Python-3.7.5 install"
+      become: yes
 
     - name: install python ensurepip
       shell: python3.7 -m ensurepip
+      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
@@ -30,6 +34,7 @@
 
     - name: install python upgrade pip
       shell: python3.7 -m pip install --upgrade pip --no-index --find-links {{ resources_dir }}/pylibs
+      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
@@ -37,6 +42,7 @@
 
     - name: install python libs
       shell: python3.7 -m pip install {{ item }} --no-index --find-links {{ resources_dir }}/pylibs
+      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
@@ -57,6 +63,7 @@
 
     - name: install python selinux
       shell: python3.7 -m pip install selinux --no-index --find-links {{ resources_dir }}/pylibs
+      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
@@ -65,8 +72,10 @@
 
     - name: set python environment PATH
       shell: echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
+      become: yes
       failed_when: false
 
     - name: set python environment LD_LIBRARY_PATH
       shell: echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
+      become: yes
       failed_when: false

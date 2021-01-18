@@ -9,14 +9,9 @@
         patterns: ".*toolbox.*{{ ansible_architecture }}.run"
       register: toolbox
 
-    - name: add run permission for toolbox
-      file:
-        path: "{{ toolbox.files[0].path }}"
-        mode: a+x
-      when: toolbox.matched > 0
-
     - name: install toolbox
-      shell: "{{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      become: yes
       register: toolbox_result
       when: toolbox.matched > 0
 

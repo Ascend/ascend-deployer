@@ -50,6 +50,11 @@
         cacheable: yes
       when: ansible_connection != "local"
 
+    - name: set build_dir
+      set_fact:
+        build_dir: "{{ ansible_user_dir }}/build"
+        cacheable: yes
+
     - name: check if need prepare
       local_action: stat path=prepare_{{os_and_arch}}.yml
       register: optional_file
@@ -64,6 +69,7 @@
         state: directory
         mode: 0750
         recurse: yes
+      become: yes
 
     - name: copy npu_info.fact to host
       template:
@@ -72,6 +78,8 @@
         owner: "root"
         group: "root"
         mode: "0500"
+      become: yes
 
     - name: gather facts again
       setup:
+      become: yes
