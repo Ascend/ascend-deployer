@@ -4,18 +4,22 @@
       debug: var=uninstall_version
 
     - name: find uninstall.sh in toolkit without version params
-      shell: find /usr/local/Ascend/ascend-toolkit/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+      shell: find /usr/local/Ascend/ascend-toolkit/latest/ -type f | grep -E "/*-linux/script/uninstall.sh" | head -n 1
       become: yes
       register: uninstall_toolkit
       when: uninstall_version is not defined
 
     - name: uninstall toolkit
       shell: "{{ uninstall_toolkit.stdout }}"
+      register: result
       become: yes
       when:
         - uninstall_version is not defined
         - uninstall_toolkit.rc == 0
         - uninstall_toolkit.stdout != ''
+
+    - name: show uninstall result without uninstall_version
+      debug: var=result
 
     - name: show info
       debug: var={{ item }}
@@ -25,7 +29,7 @@
     - name: uninstall toolkit with version params
       shell: "{{ item.install_path }}/script/uninstall.sh"
       become: yes
-      register: uninstall_version
+      register: uninstall_result
       when:
         - uninstall_version is defined
         - item.install_path and item.name and item.version
@@ -34,5 +38,5 @@
       with_items:
         - "{{ ansible_local.app_info.result }}"
 
-    - name: show result
-      debug: var=uninstall_version
+    - name: show uninstall result with uninstall_version
+      debug: var=uninstall_result
