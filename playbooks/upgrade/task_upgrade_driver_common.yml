@@ -53,7 +53,7 @@
     mode: a+x
   when:
     - driver_pkg.matched > 0
-    - target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version
+    - target_driver_version is defined and cur_driver_version.stdout != target_driver_version
 
 - name: add run permission for common linux driver package
   file:
@@ -61,7 +61,7 @@
     mode: a+x
   when: 
     - driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
-    - target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux
+    - target_driver_version_linux is defined and cur_driver_version.stdout != target_driver_version_linux
 
 - name: upgrade driver for specific linux
   shell: "{{driver_pkg.files[0].path}} --upgrade --quiet"
@@ -69,7 +69,7 @@
   failed_when: "'upgrade success' not in driver_result.stdout"
   when: 
     - driver_pkg.matched > 0
-    - target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version
+    - target_driver_version is defined and cur_driver_version.stdout != target_driver_version
 
 - name: upgrade driver for common linux
   shell: "{{driver_pkg_linux.files[0].path}} --upgrade --quiet"
@@ -77,13 +77,13 @@
   failed_when: "'upgrade success' not in driver_result.stdout"
   when: 
     - driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
-    - target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux
+    - target_driver_version_linux is defined and cur_driver_version.stdout != target_driver_version_linux
 
 - debug: var=driver_result
 
 - name: service host_sys_init start
   shell: service host_sys_init start
-  when: 
+  when:
     - driver_pkg.matched > 0 or driver_pkg_linux.matched > 0
-    - (target_driver_version is not skipped and cur_driver_version.stdout != target_driver_version) or
-      (target_driver_version_linux is not skipped and cur_driver_version.stdout != target_driver_version_linux)
+    - (target_driver_version is defined and cur_driver_version.stdout != target_driver_version) or
+      (target_driver_version_linux is defined and cur_driver_version.stdout != target_driver_version_linux)

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 readonly TRUE=1
 readonly FALSE=0
 readonly kernel_version=$(uname -r)
@@ -11,6 +10,16 @@ if [ ${UID} == 0 ];then
 else
     readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
 fi
+readonly app_name_list=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit)
+
+function ansible_playbook()
+{
+    if [ -z "$output_file" ]; then
+        ansible-playbook $*
+    else
+        ansible-playbook $* > "$output_file"
+    fi
+}
 
 function get_os_name()
 {
@@ -73,8 +82,8 @@ function install_kernel_header_devel_euler()
 
     local kh=$(rpm -qa kernel-headers | wc -l)
     local kd=$(rpm -qa kernel-devel | wc -l)
-    local kh_rpm=$(find ./resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
-    local kd_rpm=$(find ./resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
+    local kh_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
+    local kd_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
         sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
     fi
@@ -89,8 +98,8 @@ function install_kernel_header_devel()
     if [ ${have_rpm} -eq 0 ]; then
         return
     fi
-    local kh_rpm=./resources/kernel/kernel-headers-${kernel_version}.rpm
-    local kd_rpm=./resources/kernel/kernel-devel-${kernel_version}.rpm
+    local kh_rpm=${BASE_DIR}/resources/kernel/kernel-headers-${kernel_version}.rpm
+    local kd_rpm=${BASE_DIR}/resources/kernel/kernel-devel-${kernel_version}.rpm
     local kh=$(rpm -q kernel-headers | grep ${kernel_version} | wc -l)
     local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
@@ -140,23 +149,23 @@ function install_sys_packages()
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        sudo rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        sudo rpm -ivh --force --nodeps --replacepkgs ./resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        sudo export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ./resources/${os_ver}_${arch}/*.deb
+        sudo export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ${BASE_DIR}/resources/${os_ver}_${arch}/*.deb
     fi
 }
 
 function install_python375()
 {
-    if [ ! -f ./resources/Python-3.7.5.tar.xz ];then
+    if [ ! -f ${BASE_DIR}/resources/Python-3.7.5.tar.xz ];then
         echo "can't find Python-3.7.5.tar.xz"
         return
     fi
     echo "installing Python 3.7.5"
     mkdir -p ~/build
-    tar -xvf ./resources/Python-3.7.5.tar.xz -C ~/build
+    tar -xvf ${BASE_DIR}/resources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j4
@@ -198,13 +207,35 @@ function install_ansible()
     fi
 }
 
+function process_display()
+{
+    IFS=' '
+    unsupported=${TRUE}
+    for target in ${app_name_list[*]}
+    do
+        if [ "${target}" == "${display_target}" ];then
+            unsupported=${FALSE}
+            break
+        fi
+    done
+    if [ ${unsupported} == ${TRUE} ];then
+        echo "Error: not support display for ${display_target}"
+        exit 1
+    fi
+    unset IFS
+    ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -f /etc/ansible/facts.d/app_info.fact"
+    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
+    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
+
+}
+
 function process_install()
 {
     IFS=','
     unsupport=${FALSE}
     for target in ${install_target}
     do
-        if [ ! -f playbooks/install/install_${target}.yml ];then
+        if [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
             echo "Error: not support install for ${target}"
             unsupport=${TRUE}
         fi
@@ -215,8 +246,8 @@ function process_install()
     ping_all
     process_check
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
-        ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
+        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
+        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
     fi
     debug_cmd=""
     if [ "x${debug_flag}" == "xy" ];then
@@ -224,8 +255,8 @@ function process_install()
     fi
     for target in ${install_target}
     do
-        echo "ansible-playbook -i ./inventory_file playbooks/install_${target}.yml -e hosts_name=ascend ${debug_cmd}"
-        ansible-playbook -i ./inventory_file playbooks/install/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/install_${target}.yml -e hosts_name=ascend ${debug_cmd}"
+        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/install/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
     done
     unset IFS
 }
@@ -236,7 +267,7 @@ function process_uninstall()
     not_supported=${FALSE}
     for target in ${uninstall_target}
     do
-        if [ ! -f playbooks/uninstall/uninstall_${target}.yml ]; then
+        if [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
             echo "Error: not supported uninstall for ${target}"
             not_supported=${TRUE}
         fi
@@ -246,14 +277,21 @@ function process_uninstall()
     fi
     ping_all
     process_check
+    display_target="all"
+    process_display
     debug_cmd=""
     if [ "x${debug_flag}" == "xy" ]; then
         debug_cmd="-v"
     fi
     for target in ${uninstall_target}
     do
-        echo "ansible-playbook -i ./inventory_file playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
-        ansible-playbook -i ./inventory_file playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        if [ -z "${uninstall_version}" ];then
+            echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
+            ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        else
+            echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" -e \"uninstall_version=${uninstall_version}\" ${debug_cmd}"
+            ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" -e "uninstall_version=${uninstall_version}" ${debug_cmd}
+        fi
     done
     unset IFS
 }
@@ -264,7 +302,7 @@ function process_upgrade()
     not_supported=${FALSE}
     for target in ${upgrade_target}
     do
-        if [ ! -f playbooks/upgrade/upgrade_${target}.yml ]; then
+        if [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
             echo "Error: not supported upgrade for ${target}"
             not_supported=${TRUE}
         fi
@@ -275,8 +313,8 @@ function process_upgrade()
     ping_all
     process_check
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
-        ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
+        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
+        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
     fi
     debug_cmd=""
     if [ "x${debug_flag}" == "xy" ]; then
@@ -284,8 +322,8 @@ function process_upgrade()
     fi
     for target in ${upgrade_target}
     do
-        echo "ansible-playbook -i ./inventory_file playbooks/upgrade/upgrade_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
-        ansible-playbook -i ./inventory_file playbooks/upgrade/upgrade_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
+        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
     done
     unset IFS
 }
@@ -296,7 +334,7 @@ function process_test()
     unsupport=${FALSE}
     for target in ${test_target}
     do
-        if [ ! -f test/test_${target}.yml ];then
+        if [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
             echo "Error: not support test for ${target}"
             unsupport=${TRUE}
         fi
@@ -310,8 +348,8 @@ function process_test()
     fi
     for target in ${test_target}
     do
-        echo "ansible-playbook -i ./inventory_file test/test_${target}.yml -e hosts_name=ascend ${debug_cmd}"
-        ansible-playbook -i ./inventory_file test/test_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/test/test_${target}.yml -e hosts_name=ascend ${debug_cmd}"
+        ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/test/test_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
     done
     unset IFS
 }
@@ -320,16 +358,16 @@ function process_scene()
 {
     ping_all
     process_check
-    echo "ansible-playbook -i ./inventory_file playbooks/distribution.yml -e hosts_name=ascend"
+    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
     if [ "x${nocopy_flag}" != "xy" ];then
-        ansible-playbook -i ./inventory_file playbooks/distribution.yml -e "hosts_name=ascend"
+        ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
     fi
     debug_cmd=""
     if [ "x${debug_flag}" == "xy" ];then
         debug_cmd="-v"
     fi
-    echo "ansible-playbook -i ./inventory_file scene/scene_${install_scene}.yml -e hosts_name=ascend ${debug_cmd}"
-    ansible-playbook -i ./inventory_file scene/scene_${install_scene}.yml -e "hosts_name=ascend" ${debug_cmd}
+    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/scene/scene_${install_scene}.yml -e hosts_name=ascend ${debug_cmd}"
+    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/scene/scene_${install_scene}.yml -e "hosts_name=ascend" ${debug_cmd}
 }
 
 function print_usage()
@@ -341,25 +379,55 @@ function print_usage()
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--debug                        enable debug"
-    echo "--install=<package_name>       Install specific package:"
-    for target in `find playbooks/install/install_*.yml`
+    echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
+    echo "--install=<package_name>       Install specific package:"    
+    for target in `find ${BASE_DIR}/playbooks/install/install_*.yml`
     do
+        target=$(basename ${target})
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
     echo "The \"npu\" will install driver and firmware together"
     echo "--install-scene=<scene_name>   Install specific scene:"
-    for scene in `find scene/scene_*.yml`
+    for scene in `find ${BASE_DIR}/scene/scene_*.yml`
     do
+        scene=$(basename ${scene})
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--test=<target>                test the functions:"
-    for test in `find test/test_*.yml`
+    echo "--uninstall=<package_name>     Uninstall specific package:"
+    for target in `find ${BASE_DIR}/playbooks/uninstall/uninstall_*.yml`
     do
+        target=$(basename ${target})
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "The \"npu\" will uninstall driver and firmware together"
+    echo "--uninstall-version=<version>  Uninstall specific version package"
+    echo "                               using with --uninstall=<package_name> together"
+    echo "                               support single package_name except auto,npu"
+    echo "--upgrade=<package_name>       Upgrade specific package:"
+    for target in `find ${BASE_DIR}/playbooks/upgrade/upgrade_*.yml`
+    do
+        target=$(basename ${target})
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "The \"npu\" will upgrade driver and firmware together"
+    echo "--test=<target>                test the functions:"
+    for test in `find ${BASE_DIR}/test/test_*.yml`
+    do
+        test=$(basename ${test})
         tmp=${test#*_}
         echo "                               ${tmp%.*}"
     done
+    echo "--display=<target>             display app install info:"
+    for target in ${app_name_list[*]}
+    do
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "The \"npu\" will upgrade driver and firmware together"
     exit 0
 }
 
@@ -377,6 +445,10 @@ function parse_script_args() {
             echo "this is version"
             exit 0
             ;;
+        --display=*)
+            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
         --install=*)
             install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
@@ -385,8 +457,24 @@ function parse_script_args() {
             install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
+        --uninstall=*)
+            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --uninstall-version=*)
+            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --upgrade=*)
+            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
         --test=*)
             test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
+        --output-file=*)
+            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
         --nocopy)
@@ -426,7 +514,7 @@ function check_script_args()
 
 function ping_all()
 {
-    ansible -i inventory_file -m ping all
+    ansible -i ${BASE_DIR}/inventory_file -m ping all
     if [ $? -ne 0 ]; then
         echo "ERROR" "some hosts is unreachable"
         exit 1
@@ -435,14 +523,14 @@ function ping_all()
 
 function process_check()
 {
-    ansible -i ./inventory_file all -m shell -b -a "rm -f /etc/ansible/facts.d/npu_info.fact"
-    echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    ansible -i ${BASE_DIR}/inventory_file all -m shell -b -a "rm -f /etc/ansible/facts.d/npu_info.fact"
+    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e hosts_name=ascend"
+    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
 
 function process_chean()
 {
-    ansible -i ./inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
+    ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
 }
 
 function bootstrap()
@@ -462,12 +550,19 @@ function bootstrap()
     fi
 }
 
+function prepare_ansible_cfg() {
+    sed -i "s#^log_path=.*#log_path=${BASE_DIR}\\/install.log#g" ${BASE_DIR}/ansible.cfg
+    sed -i "s#^inventory=.*#inventory=${BASE_DIR}\\/inventory_file#g" ${BASE_DIR}/ansible.cfg
+    sed -i "s#^fact_caching_connection=.*#fact_caching_connection=${BASE_DIR}\\/facts_cache#g" ${BASE_DIR}/ansible.cfg
+}
+
 main()
 {
     parse_script_args $*
     check_script_args
-    if [ -d ./facts_cache ];then
-        rm -rf ./facts_cache
+    prepare_ansible_cfg
+    if [ -d ${BASE_DIR}/facts_cache ];then
+        rm -rf ${BASE_DIR}/facts_cache
     fi
     if [ ${UID} == 0 ];then
         export PATH=/usr/local/python3.7.5/bin:$PATH
@@ -476,6 +571,7 @@ main()
         export PATH=${HOME}/.local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
     fi
+    export ANSIBLE_CONFIG=$BASE_DIR/ansible.cfg
     unset DISPLAY
     bootstrap
 
@@ -495,10 +591,13 @@ main()
         process_chean
     fi
     if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall ${uninstall_target}
+        process_uninstall ${uninstall_target} ${uninstall_version}
     fi
     if [ "x${upgrade_target}" != "x" ];then
         process_upgrade ${upgrade_target}
+    fi
+    if [ "x${display_target}" != "x" ]; then
+        process_display
     fi
 }
 

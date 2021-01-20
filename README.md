@@ -82,6 +82,7 @@ Usage: ./install.sh [options]
 --clean                        clean resources on remote servers
 --nocopy                       do not copy resources to remote servers when install for remote
 --debug                        enable debug
+--output-file=<output_file>    Redirect the output of ansible execution results to a file
 --install=<package_name>       Install specific package:
                                cmake
                                driver
@@ -105,6 +106,31 @@ The "npu" will install driver and firmware together
                                train_dev
                                train_run
                                vmhost
+--uninstall=<package_name>     Uninstall specific package:
+                               auto
+                               driver
+                               firmware
+                               nnae
+                               nnrt
+                               npu
+                               tfplugin
+                               toolbox
+                               toolkit
+The "npu" will uninstall driver and firmware together
+--uninstall-version=<version>  Uninstall specific version package
+                               using with --uninstall=<package_name> together
+                               support single package_name except auto,npu
+--upgrade=<package_name>       Upgrade specific package:
+                               auto
+                               driver
+                               firmware
+                               nnae
+                               nnrt
+                               npu
+                               tfplugin
+                               toolbox
+                               toolkit
+The "npu" will upgrade driver and firmware together
 --test=<target>                test the functions:
                                all
                                driver
@@ -112,6 +138,17 @@ The "npu" will install driver and firmware together
                                tensorflow
                                toolbox
                                torch
+--display=<target>             display app install info:
+                               all
+                               npu
+                               driver
+                               firmware
+                               nnrt
+                               nnae
+                               tfplugin
+                               toolbox
+                               toolkit
+The "npu" will upgrade driver and firmware together
 ```
 
 - **步骤 5**

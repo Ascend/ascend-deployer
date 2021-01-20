@@ -1,5 +1,7 @@
 #!/bin/bash
 
+readonly CUR_DIR=$(cd $(dirname "$0"); pwd)
+
 function get_python_cmd()
 {
     # try this first
@@ -39,8 +41,8 @@ function get_python_cmd()
 function main()
 {
     pycmd=$(get_python_cmd)
-    ${pycmd} downloader/downloader.py
-    ${pycmd} downloader/other_downloader.py
+    ${pycmd} ${CUR_DIR}/downloader/downloader.py
+    ${pycmd} ${CUR_DIR}/downloader/other_downloader.py
 }
 
 main $*

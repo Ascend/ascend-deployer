@@ -1,0 +1,49 @@
+- name: set os_version euler
+  set_fact:
+    os_version: "{{ ansible_distribution_version }}{{ ansible_distribution_release }}"
+  when: ansible_distribution == "EulerOS"
+
+- name: set os_and_arch euler
+  set_fact:
+    os_and_arch: "{{ ansible_distribution }}_{{os_version}}_{{ ansible_architecture}}"
+  when: ansible_distribution == "EulerOS"
+
+- name: set os_version kylin
+  set_fact:
+    os_version: "{{ ansible_distribution_version }}{{ ansible_distribution_release }}"
+  when: "'Kylin' in ansible_distribution"
+
+- name: set os_and_arch kylin
+  set_fact:
+    os_and_arch: "Kylin_{{os_version}}_{{ ansible_architecture}}"
+  when: "'Kylin' in ansible_distribution"
+
+- name: set fact os_version
+  set_fact:
+    os_version: "{{ os_version }}"
+    cacheable: yes
+
+- name: set fact os_and_arch
+  set_fact:
+    os_and_arch: "{{ os_and_arch }}"
+    cacheable: yes
+
+- name: set resources_dir local
+  set_fact:
+    resources_dir: "{{ inventory_dir }}/resources"
+    cacheable: yes
+  when: ansible_connection == "local"
+
+- name: set resources_dir remote
+  set_fact:
+    resources_dir: "~/resources"
+    cacheable: yes
+  when: ansible_connection != "local"
+
+- name: check if need prepare
+  local_action: stat path=prepare_{{os_and_arch}}.yml
+  register: optional_file
+
+- name: process prepare
+  include_tasks: "prepare_{{os_and_arch}}.yml"
+  when: optional_file.stat.exists

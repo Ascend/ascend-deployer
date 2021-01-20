@@ -1,0 +1,37 @@
+- name: gather app install info for all
+  hosts: all
+  gather_facts: true
+  vars:
+    need_test: yes
+    temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
+    os_version: "{{ temp[0] }}"
+    os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
+
+  tasks:
+    - name: set custom fact tasks
+      import_tasks: task_set_custom_fact.yml
+
+    - name: create facts.d folder
+      file:
+        path: /etc/ansible/facts.d/
+        state: directory
+        mode: 0750
+        recurse: yes
+      become: yes
+
+    - name: copy app_info.fact to host
+      template:
+        src: facts/app_info.fact.j2
+        dest: /etc/ansible/facts.d/app_info.fact
+        owner: "root"
+        group: "root"
+        mode: "0500"
+      become: yes
+
+    - name: gather facts again
+      setup:
+      become: yes
+
+    - name: show app install info
+      debug:
+        var=ansible_local.app_info
