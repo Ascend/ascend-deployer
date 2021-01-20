@@ -11,11 +11,15 @@
 
     - name: uninstall firmware
       shell: "{{ uninstall_firmware.stdout }}"
+      register: result
       become: yes
       when:
         - uninstall_version is not defined
         - uninstall_firmware.rc == 0
         - uninstall_firmware.stdout != ''
+
+    - name: show uninstall result without uninstall_version
+      debug: var=result
 
     - name: show info
       debug: var={{ item }}
@@ -25,7 +29,7 @@
     - name: uninstall firmware with version params
       shell: "{{ item.install_path }}/firmware/script/uninstall.sh"
       become: yes
-      register: uninstall_version
+      register: uninstall_result
       when:
         - uninstall_version is defined
         - item.install_path and item.name and item.version
@@ -34,5 +38,5 @@
       with_items:
         - "{{ ansible_local.app_info.result }}"
 
-    - name: show result
-      debug: var=uninstall_version
+    - name: show uninstall result with uninstall_version
+      debug: var=uninstall_result
