@@ -20,6 +20,7 @@ import configparser
 import socket
 import time
 import hashlib
+import ssl
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
@@ -59,11 +60,8 @@ class ConfigUtil:
 
     def get_download_os_list(self):
         return [x.strip() for x in
-                self.config.get('download', 'os_list').split(',')]
-
-    def get_download_arch_list(self):
-        return [x.strip() for x in
-                self.config.get('download', 'arch_list').split(',')]
+                self.config.get('download', 'os_list').split(',')
+                if len(x.strip()) != 0]
 
 
 CONFIG_INST = ConfigUtil()
@@ -80,11 +78,12 @@ class ProxyUtil:
         self.user_password = parse.quote(
             CONFIG_INST.get_proxy_user_password().encode('utf-8'))
         self.proxy_handler = self._init_proxy_handler()
+        self.https_handler = self._init_https_handler()
 
     def _init_proxy_handler(self):
-        if not self.verify:
-            import ssl
-            ssl._create_default_https_context = ssl._create_unverified_context
+        if not self.enable:
+            LOG.info('use system proxy settings')
+            return request.ProxyHandler()
         if 'http' in self.protocol:
             proxy_suffix = f'{self.username}:{self.user_password}' \
                            f'@{self.hostname}:{self.port}'
@@ -95,14 +94,26 @@ class ProxyUtil:
             return request.ProxyHandler(proxy_option)
         else:
             print('protocol[{}] is invalid!'.format(self.protocol))
-            LOG.error('protocol[{}] is invalid!'.format(self.protocol))
+            LOG.error('protocol[%s] is invalid!', self.protocol)
+
+    def _init_https_handler(self):
+        if not self.verify:
+            context = self.create_unverified_context()
+        else:
+            context = ssl.create_default_context()
+        return request.HTTPSHandler(context=context)
 
     def build_proxy_handler(self):
-        if self.enable:
-            opener = request.build_opener(self.proxy_handler)
-            request.install_opener(opener)
-        else:
-            LOG.info('proxy is disabled')
+        opener = request.build_opener(self.proxy_handler,
+                                      self.https_handler)
+        request.install_opener(opener)
+
+    @staticmethod
+    def create_unverified_context():
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+        context.verify_mode = ssl.CERT_NONE
+        context.check_hostname = False
+        return context
 
 
 class DownloadUtil:
@@ -112,25 +123,25 @@ class DownloadUtil:
     def download(cls, url: str, dst_file_name: str):
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
-            LOG.info("mkdir : {0}".format(parent_dir))
+            LOG.info("mkdir : %s", parent_dir)
             os.makedirs(parent_dir)
         res = cls.download_with_retry(url, dst_file_name)
         if not res:
             print('download {} failed'.format(url))
-            LOG.error('download {} failed'.format(url))
+            LOG.error('download %s failed', url)
         else:
-            LOG.info('download {} successfully'.format(url))
+            LOG.info('download %s successfully', url)
 
     @classmethod
     def download_with_retry(cls, url: str, dst_file_name: str, retry_times=5):
         for retry in range(1, retry_times + 1):
             try:
-                LOG.info('downloading try: {} from {}'.format(retry, url))
+                LOG.info('downloading try: %s from %s', retry, url)
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 local_file, _ = request.urlretrieve(url, dst_file_name)
                 if os.path.exists(local_file):
-                    LOG.info('{0} download successfully'.format(url))
+                    LOG.info('%s download successfully', url)
                 return True
             except ContentTooShortError as ex:
                 print(ex)
@@ -150,7 +161,7 @@ class DownloadUtil:
     @classmethod
     def download_no_retry(cls, url: str, dst_file_name: str):
         try:
-            LOG.info('downloading from {}'.format(url))
+            LOG.info('downloading from %s', url)
             cls.proxy_inst.build_proxy_handler()
             local_file, _ = request.urlretrieve(url, dst_file_name)
             return True
@@ -193,9 +204,9 @@ class DownloadUtil:
     @staticmethod
     def delete_if_exist(dst_file_name: str):
         if os.path.exists(dst_file_name):
-            LOG.info('{} already exists'.format(dst_file_name))
+            LOG.info('%s already exists', dst_file_name)
             os.remove(dst_file_name)
-            LOG.info('{} already deleted'.format(dst_file_name))
+            LOG.info('%s already deleted', dst_file_name)
 
 
 DOWNLOAD_INST = DownloadUtil()
