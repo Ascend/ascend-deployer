@@ -5,6 +5,10 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
+
+VAULT_CMD=""
+DEBUG_CMD=""
+
 if [ ${UID} == 0 ];then
     readonly PYTHON_PREFIX=/usr/local/python3.7.5
 else
@@ -39,6 +43,25 @@ function get_os_version()
     ver="${ver%\"}"
     ver="${ver#\"}"
     echo ${ver}
+}
+
+function encrypt_inventory() {
+    pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
+    pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
+    pass_cnt=$((pass1 + pass2))
+    if [ ${pass_cnt} == 0 ];then
+        return
+    fi
+    echo "The inventory_file need encrypt !"
+    ansible-vault encrypt ${BASE_DIR}/inventory_file
+}
+
+function init_ansible_vault()
+{
+    local vault_count=$(grep "ANSIBLE_VAULT.*AES" ${BASE_DIR}/inventory_file | wc -l)
+    if [ ${vault_count} != 0 ] && [ -z ${ANSIBLE_VAULT_PASSWORD_FILE} ];then
+         VAULT_CMD="--ask-vault-pass"
+    fi
 }
 
 function have_no_python_module
@@ -232,7 +255,7 @@ function process_display()
 function process_install()
 {
     IFS=','
-    unsupport=${FALSE}
+    local unsupport=${FALSE}
     for target in ${install_target}
     do
         if [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
@@ -243,22 +266,22 @@ function process_install()
     if [ ${unsupport} == ${TRUE} ];then
         exit 1
     fi
-    ping_all
-    process_check
+    local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
-        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
-    fi
-    debug_cmd=""
-    if [ "x${debug_flag}" == "xy" ];then
-        debug_cmd="-v"
+        echo "- import_playbook: distribution.yml" >> ${tmp_install_play}
     fi
     for target in ${install_target}
     do
-        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/install_${target}.yml -e hosts_name=ascend ${debug_cmd}"
-        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/install/install_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
     done
     unset IFS
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_install_play}
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_install_play} ];then
+        rm -f ${tmp_install_play}
+    fi
 }
 
 function process_uninstall()
@@ -275,31 +298,26 @@ function process_uninstall()
     if [ "${not_supported}" == "${TRUE}" ]; then
         exit 1
     fi
-    ping_all
-    process_check
-    display_target="all"
-    process_display
-    debug_cmd=""
-    if [ "x${debug_flag}" == "xy" ]; then
-        debug_cmd="-v"
-    fi
+
+    local tmp_uninstall_play=${BASE_DIR}/playbooks/.tmp_uninstall.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     for target in ${uninstall_target}
     do
-        if [ -z "${uninstall_version}" ];then
-            echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
-            ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
-        else
-            echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e \"hosts_name=ascend\" -e \"uninstall_version=${uninstall_version}\" ${debug_cmd}"
-            ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml -e "hosts_name=ascend" -e "uninstall_version=${uninstall_version}" ${debug_cmd}
-        fi
+        echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
     done
     unset IFS
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_uninstall_play}
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_uninstall_play} ];then
+        rm -f ${tmp_uninstall_play}
+    fi
 }
 
 function process_upgrade()
 {
     IFS=','
-    not_supported=${FALSE}
+    local not_supported=${FALSE}
     for target in ${upgrade_target}
     do
         if [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
@@ -310,28 +328,29 @@ function process_upgrade()
     if [ "${not_supported}" == "${TRUE}" ]; then
         exit 1
     fi
-    ping_all
-    process_check
+
+    local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
-        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
-    fi
-    debug_cmd=""
-    if [ "x${debug_flag}" == "xy" ]; then
-        debug_cmd="-v"
+        echo "- import_playbook: distribution.yml" >> ${tmp_upgrade_play}
     fi
     for target in ${upgrade_target}
     do
-        echo "ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml -e \"hosts_name=ascend\" ${debug_cmd}"
-        ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "- import_playbook: upgrade/upgrade_${target}.yml" >> ${tmp_upgrade_play}
     done
     unset IFS
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_upgrade_play}
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_upgrade_play} ];then
+        rm -f ${tmp_upgrade_play}
+    fi
 }
 
 function process_test()
 {
     IFS=','
-    unsupport=${FALSE}
+    local unsupport=${FALSE}
     for target in ${test_target}
     do
         if [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
@@ -342,32 +361,35 @@ function process_test()
     if [ ${unsupport} == ${TRUE} ];then
         exit 1
     fi
-    debug_cmd=""
-    if [ "x${debug_flag}" == "xy" ];then
-        debug_cmd="-v"
-    fi
+
+    local tmp_test_play=${BASE_DIR}/test/tmp_test.yml
+    touch ${tmp_test_play}
     for target in ${test_target}
     do
-        echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/test/test_${target}.yml -e hosts_name=ascend ${debug_cmd}"
-        ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/test/test_${target}.yml -e "hosts_name=ascend" ${debug_cmd}
+        echo "- import_playbook: test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_test_play} ];then
+        rm -f ${tmp_test_play}
+    fi
 }
 
 function process_scene()
 {
-    ping_all
-    process_check
-    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e hosts_name=ascend"
+    local tmp_scene_play=${BASE_DIR}/scene/tmp_scene.yml
+    echo "- import_playbook: ../playbooks/gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then
-        ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/distribution.yml -e "hosts_name=ascend"
+        echo "- import_playbook: ../playbooks/distribution.yml" >> ${tmp_scene_play}
     fi
-    debug_cmd=""
-    if [ "x${debug_flag}" == "xy" ];then
-        debug_cmd="-v"
+    echo "- import_playbook: scene_${install_scene}.yml" >> ${tmp_scene_play}
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_scene_play}
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_scene_play} ];then
+        rm -f ${tmp_scene_play}
     fi
-    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/scene/scene_${install_scene}.yml -e hosts_name=ascend ${debug_cmd}"
-    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/scene/scene_${install_scene}.yml -e "hosts_name=ascend" ${debug_cmd}
 }
 
 function print_usage()
@@ -482,7 +504,7 @@ function parse_script_args() {
             shift
             ;;
         --debug)
-            debug_flag=y
+            DEBUG_CMD="-v"
             shift
             ;;
         --check)
@@ -523,9 +545,8 @@ function ping_all()
 
 function process_check()
 {
-    ansible -i ${BASE_DIR}/inventory_file all -m shell -b -a "rm -f /etc/ansible/facts.d/npu_info.fact"
-    echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
+    ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
 
 function process_chean()
@@ -556,8 +577,22 @@ function prepare_ansible_cfg() {
     sed -i "s#^fact_caching_connection=.*#fact_caching_connection=${BASE_DIR}\\/facts_cache#g" ${BASE_DIR}/ansible.cfg
 }
 
+function set_permission()
+{
+    for f in $(find ${BASE_DIR}/  -type f  -name "*.sh" -o -name "*.py" ! -path "./.git*")
+    do
+        is_exe=$(file ${f} | grep executable | wc -l)
+        if [[ ${is_exe} -eq 1 ]];then
+            chmod 550 ${f} 2>/dev/null
+        fi
+    done
+    chmod 600 ${BASE_DIR}/inventory_file
+}
+
+
 main()
 {
+    set_permission
     parse_script_args $*
     check_script_args
     prepare_ansible_cfg
@@ -574,6 +609,8 @@ main()
     export ANSIBLE_CONFIG=$BASE_DIR/ansible.cfg
     unset DISPLAY
     bootstrap
+    encrypt_inventory
+    init_ansible_vault
 
     if [ "x${install_target}" != "x" ];then
         process_install ${install_target}

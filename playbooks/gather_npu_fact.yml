@@ -1,13 +1,13 @@
 - name: gather facts for all
   hosts: all
-  gather_facts: True
-  vars:
-    need_test: yes
-    temp: "{{ ansible_distribution_version | regex_findall('[0-9]+.[0-9]+') }}"
-    os_version: "{{ temp[0] }}"
-    os_and_arch: "{{ansible_distribution}}_{{os_version}}_{{ansible_architecture}}"
+  gather_facts: False
 
   tasks:
+    - name: gather facts first
+      setup:
+        fact_path: /notexist
+      become: yes
+
     - name: set custom fact tasks
       import_tasks: task_set_custom_fact.yml
 
