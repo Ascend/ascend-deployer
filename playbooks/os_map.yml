@@ -1,0 +1,21 @@
+os_dict:
+  centos: "CentOS"
+  ubuntu: "Ubuntu"
+  euleros: "EulerOS"
+  debian: "Debian"
+  sles: "SLES"
+  kylin: "Kylin"
+  bclinux: "BigCloud"
+os_version_dict:
+  centos:
+    "7": "7.6"
+    "8": "8.2"
+  debian:
+    "9": "9.9"
+code_name_dict:
+  euleros:
+    "SP8": "SP8"
+    "SP9": "SP9"
+  kylin:
+    "Tercel": "Tercel"
+code_name: ""
