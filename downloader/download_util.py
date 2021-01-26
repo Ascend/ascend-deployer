@@ -59,9 +59,10 @@ class ConfigUtil:
         return self.config.get('proxy', 'userpassword')
 
     def get_download_os_list(self):
-        return [x.strip() for x in
-                self.config.get('download', 'os_list').split(',')
-                if len(x.strip()) != 0]
+        os_list = os.getenv('DOWNLOAD_OS_LIST')
+        if os_list is None:
+            os_list = self.config.get('download', 'os_list')
+        return [x.strip() for x in os_list.split(',') if len(x.strip()) != 0]
 
 
 CONFIG_INST = ConfigUtil()

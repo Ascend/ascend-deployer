@@ -20,6 +20,7 @@ import os
 from logger_config import get_logger
 from pip_downloader import MyPip
 from os_dep_downloader import OsDepDownloader
+from other_downloader import download_other_packages
 
 LOG = get_logger(__file__)
 
@@ -47,3 +48,4 @@ def download_os_packages():
 if __name__ == "__main__":
     download_python_packages()
     download_os_packages()
+    download_other_packages()
