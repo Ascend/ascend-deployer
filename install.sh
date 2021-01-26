@@ -6,8 +6,23 @@ readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
 
+unset DISPLAY
+if [ -z ${ASNIBLE_CONFIG} ];then
+    export ANSIBLE_CONFIG=$BASE_DIR/ansible.cfg
+fi
+if [ -z ${ASNIBLE_LOG_PATH} ];then
+    export ANSIBLE_LOG_PATH=$BASE_DIR/install.log
+fi
+if [ -z ${ASNIBLE_INVENTORY} ];then
+    export ANSIBLE_INVENTORY=$BASE_DIR/inventory_file
+fi
+if [ -z ${ANSIBLE_CACHE_PLUGIN_CONNECTION} ];then
+    export ANSIBLE_CACHE_PLUGIN_CONNECTION=$BASE_DIR/facts_cache
+fi
+
 VAULT_CMD=""
 DEBUG_CMD=""
+STDOUT_CALLBACK=""
 
 if [ ${UID} == 0 ];then
     readonly PYTHON_PREFIX=/usr/local/python3.7.5
@@ -402,7 +417,9 @@ function print_usage()
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--debug                        enable debug"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
-    echo "--install=<package_name>       Install specific package:"    
+    echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
+    echo "                               avaiable callback could be listed by: ansible-doc -t callback -l"
+    echo "--install=<package_name>       Install specific package:"
     for target in `find ${BASE_DIR}/playbooks/install/install_*.yml`
     do
         target=$(basename ${target})
@@ -499,6 +516,10 @@ function parse_script_args() {
             output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
             ;;
+        --stdout_callback=*)
+            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            shift
+            ;;
         --nocopy)
             nocopy_flag=y
             shift
@@ -551,15 +572,15 @@ function process_check()
 
 function process_chean()
 {
-    ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
+    ansible ${VAULT_CMD} -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
 }
 
 function bootstrap()
 {
-    have_ansible=`command -v ansible | wc -l`
-    have_rpm=`command -v rpm | wc -l`
+    local have_ansible=`command -v ansible | wc -l`
+    local have_rpm=`command -v rpm | wc -l`
     check_python375
-    py37_status=$?
+    local py37_status=$?
     if [ ${py37_status} == ${FALSE} ];then
         install_sys_packages
         install_python375
@@ -569,12 +590,6 @@ function bootstrap()
         echo "no ansible"
         install_ansible
     fi
-}
-
-function prepare_ansible_cfg() {
-    sed -i "s#^log_path=.*#log_path=${BASE_DIR}\\/install.log#g" ${BASE_DIR}/ansible.cfg
-    sed -i "s#^inventory=.*#inventory=${BASE_DIR}\\/inventory_file#g" ${BASE_DIR}/ansible.cfg
-    sed -i "s#^fact_caching_connection=.*#fact_caching_connection=${BASE_DIR}\\/facts_cache#g" ${BASE_DIR}/ansible.cfg
 }
 
 function set_permission()
@@ -589,13 +604,18 @@ function set_permission()
     chmod 600 ${BASE_DIR}/inventory_file
 }
 
+function prepare_environment()
+{
+    if [ -z ${ANSIBLE_STDOUT_CALLBACK} ] && [ ! -z ${STDOUT_CALLBACK} ];then
+        export ANSIBLE_STDOUT_CALLBACK=${STDOUT_CALLBACK}
+    fi
+}
 
 main()
 {
     set_permission
     parse_script_args $*
     check_script_args
-    prepare_ansible_cfg
     if [ -d ${BASE_DIR}/facts_cache ];then
         rm -rf ${BASE_DIR}/facts_cache
     fi
@@ -606,11 +626,10 @@ main()
         export PATH=${HOME}/.local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
     fi
-    export ANSIBLE_CONFIG=$BASE_DIR/ansible.cfg
-    unset DISPLAY
     bootstrap
     encrypt_inventory
     init_ansible_vault
+    prepare_environment
 
     if [ "x${install_target}" != "x" ];then
         process_install ${install_target}
