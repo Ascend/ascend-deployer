@@ -248,7 +248,7 @@ function process_display()
     unset IFS
     ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -f /etc/ansible/facts.d/app_info.fact"
     echo "ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
-    ansible-playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
 
 }
 
@@ -278,7 +278,7 @@ function process_install()
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
     fi
@@ -308,7 +308,7 @@ function process_uninstall()
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend ${DEBUG_CMD}"
     cat ${tmp_uninstall_play}
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_uninstall_play} ];then
         rm -f ${tmp_uninstall_play}
     fi
@@ -341,7 +341,7 @@ function process_upgrade()
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend ${DEBUG_CMD}"
     cat ${tmp_upgrade_play}
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_upgrade_play} ];then
         rm -f ${tmp_upgrade_play}
     fi
@@ -370,7 +370,7 @@ function process_test()
     done
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend ${DEBUG_CMD}"
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
     fi
@@ -386,7 +386,7 @@ function process_scene()
     echo "- import_playbook: scene_${install_scene}.yml" >> ${tmp_scene_play}
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
     fi
@@ -546,7 +546,7 @@ function ping_all()
 function process_check()
 {
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
 }
 
 function process_chean()
