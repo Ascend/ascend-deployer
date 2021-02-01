@@ -242,7 +242,17 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 如需自定义安装场景，可参考上述配置文件进行定制。
 ##  <a name="config">配置说明</a>
 ### 代理配置
-在downloader/config.ini文件中配置代理，内容如下：
+如需使用http代理，需将downloader/config.ini的enable参数改为true。
+离线安装工具会优先读取环境变量中的代理配置，如果环境变量中无代理配置，则会从downloader/config.ini文件中读取代理配置。
+1. 环境变量中配置代理，参考如下
+```
+# 配置环境变量
+export http_proxy="http://user:password@proxyserverip:port"
+export https_proxy="http://user:password@proxyserverip:port"
+```
+其中user为用户在内部网络中的用户名，password为用户密码（特殊字符需转义），proxyserverip为代理服务器的ip地址，port为端口。
+
+2. 在downloader/config.ini文件中配置代理，内容如下：
 ```
 [proxy]
 enable=false         # 是否开启代理配置参数
@@ -253,6 +263,8 @@ port=8080
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
+安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
+
 ### 下载行为配置
 在downloader/config.ini文件中可进行下载行为配置，将其调整为下载所需OS的组件。
 ```

@@ -191,7 +191,7 @@ function install_sys_packages()
     elif [ ${have_dnf} -eq 1 ]; then
         sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${os_ver}_${arch}/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        sudo export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ${BASE_DIR}/resources/${os_ver}_${arch}/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; sudo -E dpkg --force-all -i ${BASE_DIR}/resources/${os_ver}_${arch}/*.deb
     fi
 }
 
@@ -261,7 +261,6 @@ function process_display()
         exit 1
     fi
     unset IFS
-    ansible ${VAULT_CMD} -i ${BASE_DIR}/inventory_file all -m shell -a "rm -f /etc/ansible/facts.d/app_info.fact"
     echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
     ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
 
