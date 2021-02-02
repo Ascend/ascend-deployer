@@ -18,14 +18,43 @@
 import os
 import configparser
 import urllib.request
-import xml.dom.minidom
 import http.client
 import time
+from html.parser import HTMLParser
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256, calc_md5
 from logger_config import get_logger
 
 LOG = get_logger(__file__)
+
+class SimpleIndexParser(HTMLParser):
+    """解析simple index"""
+    def __init__(self):
+        super().__init__()
+        self.index={}
+        self.tmp_attrs = None
+
+    def get_index(self):
+        """
+        get_index  获取解析到的软件包的索引
+
+        :return:  索引
+        """
+        return self.index
+
+    def handle_starttag(self, tag, attrs):
+        """
+        handle_starttag  解析tag开始
+        """
+        if tag == 'a':
+            self.tmp_attrs = attrs
+
+    def handle_data(self, data):
+        """
+        handle_starttag  解析tag中的数据
+        """
+        if self.tmp_attrs is not None:
+            self.index[data] = self.tmp_attrs[0][1]
 
 
 class MyPip(object):
@@ -97,7 +126,7 @@ class MyPip(object):
         if distribution in self.cache.keys():
             index = self.cache.get(distribution)
         else:
-            url = '{0}/{1}'.format(self.pypi_url, distribution.lower())
+            url = '{0}/{1}/'.format(self.pypi_url, distribution.lower())
             LOG.info('pypi URL = [{0}]'.format(url))
             index = ''
             for retry in [x + 1 for x in range(5)]:
@@ -113,9 +142,10 @@ class MyPip(object):
                 if success:
                     break
             self.cache[distribution] = index
-        dom_tree = xml.dom.minidom.parseString(index)
-        collection = dom_tree.documentElement
-        idx = collection.getElementsByTagName('a')
+
+        parser = SimpleIndexParser()
+        parser.feed(index.decode())
+        idx = parser.get_index()
         return idx
 
     def wheel_filter(self, index, version, platform, implement):
@@ -130,12 +160,11 @@ class MyPip(object):
         """
         pkg = ''
         url = ''
-        for i in index:
-            name = i.firstChild.nodeValue
+        for name, href in index.items():
             if 'whl' in name:
                 if self.is_wheel_match(name, version, platform, implement):
                     pkg = name
-                    url = i.getAttribute('href')
+                    url = href
             else:
                 continue
         return pkg, url
@@ -151,12 +180,11 @@ class MyPip(object):
         """
         pkg = ''
         url = ''
-        for i in index:
-            name = i.firstChild.nodeValue
+        for name, href in index.items():
             if 'tar' in name or 'zip' in name:
                 if version in name:
                     pkg = name
-                    url = i.getAttribute('href')
+                    url = href
             else:
                 continue
         return pkg, url
