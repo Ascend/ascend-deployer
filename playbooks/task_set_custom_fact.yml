@@ -30,7 +30,7 @@
 
 - name: set os_version first
   set_fact:
-    os_version: os_ver.stdout
+    os_version: "{{ os_ver.stdout }}"
     cacheable: yes
 
 - name: set os_version second
