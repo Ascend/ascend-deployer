@@ -235,6 +235,8 @@ function install_ansible()
         if [ ${eulercnt} == 0 ];then
             # euler os 2 is recoginized as centos 2
             sed -i "1515 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            # ubuntu 18.04 is recoginized as debian buster/sid due tu /etc/debian_release
+            sed -i "1520 i\      'buster/sid': /usr/bin/python3" ${ansible_path}/config/base.yml
             # euler os use python3 as default python interpreter
             sed -i "1527 i\    euleros:"                    ${ansible_path}/config/base.yml
             sed -i "1528 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
