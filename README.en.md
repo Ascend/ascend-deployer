@@ -242,7 +242,17 @@ The configuration files for the preceding installation scenarios are stored in t
 To customize an installation scenario, refer to the preceding configuration file.
 ## <a name="config">Configuration Description</a>
 ### Proxy Configuration
-You can configure a proxy in the **downloader/config.ini** file. The content is as follows:
+To use HTTP proxies, change the enable parameter of downloader/config.ini to true.
+The offline installation tool reads the agent configuration in the environment variable first, and if there is no agent configuration in the environment variable, reads the agent configuration from the downloader/config.ini file.
+1. Configure the agent in the environment variable as follows
+```
+# Configure environment variables.
+export http_proxy="http://user:password@proxyserverip:port"
+export https_proxy="http://user:password@proxyserverip:port"
+```
+Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port.
+
+2. Configure the agent in the downloader/config.ini file as follows:
 ```
 [proxy]
 enable=false         # Whether to enable or disable the proxy.
@@ -253,6 +263,8 @@ port=8080
 username=none       # Proxy account
 userpassword=none   # Proxy password
 ```
+For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
+
 ### Download Configuration
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
