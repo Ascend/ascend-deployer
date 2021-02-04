@@ -61,9 +61,10 @@ function get_os_version()
 }
 
 function encrypt_inventory() {
-    pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
-    pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
-    pass_cnt=$((pass1 + pass2))
+    local pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass3=$(grep ansible_become_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass_cnt=$((pass1 + pass2 + pass3))
     if [ ${pass_cnt} == 0 ];then
         return
     fi
