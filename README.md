@@ -104,11 +104,11 @@ ascend-deployer
     编辑inventory_file文件，格式如下：
     ```
     [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
-    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-    ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root用户
+    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # 非root用户
+    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # 非root用户
     ```
-    注意：inventory文件中会配置远程设备的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除。
+    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；
 2. 执行ansible ping测试待安装设备连通性。
     ```
     #配置环境变量
