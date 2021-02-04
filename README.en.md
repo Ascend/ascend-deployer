@@ -148,6 +148,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
   You can develop applications in the development environment by referring to the [CANN Application Software Development Guide (C and C++)](https://www.huaweicloud.com/intl/en-us/ascend/cann) or [CANN Application Software Development Guide (Python)](https://www.huaweicloud.com/intl/en-us/ascend/cann).
 - Training scenario
   For details about network model porting and training, see the [TensorFlow Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow) or [PyTorch Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow).
+- Delete this tool
+  This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
+
 # Upgrade
 Run the following command to upgrade the specified software:
 `./install.sh --upgrade=<package_name>`
@@ -275,10 +278,10 @@ os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x8
 The offline installation tool provides the source configuration file. Replace it as required.
 - Python source configuration
   Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.
-    ```
+```
   [pypi]
-  index_url=http://mirrors.huaweicloud.com/pypi/simple
-    ```
+  index_url=https://repo.huaweicloud.com/repository/pypi/simple
+```
 - OS source configuration
   OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
   Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:
