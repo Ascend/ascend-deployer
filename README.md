@@ -50,7 +50,7 @@
     user=HwHiAiUser
     group=HwHiAiUser
     ```
-    
+
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源定期更新。
 
 ### 准备软件包
@@ -148,6 +148,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
 - 训练场景
 若需进行网络模型移植和训练，请参考《[TensorFlow网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》或《[PyTorch网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》。
+- 删除工具
+本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
+
 # 升级
 可执行以下命令，升级指定软件：
 `./install.sh --upgrade=<package_name>`
@@ -255,7 +258,7 @@ export https_proxy="http://user:password@proxyserverip:port"
 2. 在downloader/config.ini文件中配置代理，内容如下：
 ```
 [proxy]
-enable=false         # 是否开启代理配置参数
+enable=false        # 是否开启代理配置参数
 verify=true         # 是否校验https证书
 protocol=http
 hostname=openproxy.huawei.com
@@ -275,10 +278,10 @@ os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x8
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 -  Python源配置
 在downloader/config.ini文件中配置python源，默认使用华为源。
-    ```
+```
 [pypi]
-index_url=http://mirrors.huaweicloud.com/pypi/simple
-    ```
+index_url=https://repo.huaweicloud.com/repository/pypi/simple
+```
 - 系统源配置
 系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*
 以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：
