@@ -260,9 +260,9 @@ export https_proxy="http://user:password@proxyserverip:port"
 [proxy]
 enable=false        # 是否开启代理配置参数
 verify=true         # 是否校验https证书
-protocol=http
-hostname=openproxy.huawei.com
-port=8080
+protocol=           # http或者https
+hostname=           # 代理服务器
+port=               # 端口
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
