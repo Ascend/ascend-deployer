@@ -258,11 +258,11 @@ Where "user" is the user's internal network name, "password" is the user's passw
 2. Configure the agent in the downloader/config.ini file as follows:
 ```
 [proxy]
-enable=false         # Whether to enable or disable the proxy.
+enable=false        # Whether to enable or disable the proxy.
 verify=true         # Whether to verify the HTTPS certificate.
-protocol=http
-hostname=openproxy.huawei.com
-port=8080
+protocol=           # http or https
+hostname=           # proxy server
+port=               # proxy port
 username=none       # Proxy account
 userpassword=none   # Proxy password
 ```
