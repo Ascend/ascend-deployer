@@ -104,11 +104,11 @@ ascend-deployer
     Edit the **inventory_file** file. The format is shown as follows:
     ```
     [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root user
-    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
-    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
+    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
+    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
+    ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
     ```
-    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism.
+    Note: The **root** user names and passwords of the remote devices are configured in the **inventory** file. The Offline Deployment Tool encrypts the Inventory files configured with the password using the Ansidia-Vault mechanism.
 2. Run the **ansible ping** command to test the connectivity of the devices where the packages to be installed.
     ```
     # Configure environment variables.
@@ -287,9 +287,9 @@ The offline installation tool provides the source configuration file. Replace it
   Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:
 ```
 [base]
-baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 
 [epel]
-baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
+baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
-The preceding information indicates that both the base and epel sources are used. The two sources are queried, and OS components are downloaded from them. The Huawei source is used by default. Replace it as required. If the sources are deleted, components may not be completely downloaded.
+The preceding information indicates that both the base and epel sources are used. The two sources are queried, and OS components are downloaded from them. The Huawei source is used by default. Replace it as required. If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation. If the sources are deleted, components may not be completely downloaded.
