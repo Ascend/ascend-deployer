@@ -62,10 +62,7 @@ function get_os_version()
 
 function encrypt_inventory() {
     local pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass3=$(grep ansible_become_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass_cnt=$((pass1 + pass2 + pass3))
-    if [ ${pass_cnt} == 0 ];then
+    if [ ${pass1} == 0 ];then
         return
     fi
     echo "The inventory_file need encrypt !"
@@ -269,38 +266,6 @@ function process_display()
 
 }
 
-function verify_zip()
-{
-    rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir ${BASE_DIR}/resources/run_from_zip_dir
-    local IFS_OLD=$IFS
-    unset IFS
-    for zip_package in $(find ${BASE_DIR}/resources/*.zip 2>/dev/null)
-    do
-        unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
-        local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
-        local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
-        openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null
-        local verify_success=$?
-        if [[ ${verify_success} -eq 0 ]];then
-            if [[ "$(basename ${zip_file})" =~ zip ]];then
-                unzip -o ${zip_file} -d ${BASE_DIR}/resources/run_from_zip_dir
-            elif [[ "$(basename ${zip_file})" =~ atlasedge ]];then
-                rm -rf ${BASE_DIR}/resources/run_from_zip_dir/atlasedge && mkdir ${BASE_DIR}/resources/run_from_zip_dir/atlasedge
-                tar -xf ${zip_file} -C ${BASE_DIR}/resources/run_from_zip_dir/atlasedge
-            elif [[ "$(basename ${zip_file})" =~ ha ]];then
-                rm -rf ${BASE_DIR}/resources/run_from_zip_dir/ha && mkdir ${BASE_DIR}/resources/run_from_zip_dir/ha
-                tar -xf ${zip_file} -C ${BASE_DIR}/resources/run_from_zip_dir/ha
-            fi
-        fi
-        rm -rf ${BASE_DIR}/resources/zip_tmp
-        if [[ ${verify_success} -ne 0 ]];then
-            echo "Error: check validation fail"
-            exit 1
-        fi
-    done
-    IFS=${IFS_OLD}
-}
-
 function process_install()
 {
     IFS=','
@@ -315,7 +280,6 @@ function process_install()
     if [ ${unsupport} == ${TRUE} ];then
         exit 1
     fi
-    verify_zip
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -378,7 +342,6 @@ function process_upgrade()
     if [ "${not_supported}" == "${TRUE}" ]; then
         exit 1
     fi
-    verify_zip
     local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -428,7 +391,6 @@ function process_test()
 
 function process_scene()
 {
-    verify_zip
     local tmp_scene_play=${BASE_DIR}/scene/tmp_scene.yml
     echo "- import_playbook: ../playbooks/gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then
