@@ -414,9 +414,6 @@ function print_usage()
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--debug                        enable debug"
-    echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
-    echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
-    echo "                               avaiable callback could be listed by: ansible-doc -t callback -l"
     echo "--install=<package_name>       Install specific package:"
     for target in `find ${BASE_DIR}/playbooks/install/install_*.yml`
     do
@@ -432,25 +429,6 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--uninstall=<package_name>     Uninstall specific package:"
-    for target in `find ${BASE_DIR}/playbooks/uninstall/uninstall_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will uninstall driver and firmware together"
-    echo "--uninstall-version=<version>  Uninstall specific version package"
-    echo "                               using with --uninstall=<package_name> together"
-    echo "                               support single package_name except auto,npu"
-    echo "--upgrade=<package_name>       Upgrade specific package:"
-    for target in `find ${BASE_DIR}/playbooks/upgrade/upgrade_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find ${BASE_DIR}/test/test_*.yml`
     do
@@ -458,13 +436,6 @@ function print_usage()
         tmp=${test#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--display=<target>             display app install info:"
-    for target in ${app_name_list[*]}
-    do
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will upgrade driver and firmware together"
     exit 0
 }
 
