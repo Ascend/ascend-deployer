@@ -47,7 +47,7 @@ function print_usage()
     echo " Options:"
     echo "--help  -h               Print this message"
     echo "--os-list=<OS1>,<OS2>    Specific OS list to download, supported os are:"
-    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d)
+    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d | grep 'CentOS\|Ubuntu')
     do
         os_name=$(basename ${os})
         echo "                         ${os_name}"
