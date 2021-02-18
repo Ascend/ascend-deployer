@@ -51,7 +51,7 @@
     user=HwHiAiUser
     group=HwHiAiUser
     ```
-    
+
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源定期更新。
 
 ### 准备软件包
@@ -105,11 +105,11 @@ ascend-deployer
     编辑inventory_file文件，格式如下：
     ```
     [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
-    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-    ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root用户
+    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # 非root用户
+    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # 非root用户
     ```
-    注意：inventory文件中会配置远程设备的root用户名和密码，建议使用ansible的vault机制进行加密，使用完成之后建议立即删除。
+    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；
 2. 执行ansible ping测试待安装设备连通性。
     ```
     #配置环境变量
@@ -149,6 +149,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
 - 训练场景
 若需进行网络模型移植和训练，请参考《[TensorFlow网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》或《[PyTorch网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》。
+- 删除工具
+本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
+
 # 升级
 可执行以下命令，升级指定软件：
 `./install.sh --upgrade=<package_name>`
@@ -243,17 +246,29 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 如需自定义安装场景，可参考上述配置文件进行定制。
 ##  <a name="config">配置说明</a>
 ### 代理配置
-在downloader/config.ini文件中配置代理，内容如下：
+如需使用http代理，需将downloader/config.ini的enable参数改为true。
+离线安装工具会优先读取环境变量中的代理配置，如果环境变量中无代理配置，则会从downloader/config.ini文件中读取代理配置。
+1. 环境变量中配置代理，参考如下
+```
+# 配置环境变量
+export http_proxy="http://user:password@proxyserverip:port"
+export https_proxy="http://user:password@proxyserverip:port"
+```
+其中user为用户在内部网络中的用户名，password为用户密码（特殊字符需转义），proxyserverip为代理服务器的ip地址，port为端口。
+
+2. 在downloader/config.ini文件中配置代理，内容如下：
 ```
 [proxy]
-enable=false         # 是否开启代理配置参数
+enable=false        # 是否开启代理配置参数
 verify=true         # 是否校验https证书
-protocol=http
-hostname=openproxy.huawei.com
-port=8080
+protocol=           # http或者https
+hostname=           # 代理服务器
+port=               # 端口
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
+安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
+
 ### 下载行为配置
 在downloader/config.ini文件中可进行下载行为配置，将其调整为下载所需OS的组件。
 ```
@@ -264,10 +279,10 @@ os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x8
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 -  Python源配置
 在downloader/config.ini文件中配置python源，默认使用华为源。
-    ```
+```
 [pypi]
-index_url=http://mirrors.huaweicloud.com/pypi/simple
-    ```
+index_url=https://repo.huaweicloud.com/repository/pypi/simple
+```
 - 系统源配置
 系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*
 以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：

@@ -105,11 +105,11 @@ ascend-deployer
     Edit the **inventory_file** file. The format is shown as follows:
     ```
     [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
-    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-    ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root user
+    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
+    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
     ```
-    Note: The **root** user names and passwords of the remote devices are configured in the **inventory** file. You are advised to use Ansible Vault to encrypt the file. After the encryption is complete, delete the original file immediately.
+    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism.
 2. Run the **ansible ping** command to test the connectivity of the devices where the packages to be installed.
     ```
     # Configure environment variables.
@@ -149,6 +149,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
   You can develop applications in the development environment by referring to the [CANN Application Software Development Guide (C and C++)](https://www.huaweicloud.com/intl/en-us/ascend/cann) or [CANN Application Software Development Guide (Python)](https://www.huaweicloud.com/intl/en-us/ascend/cann).
 - Training scenario
   For details about network model porting and training, see the [TensorFlow Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow) or [PyTorch Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow).
+- Delete this tool
+  This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
+
 # Upgrade
 Run the following command to upgrade the specified software:
 `./install.sh --upgrade=<package_name>`
@@ -243,17 +246,29 @@ The configuration files for the preceding installation scenarios are stored in t
 To customize an installation scenario, refer to the preceding configuration file.
 ## <a name="config">Configuration Description</a>
 ### Proxy Configuration
-You can configure a proxy in the **downloader/config.ini** file. The content is as follows:
+To use HTTP proxies, change the enable parameter of downloader/config.ini to true.
+The offline installation tool reads the agent configuration in the environment variable first, and if there is no agent configuration in the environment variable, reads the agent configuration from the downloader/config.ini file.
+1. Configure the agent in the environment variable as follows
+```
+# Configure environment variables.
+export http_proxy="http://user:password@proxyserverip:port"
+export https_proxy="http://user:password@proxyserverip:port"
+```
+Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port.
+
+2. Configure the agent in the downloader/config.ini file as follows:
 ```
 [proxy]
-enable=false         # Whether to enable or disable the proxy.
+enable=false        # Whether to enable or disable the proxy.
 verify=true         # Whether to verify the HTTPS certificate.
-protocol=http
-hostname=openproxy.huawei.com
-port=8080
+protocol=           # http or https
+hostname=           # proxy server
+port=               # proxy port
 username=none       # Proxy account
 userpassword=none   # Proxy password
 ```
+For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
+
 ### Download Configuration
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
@@ -264,10 +279,10 @@ os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x8
 The offline installation tool provides the source configuration file. Replace it as required.
 - Python source configuration
   Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.
-    ```
+```
   [pypi]
-  index_url=http://mirrors.huaweicloud.com/pypi/simple
-    ```
+  index_url=https://repo.huaweicloud.com/repository/pypi/simple
+```
 - OS source configuration
   OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
   Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:

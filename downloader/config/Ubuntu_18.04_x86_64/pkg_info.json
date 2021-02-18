@@ -24,6 +24,15 @@
         "name": "g++-7", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libquadmath0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libmpx2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libcilkrts5", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "make", "used_by": [ "driver", "cann", "framework" ]
     },
     {

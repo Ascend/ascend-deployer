@@ -86,12 +86,18 @@ class ProxyUtil:
             LOG.info('use system proxy settings')
             return request.ProxyHandler()
         if 'http' in self.protocol:
-            proxy_suffix = f'{self.username}:{self.user_password}' \
-                           f'@{self.hostname}:{self.port}'
-            proxy_option = {
-                'http': f'http://{proxy_suffix}',
-                'https': f'https://{proxy_suffix}'
-            }
+            if os.environ.get("http_proxy") and os.environ.get("https_proxy"):
+                proxy_option = {
+                    'http': os.environ.get("http_proxy"),
+                    'https': os.environ.get("https_proxy")
+                }
+            else:
+                proxy_suffix = f'{self.username}:{self.user_password}' \
+                               f'@{self.hostname}:{self.port}'
+                proxy_option = {
+                    'http': f'http://{proxy_suffix}',
+                    'https': f'https://{proxy_suffix}'
+                }
             return request.ProxyHandler(proxy_option)
         else:
             print('protocol[{}] is invalid!'.format(self.protocol))
