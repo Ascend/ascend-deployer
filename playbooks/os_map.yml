@@ -7,18 +7,21 @@ os_dict:
   kylin: "Kylin"
   bclinux: "BigCloud"
   Linx: "Linx"
+  uos: "UOS"
 os_version_dict:
+  euleros:
+    "2.0": "2"
   centos:
     "7": "7.6"
     "8": "8.2"
   debian:
     "9": "9.9"
   kylin:
-    "V10": "V10Tercel"
+    "V10": "V10"
 code_name_dict:
   euleros:
-    "SP8": "SP8"
-    "SP9": "SP9"
+    "SP8": ".8"
+    "SP9": ".9"
   kylin:
     "Tercel": "Tercel"
 code_name: ""
