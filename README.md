@@ -31,6 +31,7 @@
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 离线安装工具已提供源配置文件，默认使用华为源，用户可根据需要进行替换。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
+- 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++等第三方组件。
 ### 下载操作
 - windows
     1. windows环境需安装python3，推荐使用python3.7版本以上。

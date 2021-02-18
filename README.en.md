@@ -31,6 +31,7 @@ The download function can be used in the Windows or Linux OSs.
 - To configure a proxy or modify the configuration file to download required OS components, edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - The offline installation tool provides the source configuration file. The Huawei source is used by default. Replace it as required. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
+- After the installation, it is recommended to uninstall the third-party components such as GCC and G + + that may have security risks in the system.
 ### Download
 - Windows
     1. Python 3 is required in Windows. Python 3.7 or later is recommended.
