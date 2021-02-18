@@ -109,7 +109,7 @@ ascend-deployer
     ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # 非root用户
     ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # 非root用户
     ```
-    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；
+    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行check或者安装过程才能完成对该文件的加密，否则可能导致其他服务器账户密码的泄露。
 2. 执行ansible ping测试待安装设备连通性。
     ```
     #配置环境变量
