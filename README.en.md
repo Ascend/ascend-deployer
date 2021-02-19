@@ -291,9 +291,9 @@ The offline installation tool provides the source configuration file. Replace it
   Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:
 ```
 [base]
-baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 
 [epel]
-baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
+baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
-The preceding information indicates that both the base and epel sources are used. The two sources are queried, and OS components are downloaded from them. The Huawei source is used by default. Replace it as required. If the sources are deleted, components may not be completely downloaded.
+Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.

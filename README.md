@@ -291,9 +291,9 @@ index_url=https://repo.huaweicloud.com/repository/pypi/simple
 以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：
 ```
 [base]
-baseurl=http://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 
 [epel]
-baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64
+baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
-表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若删除源，可能造成组件下载不完整。
+表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。

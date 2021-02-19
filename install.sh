@@ -70,6 +70,9 @@ function encrypt_inventory() {
     fi
     echo "The inventory_file need encrypt !"
     ansible-vault encrypt ${BASE_DIR}/inventory_file
+    if [[ $? != 0 ]];then
+        exit 1
+    fi
 }
 
 function init_ansible_vault()
@@ -502,7 +505,7 @@ function print_usage()
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "The \"npu\" will upgrade driver and firmware together"
+    echo "The \"npu\" will display driver and firmware together"
     exit 0
 }
 
@@ -637,6 +640,10 @@ function set_permission()
             chmod 550 ${f} 2>/dev/null
         fi
     done
+    if [[ ! -e $BASE_DIR/install.log ]];then
+        touch $BASE_DIR/install.log
+    fi
+    chmod 600 $BASE_DIR/install.log 2>/dev/null
     chmod 600 ${BASE_DIR}/inventory_file
 }
 

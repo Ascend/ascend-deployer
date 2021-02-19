@@ -1,11 +1,11 @@
 [base]
-baseurl=https://mirrors.bclinux.org/bclinux/el7.6/os/aarch64/
+baseurl=http://mirrors.bclinux.org/bclinux/el7.6/os/aarch64/
 
 [updates]
-baseurl=https://mirrors.bclinux.org/bclinux/el7.6/updates/aarch64/
+baseurl=http://mirrors.bclinux.org/bclinux/el7.6/updates/aarch64/
 
 [extras]
-baseurl=https://mirrors.bclinux.org/bclinux/el7.6/extras/aarch64/
+baseurl=http://mirrors.bclinux.org/bclinux/el7.6/extras/aarch64/
 
 [epel]
-baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64/
+baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64/
