@@ -1,5 +1,25 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+
+    - name: find toolkit package from run_from_zip_dir first
+      find:
+        paths: "{{ resources_dir }}/run_from_zip_dir"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*toolkit.*{{ ansible_architecture }}.run"
+      register: toolkit_from_zip
+
+    - name: install toolkit from run_from_zip_dir first
+      shell: "bash {{ toolkit_from_zip.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      become: yes
+      environment:
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
+        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+      register: toolkit_from_zip_result
+      when: toolkit_from_zip.matched > 0
+      failed_when: "toolkit_from_zip_result.rc != 0 and ('install success' not in toolkit_from_zip_result.stdout and 'already installed' not in toolkit_from_zip_result.stdout)"
+
     - name: find toolkit package
       find:
         paths: "{{ resources_dir }}"
@@ -8,6 +28,7 @@
         use_regex: yes
         patterns: ".*toolkit.*{{ ansible_architecture }}.run"
       register: toolkit
+      when: toolkit_from_zip.matched == 0
 
     - name: install toolkit
       shell: "bash {{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
@@ -16,15 +37,18 @@
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
       register: toolkit_result
-      when: toolkit.matched > 0
+      when: toolkit_from_zip.matched == 0 and toolkit.matched > 0
       failed_when: "toolkit_result.rc != 0 and ('install success' not in toolkit_result.stdout and 'already installed' not in toolkit_result.stdout)"
 
     - name: message
       debug:
         msg:
           - "can not find toolkit package, toolkit install skipped"
-      when: "'skipped' in toolkit_result and toolkit_result.skipped and toolkit.matched == 0"
+      when: toolkit_from_zip.matched == 0 and toolkit.matched == 0
 
     - name: message
-      debug: var=toolkit_result
-      when: toolkit_result.changed
+      debug:
+        msg:
+          - "{{ toolkit_from_zip_result | default('NOT DEFINED') }}"
+          - "{{ toolkit_result | default('NOT DEFINED') }}"
+      when: toolkit_from_zip_result.changed or toolkit_result.changed

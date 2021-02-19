@@ -60,6 +60,7 @@ Prepare the software packages to be installed as required. (The driver, firmware
     - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
 Save the software packages to be installed in the **resources** directory. The following is an example.
+ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
 
 ```
 ascend-deployer
@@ -70,8 +71,10 @@ ascend-deployer
 |- playbooks
 |- README.md
 |- resources
+   |- A300-3010-npu_xxx.zip
    |- A300-3010-npu-driver_xxx.run
    |- A300-3010-npu-firmware_xxx.run
+   |- Ascend-cann-nnrt-xxx.zip
    |- Ascend-cann-nnrt-xxx.run
    |- ...
    |- Ascend-cann-toolkit-xxx.run

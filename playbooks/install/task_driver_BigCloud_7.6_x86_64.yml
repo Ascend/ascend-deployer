@@ -1,4 +1,20 @@
 # BigCloud Linux 7.6 use the driver of CentOS 7.6
+- name: find driver package for BigCloud Linux 7.6 from run_from_zip_dir first
+  find:
+    path: "{{ resources_dir }}/run_from_zip_dir"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+  register: driver_pkg_from_zip
+
+- name: install driver for BigCloud Linux from run_from_zip_dir first
+  shell: "bash {{driver_pkg_from_zip.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  become: yes
+  register: driver_result_from_zip
+  failed_when: "'install success' not in driver_result_from_zip.stdout"
+  when: driver_pkg_from_zip.matched > 0
+
 - name: find driver package for BigCloud Linux 7.6
   find:
     path: "{{ resources_dir }}"
@@ -7,19 +23,30 @@
     use_regex: yes
     patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg
-
-- debug:
-    var: driver_pkg
-    verbosity: 1
+  when: driver_pkg_from_zip.matched == 0
 
 - name: install driver for BigCloud Linux
   shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   become: yes
   register: driver_result
   failed_when: "'install success' not in driver_result.stdout"
-  when: driver_pkg.matched > 0
+  when: driver_pkg_from_zip.matched == 0 and driver_pkg.matched > 0
+
+- name: message
+  debug:
+    msg:
+      - "can not find driver package, driver install skipped"
+  when: driver_pkg_from_zip.matched == 0 and driver_pkg.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "{{ driver_result_from_zip | default('NOT DEFINED') }}"
+      - "{{ driver_result | default('NOT DEFINED') }}"
+  when: driver_result_from_zip.changed or driver_result.changed
 
 - name: service host_sys_init start
   shell: service host_sys_init start
+  become: yes
   failed_when: false
-  when: driver_pkg.matched > 0
+when: driver_result_from_zip.changed or driver_result.changed
