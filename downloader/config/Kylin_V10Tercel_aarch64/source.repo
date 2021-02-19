@@ -1,8 +1,8 @@
 [base]
-baseurl = https://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/base/aarch64/
+baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/base/aarch64/
 
 [updates]
-baseurl = https://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/updates/aarch64/
+baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/updates/aarch64/
 
 [addons]
-baseurl = https://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/addons/aarch64/
+baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/addons/aarch64/
