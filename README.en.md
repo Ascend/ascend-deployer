@@ -105,11 +105,11 @@ ascend-deployer
     Edit the **inventory_file** file. The format is shown as follows:
     ```
     [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root user
-    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
-    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
+    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
+    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
+    ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
     ```
-    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism.After the configuration is completed, check or installation process must be performed to complete the encryption of the file, otherwise the password of other server accounts may be disclosed.
+    Note: The **root** user names and passwords of the remote devices are configured in the **inventory** file. The Offline Deployment Tool encrypts the Inventory files configured with the password using the Ansidia-Vault mechanism. After the configuration is completed, check or installation process must be performed to complete the encryption of the file, otherwise the password of other server accounts may be disclosed.
 2. Run the **ansible ping** command to test the connectivity of the devices where the packages to be installed.
     ```
     # Configure environment variables.
