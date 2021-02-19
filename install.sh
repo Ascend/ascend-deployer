@@ -283,7 +283,7 @@ function verify_zip()
         local verify_success=$?
         if [[ ${verify_success} -eq 0 ]];then
             if [[ "$(basename ${zip_file})" =~ zip ]];then
-                unzip -o ${zip_file} -d ${BASE_DIR}/resources/
+                unzip -o ${zip_file} -d ${BASE_DIR}/resources/run_from_zip_dir
             elif [[ "$(basename ${zip_file})" =~ atlasedge ]];then
                 rm -rf ${BASE_DIR}/resources/run_from_zip_dir/atlasedge && mkdir ${BASE_DIR}/resources/run_from_zip_dir/atlasedge
                 tar -xf ${zip_file} -C ${BASE_DIR}/resources/run_from_zip_dir/atlasedge

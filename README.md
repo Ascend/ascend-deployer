@@ -60,6 +60,7 @@
     - 驱动和固件：[获取链接](https://ascend.huawei.com/#/hardware/firmware-drivers)
     - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
 将待安装软件包放置于resources目录下。参考如下：
+软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
 
 ```
 ascend-deployer
@@ -70,8 +71,10 @@ ascend-deployer
 |- playbooks
 |- README.md
 |- resources
+   |- A300-3010-npu_xxx.zip
    |- A300-3010-npu-driver_xxx.run
    |- A300-3010-npu-firmware_xxx.run
+   |- Ascend-cann-nnrt-xxx.zip
    |- Ascend-cann-nnrt-xxx.run
    |- ...
    |- Ascend-cann-toolkit-xxx.run

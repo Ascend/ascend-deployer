@@ -1,3 +1,12 @@
+- name: find firmware package from run_from_zip_dir first
+  find:
+    path: "{{ resources_dir }}/run_from_zip_dir"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
+  register: firmware_pkg_from_zip
+
 - name: find firmware package
   find:
     path: "{{ resources_dir }}"
@@ -6,10 +15,7 @@
     use_regex: yes
     patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
   register: firmware_pkg
-
-- debug:
-    var: firmware_pkg
-    verbosity: 1
+  when: firmware_pkg_from_zip.matched == 0
 
 - name: find upgrade tool
   find:
@@ -25,20 +31,31 @@
     msg:
     - "firmware install failed: driver not installed"
   failed_when: true
-  when: up_tool.matched == 0 and firmware_pkg.matched > 0
+  when: up_tool.matched == 0 and (firmware_pkg_from_zip.matched > 0 or firmware_pkg.matched > 0)
 
-- name: add run permission for firmware
-  file:
-    path: "{{ firmware_pkg.files[0].path }}"
-    mode: a+x
-  when: firmware_pkg.matched > 0
+- name: install firmware from run_from_zip_dir first
+  shell: "bash {{ firmware_pkg_from_zip.files[0].path }} --full --quiet"
+  become: yes
+  register: firmware_result_from_zip
+  when: firmware_pkg_from_zip.matched > 0
+  failed_when: "firmware_result_from_zip.rc != 0 and ('install success' not in firmware_result_from_zip.stdout and 'already installed' not in firmware_result_from_zip.stdout)"
 
 - name: install firmware
-  shell: "{{ firmware_pkg.files[0].path }} --full --quiet"
-  register: firmware_result
-  when: firmware_pkg.matched > 0
+  shell: "bash {{ firmware_pkg.files[0].path }} --full --quiet"
   become: yes
+  register: firmware_result
+  when: firmware_pkg_from_zip.matched == 0 and firmware_pkg.matched > 0
+  failed_when: "firmware_result.rc != 0 and ('install success' not in firmware_result.stdout and 'already installed' not in firmware_result.stdout)"
 
-- debug:
-    var: firmware_result
-    verbosity: 1
+- name: message
+  debug:
+    msg:
+      - "can not find firmware package, firmware install skipped"
+  when: firmware_pkg_from_zip.matched == 0 and firmware_pkg.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "{{ firmware_result_from_zip | default('NOT DEFINED') }}"
+      - "{{ firmware_result | default('NOT DEFINED') }}"
+  when: firmware_result_from_zip.changed or firmware_result.changed
