@@ -17,6 +17,9 @@
     {
         "name": "gcc-6", "used_by": [ "driver", "cann", "framework" ]
     },
+    { "name": "libquadmath0" },
+    { "name": "libcilkrts5" },
+    { "name": "libmpx2" },
     {
         "name": "libstdc++-6-dev", "used_by": [ "driver", "cann", "framework" ]
     },
@@ -138,10 +141,16 @@
         "name": "gfortran-6", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "gfortran", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name":"libgfortran3", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libblas3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libblas-common", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libopenblas-base", "used_by": [ "driver", "cann", "framework" ]

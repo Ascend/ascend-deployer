@@ -172,7 +172,7 @@ function install_sys_packages()
         else
             os_ver="CentOS_8.2"
         fi
-    elif [ ${os_name} == "EulerOS" ]; then
+    elif [ "${os_name}" == "EulerOS" ]; then
         if [ -z "${os_version##*SP8*}" ];then
             os_ver="EulerOS_2.0SP8"
         else
