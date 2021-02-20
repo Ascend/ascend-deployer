@@ -11,19 +11,11 @@
 |CentOS|8.2|x86_64|镜像默认Minimal模式|
 |ubuntu|18.04|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
 |ubuntu|18.04|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
-|BigCloud|7.6|aarch64|镜像默认Minimal模式|
-|BigCloud|7.6|x86_64|镜像默认Minimal模式|
-|SLES|12.4|x86_64|镜像默认Minimal模式|
-|EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
-|EulerOS|2.0SP9|aarch64|镜像默认Minimal模式|
-|EulerOS|2.0SP9|x86_64|镜像默认Minimal模式|
 ## 注意事项
 - 操作系统必须安装tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
-- EulerOS系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel软件包。若不存在，需自行准备相应的kernel-headers和kernel-devel软件包。
 - CentOS 8.2安装时，需要勾选“Additioanl Software for Selected Environment”中的Standard，若未勾选，系统安装完成后可能缺少tar等基本命令。
-- EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 # 操作指导
 ## 下载系统组件及python第三方依赖
 支持windows或linux系统使用下载功能。
@@ -75,9 +67,6 @@ ascend-deployer
    |- Ascend-cann-nnrt-xxx.run
    |- ...
    |- Ascend-cann-toolkit-xxx.run
-   |- ...
-   |- BigCloud_7.6_aarch64
-   |- BigCloud_7.6_x86_64
    |- ...
 ```
 ### 单机安装
@@ -152,32 +141,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 - 删除工具
 本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
-# 升级
-可执行以下命令，升级指定软件：
-`./install.sh --upgrade=<package_name>`
-<package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --upgrade=npu     //升级driver和firmware`
-注意事项：
-
-- 请按照“firmware>driver>CANN软件包（toolkit、nnrt等）“或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行升级。
-- 升级driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
-# 卸载
-可执行以下命令，卸载指定软件：
-`./install.sh --uninstall=<package_name>`
-<package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --uninstall=npu     //卸载driver和firmware`
-注意事项：
-请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
-
-# 更新离线部署工具
-能够通过以下操作实现离线安装工具自我更新。
-- windows
-运行upgrade_self.bat启动更新。
-- linux
-执行命令`./upgrade_self.sh`启动更新。
 # 参考信息
 ## <a name="parameter">参数说明</a>
-用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
+用户根据实际需要选择对应参数完成安装，命令格式如下：
 `./install.sh [options]`
 参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
 
@@ -190,8 +156,6 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 | --debug                      | 开发调测使用。                                               |
 | --install=<package_name>     | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。 |
 | --install-scene=<scene_name> | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。 |
-| --uninstall=<package_name>   | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。 |
-| --upgrade=<package_name>     | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。 |
 | --test=<target>              | 检查指定组件能否正常工作。                                   |
 
 ## <a name="scene">安装场景介绍</a>
@@ -273,7 +237,7 @@ userpassword=none   # 代理密码
 在downloader/config.ini文件中可进行下载行为配置，将其调整为下载所需OS的组件。
 ```
 [download]
-os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, ...          # 待安装部署的环境OS信息
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, ...          # 待安装部署的环境OS信息
 ```
 ###  <a name="sourceconfig">源配置</a>
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
