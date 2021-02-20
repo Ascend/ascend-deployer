@@ -11,19 +11,11 @@ The offline installation tool supports the download and installation of the OSs 
 |  CentOS  |   8.2   |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |  18.04  |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-| BigCloud |   7.6   |     AArch64      | A minimal image is installed by default. |
-| BigCloud |   7.6   |      x86_64      | A minimal image is installed by default. |
-|   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |      x86_64      | A minimal image is installed by default. |
 ## Precautions
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod** must be installed in the OS. The OpenSSH server is used by Ansible for connections over SSH. When installing the Ubuntu OS, you need to install it.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
-- For EulerOS, ensure that the source has the **kernel-headers** and **kernel-devel** software packages that match the kernel version (you can run the `uname -r` command to view the version). If the software packages do not exist, you need to prepare them.
 - When installing CentOS 8.2, select **Standard** in **Additional Software for Selected Environment**. Otherwise, basic commands such as **tar** may be missing after the OS is installed.
-- By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
 # Operation Instructions
 ## Downloading OS Components and Python Third-party Dependencies
 The download function can be used in the Windows or Linux OSs.
@@ -75,9 +67,6 @@ ascend-deployer
    |- Ascend-cann-nnrt-xxx.run
    |- ...
    |- Ascend-cann-toolkit-xxx.run
-   |- ...
-   |- BigCloud_7.6_aarch64
-   |- BigCloud_7.6_x86_64
    |- ...
 ```
 ### Single-Device Installation
@@ -151,33 +140,9 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
   For details about network model porting and training, see the [TensorFlow Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow) or [PyTorch Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow).
 - Delete this tool
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
-
-# Upgrade
-Run the following command to upgrade the specified software:
-`./install.sh --upgrade=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --upgrade=npu // Upgrade the driver and firmware.`
-Notes:
-
-- Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-- After the driver or firmware is upgraded, run the `reboot` command to restart the device for the driver and firmware to take effect.
-# Uninstallation
-Run the following command to uninstall the specified software:
-`./install.sh --uninstall=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --uninstall=npu     // Uninstall the driver and firmware`
-Note:
-Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
-
-# Offline Installation Tool Upgrade
-You can perform the following operation to upgrade the offline installation tool:
-- Windows
-  Run **upgrade_self.bat** to start the upgrade.
-- Linux
-  Run the `./upgrade_self.sh` command to start the upgrade.
 # Reference Information
 ## <a name="parameter">Parameter Description</a>
-Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
+Select corresponding parameters to install the software. The command format is as follows:
 `./install.sh [options]`
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
 
@@ -190,8 +155,6 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --debug                      | Performs debugging.                      |
 | --install=<package_name>     | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed. |
 | --install-scene=<scene_name> | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>. |
-| --uninstall=<package_name>   | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled. |
-| --upgrade=<package_name>     | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded. |
 | --test=<target>              | Checks whether the specified component works properly. |
 
 ## <a name="scene">Installation Scenarios</a>
@@ -273,7 +236,7 @@ For security purposes, if the proxy account and password have been configured in
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
 [download]
-os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, ...          # OS information of the environment to be deployed.
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, ...          # OS information of the environment to be deployed.
 ```
 ###  <a name="sourceconfig">Source Configuration</a>
 The offline installation tool provides the source configuration file. Replace it as required.
