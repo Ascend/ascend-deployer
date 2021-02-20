@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test system packages
+    import_tasks: case_sys_pkg.yml

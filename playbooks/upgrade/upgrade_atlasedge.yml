@@ -1,0 +1,36 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find atlasedge package
+      find:
+        paths: "{{ resources_dir }}/run_from_zip_dir/atlasedge_{{ ansible_architecture }}"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*atlasedge.*{{ansible_architecture}}.tar.gz"
+      register: atlasedge
+
+    - name: find AtlasEdge/run.sh in atlasedge install_path
+      find:
+        paths: "/usr/local/AtlasEdge/"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: "run.sh$"
+      register: atlasedge_run
+
+    - name: upgrade atlasedge
+      shell: "{{ atlasedge_run.files[0].path }} upgrade -i normal -f {{ atlasedge.files[0].path }} -s {{ atlasedge.files[0].path }}.cms -c {{ atlasedge.files[0].path }}.crl -e now -t AtlasEdge"
+      become: yes
+      register: atlasedge_result
+      when: atlasedge.matched > 0
+      failed_when: "atlasedge_result.rc !=0 and 'upgrade ok' not in atlasedge_result.stdout"
+
+    - name: message
+      debug:
+        msg:
+          - "can not find atlasedge package, atlasedge upgrade skipped"
+      when: "'skipped' in atlasedge_result and atlasedge_result.skipped and atlasedge.matched == 0"
+
+    - name: atlasedge upgrade message
+      debug: var=atlasedge_result
+      when: atlasedge_result.changed

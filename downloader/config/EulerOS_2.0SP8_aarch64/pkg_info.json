@@ -48,5 +48,20 @@
     { "name": "libaec",
       "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/libaec-1.0.4-1.oe1.aarch64.rpm",
       "sha256": "e2c0245c8b9a261aa2ddb678abafea33179bf2d8c9f72e1f2faf4c8df1fb5a19",
-      "info": "hdf5 need" }
+      "info": "hdf5 need" },
+    { "name": "docker-engine",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "libcgroup",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "iputils",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "inotify-tools",
+      "url": "http://mirrors.aliyun.com/epel/7/aarch64/Packages/i/inotify-tools-3.14-9.el7.aarch64.rpm",
+      "sha256": "0356b062c8d980935fe9120a7899899334cc77c7d46eb6f4e660b9407afba31c",
+      "info": "used for edge ha" },
+    { "name": "gzip",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "openssl",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "expect",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "iptables",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "libnetfilter_conntrack",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "libnfnetlink",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "ethtool",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "unzip",   "autodependency":"true", "info": "used for edge ha" }
 ]

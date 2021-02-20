@@ -322,5 +322,53 @@
     },
     {
         "name": "libstdc++6", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libnet1", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "arping", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libinotifytools0", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "inotify-tools", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libssl1.1", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "openssl", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libtcl8.6", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tcl-expect", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tcl8.6", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "expect", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "ethtool", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "iptables", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "gzip", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "docker-ce", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "docker-ce-cli", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "containerd.io", "used_by": ["edge", "ha"]
     }
 ]

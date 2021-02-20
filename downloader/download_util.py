@@ -134,10 +134,11 @@ class DownloadUtil:
             os.makedirs(parent_dir)
         res = cls.download_with_retry(url, dst_file_name)
         if not res:
-            print('download {} failed'.format(url))
             LOG.error('download %s failed', url)
+            return False
         else:
             LOG.info('download %s successfully', url)
+            return True
 
     @classmethod
     def download_with_retry(cls, url: str, dst_file_name: str, retry_times=5):

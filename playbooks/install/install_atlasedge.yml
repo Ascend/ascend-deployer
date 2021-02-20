@@ -1,0 +1,27 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: find atlasedge path
+      find:
+        paths: "{{ resources_dir }}/run_from_zip_dir"
+        recurse: no
+        file_type: directory
+        use_regex: yes
+        patterns: ".*atlasedge.*{{ansible_architecture}}"
+      register: atlasedge
+
+    - name: install atlasedge
+      shell: "bash {{ atlasedge.files[0].path }}/install.sh --install_dir=/usr/local/"
+      become: yes
+      register: atlasedge_result
+      when: atlasedge.matched > 0
+      failed_when: "atlasedge_result.rc !=0 and ('install success' not in atlasedge_result.stdout and 'has been installed' not in atlasedge_result.stdout)"
+
+    - name: atlasedge message
+      debug:
+        msg:
+          - "can not find atlasedge package, atlasedge install skipped"
+      when: "'skipped' in atlasedge_result and atlasedge_result.skipped and atlasedge.matched == 0"
+
+    - name: atlasedge install message
+      debug: var=atlasedge_result
+      when: atlasedge_result.changed

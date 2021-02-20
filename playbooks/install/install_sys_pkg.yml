@@ -6,3 +6,11 @@
     - name: install cmake3.5.2 for BigCloud Linux 7.6 and CentOS 7.6
       import_tasks: task_cmake.yml
       when: "'BigCloud' in os_and_arch or 'CentOS_7.6' in os_and_arch"
+
+    - name: find docker command
+      shell: command -v docker | wc -l
+      register: docker_exists
+
+    - name: restart docker
+      shell: "systemctl restart docker"
+      when: "docker_exists.stdout != 0"

@@ -9,3 +9,6 @@ baseurl=https://mirrors.huaweicloud.com/centos/8/AppStream/aarch64/os/
 
 [Everyting]
 baseurl=https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/
+
+[docker-ce]
+baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/8/aarch64/stable/
