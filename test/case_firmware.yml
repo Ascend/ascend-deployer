@@ -15,6 +15,7 @@
 
 - name: check firmware
   shell: /usr/local/Ascend/driver/tools/upgrade-tool --device_index -1 --system_version
+  become: yes
   register: upgrade_tool_result
   when: upgrade_tool.matched > 0
 

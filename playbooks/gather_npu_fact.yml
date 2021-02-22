@@ -6,7 +6,6 @@
     - name: gather facts first
       setup:
         fact_path: /notexist
-      become: yes
 
     - name: set custom fact tasks
       import_tasks: task_set_custom_fact.yml
@@ -15,7 +14,7 @@
       file:
         path: /etc/ansible/facts.d/
         state: directory
-        mode: 0750
+        mode: 0755
         recurse: yes
       become: yes
 
@@ -25,9 +24,8 @@
         dest: /etc/ansible/facts.d/npu_info.fact
         owner: "root"
         group: "root"
-        mode: "0500"
+        mode: "0555"
       become: yes
 
     - name: gather facts again
       setup:
-      become: yes

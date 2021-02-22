@@ -58,7 +58,7 @@
 
 - name: set resources_dir remote
   set_fact:
-    resources_dir: "~/resources"
+    resources_dir: "{{ ansible_user_dir }}/resources"
     cacheable: yes
   when: ansible_connection != "local"
 

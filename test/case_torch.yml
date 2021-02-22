@@ -30,6 +30,7 @@
   environment:
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64
+  become: yes
   register: import_torch
   when:
     - torch_ascend.matched > 0
@@ -47,6 +48,7 @@
   environment:
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:/usr/local/Ascend/add-ons/
+  become: yes
   register: import_torch_with_add_ons
   when:
     - torch_ascend.matched > 0
