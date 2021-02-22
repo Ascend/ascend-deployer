@@ -220,13 +220,8 @@ function install_python375()
     if [ "${g_os_name}" == "EulerOS" ];then
         python3.7 -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
-    if [ ${UID} == 0 ];then
-        echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
-        echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
-    else
-        echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > ${HOME}/.local/ascendrc 2>/dev/null
-        echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> ${HOME}/.local/ascendrc 2>/dev/null
-    fi
+    echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
+    echo "export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:\$LD_LIBRARY_PATH" >> ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
 }
 
 function install_ansible()

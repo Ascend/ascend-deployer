@@ -4,9 +4,11 @@
 
 - name: add usergroup
   shell: groupadd {{group}}
+  become: yes
   ignore_errors: yes
   when: "'0' in user_test.stdout"
 
 - name: add user
-  shell: useradd -g {{group}} -d /home/{{user}} -m {{user}}
+  shell: useradd -g {{group}} -d /home/{{user}} -m {{user}} -s /bin/bash
+  become: yes
   when: "'0' in user_test.stdout"
