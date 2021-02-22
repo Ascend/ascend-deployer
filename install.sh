@@ -29,7 +29,7 @@ if [ ${UID} == 0 ];then
 else
     readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
 fi
-readonly app_name_list=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit)
+readonly app_name_list=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
 
 function ansible_playbook()
 {
@@ -277,17 +277,40 @@ function verify_zip()
         unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
+        local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
         openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null
         local verify_success=$?
         if [[ ${verify_success} -eq 0 ]];then
             if [[ "$(basename ${zip_file})" =~ zip ]];then
                 unzip -o ${zip_file} -d ${BASE_DIR}/resources/run_from_zip_dir
-            elif [[ "$(basename ${zip_file})" =~ atlasedge ]];then
-                rm -rf ${BASE_DIR}/resources/run_from_zip_dir/atlasedge && mkdir ${BASE_DIR}/resources/run_from_zip_dir/atlasedge
-                tar -xf ${zip_file} -C ${BASE_DIR}/resources/run_from_zip_dir/atlasedge
-            elif [[ "$(basename ${zip_file})" =~ ha ]];then
-                rm -rf ${BASE_DIR}/resources/run_from_zip_dir/ha && mkdir ${BASE_DIR}/resources/run_from_zip_dir/ha
-                tar -xf ${zip_file} -C ${BASE_DIR}/resources/run_from_zip_dir/ha
+            elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_x86_64
+                rm -rf ${atlasedge_dir} && mkdir ${atlasedge_dir}
+                cp ${zip_file} ${atlasedge_dir}
+                cp ${cms_file} ${atlasedge_dir}
+                cp ${crl_file} ${atlasedge_dir}
+                tar -xf ${zip_file} -C ${atlasedge_dir}
+            elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
+                local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_x86_64
+                rm -rf ${ha_dir} && mkdir ${ha_dir}
+                cp ${zip_file} ${ha_dir}
+                cp ${cms_file} ${ha_dir}
+                cp ${crl_file} ${ha_dir}
+                tar -xf ${zip_file} -C ${ha_dir}
+            elif [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_aarch64
+                rm -rf ${atlasedge_dir} && mkdir ${atlasedge_dir}
+                cp ${zip_file} ${atlasedge_dir}
+                cp ${cms_file} ${atlasedge_dir}
+                cp ${crl_file} ${atlasedge_dir}
+                tar -xf ${zip_file} -C ${atlasedge_dir}
+            elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
+                local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_aarch64
+                rm -rf ${ha_dir} && mkdir ${ha_dir}
+                cp ${zip_file} ${ha_dir}
+                cp ${cms_file} ${ha_dir}
+                cp ${crl_file} ${ha_dir}
+                tar -xf ${zip_file} -C ${ha_dir}
             fi
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp

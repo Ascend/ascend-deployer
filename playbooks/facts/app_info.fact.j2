@@ -4,6 +4,7 @@ import json
 import os
 import platform
 import sys
+import re
 
 
 def get_info_from_config(pkg_name, config_file='/etc/ascend_install.info'):
@@ -57,6 +58,39 @@ def get_info_dict_list(pkg_name, target_paths, target_file):
         info_dict['version'] = pkg_version
         info_dict_list.append(info_dict)
 
+    return info_dict_list
+
+
+def getinfo_from_xml(file_path):
+    if not os.path.exists(file_path):
+        return {}
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+    archs = {'ARM': 'aarch64', 'x86': 'x86_64'}
+    info_dict = {}
+    for line in lines:
+        if 'OutterName' in line:
+            info_dict['name'] = re.findall('>(.*)<', line)[0]
+        if 'ProcessorArchitecture' in line:
+            arch = re.findall('>(.*)<', line)[0]
+            info_dict['install_arch'] = archs.get(arch, arch)
+        if 'Version' in line:
+            info_dict['version'] = re.findall('>(.*)<', line)[0]
+    info_dict['install_path'] = '/usr/local/'
+    return info_dict
+
+
+def get_edge_install_info(pkg_name):
+    info_dict_list = []
+    if pkg_name == 'atlasedge':
+        xml_file = '/usr/local/AtlasEdge/version.xml'
+    elif pkg_name == 'ha':
+        xml_file = '/usr/local/ha/version.xml'
+    else:
+        return info_dict_list
+    res = getinfo_from_xml(xml_file)
+    if res:
+        info_dict_list.append(res)
     return info_dict_list
 
 
@@ -129,6 +163,14 @@ def get_app_install_info(app_name='all'):
     toolkit = get_toolkit_install_info()
     if app_name in ['all', 'toolkit'] and toolkit:
         app_install_info.extend(toolkit)
+    if app_name in ['all', 'atlasedge']:
+        edge = get_edge_install_info('atlasedge')
+        if edge:
+            app_install_info.extend(edge)
+    if app_name in ['all', 'ha']:
+        ha = get_edge_install_info('ha')
+        if ha:
+            app_install_info.extend(ha)
     return app_install_info
 
 

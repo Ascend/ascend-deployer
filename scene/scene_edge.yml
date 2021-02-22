@@ -1,0 +1,13 @@
+- hosts: '{{ hosts_name }}'
+
+- name: install system dependencies
+  import_playbook: ../playbooks/install/install_sys_pkg.yml
+
+- name: install driver and firmware
+  import_playbook: ../playbooks/install/install_npu.yml
+
+- name: install atlasedge
+  import_playbook: ../playbooks/install/install_atlasedge.yml
+
+- name: install ha
+  import_playbook: ../playbooks/install/install_ha.yml
