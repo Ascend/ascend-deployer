@@ -14,3 +14,4 @@
     - name: restart docker
       shell: "systemctl restart docker"
       when: "docker_exists.stdout != 0"
+      become: yes
