@@ -14,3 +14,6 @@
 
   - name: test torch
     include_tasks: case_torch.yml
+
+  - name: test system packages
+    import_tasks: case_sys_pkg.yml

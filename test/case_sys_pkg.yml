@@ -1,5 +1,6 @@
 - name: test system packages' commands
   shell: "command -v {{ item }} | wc -l "
+  become: yes
   register: x
   failed_when: "'0' in x.stdout"
   with_items:
