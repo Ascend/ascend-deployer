@@ -18,8 +18,3 @@
 
     - name: show uninstall ha result
       debug: var=uninstall_ha_result
-
-    - name: show info
-      debug: var={{ item }}
-      with_items:
-        - "{{ ansible_local.app_info.result }}"
