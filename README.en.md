@@ -13,6 +13,7 @@ The offline installation tool supports the download and installation of the OSs 
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 | BigCloud |   7.6   |     AArch64      | A minimal image is installed by default. |
 | BigCloud |   7.6   |      x86_64      | A minimal image is installed by default. |
+| BigCloud |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
