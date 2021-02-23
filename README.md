@@ -11,9 +11,12 @@
 |CentOS|8.2|x86_64|镜像默认Minimal模式|
 |ubuntu|18.04|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
 |ubuntu|18.04|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
+|Debian|9.9|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
+|Debian|9.9|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
 |BigCloud|7.6|aarch64|镜像默认Minimal模式|
 |BigCloud|7.6|x86_64|镜像默认Minimal模式|
 |SLES|12.4|x86_64|镜像默认Minimal模式|
+|Kylin|V10Tercel|aarch64|镜像默认Minimal模式|
 |EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
 |EulerOS|2.0SP9|aarch64|镜像默认Minimal模式|
 |EulerOS|2.0SP9|x86_64|镜像默认Minimal模式|
@@ -40,10 +43,9 @@
     2. 启动下载。
 运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
 - linux
-    执行`./start_download.sh`启动下载。
+    执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
 ## 安装操作
 ### 安装须知
-- 由于安装过程需使用dpkg， rpm等包管理器，因此仅支持root用户运行。
 
 - 离线安装工具在安装驱动、CANN软件包过程中，会默认创建HwHiAiUser用户作为软件包运行用户，若用户需自行指定运行用户和用户组，可自行修改inventory_file文件。文件内容如下：
     ```
@@ -84,7 +86,14 @@ ascend-deployer
    |- ...
 ```
 ### 单机安装
-1. 将ascend-deployer整个目录上传到待安装设备上。
+1. 配置单机的inventory_file文件。
+    编辑inventory_file文件，格式如下：
+    ```
+    [ascend]
+    localhost ansible_connection='local' # root用户
+    localhost ansible_connection='local' ansible_become_pass='password' # 非root用户
+    ```
+    注意：支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与非root用户密码相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限。
 2. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
     - 指定软件安装
 `./install.sh --install=<package_name>`
@@ -112,16 +121,18 @@ ascend-deployer
     ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # 非root用户
     ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # 非root用户
     ```
-    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行check或者安装过程才能完成对该文件的加密，否则可能导致其他服务器账户密码的泄露。
+    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限。
 2. 执行ansible ping测试待安装设备连通性。
     ```
     #配置环境变量
     export PATH=/usr/local/python3.7.5/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
     #测试待安装设备连通性
-    ansible all -i ./inventory_file -m ping
+    ansible all -i ./inventory_file -m ping  # inventory_file未加密时
+    ansible all -i ./inventory_file -m ping --ask-vault-pass  # inventory_file已加密时
     ```
     若当前环境未安装ansible，可执行`./install.sh --check`
+    若inventory_file已加密，测试待安装设备连通性时需要添加--ask-vault-pass参数
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
 3. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
     - 指定软件安装
@@ -187,10 +198,12 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 | 参数                         | 说明                                                         |
 | :--------------------------- | ------------------------------------------------------------ |
 | --help  -h                   | 查询帮助信息。                                               |
-| --check                      | 检查环境。                                                   |
-| --clean                      | 清理resources目录。                                          |
+| --check                      | 检查环境，确保控制机安装好python3.7.5、ansible等组件，并检查与待安装设备的连通性。  |
+| --clean                      | 清理待安装设备用户家目录下的resources目录。                                      |
 | --nocopy                     | 在批量安装时不进行资源拷贝。                                 |
 | --debug                      | 开发调测使用。                                               |
+| --output-file                | 重定向命令执行的输出结果到指定文件。                                               |
+| --stdout_callback=<callback_name>| 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。    |
 | --install=<package_name>     | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。 |
 | --install-scene=<scene_name> | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。 |
 | --uninstall=<package_name>   | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。 |
@@ -249,8 +262,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 如需自定义安装场景，可参考上述配置文件进行定制。
 ##  <a name="config">配置说明</a>
 ### 代理配置
-如需使用http代理，需将downloader/config.ini的enable参数改为true。
-离线安装工具会优先读取环境变量中的代理配置，如果环境变量中无代理配置，则会从downloader/config.ini文件中读取代理配置。
+如需使用http代理，其一是在环境变量中配置代理（推荐），其二是在downloader/config.ini文件中配置代理
 1. 环境变量中配置代理，参考如下
 ```
 # 配置环境变量
@@ -264,12 +276,13 @@ export https_proxy="http://user:password@proxyserverip:port"
 [proxy]
 enable=false        # 是否开启代理配置参数
 verify=true         # 是否校验https证书
-protocol=           # http或者https
+protocol=https      # HTTP协议
 hostname=           # 代理服务器
 port=               # 端口
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
+需将置enable参数改为true，并配置可用的hostname、port、username、userpassword。
 安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
 ### 下载行为配置
