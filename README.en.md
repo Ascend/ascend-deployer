@@ -11,10 +11,13 @@ The offline installation tool supports the download and installation of the OSs 
 |  CentOS  |   8.2   |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |  18.04  |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
+|  Debian  |   9.9   |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
+|  Debian  |   9.9   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 | BigCloud |   7.6   |     AArch64      | A minimal image is installed by default. |
 | BigCloud |   7.6   |      x86_64      | A minimal image is installed by default. |
 | BigCloud |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
+|  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP9  |      x86_64      | A minimal image is installed by default. |
@@ -41,11 +44,9 @@ The download function can be used in the Windows or Linux OSs.
     2. Start download.
       Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-    Run the `./start_download.sh` command to start download.
+    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
 ## Installation
 ### Notice
-- The installation requires package managers such as **dpkg** and **rpm**. Therefore, only the **root** user can run the package manager.
-
 - When the offline installation tool installs the driver and CANN software packages, the **HwHiAiUser** user is created by default as the running user. If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
     ```
     [ascend:vars]
@@ -85,7 +86,14 @@ ascend-deployer
    |- ...
 ```
 ### Single-Device Installation
-1. Upload entire **ascend-deployer** directory to the device where the packages to be installed.
+1. Configure a stand-alone inventory_file file.
+    Edit the **inventory_file** file. The format is shown as follows:
+    ```
+    [ascend]
+    localhost ansible_connection='local' # root user
+    localhost ansible_connection='local' ansible_become_pass='password' # not root user
+    ```
+    Note: supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism. ./install.sh --check or install, test and other commands can be executed to complete the encryption of the file after the configuration is completed, otherwise the account password may be leaked;Non-root users using the offline deployment tool need to have access to the ASCEND -Deployer directory.
 2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
     - Software-specific installation
       `./install.sh --install=<package_name>`
@@ -113,16 +121,18 @@ ascend-deployer
     ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
     ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
     ```
-    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism.After the configuration is completed, check or installation process must be performed to complete the encryption of the file, otherwise the password of other server accounts may be disclosed.
+    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism. `./install.sh --check` or install, test and other commands can be executed to complete the encryption of the file after the configuration is completed, otherwise the account password may be leaked;Non-root users using the offline deployment tool need to have access to the ASCEND -Deployer directory.
 2. Run the **ansible ping** command to test the connectivity of the devices where the packages to be installed.
     ```
     # Configure environment variables.
     export PATH=/usr/local/python3.7.5/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
     # Test the connectivity of the devices.
-    ansible all -i ./inventory_file -m ping
+    ansible all -i ./inventory_file -m ping # Inventory_file is not encrypted
+    ansible all -i ./inventory_file -m ping --ask-vault-pass # Inventory_file is encrypted
     ```
     If Ansible is not installed in the current environment, run the `./install.sh --check` command.
+    If inventory_file is encrypted, you need to add the `--ask-vault-pass` parameter to test the connectivity of the device to be installed
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 3. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
     - Software-specific installation
@@ -188,10 +198,12 @@ The following table describes the parameters. You can run the `./install.sh --he
 | Parameter                    | Description                              |
 | :--------------------------- | ---------------------------------------- |
 | --help  -h                   | Queries help information.                |
-| --check                      | Checks the environment.                  |
-| --clean                      | Cleans the resources directory.          |
+| --check                      | Check the environment to ensure that the control machine has installed Python 3.7.5, Ansible and other components, and check the connectivity with the device to be installed.                  |
+| --clean                      | Clean the Resources directory under the user's home directory for the device to be installed.          |
 | --nocopy                     | Forbids resources copying during batch installation. |
 | --debug                      | Performs debugging.                      |
+| --output-file                | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                    |
+| --stdout_callback=<callback_name>| Performs debugging.                      |
 | --install=<package_name>     | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed. |
 | --install-scene=<scene_name> | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>. |
 | --uninstall=<package_name>   | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled. |
@@ -251,8 +263,7 @@ The configuration files for the preceding installation scenarios are stored in t
 To customize an installation scenario, refer to the preceding configuration file.
 ## <a name="config">Configuration Description</a>
 ### Proxy Configuration
-To use HTTP proxies, change the enable parameter of downloader/config.ini to true.
-The offline installation tool reads the agent configuration in the environment variable first, and if there is no agent configuration in the environment variable, reads the agent configuration from the downloader/config.ini file.
+If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file.
 1. Configure the agent in the environment variable as follows
 ```
 # Configure environment variables.
@@ -266,12 +277,13 @@ Where "user" is the user's internal network name, "password" is the user's passw
 [proxy]
 enable=false        # Whether to enable or disable the proxy.
 verify=true         # Whether to verify the HTTPS certificate.
-protocol=           # http or https
+protocol=https      # The HTTP protocol
 hostname=           # proxy server
 port=               # proxy port
 username=none       # Proxy account
 userpassword=none   # Proxy password
 ```
+You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
 For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
 ### Download Configuration
