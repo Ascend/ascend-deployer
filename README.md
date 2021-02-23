@@ -13,6 +13,7 @@
 |ubuntu|18.04|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
 |BigCloud|7.6|aarch64|镜像默认Minimal模式|
 |BigCloud|7.6|x86_64|镜像默认Minimal模式|
+|BigCloud|7.7|aarch64|镜像默认Minimal模式|
 |SLES|12.4|x86_64|镜像默认Minimal模式|
 |EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
 |EulerOS|2.0SP9|aarch64|镜像默认Minimal模式|
