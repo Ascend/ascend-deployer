@@ -20,7 +20,7 @@
       file:
         path: /etc/ansible/facts.d/
         state: directory
-        mode: 0750
+        mode: 0755
         recurse: yes
       become: yes
 
@@ -30,7 +30,7 @@
         dest: /etc/ansible/facts.d/app_info.fact
         owner: "root"
         group: "root"
-        mode: "0500"
+        mode: "0555"
       become: yes
 
     - name: gather facts again

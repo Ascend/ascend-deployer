@@ -4,13 +4,13 @@
     # set changed when npu-smi info not work
     - name: check if driver is already installed
       shell: npu-smi info
+      environment:
+        PATH: /usr/local/python3.7.5/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64
+      become: yes
       register: smi_info
       failed_when: false
       changed_when: smi_info.rc != 0
-
-    - debug:
-        var: smi_info
-        verbosity: 1
 
     - name: create user if not exist
       import_tasks: ../create_user.yml
