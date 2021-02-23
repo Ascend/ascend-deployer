@@ -209,6 +209,7 @@ The offline installation tool provides several basic installation scenarios.
 | train_dev             | Driver, firmware, nnae、toolbox, the Toolkit, torch, TFPlugin, and TensorFlow | Training development scenario            |
 | train_run             | Driver, firmware, nnae, toolbox, torch, TFPlugin, and TensorFlow | Training running scenario                |
 | vmhost                | Driver, firmware, and toolbox            | VM host scenario                         |
+| edge                  | Driver, firmware, atlasedge, ha          | Install MindX middleware, HA                        |
 
 The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_infer_run.yml** of the inference development scenario:
 

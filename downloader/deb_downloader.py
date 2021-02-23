@@ -67,13 +67,17 @@ class Apt(object):
         self.source = {}
         self.source_list = []
         self.mirror_url = None
+        self.docker_url = None
         script = os.path.realpath(__file__)
         self.base_dir = os.path.dirname(os.path.dirname(script))
         self.repo_file = os.path.join(self.base_dir, source_file)
         with open(self.repo_file) as file:
             for line in file.readlines():
                 tmp = line.split(' ')
-                self.mirror_url = tmp[1]
+                if 'docker-ce' not in tmp[1]:
+                    self.mirror_url = tmp[1]
+                else:
+                    self.docker_url = tmp[1]
                 url = tmp[1] + 'dists/' + tmp[2]
                 self.source[url] = tmp[3:]
 
@@ -122,6 +126,8 @@ class Apt(object):
         if len(ver_a) == len(ver_b):
             return ver_a > ver_b
         else:
+            if 'containerd.io' in ver_a:
+                return ver_a > ver_b
             return len(ver_a) > len(ver_b)
 
     def make_cache_from_packages(self, packages_content):
@@ -175,6 +181,8 @@ class Apt(object):
             print("can't find package {0}".format(name))
             LOG.error("can't find package {0}".format(name))
             return
+        if name in ["docker-ce", "docker-ce-cli", "containerd.io"] and self.docker_url is not None:
+            url = self.docker_url + self.cache[name].get_filename()
 
         try:
             LOG.info('[{0}] download from [{1}]'.format(name, url))
@@ -185,8 +193,10 @@ class Apt(object):
                 LOG.info("{0} no need download again".format(name))
                 print(name.ljust(60), 'exists')
                 return
-            DOWNLOAD_INST.download(url, dst_file)
-            print(name.ljust(60), 'download success')
+            if DOWNLOAD_INST.download(url, dst_file):
+                print(name.ljust(60), 'download success')
+                return
+            print(name.ljust(60), 'download failed')
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[{0}]->{1}'.format(url, http_error))

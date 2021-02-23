@@ -209,6 +209,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 | train_dev | driver、firmware、nnae、toolbox、toolkit、torch、tfplugin、tensorflow | 训练开发场景           |
 | train_run | driver、firmware、nnae、toolbox、torch、tfplugin、tensorflow | 训练运行场景           |
 | vmhost    | driver、firmware、toolbox                                    | 虚拟机host场景         |
+| edge      | driver、firmware、atlasedge、ha                                    | 安装MindX中间件、HA         |
 
 上述安装场景的配置文件位于scene目录下，如推理开发场景的配置文件scene/scene_infer_run.yml:
 

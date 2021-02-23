@@ -18,8 +18,3 @@
 
     - name: show uninstall atlasedge result
       debug: var=uninstall_atlasedge_result
-
-    - name: show info
-      debug: var={{ item }}
-      with_items:
-        - "{{ ansible_local.app_info.result }}"

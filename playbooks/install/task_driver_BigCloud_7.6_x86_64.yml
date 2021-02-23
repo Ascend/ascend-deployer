@@ -49,4 +49,4 @@
   shell: service host_sys_init start
   become: yes
   failed_when: false
-when: driver_result_from_zip.changed or driver_result.changed
+  when: driver_result_from_zip.changed or driver_result.changed
