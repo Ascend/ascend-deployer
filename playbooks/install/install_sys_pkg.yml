@@ -15,3 +15,4 @@
       shell: "systemctl restart docker"
       when: "docker_exists.stdout != 0"
       become: yes
+      when: "'CentOS_7.6_aarch64' in os_and_arch or 'CentOS_8.2_aarch64' in os_and_arch or 'EulerOS_2.0SP8_aarch64' in os_and_arch or 'Ubuntu_18.04_aarch64' in os_and_arch"
