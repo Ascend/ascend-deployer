@@ -1,6 +1,6 @@
 # 简介
 ## 功能描述
-离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。
+离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device IP配置脚本，若有需要可取用。
 ## 环境要求
 离线安装工具现支持如下操作系统的组件下载及安装。
 |操作系统|版本|CPU架构|安装类型|
@@ -284,7 +284,7 @@ port=               # 端口
 username=none       # 代理账号
 userpassword=none   # 代理密码
 ```
-需将置enable参数改为true，并配置可用的hostname、port、username、userpassword。
+需将enable参数改为true，并配置可用的hostname、port、username、userpassword。
 安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
 ### 下载行为配置

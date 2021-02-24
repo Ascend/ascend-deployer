@@ -1,6 +1,6 @@
 # Overview
 ## Functions
-The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages.
+The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory contains an additional Device IP configuration script that can be used if needed.
 ## Environment Requirements
 The offline installation tool supports the download and installation of the OSs listed in the following table:
 |    OS    | Version | CPU Architecture |            Installation Type             |
