@@ -7,6 +7,7 @@
         file_type: directory
         use_regex: yes
         patterns: ".*atlasedge.*{{ansible_architecture}}"
+      when: ansible_local.npu_info.scene == 'infer'
       register: atlasedge
 
     - name: install atlasedge
