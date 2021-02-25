@@ -1,5 +1,5 @@
-# BigCloud Linux 7.6 use the driver of CentOS 7.6
-- name: find driver package for BigCloud Linux 7.6 from run_from_zip_dir first
+# BigCloud Linux 7.7 use the driver of CentOS 7.6
+- name: find driver package for BigCloud Linux 7.7 from run_from_zip_dir first
   find:
     path: "{{ resources_dir }}/run_from_zip_dir"
     recurse: no
@@ -15,7 +15,7 @@
   failed_when: "'install success' not in driver_result_from_zip.stdout"
   when: driver_pkg_from_zip.matched > 0
 
-- name: find driver package for BigCloud Linux 7.6
+- name: find driver package for BigCloud Linux 7.7
   find:
     path: "{{ resources_dir }}"
     recurse: no
