@@ -14,15 +14,21 @@
       shell: "bash {{ atlasedge.files[0].path }}/install.sh --install_dir=/usr/local/"
       become: yes
       register: atlasedge_result
-      when: atlasedge.matched > 0
+      when: atlasedge.matched is defined and atlasedge.matched > 0
       failed_when: "atlasedge_result.rc !=0 and ('install success' not in atlasedge_result.stdout and 'has been installed' not in atlasedge_result.stdout)"
+
+    - name: atlasedge scene message
+      debug:
+        msg:
+          - "scene is not infer, atlasedge install skipped"
+      when: atlasedge.matched is undefined
 
     - name: atlasedge message
       debug:
         msg:
           - "can not find atlasedge package, atlasedge install skipped"
-      when: "'skipped' in atlasedge_result and atlasedge_result.skipped and atlasedge.matched == 0"
+      when: atlasedge.matched is defined and atlasedge.matched == 0
 
     - name: atlasedge install message
       debug: var=atlasedge_result
-      when: atlasedge_result.changed
+      when: atlasedge_result.changed is defined and atlasedge_result.changed
