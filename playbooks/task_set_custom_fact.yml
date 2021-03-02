@@ -41,7 +41,7 @@
 
 - name: set os code name
   set_fact:
-    code_name: os_codename.stdout
+    code_name: "{{ os_codename.stdout }}"
     cacheable: yes
   when: os_id.stdout in code_name_dict
 

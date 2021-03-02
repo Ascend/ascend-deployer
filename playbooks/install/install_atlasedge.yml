@@ -1,5 +1,8 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: create user if not exist
+      import_tasks: ../create_user.yml
+
     - name: find atlasedge path
       find:
         paths: "{{ resources_dir }}/run_from_zip_dir"

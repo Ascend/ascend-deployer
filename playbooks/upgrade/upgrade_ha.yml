@@ -1,5 +1,8 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: create user if not exist
+      import_tasks: ../create_user.yml
+
     - name: find ha package
       find:
         paths: "{{ resources_dir }}/run_from_zip_dir/ha_{{ ansible_architecture }}"
@@ -23,15 +26,21 @@
       shell: "{{ atlasedge_run.files[0].path }} upgrade -i normal -f {{ ha.files[0].path }} -s {{ ha.files[0].path }}.cms -c {{ ha.files[0].path }}.crl -e now -t HA"
       become: yes
       register: ha_result
-      when: ha.matched > 0
+      when: ha.matched is defined and ha.matched > 0
       failed_when: "ha_result.rc !=0 and 'upgrade ok' not in ha_result.stdout"
+
+    - name: ha scene message
+      debug:
+        msg:
+          - "scene is not infer, ha upgrade skipped"
+      when: ha.matched is undefined
 
     - name: message
       debug:
         msg:
           - "can not find ha package, ha upgrade skipped"
-      when: "'skipped' in ha_result and ha_result.skipped and ha.matched == 0"
+      when: ha.matched is defined and ha.matched == 0
 
     - name: ha upgrade message
       debug: var=ha_result
-      when: ha_result.changed
+      when: ha_result.changed is defined and ha_result.changed

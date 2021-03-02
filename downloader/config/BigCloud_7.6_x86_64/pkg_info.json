@@ -178,27 +178,23 @@
     },
     {
         "name": "docker-ce-cli",
-        "version": "20.10.2",
-        "release": "3.el7",
-        "sha256": "ebb7dc053fec4d57978c7d500bbe0f114c116361bd9206e45adf79ae10c41838"
+        "version": "20.10.3",
+        "release": "3.el7"
     },
     {
         "name": "containerd.io",
         "version": "1.4.3",
-        "release": "3.1.el7",
-        "sha256": "e0e402795fa2dae80676673bc30accbfea5acc23de588f943bfc2da8a59a0c85"
+        "release": "3.1.el7"
     },
     {
         "name": "docker-ce-rootless-extras",
-        "version": "20.10.0",
-        "release": "3.el7",
-        "sha256": "d8b35b48d6f92e45d0007f84883335065684bab677cd30697e011584627d33ad"
+        "version": "20.10.3",
+        "release": "3.el7"
     },
     {
         "name": "docker-ce",
-        "version": "20.10.2",
-        "release": "3.el7",
-        "sha256": "c70ef3da602c4b2661841e8b0c31b18e781fa7e94470ecd767751282ee240724"
+        "version": "20.10.3",
+        "release": "3.el7"
     },
     {
         "name": "iputils", "used_by": ["edge", "ha"]

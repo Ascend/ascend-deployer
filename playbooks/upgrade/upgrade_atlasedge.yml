@@ -1,5 +1,8 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: create user if not exist
+      import_tasks: ../create_user.yml
+
     - name: find atlasedge package
       find:
         paths: "{{ resources_dir }}/run_from_zip_dir/atlasedge_{{ ansible_architecture }}"
@@ -23,15 +26,21 @@
       shell: "{{ atlasedge_run.files[0].path }} upgrade -i normal -f {{ atlasedge.files[0].path }} -s {{ atlasedge.files[0].path }}.cms -c {{ atlasedge.files[0].path }}.crl -e now -t AtlasEdge"
       become: yes
       register: atlasedge_result
-      when: atlasedge.matched > 0
+      when: atlasedge.matched is defined and atlasedge.matched > 0
       failed_when: "atlasedge_result.rc !=0 and 'upgrade ok' not in atlasedge_result.stdout"
+
+    - name: atlasedge scene message
+      debug:
+        msg:
+          - "scene is not infer, atlasedge upgrade skipped"
+      when: atlasedge.matched is undefined
 
     - name: message
       debug:
         msg:
           - "can not find atlasedge package, atlasedge upgrade skipped"
-      when: "'skipped' in atlasedge_result and atlasedge_result.skipped and atlasedge.matched == 0"
+      when: atlasedge.matched is defined and atlasedge.matched == 0
 
     - name: atlasedge upgrade message
       debug: var=atlasedge_result
-      when: atlasedge_result.changed
+      when: atlasedge_result.changed is defined and atlasedge_result.changed
