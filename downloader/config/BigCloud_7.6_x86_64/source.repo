@@ -9,3 +9,6 @@ baseurl=http://mirrors.bclinux.org/bclinux/el7.6/extras/x86_64/
 
 [kernelbek]
 baseurl=http://mirrors.bclinux.org/bclinux/el7.6/kernel/bek/x86_64/
+
+[docker-ce]
+baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/x86_64/stable/
