@@ -45,6 +45,12 @@
     cacheable: yes
   when: os_id.stdout in code_name_dict
 
+- name: set erleros os_version
+  set_fact:
+    os_version: "{{ os_version[0:2] + code_name[2] }}"
+    cacheable: yes
+  when: "'euler' in os_id.stdout"
+
 - name: set os_and_arch
   set_fact:
     os_and_arch: "{{os_name}}_{{os_version}}{{code_name}}_{{ansible_architecture}}"
