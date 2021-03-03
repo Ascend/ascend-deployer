@@ -6,6 +6,7 @@ os_dict:
   sles: "SLES"
   kylin: "Kylin"
   bclinux: "BigCloud"
+  Linx: "Linx"
 os_version_dict:
   centos:
     "7": "7.6"

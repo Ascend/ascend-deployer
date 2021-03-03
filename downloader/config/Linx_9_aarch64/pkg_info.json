@@ -1,0 +1,287 @@
+[
+    {
+        "name": "make", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjsoncpp1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libuv1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libcurl3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libldap-2.4-2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgssapi3-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libasn1-8-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhcrypto4-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libheimbase1-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libheimntlm0-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libkrb5-26-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhx509-5-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libwind0-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libroken18-heimdal", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsasl2-2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsasl2-modules-db", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libldap-common", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libnghttp2-14", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "librtmp1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name":"libarchive13", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name":"librhash0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "zlib1g", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "zlib1g-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsqlite3-0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsqlite3-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "openssl", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libssl1.1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libssl-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libffi-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "unzip", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpci3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pciutils", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "net-tools", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libblas-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgfortran-6-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gfortran-6", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libblas3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libopenblas-base", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libopenblas-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "liblzo2-2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "sshpass", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsz2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5-helpers", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-100", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libhdf5-cpp-100", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg62-turbo-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libjpeg62-turbo", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pkg-config", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libc6-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libc6", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "dpkg-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "patch", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libdpkg-perl", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-base", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "perl-modules-5.24", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libperl5.24", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libisl15", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libmpc3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libmpfr4", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libc-dev-bin", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libselinux1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libselinux1-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "python3-selinux", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsepol1-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpcre3-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpcre16-3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpcre32-3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpcrecpp0v5", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "dkms", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libbz2-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libbz2-1.0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "liblzma-dev", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libnet1", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "arping", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libinotifytools0", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "inotify-tools", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libssl1.1", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "openssl", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libtcl8.6", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tcl-expect", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tcl8.6", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "expect", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "ethtool", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "iptables", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "gzip", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "docker-ce", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "docker-ce-cli", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "containerd.io", "used_by": ["edge", "ha"]
+    }
+]

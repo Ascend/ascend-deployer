@@ -3,3 +3,9 @@
   become: yes
   when:
       - ansible_pkg_mgr == 'apt'
+      - "'Linx' not in {{ ansible_distribution }}"
+
+- name: apt install system packages in Linx OS
+  shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ resources_dir }}/Linx_{{ os_version}}_{{ ansible_architecture }}/*.deb
+  become: yes
+  when: "'Linx' in {{ ansible_distribution }}"
