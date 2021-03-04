@@ -3,3 +3,6 @@ baseurl=https://mirrors.huaweicloud.com/opensuse/distribution/leap/15.0/repo/oss
 
 [non_oss]
 baseurl=https://mirrors.huaweicloud.com/opensuse/distribution/leap/15.0/repo/non-oss/
+
+[docker-ce]
+baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/x86_64/stable/

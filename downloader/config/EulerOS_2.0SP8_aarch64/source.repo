@@ -1,2 +1,5 @@
 [base]
 baseurl=https://repo.huaweicloud.com/euler/2.8/os/aarch64/
+
+[epel]
+baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64/
