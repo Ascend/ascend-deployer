@@ -186,9 +186,9 @@ function install_sys_packages()
         fi
     elif [ "${os_name}" == "EulerOS" ]; then
         if [ -z "${os_version##*SP8*}" ];then
-            os_ver="EulerOS_2.0SP8"
+            os_ver="EulerOS_2.8"
         else
-            os_ver="EulerOS_2.0SP9"
+            os_ver="EulerOS_2.9"
         fi
     elif [ -z "${os_name##*BigCloud*}" ];then
         os_ver="BigCloud_7.6"
