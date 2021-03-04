@@ -295,5 +295,14 @@
     },
     {
         "name": "libstdc++6", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "docker-ce", "used_by": [ "cann", "framework" ]
+    },
+    {
+        "name": "docker-ce-cli", "used_by": [ "cann", "framework" ]
+    },
+    {
+        "name": "containerd.io", "used_by": [ "cann", "framework" ]
     }
 ]

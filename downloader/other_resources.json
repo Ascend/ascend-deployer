@@ -61,8 +61,8 @@
     },
     {
         "filename":"tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://mytf.obs.cn-southwest-2.myhuaweicloud.com/tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"34a67d5c07f9138f1f754e0b1a3b35af94c30e03ddfbdc58c042cf897e1cc18d",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
+        "sha256":"8739df1113be0af618a3ccee8128a836933eaf56719f295bd5527e5dff335cae",
         "dest":"resources/pylibs"
     },
     {

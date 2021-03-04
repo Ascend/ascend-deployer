@@ -36,5 +36,7 @@
     { "name": "hdf5-devel", 
       "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/x86_64/Packages/libaec-1.0.4-1.oe1.x86_64.rpm",
       "sha256": "c060772b103c2069dc37e9cc49ec6681b2e64e3a63d9ba5193dc439aec4a25dc",
-      "info": "hdf5 need" }
+      "info": "hdf5 need" },
+    { "name": "docker-engine",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "libcgroup",   "autodependency":"true", "info": "used for edge ha" }
 ]
