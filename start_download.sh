@@ -68,6 +68,11 @@ function parse_script_args() {
         --os-list=*)
             OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
+            if [ "x${OS_LIST}" == "x" ]; then
+                echo "ERROR" "Unsupported parameters: $1"
+                print_usage
+            fi
+            break
             ;;
         *)
             if [ "x$1" != "x" ]; then

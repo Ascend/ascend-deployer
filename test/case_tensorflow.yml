@@ -18,6 +18,7 @@
   environment:
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+  become: yes
   register: tf_version
   when: tf.matched > 0
 
