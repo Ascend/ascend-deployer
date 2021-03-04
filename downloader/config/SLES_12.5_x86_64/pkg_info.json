@@ -1,0 +1,207 @@
+[
+    {
+        "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "glibc-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libopenssl-devel", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "libopenssl-1_1-devel", "used_by": [ "libopenssl-devel" ]
+    },
+    {
+        "name": "libopenssl1_1", "used_by": [ "libopenssl-devel" ]
+    },
+    {
+        "name": "openssl-1_1", "used_by": [ "libopenssl-devel" ]
+    },
+    {
+        "name": "libffi-devel", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "libffi7", "used_by": [ "libffi-devel" ]
+    },
+    {
+        "name": "libreadline7", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "readline-devel", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "linux-glibc-devel", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "kernel-source", "used_by": [ "python3.7.5" ]
+    },
+    {
+        "name": "kernel-devel", "used_by": [ "kernel-source" ]
+    },
+    {
+        "name": "kernel-macros", "used_by": [ "kernel-devel" ]
+    },
+    {
+        "name": "kernel-default-base", "used_by": [ "driver" ]
+    },
+    {
+        "name": "kernel-default-devel", "used_by": [ "driver" ]
+    },
+    {
+        "name": "libelf-devel", "used_by": [ "kernel-default-devel" ]
+    },
+    {
+        "name": "libgomp1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gcc", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gcc7", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cpp7", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libasan4", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libatomic1", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libcilkrts5", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libisl15", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libitm1", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "liblsan0", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libmpfr6", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libmpx2", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libmpxwrappers2", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libtsan0", "used_by": [ "gcc7" ]
+    },
+    {
+        "name": "libubsan0", "used_by": [ "gcc7" ]
+    },
+
+    {
+        "name": "libstdc++-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gcc-c++", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gcc7-c++", "used_by": [ "gcc-c++" ]
+    },
+    {
+        "name": "libstdc++6-devel-gcc7", "used_by": [ "gcc7-c++" ]
+    },
+    {
+        "name": "libgfortran4", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "make", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "liblzma5", "used_by": [ "cmake" ]
+    },
+    {
+        "name": "librhash0", "used_by": [ "cmake" ]
+    },
+    {
+        "name": "libncurses6", "used_by": [ "cmake" ]
+    },
+    {
+        "name": "libuv1", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "rhash", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "python3-pip", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "python3-setuptools", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "python3", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "unzip", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "bzip2", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "zlib-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libaec0", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hdf5", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libselinux-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "krb5-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pcre-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "sqlite3-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "blas-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "net-tools", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "lapack-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libverto-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libsepol-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "sshpass", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "hwdata", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "python3-selinux", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "xz-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libbz2-devel", "used_by": [ "driver", "cann", "framework" ]
+    }
+]

@@ -1,0 +1,5 @@
+[oss]
+baseurl=https://mirrors.huaweicloud.com/opensuse/distribution/leap/15.0/repo/oss/
+
+[non_oss]
+baseurl=https://mirrors.huaweicloud.com/opensuse/distribution/leap/15.0/repo/non-oss/

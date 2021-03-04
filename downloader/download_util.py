@@ -92,11 +92,13 @@ class ProxyUtil:
                     'https': os.environ.get("https_proxy")
                 }
             else:
-                proxy_suffix = f'{self.username}:{self.user_password}' \
-                               f'@{self.hostname}:{self.port}'
+                proxy_suffix = '{}:{}@{}:{}'.format(
+                    self.username, self.user_password,
+                    self.hostname, self.port
+                    )
                 proxy_option = {
-                    'http': f'http://{proxy_suffix}',
-                    'https': f'https://{proxy_suffix}'
+                    'http': 'http://{}'.format(proxy_suffix),
+                    'https': 'https://{}'.format(proxy_suffix)
                 }
             return request.ProxyHandler(proxy_option)
         else:
