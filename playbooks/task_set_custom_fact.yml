@@ -15,6 +15,7 @@
   shell: grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release
   changed_when: false
   register: os_codename
+  ignore_errors: yes
 
 - name: set os_name
   set_fact:
