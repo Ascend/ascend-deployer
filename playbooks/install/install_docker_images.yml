@@ -1,0 +1,30 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: install system packages
+      include_tasks: "task_sys_{{ansible_pkg_mgr}}.yml"
+
+    - name: find docker command
+      shell: command -v docker | wc -l
+      register: docker_exists
+
+    - name: restart docker
+      shell: "systemctl restart docker"
+      when: docker_exists.stdout != '0'
+      become: yes
+
+    - name: find docker images
+      find:
+        paths: "{{ resources_dir }}/docker_images/"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*.tar.*"
+      register: images
+
+    - name: load docker images
+      shell: "docker load -i {{ item.path }}"
+      register: x
+      failed_when: x.rc != 0
+      with_items: "{{ images.files }}"
+      when: images.matched > 0
+      become: yes

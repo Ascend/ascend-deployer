@@ -1,4 +1,5 @@
-/resources/
+/resources/*
+!/resources/docker_images/
 *.pyc
 *.whl
 *.log

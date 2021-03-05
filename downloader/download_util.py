@@ -169,7 +169,7 @@ class DownloadUtil:
                 cls.proxy_inst.build_proxy_handler()
                 global start_time
                 start_time = time.time()
-                print("downloading {}".format(dst_file_name.split('\\')[-1]))
+                print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
                 sys.stdout.write('\n')
                 if os.path.exists(local_file):
@@ -197,7 +197,7 @@ class DownloadUtil:
             cls.proxy_inst.build_proxy_handler()
             global start_time
             start_time = time.time()
-            print("downloading {}".format(dst_file_name.split('\\')[-1]))
+            print("downloading {}".format(dst_file_name.split('/')[-1]))
             local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
             sys.stdout.write('\n')
             return True
