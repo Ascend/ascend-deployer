@@ -19,6 +19,7 @@ import os
 import configparser
 import socket
 import time
+import sys
 import hashlib
 import ssl
 from urllib import request
@@ -125,6 +126,22 @@ class ProxyUtil:
         return context
 
 
+def Schedule(blocknum, blocksize, totalsize):
+    speed = (blocknum * blocksize) / (time.time() - start_time)
+    speed_str = " Speed: {:.2f} KB".format(float(speed) / 1024)
+    recv_size = blocknum * blocksize
+    # config scheduler
+    f = sys.stdout
+    pervent = recv_size / totalsize
+    if pervent > 1:
+        pervent = 1
+    percent_str = "{:.2f}%".format(pervent * 100)
+    n = round(pervent * 50)
+    s = ('=' * n).ljust(50, '-')
+    f.write('\r' + percent_str.ljust(4, ' ') + '[' + s + ']' + speed_str)
+    f.flush()
+
+
 class DownloadUtil:
     proxy_inst = ProxyUtil()
 
@@ -136,6 +153,7 @@ class DownloadUtil:
             os.makedirs(parent_dir)
         res = cls.download_with_retry(url, dst_file_name)
         if not res:
+            print('download {} failed'.format(url))
             LOG.error('download %s failed', url)
             return False
         else:
@@ -149,7 +167,11 @@ class DownloadUtil:
                 LOG.info('downloading try: %s from %s', retry, url)
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
-                local_file, _ = request.urlretrieve(url, dst_file_name)
+                global start_time
+                start_time = time.time()
+                print("downloading {}".format(dst_file_name.split('\\')[-1]))
+                local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
+                sys.stdout.write('\n')
                 if os.path.exists(local_file):
                     LOG.info('%s download successfully', url)
                 return True
@@ -173,7 +195,11 @@ class DownloadUtil:
         try:
             LOG.info('downloading from %s', url)
             cls.proxy_inst.build_proxy_handler()
-            local_file, _ = request.urlretrieve(url, dst_file_name)
+            global start_time
+            start_time = time.time()
+            print("downloading {}".format(dst_file_name.split('\\')[-1]))
+            local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
+            sys.stdout.write('\n')
             return True
         except ContentTooShortError as ex:
             LOG.error(ex)
