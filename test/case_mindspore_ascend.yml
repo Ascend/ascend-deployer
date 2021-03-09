@@ -1,0 +1,31 @@
+- name: test if mindspore installed
+  find:
+    path: /usr/local/python3.7.5/lib
+    recurse: yes
+    file_type: directory
+    use_regex: yes
+    patterns: "mindspore"
+  register: ms
+
+- name: message
+  debug:
+    msg:
+    - "mindspore not installed"
+  when: ms.matched == 0
+
+- name: test import mindspore ascend
+  shell: python3.7 -c "import mindspore as tf; print(tf.__version__)"
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin/
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/opp/op_impl/built-in/ai_core/tbe/op_tiling:/usr/local/python3.7.5/lib/python3.7/site-packages/mindspore/lib
+    TBE_IMPL_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe
+    ASCEND_OPP_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp
+    PYTHONPATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/
+  register: ms_version
+  when:
+    - ms.matched > 0
+    - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010" or ansible_local.npu_info.model_number == "9000" or ansible_local.npu_info.model_number == "9010"
+
+- name: print mindspore ascend version
+  debug: var=ms_version
+  when: ms.matched > 0

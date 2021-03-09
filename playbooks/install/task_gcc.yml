@@ -24,7 +24,7 @@
 
 - name: install gcc 7.3.0 copy gmp
   copy:
-    src: "{{ resources_dir }}/gmp-6.1.0.tar.bz2"
+    src: "{{ resources_dir }}/gmp-6.1.2.tar.bz2"
     dest: "{{ build_dir }}/gcc-7.3.0"
     remote_src: yes
 

@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test mindspore
+    import_tasks: case_mindspore_ascend.yml

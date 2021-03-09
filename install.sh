@@ -272,6 +272,7 @@ function process_display()
     done
     if [ ${unsupported} == ${TRUE} ];then
         echo "Error: not support display for ${display_target}"
+        print_usage
         exit 1
     fi
     unset IFS
@@ -347,6 +348,7 @@ function process_install()
         fi
     done
     if [ ${unsupport} == ${TRUE} ];then
+        print_usage
         exit 1
     fi
     verify_zip
@@ -380,6 +382,7 @@ function process_uninstall()
         fi
     done
     if [ "${not_supported}" == "${TRUE}" ]; then
+        print_usage
         exit 1
     fi
 
@@ -410,6 +413,7 @@ function process_upgrade()
         fi
     done
     if [ "${not_supported}" == "${TRUE}" ]; then
+        print_usage
         exit 1
     fi
     verify_zip
@@ -443,6 +447,7 @@ function process_test()
         fi
     done
     if [ ${unsupport} == ${TRUE} ];then
+        print_usage
         exit 1
     fi
 
@@ -621,6 +626,7 @@ function check_script_args()
 {
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
         echo "ERROR" "Unsupported --install and --install-scene at same time"
+        print_usage
         exit 1
     fi
 }
