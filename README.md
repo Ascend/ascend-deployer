@@ -45,6 +45,7 @@
 运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
 - linux
     执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
+    下载docker images需在linux环境下，系统需预装docker并且docker能正常访问网络。
 ## 安装操作
 ### 安装须知
 

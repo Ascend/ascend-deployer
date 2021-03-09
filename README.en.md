@@ -45,6 +45,7 @@ The download function can be used in the Windows or Linux OSs.
       Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
     Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
+    The download of docker images needs to be in Linux environment. The system needs to be pre installed with docker and the docker can access the network normally.
 ## Installation
 ### Notice
 - When the offline installation tool installs the driver and CANN software packages, the **HwHiAiUser** user is created by default as the running user. If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:

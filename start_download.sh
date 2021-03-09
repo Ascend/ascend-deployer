@@ -105,6 +105,19 @@ function check_script_args()
     fi
 }
 
+function download_docker_images()
+{
+    docker login -u cn-south-1@469VIRAIMU93ODV8CRYC -p 3978748feeda63c39a32e2371952e0b7a4fc80bb4be9009897de542b71b2d532 swr.cn-south-1.myhuaweicloud.com
+    docker pull swr.cn-south-1.myhuaweicloud.com/public-ascendhub/centos:7.6.1810
+    docker pull swr.cn-south-1.myhuaweicloud.com/public-ascendhub/centos:7.6.1810-amd64
+    docker pull swr.cn-south-1.myhuaweicloud.com/public-ascendhub/ubuntu:18.04-arm64v8
+    docker pull swr.cn-south-1.myhuaweicloud.com/public-ascendhub/ubuntu:18.04-amd64
+    docker save -o resources/docker_images/centos7.6-arm64.tar swr.cn-south-1.myhuaweicloud.com/public-ascendhub/centos:7.6.1810
+    docker save -o resources/docker_images/centos7.6-amd64.tar swr.cn-south-1.myhuaweicloud.com/public-ascendhub/centos:7.6.1810-amd64
+    docker save -o resources/docker_images/ubuntu18.04-arm64.tar swr.cn-south-1.myhuaweicloud.com/public-ascendhub/ubuntu:18.04-arm64v8
+    docker save -o resources/docker_images/ubuntu18.04-amd64.tar swr.cn-south-1.myhuaweicloud.com/public-ascendhub/ubuntu:18.04-amd64
+}
+
 function main()
 {
     parse_script_args $*
@@ -114,6 +127,7 @@ function main()
     fi
     pycmd=$(get_python_cmd)
     ${pycmd} ${CUR_DIR}/downloader/downloader.py
+    download_docker_images
 }
 
 main $*
