@@ -45,7 +45,6 @@
 运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
 - linux
     执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
-    下载docker images需在linux环境下，系统需预装docker并且docker能正常访问网络。
 ## 安装操作
 ### 安装须知
 
@@ -65,6 +64,8 @@
     - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
 将待安装软件包放置于resources目录下。参考如下：
 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
+docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装。
+docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
 
 ```
 ascend-deployer
@@ -85,6 +86,7 @@ ascend-deployer
    |- ...
    |- BigCloud_7.6_aarch64
    |- BigCloud_7.6_x86_64
+   |- docker_images
    |- ...
 ```
 ### 单机安装
