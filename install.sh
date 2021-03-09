@@ -108,6 +108,14 @@ function check_python375()
     return ${TRUE}
 }
 
+function check_sudo_cmd()
+{
+    if [[ $? != 0 ]];then
+        exit 1
+    fi
+}
+
+
 function install_kernel_header_devel_euler()
 {
     local os_name=$(get_os_name)
@@ -128,9 +136,11 @@ function install_kernel_header_devel_euler()
     local kd_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
         sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        check_sudo_cmd
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
         sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        check_sudo_cmd
     fi
 }
 
@@ -146,9 +156,11 @@ function install_kernel_header_devel()
     local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
         sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        check_sudo_cmd
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
         sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        check_sudo_cmd
     fi
 }
 
@@ -174,9 +186,9 @@ function install_sys_packages()
         fi
     elif [ "${os_name}" == "EulerOS" ]; then
         if [ -z "${os_version##*SP8*}" ];then
-            os_ver="EulerOS_2.0SP8"
+            os_ver="EulerOS_2.8"
         else
-            os_ver="EulerOS_2.0SP9"
+            os_ver="EulerOS_2.9"
         fi
     elif [ -z "${os_name##*BigCloud*}" ];then
         os_ver="BigCloud_7.6"
@@ -197,6 +209,7 @@ function install_sys_packages()
     elif [ ${have_dpkg} -eq 1 ]; then
         export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; sudo -E dpkg --force-all -i ${BASE_DIR}/resources/${os_ver}_${arch}/*.deb
     fi
+    check_sudo_cmd
 }
 
 function install_python375()

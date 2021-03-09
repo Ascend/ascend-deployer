@@ -30,12 +30,12 @@ function get_python_cmd()
 
     have_yum=`command -v yum | wc -l`
     if [ ${have_yum} -eq 1 ];then
-        yum install -y python3 > install_python3.log
+        sudo -E yum install -y python3 > install_python3.log
     fi
 
     have_apt=`command -v apt | wc -l`
     if [ ${have_apt} -eq 1 ];then
-        DEBIAN_FRONTEND=noninteractive apt -y install python3 > install_python3.log
+        sudo -E DEBIAN_FRONTEND=noninteractive apt -y install python3 > install_python3.log
     fi
     echo python3
     return 0
@@ -68,6 +68,11 @@ function parse_script_args() {
         --os-list=*)
             OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
             shift
+            if [ "x${OS_LIST}" == "x" ]; then
+                echo "ERROR" "Unsupported parameters: $1"
+                print_usage
+            fi
+            break
             ;;
         *)
             if [ "x$1" != "x" ]; then
