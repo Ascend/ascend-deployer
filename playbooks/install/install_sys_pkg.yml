@@ -3,7 +3,7 @@
     - name: install system packages
       include_tasks: "task_sys_{{ansible_pkg_mgr}}.yml"
 
-    - name: install cmake3.5.2 for BigCloud Linux 7.6 and CentOS 7.6
+    - name: install cmake3.18.6 for BigCloud Linux 7.6 and CentOS 7.6
       import_tasks: task_cmake.yml
       when: "'BigCloud' in os_and_arch or 'CentOS_7.6' in os_and_arch"
 
@@ -13,5 +13,5 @@
 
     - name: restart docker
       shell: "systemctl restart docker"
-      when: "docker_exists.stdout != 0"
+      when: docker_exists.stdout != "0"
       become: yes

@@ -18,9 +18,15 @@
         "dest":"resources/"
     },
     {
-        "filename":"gmp-6.1.0.tar.bz2",
-        "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.0.tar.bz2",
-        "sha256":"498449a994efeba527885c10405993427995d3f86b8768d8cdf8d9dd7c6b73e8",
+        "filename":"gcc-8.4.0.tar.gz",
+        "url":"https://mirrors.huaweicloud.com/gnu/gcc/gcc-8.4.0/gcc-8.4.0.tar.gz",
+        "sha256":"41e8b145832fc0b2b34c798ed25fb54a881b0cee4cd581b77c7dc92722c116a8",
+        "dest":"resources/"
+    },
+    {
+        "filename":"gmp-6.1.2.tar.bz2",
+        "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.2.tar.bz2",
+        "sha256":"5275bb04f4863a13516b2f39392ac5e272f5e1bb8057b18aec1c9b79d73d8fb2",
         "dest":"resources/"
     },
     {
@@ -42,9 +48,9 @@
         "dest":"resources/"
     },
     {
-        "filename":"cmake-3.5.2.tar.gz",
-        "url":"https://github.com/Kitware/CMake/releases/download/v3.5.2/cmake-3.5.2.tar.gz",
-        "sha256":"92d8410d3d981bb881dfff2aed466da55a58d34c7390d50449aa59b32bb5e62a",
+        "filename":"cmake-3.18.6.tar.gz",
+        "url":"https://github.com/Kitware/CMake/releases/download/v3.18.6/cmake-3.18.6.tar.gz",
+        "sha256":"2c89f4e30af4914fd6fb5d00f863629812ada848eee4e2d29ec7e456d7fa32e5",
         "dest":"resources/"
     },
     {

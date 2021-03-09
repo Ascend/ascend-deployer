@@ -58,3 +58,4 @@ pandas==1.1.5
 python-dateutil==2.8.1
 pytz==2020.5
 xlrd==1.2.0
+numpy==1.17.5

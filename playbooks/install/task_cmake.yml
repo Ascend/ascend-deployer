@@ -4,21 +4,21 @@
     state: directory
     recurse: yes
 
-- name: install cmake-3.5.2 unarchive
+- name: install cmake-3.18.6 unarchive
   unarchive:
-    src: "{{ resources_dir }}/cmake-3.5.2.tar.gz"
+    src: "{{ resources_dir }}/cmake-3.18.6.tar.gz"
     dest: "{{ build_dir }}"
     copy: no
 
-- name: install cmake-3.5.2 bootstrap
+- name: install cmake-3.18.6 bootstrap
   shell: ./bootstrap --prefix=/usr/local
   args:
-    chdir: "{{ build_dir }}/cmake-3.5.2"
+    chdir: "{{ build_dir }}/cmake-3.18.6"
 
-- name: install cmake-3.5.2 make
-  shell: "make -C {{ build_dir }}/cmake-3.5.2 -j20"
+- name: install cmake-3.18.6 make
+  shell: "make -C {{ build_dir }}/cmake-3.18.6 -j20"
   ignore_errors: yes
 
-- name: install cmake-3.5.2 make install
-  shell: "make -C {{ build_dir }}/cmake-3.5.2 install"
+- name: install cmake-3.18.6 make install
+  shell: "make -C {{ build_dir }}/cmake-3.18.6 install"
   become: yes
