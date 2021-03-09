@@ -18,7 +18,7 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*.tar.*"
+        patterns: ".*{{ansible_architecture}}.tar.*"
       register: images
 
     - name: load docker images

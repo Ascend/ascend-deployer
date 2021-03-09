@@ -45,7 +45,6 @@ The download function can be used in the Windows or Linux OSs.
       Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
     Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
-    The download of docker images needs to be in Linux environment. The system needs to be pre installed with docker and the docker can access the network normally.
 ## Installation
 ### Notice
 - When the offline installation tool installs the driver and CANN software packages, the **HwHiAiUser** user is created by default as the running user. If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
@@ -64,6 +63,8 @@ Prepare the software packages to be installed as required. (The driver, firmware
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
 Save the software packages to be installed in the **resources** directory. The following is an example.
 ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.
+The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
 ascend-deployer
@@ -84,6 +85,7 @@ ascend-deployer
    |- ...
    |- BigCloud_7.6_aarch64
    |- BigCloud_7.6_x86_64
+   |- docker_images
    |- ...
 ```
 ### Single-Device Installation
