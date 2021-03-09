@@ -50,6 +50,11 @@ def download_other_packages():
 
 
 class MindsporeDownloader(object):
+    """
+    download_mindspore_packages
+
+    :return:
+    """
     def __init__(self):
         self.os = None
         self.os_version = None
