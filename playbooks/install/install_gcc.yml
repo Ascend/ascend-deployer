@@ -2,10 +2,10 @@
   tasks:
     - name: install gcc 7.3.0
       import_tasks: task_gcc.yml
-      when: 'CentOS_8.2' not in os_and_arch or 'EulerOS' not in os_and_arch
+      when: "'CentOS_8.2' not in os_and_arch and 'EulerOS' not in os_and_arch"
 
     - name: message
       debug:
         msg:
-        - "not support installing gcc7.3.0 for EulerOS, please use install=sys_pkg instead"
-      when: 'EulerOS' in os_and_arch
+        - "not support installing gcc7.3.0 for CentOS_8.2 or EulerOS, please use install=sys_pkg instead"
+      when: "'CentOS_8.2' in os_and_arch or 'EulerOS' in os_and_arch"

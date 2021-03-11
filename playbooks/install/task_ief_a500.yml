@@ -1,4 +1,4 @@
-- name: find cert_*.tar.gz
+- name: find cert_*.tar.gz a500
   find:
     path: "{{ resources_dir }}"
     recurse: no
@@ -7,24 +7,24 @@
     patterns: "cert_*.tar.gz"
   register: cert
 
-- name: message
+- name: find ief cert message
   debug:
     msg:
       - "can not find ief product cert, install ief failed"
   when: cert.matched == 0
   failed_when: cert.matched == 0
 
-- name: stat edge-installer
+- name: stat edge-installer a500
   stat:
     path: /opt/middleware/AtlasEdge/software/IEF/edge-installer
   register: edge_installer_dir
 
-- name: stat edge-register
+- name: stat edge-register a500
   stat:
     path: /opt/middleware/AtlasEdge/software/IEF/edge-register
   register: edge_register_dir
 
-- name: copy edge-installe
+- name: copy edge-installe a500
   copy:
     src: /opt/middleware/AtlasEdge/software/IEF/edge-installer
     dest: /opt
@@ -32,7 +32,7 @@
   become: yes
   when: edge_installer_dir.stat.exists and edge_register_dir.stat.exists
 
-- name: copy edge-register
+- name: copy edge-register a500
   copy:
     src: /opt/middleware/AtlasEdge/software/IEF/edge-register
     dest: /opt
@@ -60,10 +60,10 @@
   register: edge_register_tar
   when: not edge_installer_dir.stat.exists or not edge_register_dir.stat.exists
 
-- name: message
+- name: find ief tool message
   debug:
     msg:
-      - "can not find edge-register or edge-register tar.gz, install ief failed"
+      - "can not find edge-installer or edge-register tar.gz, install ief failed"
   when: 
     - edge_installer_tar.matched is defined and edge_register_tar.matched is defined
     - edge_installer_tar.matched == 0 or edge_register_tar.matched == 0
@@ -99,7 +99,7 @@
   become: yes
   register: ief_result
 
-- name: message
+- name: ief register message
   debug:
     msg:
       - "{{ ief_result }}"

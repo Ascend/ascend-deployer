@@ -1,0 +1,75 @@
+- name: find cert_*.tar.gz a500pro
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "cert_*.tar.gz"
+  register: cert
+
+- name: find ief cert message
+  debug:
+    msg:
+      - "can not find ief product cert, install ief failed"
+  when: cert.matched == 0
+  failed_when: cert.matched == 0
+
+- name: find edge-installer_*_arm64.tar.gz
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "edge-installer_*_arm64.tar.gz"
+  register: edge_installer_tar
+
+- name: find edge-register_*_arm64.tar.gz
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "edge-register_*_arm64.tar.gz"
+  register: edge_register_tar
+
+- name: find ief tool message
+  debug:
+    msg:
+      - "can not find edge-installer or edge-register tar.gz, install ief failed"
+  when: 
+    - edge_installer_tar.matched == 0 or edge_register_tar.matched == 0
+  failed_when: edge_installer_tar.matched == 0 or edge_register_tar.matched == 0
+
+- name: edge-installer tar.gz unarchive
+  unarchive:
+    src: "{{ edge_installer_tar.files[0].path }}"
+    dest: /opt
+    copy: no
+  become: yes
+
+- name: edge-register tar.gz unarchive
+  unarchive:
+    src: "{{ edge_register_tar.files[0].path }}"
+    dest: /opt
+    copy: no
+  become: yes
+
+- name: cert tar.gz unarchive
+  unarchive:
+    src: "{{ cert.files[0].path }}"
+    dest: /opt/edge-register
+    copy: no
+  become: yes
+
+- name: ief register
+  shell: ./register --mode=cert
+  args:
+    chdir: /opt/edge-register
+  become: yes
+  register: ief_result
+
+- name: ief register message
+  debug:
+    msg:
+      - "{{ ief_result }}"
+  when: ief_result.changed
