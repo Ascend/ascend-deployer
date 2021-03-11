@@ -281,6 +281,17 @@ function process_display()
 
 }
 
+function verify_zip_redirect()
+{
+    verify_zip > ${BASE_DIR}/tmp.log 2>&1
+    local verify_result=$?
+    cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install.log
+    cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
+    if [ ${verify_result} -ne 0 ];then
+        exit 1
+    fi
+}
+
 function verify_zip()
 {
     rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir ${BASE_DIR}/resources/run_from_zip_dir
@@ -288,7 +299,7 @@ function verify_zip()
     unset IFS
     for zip_package in $(find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
-        unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
+        rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
@@ -330,7 +341,7 @@ function verify_zip()
         rm -rf ${BASE_DIR}/resources/zip_tmp
         if [[ ${verify_success} -ne 0 ]];then
             echo "Error: check validation fail"
-            exit 1
+            return 1
         fi
     done
     IFS=${IFS_OLD}
@@ -351,7 +362,7 @@ function process_install()
         print_usage
         exit 1
     fi
-    verify_zip
+    verify_zip_redirect
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -416,7 +427,7 @@ function process_upgrade()
         print_usage
         exit 1
     fi
-    verify_zip
+    verify_zip_redirect
     local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -467,7 +478,7 @@ function process_test()
 
 function process_scene()
 {
-    verify_zip
+    verify_zip_redirect
     local tmp_scene_play=${BASE_DIR}/scene/tmp_scene.yml
     echo "- import_playbook: ../playbooks/gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then

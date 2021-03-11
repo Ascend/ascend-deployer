@@ -1,0 +1,5 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: install ief
+      import_tasks: task_ief.yml
+      when: ansible_local.npu_info.scene == 'infer'
