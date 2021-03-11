@@ -265,6 +265,9 @@
         "name": "gzip", "used_by": ["edge", "ha"]
     },
     {
+        "name": "tcl", "used_by": ["expect"]
+    },
+    {
         "name": "expect", "used_by": ["edge", "ha"]
     },
     {
