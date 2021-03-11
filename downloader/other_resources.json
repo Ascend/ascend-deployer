@@ -7,7 +7,7 @@
     },
     {
         "filename":"protobuf-python-3.11.3.tar.gz",
-        "url":"https://github.com/protocolbuffers/protobuf/releases/download/v3.11.3/protobuf-python-3.11.3.tar.gz",
+        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/protobuf-python-3.11.3.tar.gz",
         "sha256":"a9c6c3821ece08f8db55392edbbec4d4a5392fa5df148188309ed6c5a842e3b7",
         "dest":"resources"
     },
@@ -37,13 +37,13 @@
     },
     {
         "filename":"isl-0.16.1.tar.bz2",
-        "url":"https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.16.1.tar.bz2",
+        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/isl-0.16.1.tar.bz2",
         "sha256":"412538bb65c799ac98e17e8cfcdacbb257a57362acfaaff254b0fcae970126d2",
         "dest":"resources/"
     },
     {
         "filename":"cmake-3.18.6.tar.gz",
-        "url":"https://github.com/Kitware/CMake/releases/download/v3.18.6/cmake-3.18.6.tar.gz",
+        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/cmake-3.18.6.tar.gz",
         "sha256":"124f571ab70332da97a173cb794dfa09a5b20ccbb80a08e56570a500f47b6600",
         "dest":"resources/"
     },
@@ -60,9 +60,9 @@
         "dest":"resources/pylibs"
     },
     {
-        "filename":"tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://mytf.obs.cn-southwest-2.myhuaweicloud.com/tensorflow-1.15.0-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"34a67d5c07f9138f1f754e0b1a3b35af94c30e03ddfbdc58c042cf897e1cc18d",
+        "filename":"tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
+        "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
+        "sha256":"d06da6e548e85eaeaa520bc15c288511d8cc903a10ffd06c50ec5084d8d459c6",
         "dest":"resources/pylibs"
     },
     {
