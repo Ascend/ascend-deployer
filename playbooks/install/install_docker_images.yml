@@ -28,3 +28,9 @@
       with_items: "{{ images.files }}"
       when: images.matched > 0
       become: yes
+
+    - name: load docker images message
+      debug:
+        msg:
+          - "can not match any docker images, please check the file name of images."
+      when: images.matched == 0
