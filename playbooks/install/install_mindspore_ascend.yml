@@ -9,18 +9,6 @@
       changed_when: false
       register: import_mindspore
 
-    - name: stat gcc-8.4.0
-      stat:
-        path: /usr/local/gcc8.4.0
-      register: gcc_stat
-
-    - name: install gcc 8.4 for centos 8.2 if not exist
-      import_tasks: task_gcc8.4.0.yml
-      when:
-        - not gcc_stat.stat.exists
-        - "os_version == '8.2'"
-        - import_mindspore.rc != 0
-
     - name: get cmake version
       shell: cmake --version | awk -F" " '{print $3;exit}'
       register: cmake_ver

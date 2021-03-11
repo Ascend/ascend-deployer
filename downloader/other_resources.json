@@ -18,12 +18,6 @@
         "dest":"resources/"
     },
     {
-        "filename":"gcc-8.4.0.tar.gz",
-        "url":"https://mirrors.huaweicloud.com/gnu/gcc/gcc-8.4.0/gcc-8.4.0.tar.gz",
-        "sha256":"41e8b145832fc0b2b34c798ed25fb54a881b0cee4cd581b77c7dc92722c116a8",
-        "dest":"resources/"
-    },
-    {
         "filename":"gmp-6.1.2.tar.bz2",
         "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.2.tar.bz2",
         "sha256":"5275bb04f4863a13516b2f39392ac5e272f5e1bb8057b18aec1c9b79d73d8fb2",

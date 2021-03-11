@@ -4,10 +4,6 @@
       import_tasks: task_gcc.yml
       when: 'CentOS_8.2' not in os_and_arch or 'EulerOS' not in os_and_arch
 
-    - name: install gcc 8.4.0
-      import_tasks: task_gcc8.4.0.yml
-      when: 'CentOS_8.2' in os_and_arch
-
     - name: message
       debug:
         msg:
