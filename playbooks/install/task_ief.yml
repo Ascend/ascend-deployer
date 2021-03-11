@@ -1,0 +1,106 @@
+- name: find cert_*.tar.gz
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "cert_*.tar.gz"
+  register: cert
+
+- name: message
+  debug:
+    msg:
+      - "can not find ief product cert, install ief failed"
+  when: cert.matched == 0
+  failed_when: cert.matched == 0
+
+- name: stat edge-installer
+  stat:
+    path: /opt/middleware/AtlasEdge/software/IEF/edge-installer
+  register: edge_installer_dir
+
+- name: stat edge-register
+  stat:
+    path: /opt/middleware/AtlasEdge/software/IEF/edge-register
+  register: edge_register_dir
+
+- name: copy edge-installe
+  copy:
+    src: /opt/middleware/AtlasEdge/software/IEF/edge-installer
+    dest: /opt
+    remote_src: yes
+  become: yes
+  when: edge_installer_dir.stat.exists and edge_register_dir.stat.exists
+
+- name: copy edge-register
+  copy:
+    src: /opt/middleware/AtlasEdge/software/IEF/edge-register
+    dest: /opt
+    remote_src: yes
+  become: yes
+  when: edge_installer_dir.stat.exists and edge_register_dir.stat.exists
+
+- name: find edge-installer_*_arm64.tar.gz
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "edge-installer_*_arm64.tar.gz"
+  register: edge_installer_tar
+  when: not edge_installer_dir.stat.exists or not edge_register_dir.stat.exists
+
+- name: find edge-register_*_arm64.tar.gz
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: no
+    patterns: "edge-register_*_arm64.tar.gz"
+  register: edge_register_tar
+  when: not edge_installer_dir.stat.exists or not edge_register_dir.stat.exists
+
+- name: message
+  debug:
+    msg:
+      - "can not find edge-register or edge-register tar.gz, install ief failed"
+  when: 
+    - edge_installer_tar.matched is defined and edge_register_tar.matched is defined
+    - edge_installer_tar.matched == 0 or edge_register_tar.matched == 0
+  failed_when: edge_installer_tar.matched == 0 or edge_register_tar.matched == 0
+
+- name: edge-installer tar.gz unarchive
+  unarchive:
+    src: "{{ edge_installer_tar.files[0].path }}"
+    dest: /opt
+    copy: no
+  become: yes
+  when: edge_installer_tar.matched is defined and edge_register_tar.matched is defined 
+
+- name: edge-register tar.gz unarchive
+  unarchive:
+    src: "{{ edge_register_tar.files[0].path }}"
+    dest: /opt
+    copy: no
+  become: yes
+  when: edge_installer_tar.matched is defined and edge_register_tar.matched is defined 
+
+- name: cert tar.gz unarchive
+  unarchive:
+    src: "{{ cert.files[0].path }}"
+    dest: /opt/edge-register
+    copy: no
+  become: yes
+
+- name: ief register
+  shell: ./register --mode=cert
+  args:
+    chdir: /opt/edge-register
+  become: yes
+  register: ief_result
+
+- name: message
+  debug:
+    msg:
+      - "{{ ief_result }}"
+  when: ief_result.changed
