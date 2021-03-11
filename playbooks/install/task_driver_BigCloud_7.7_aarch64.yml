@@ -5,7 +5,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg_from_zip
 
 - name: install driver for BigCloud Linux from run_from_zip_dir first
@@ -21,7 +21,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg
   when: driver_pkg_from_zip.matched == 0
 
