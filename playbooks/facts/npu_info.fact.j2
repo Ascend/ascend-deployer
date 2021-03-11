@@ -157,6 +157,12 @@ def get_model():
     if chip_info == '--':
         return '--'
 
+    find_a500_cmd = ["stat", "/run/board_cfg.ini"]
+    return_code = subprocess.call(find_a500_cmd, shell=False,
+                                  stdout=DEVNULL, stderr=subprocess.STDOUT)
+    if return_code == 0:
+        return "Atlas 500 (Model 3000)"
+
     try:
         cp = subprocess.Popen(args=shlex.split(FIND_PRODUCT_CMD),
                               shell=False,
@@ -187,12 +193,13 @@ def get_product(model):
         'Atlas 900 (Model 9000)': 'A900',
         'Atlas 900 Compute Node': 'A900',
         'A300T-9000': 'A300t',
-        'Atlas 800 (Model 3000)': 'A800',
-        'Atlas 800 (Model 3010)': 'A800',
+        'Atlas 800 (Model 3000)': 'A300',
+        'Atlas 800 (Model 3010)': 'A300',
         'Atlas 500 Pro (Model 3000)': 'A300',
         'Atlas 500 Pro(Model 3000)': 'A300',
         'A300-3010': 'A300',
-        'A300-3000': 'A300'
+        'A300-3000': 'A300',
+        'Atlas 500 (Model 3000)': 'A300'
     }
     if model in product_dict.keys():
         return product_dict[model]
@@ -210,7 +217,8 @@ def get_model_number(model):
         'Atlas 500 Pro (Model 3000)': '3000',
         'Atlas 500 Pro(Model 3000)': '3000',
         'A300-3010': '3010',
-        'A300-3000': '3000'
+        'A300-3000': '3000',
+        'Atlas 500 (Model 3000)': '3000'
     }
     if model in model_dict.keys():
         return model_dict[model]
