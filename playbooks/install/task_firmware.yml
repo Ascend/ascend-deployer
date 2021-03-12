@@ -1,10 +1,23 @@
+- name: get npu info for Atlas 800 and Atlas 900
+  shell: dmidecode -t 1 |egrep "Atlas 800 \(Model 90|Atlas 900" | awk -d" " '{print $4"-"$6}' | head -c -2
+  register: npu_info
+  become: yes
+
+- name: set npu product name for A800 and A900
+  set_fact: npu_product="{{ npu_info.stdout }}"
+  when: npu_info.stdout != ""
+
+- name: set npu product name for others
+  set_fact: npu_product="{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}"
+  when: npu_info.stdout == ""
+
 - name: find firmware package from run_from_zip_dir first
   find:
     path: "{{ resources_dir }}/run_from_zip_dir"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
+    patterns: "{{ npu_product }}.*firmware.*.run"
   register: firmware_pkg_from_zip
 
 - name: find firmware package
@@ -13,7 +26,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
+    patterns: "{{ npu_product }}.*firmware.*.run"
   register: firmware_pkg
   when: firmware_pkg_from_zip.matched == 0
 
