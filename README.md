@@ -64,6 +64,11 @@
     - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
 将待安装软件包放置于resources目录下。参考如下：
 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
+支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
+    - IEF相关证书和工具：[获取参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+    - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
+    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装；Atlas 500Pro支持本地和远程安装
+    - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，其他限制请参考usermanual-ief文档
 docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装。
 docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
 
@@ -86,6 +91,9 @@ ascend-deployer
    |- ...
    |- BigCloud_7.6_aarch64
    |- BigCloud_7.6_x86_64
+   |- cert_ief_xxx.tar.gz
+   |- edge-installer_xxx_arm64.tar.gz
+   |- edge-register_xxx_arm64.tar.gz
    |- docker_images
    |- ...
 ```

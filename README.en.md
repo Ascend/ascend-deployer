@@ -63,6 +63,11 @@ Prepare the software packages to be installed as required. (The driver, firmware
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
 Save the software packages to be installed in the **resources** directory. The following is an example.
 ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
+    - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
+    - Atlas 500 only supports the Euleros2.8 Aarch64 clipped operating system, and does not support other systems. Therefore, it does not support the offline deployment tool to run locally, but only supports remote installation.Atlas 500Pro supports both local and remote installations
+    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Refer to the usermanual-IEF documentation for other restrictions
 The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.
 The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
@@ -85,6 +90,9 @@ ascend-deployer
    |- ...
    |- BigCloud_7.6_aarch64
    |- BigCloud_7.6_x86_64
+   |- cert_ief_xxx.tar.gz
+   |- edge-installer_xxx_arm64.tar.gz
+   |- edge-register_xxx_arm64.tar.gz
    |- docker_images
    |- ...
 ```
