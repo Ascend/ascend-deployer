@@ -4,11 +4,9 @@
       import_tasks: ../create_user.yml
 
     - name: get A500pro_exist
-      shell: dmidecode -t 1 |grep "Atlas 500 Pro"
-      changed_when: false
+      shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
       register: a500pro_exist
       become: yes
-      ignore_errors: yes
 
     - name: find ha path
       find:
