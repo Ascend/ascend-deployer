@@ -4,7 +4,7 @@
   become: yes
 
 - name: set npu product name for A800 and A900
-  set_fact: npu_product="{{ npu_info.stdout }}"
+  set_fact: npu_product="A{{ npu_info.stdout }}"
   when: npu_info.stdout != ""
 
 - name: set npu product name for others
