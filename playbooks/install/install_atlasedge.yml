@@ -3,6 +3,13 @@
     - name: create user if not exist
       import_tasks: ../create_user.yml
 
+    - name: get A500pro_exist
+      shell: dmidecode -t 1 |grep "Atlas 500 Pro"
+      changed_when: false
+      register: a500pro_exist
+      become: yes
+      ignore_errors: yes
+
     - name: find atlasedge path
       find:
         paths: "{{ resources_dir }}/run_from_zip_dir"
@@ -10,7 +17,7 @@
         file_type: directory
         use_regex: yes
         patterns: ".*atlasedge.*{{ansible_architecture}}"
-      when: ansible_local.npu_info.scene == 'infer'
+      when: ansible_local.npu_info.scene == 'infer' and a500pro_exist.stdout != ""
       register: atlasedge
 
     - name: install atlasedge
@@ -23,7 +30,7 @@
     - name: atlasedge scene message
       debug:
         msg:
-          - "scene is not infer, atlasedge install skipped"
+          - "scene is not infer or server is not A500 Pro, atlasedge install skipped"
       when: atlasedge.matched is undefined
 
     - name: atlasedge message
