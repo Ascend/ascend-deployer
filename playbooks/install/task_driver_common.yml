@@ -4,7 +4,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg_from_zip
 
 - name: find driver package for common linux from run_from_zip_dir first
@@ -13,7 +13,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}.*driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg_linux_from_zip
   when: driver_pkg_from_zip.matched == 0
 
@@ -37,7 +37,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg
   when: driver_pkg_from_zip.matched == 0 and driver_pkg_linux_from_zip.matched == 0
 
@@ -47,7 +47,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}-.*{{ ansible_local.npu_info.model_number }}.*driver.*linux.*{{ ansible_architecture }}.run"
+    patterns: "{{ npu_product }}.*driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg_linux
   when: driver_pkg_from_zip.matched == 0 and driver_pkg_linux_from_zip.matched == 0 and driver_pkg.matched == 0
 
