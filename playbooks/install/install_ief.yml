@@ -1,29 +1,29 @@
 - hosts: '{{ hosts_name }}'
   tasks:
 
-    - name: get a500_exit
+    - name: get a500_exist
       stat: 
         path: /run/board_cfg.ini
-      register: a500_exit
+      register: a500_exist
 
     - name: install ief a500
       import_tasks: task_ief_a500.yml
-      when: a500_exit.stat.exists
+      when: a500_exist.stat.exists
 
-    - name: get a500pro_exit
+    - name: get a500pro_exist
       shell: dmidecode -t 1 | grep "Atlas 500 Pro"
       changed_when: false
-      register: a500pro_exit
+      register: a500pro_exist
       become: yes
       ignore_errors: yes
 
     - name: install ief a500pro
       import_tasks: task_ief_a500pro.yml
-      when: a500pro_exit.rc == 0
+      when: a500pro_exist.rc == 0
 
     - name: message
       debug:
         msg:
         - "only support installing ief for a500 or a500pro, please check your device"
-      when: not a500_exit.stat.exists and a500pro_exit.rc != 0
-      failed_when: not a500_exit.stat.exists and a500pro_exit.rc != 0
+      when: not a500_exist.stat.exists and a500pro_exist.rc != 0
+      failed_when: not a500_exist.stat.exists and a500pro_exist.rc != 0
