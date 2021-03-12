@@ -340,5 +340,11 @@
         "name": "docker-ce-rootless-extras",
         "version": "20.10.3",
         "release": "3.el8"
+    },
+    {
+        "name": "tar", "used_by": ["driver", "cann", "framework"]
+    },
+    {
+        "name": "binutils", "used_by": ["driver", "cann", "framework"]
     }
 ]

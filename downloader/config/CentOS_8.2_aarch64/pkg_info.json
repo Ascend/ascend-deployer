@@ -418,5 +418,11 @@
     },
     {
         "name": "glibc-langpack-en", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tar", "used_by": ["driver", "cann", "framework"]
+    },
+    {
+        "name": "binutils", "used_by": ["driver", "cann", "framework"]
     }
 ]
