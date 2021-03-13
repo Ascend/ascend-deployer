@@ -143,15 +143,15 @@ class Apt(object):
         filename = ''
         sha256 = None
         for line in lines:
-            if "Package:" in line:
+            if line.startswith("Package:"):
                 package = line.split(': ')[1]
 
-            if "SHA256" in line:
+            if line.startswith("SHA256:"):
                 sha256 = line.split(': ')[1]
 
-            if "Filename:" in line:
+            if line.startswith("Filename:"):
                 filename = line.split(': ')[1]
-                
+
             if len(line.strip()) == 0:
                 if package == 'cmake':
                     print('cmake =[{0}]'.format(filename))

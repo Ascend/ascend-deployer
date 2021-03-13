@@ -55,8 +55,8 @@ class OsDepDownloader:
             config_file = os.path.join(CUR_DIR,
                                        f'config/{os_item}/pkg_info.json')
             downloader = None
-            if 'Ubuntu' in os_item or 'Debian' in os_item or 'Linx' in os_item:
-                source_list_file = f'downloader/config/{os_item}/source.list'
+            source_list_file = f'downloader/config/{os_item}/source.list'
+            if os.path.exists(source_list_file):
                 if 'aarch64' in os_item:
                     downloader = Apt(source_list_file, 'aarch64')
                 else:
