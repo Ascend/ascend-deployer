@@ -1,344 +1,141 @@
 [
-    {
-        "name": "gcc-7-base", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libasan4", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libubsan0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgcc-7-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cpp-7", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "gcc-7", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libstdc++-7-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "g++-7", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libquadmath0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libmpx2", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libcilkrts5", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "make", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjsoncpp1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libuv1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cmake", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libcurl4", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libldap-2.4-2", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgssapi3-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libasn1-8-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libhcrypto4-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libheimbase1-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libheimntlm0-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libkrb5-26-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libhx509-5-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libwind0-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libroken18-heimdal", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsasl2-2", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsasl2-modules-db", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libldap-common", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libnghttp2-14", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "librtmp1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name":"libarchive13", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name":"librhash0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "zlib1g", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "zlib1g-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsqlite3-0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsqlite3-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "openssl", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libssl1.1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libssl-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libffi-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "unzip", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpci3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "pciutils", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "net-tools", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libblas-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgfortran-7-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "gfortran-7", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name":"libgfortran4", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libblas3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libopenblas-base", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libopenblas-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "liblzo2-2", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "sshpass", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsz2", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libhdf5-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "hdf5-helpers", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libhdf5-100", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libhdf5-cpp-100", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjpeg-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjpeg8-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjpeg8", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjpeg-turbo8-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libjpeg-turbo8", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libaec0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libaec-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "pkg-config", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libc6-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libc6", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "dpkg-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "patch", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libdpkg-perl", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "perl", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "perl-base", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "perl-modules-5.26", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libperl5.26", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgdbm-compat4", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgomp1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libitm1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libatomic1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "liblsan0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libisl19", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libmpc3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libmpfr6", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "binutils", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libtsan0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "linux-libc-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libc-dev-bin", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libcc1-0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "binutils-x86-64-linux-gnu", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libbinutils", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "binutils-common", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "gcc-8-base", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libselinux1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libselinux1-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "python3-selinux", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libsepol1-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpcre3-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpcre16-3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpcre32-3", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libpcrecpp0v5", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "dkms", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "gcc", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "g++", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libbz2-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libbz2-1.0", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "liblzma-dev", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libgcc1", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "libstdc++6", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "docker-ce", "used_by": [ "cann", "framework" ]
-    },
-    {
-        "name": "docker-ce-cli", "used_by": [ "cann", "framework" ]
-    },
-    {
-        "name": "containerd.io", "used_by": [ "cann", "framework" ]
-    }
+    { "name": "gcc" },
+    { "name": "cpp" },
+    { "name": "g++" },
+    { "name": "libgcc1" },
+    { "name": "gcc-7-base" },
+    { "name": "libasan4" },
+    { "name": "libubsan0" },
+    { "name": "libgcc-7-dev" },
+    { "name": "cpp-7" },
+    { "name": "gcc-7" },
+    { "name": "libstdc++-7-dev" },
+    { "name": "g++-7" },
+    { "name": "libquadmath0" },
+    { "name": "libmpx2" },
+    { "name": "libcilkrts5" },
+    { "name": "make" },
+    { "name": "libjsoncpp1" },
+    { "name": "libuv1" },
+    { "name": "cmake" },
+    { "name": "cmake-data" },
+    { "name": "libcurl4" },
+    { "name": "libldap-2.4-2" },
+    { "name": "libgssapi3-heimdal" },
+    { "name": "libasn1-8-heimdal" },
+    { "name": "libhcrypto4-heimdal" },
+    { "name": "libheimbase1-heimdal" },
+    { "name": "libheimntlm0-heimdal" },
+    { "name": "libkrb5-26-heimdal" },
+    { "name": "libhx509-5-heimdal" },
+    { "name": "libwind0-heimdal" },
+    { "name": "libroken18-heimdal" },
+    { "name": "libsasl2-2" },
+    { "name": "libsasl2-modules-db" },
+    { "name": "libldap-common" },
+    { "name": "libnghttp2-14" },
+    { "name": "librtmp1" },
+    { "name":"libarchive13" },
+    { "name":"librhash0" },
+    { "name": "zlib1g" },
+    { "name": "zlib1g-dev" },
+    { "name": "libsqlite3-0" },
+    { "name": "libsqlite3-dev" },
+    { "name": "openssl" },
+    { "name": "libssl1.1" },
+    { "name": "libssl-dev" },
+    { "name": "libffi-dev" },
+    { "name": "unzip" },
+    { "name": "libpci3" },
+    { "name": "pciutils" },
+    { "name": "net-tools" },
+    { "name": "libblas-dev" },
+    { "name": "libgfortran-7-dev" },
+    { "name": "gfortran-7" },
+    { "name":"libgfortran4" },
+    { "name": "libblas3" },
+    { "name": "libopenblas-base" },
+    { "name": "libopenblas-dev" },
+    { "name": "liblzo2-2" },
+    { "name": "sshpass" },
+    { "name": "libsz2" },
+    { "name": "libhdf5-dev" },
+    { "name": "hdf5-helpers" },
+    { "name": "libhdf5-100" },
+    { "name": "libhdf5-cpp-100" },
+    { "name": "libjpeg-dev" },
+    { "name": "libjpeg8-dev" },
+    { "name": "libjpeg8" },
+    { "name": "libjpeg-turbo8-dev" },
+    { "name": "libjpeg-turbo8" },
+    { "name": "libaec0" },
+    { "name": "libaec-dev" },
+    { "name": "pkg-config" },
+    { "name": "libc6-dev" },
+    { "name": "libc6" },
+    { "name": "dpkg-dev" },
+    { "name": "patch" },
+    { "name": "libdpkg-perl" },
+    { "name": "perl" },
+    { "name": "perl-base" },
+    { "name": "perl-modules-5.26" },
+    { "name": "libperl5.26" },
+    { "name": "libgdbm-compat4" },
+    { "name": "libgomp1" },
+    { "name": "libitm1" },
+    { "name": "libatomic1" },
+    { "name": "liblsan0" },
+    { "name": "libisl19" },
+    { "name": "libmpc3" },
+    { "name": "libmpfr6" },
+    { "name": "binutils" },
+    { "name": "libtsan0" },
+    { "name": "linux-libc-dev" },
+    { "name": "libc-dev-bin" },
+    { "name": "libcc1-0" },
+    { "name": "binutils-x86-64-linux-gnu" },
+    { "name": "libbinutils" },
+    { "name": "binutils-common" },
+    { "name": "gcc-8-base" },
+    { "name": "libselinux1" },
+    { "name": "libselinux1-dev" },
+    { "name": "python3-selinux" },
+    { "name": "libsepol1-dev" },
+    { "name": "libpcre3-dev" },
+    { "name": "libpcre16-3" },
+    { "name": "libpcre32-3" },
+    { "name": "libpcrecpp0v5" },
+    { "name": "dkms" },
+    { "name": "libbz2-dev" },
+    { "name": "libbz2-1.0" },
+    { "name": "liblzma-dev" },
+    { "name": "libstdc++6" },
+    { "name": "docker-ce" },
+    { "name": "docker-ce-cli" },
+    { "name": "containerd.io" },
+    { "name": "gcc-aarch64-linux-gnu", "info": "gcc cross compiler" },
+    { "name": "g++-aarch64-linux-gnu", "info": "g++ cross compiler" },
+    { "name": "binutils-aarch64-linux-gnu" },
+    { "name": "cpp-7-aarch64-linux-gnu" },
+    { "name": "cpp-aarch64-linux-gnu" },
+    { "name": "gcc-7-aarch64-linux-gnu" },
+    { "name": "g++-7-aarch64-linux-gnu" },
+    { "name": "gcc-7-aarch64-linux-gnu-base" },
+    { "name": "gcc-7-cross-base" },
+    { "name": "gcc-8-cross-base" },
+    { "name": "libasan4-arm64-cross" },
+    { "name": "libatomic1-arm64-cross" },
+    { "name": "libc6-arm64-cross" },
+    { "name": "libc6-dev-arm64-cross" },
+    { "name": "libgcc-7-dev-arm64-cross" },
+    { "name": "libgcc1-arm64-cross" },
+    { "name": "libgomp1-arm64-cross" },
+    { "name": "libitm1-arm64-cross" },
+    { "name": "liblsan0-arm64-cross" },
+    { "name": "libstdc++6-arm64-cross" },
+    { "name": "libstdc++7-arm64-cross" },
+    { "name": "libstdc++-7-dev-arm64-cross" },
+    { "name": "libtsan0-arm64-cross" },
+    { "name": "libubsan0-arm64-cross" },
+    { "name": "linux-libc-dev-arm64-cross", "info": "cross compiler ends" }
 ]
