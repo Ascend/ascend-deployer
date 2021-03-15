@@ -13,9 +13,9 @@ The offline installation tool supports the download and installation of the OSs 
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-| BigCloud |   7.6   |     AArch64      | A minimal image is installed by default. |
-| BigCloud |   7.6   |      x86_64      | A minimal image is installed by default. |
-| BigCloud |   7.7   |     AArch64      | A minimal image is installed by default. |
+| BCLinux |   7.6   |     AArch64      | A minimal image is installed by default. |
+| BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
+| BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
@@ -88,8 +88,8 @@ ascend-deployer
    |- ...
    |- Ascend-cann-toolkit-xxx.run
    |- ...
-   |- BigCloud_7.6_aarch64
-   |- BigCloud_7.6_x86_64
+   |- BCLinux_7.6_aarch64
+   |- BCLinux_7.6_x86_64
    |- cert_ief_xxx.tar.gz
    |- edge-installer_xxx_arm64.tar.gz
    |- edge-register_xxx_arm64.tar.gz
@@ -302,7 +302,7 @@ For security purposes, if the proxy account and password have been configured in
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
 [download]
-os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, ...          # OS information of the environment to be deployed.
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 ```
 ###  <a name="sourceconfig">Source Configuration</a>
 The offline installation tool provides the source configuration file. Replace it as required.
