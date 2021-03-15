@@ -35,7 +35,7 @@ class Win(object):
         self.config_file = os.path.join(CUR_DIR, 'config.ini')
         self.root = tk.Tk()
         self.root.title('离线安装下载器')
-        self.root.geometry('300x550')
+        self.root.geometry('300x{}'.format(30 * len(OS_LIST)))
         self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
         self.check_list = []
         self.os_dict = {}

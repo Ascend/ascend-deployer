@@ -13,6 +13,7 @@ os_version_dict:
     "8": "8.2"
   debian:
     "9": "9.9"
+    "10": "10.0"
   kylin:
     "V10": "V10Tercel"
 code_name_dict:

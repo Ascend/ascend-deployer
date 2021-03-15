@@ -193,7 +193,14 @@ function install_sys_packages()
     elif [ -z "${os_name##*BigCloud*}" ];then
         os_ver="BigCloud_7.6"
     elif [ -z "${os_name##*Debian*}" ];then
-        os_ver="Debian_9.9"
+        if [ -z "${os_version##*9*}" ];then
+            os_ver="Debian_9.9"
+        else
+            os_ver="Debian_10.0"
+            if [ $(id -u) -eq 0 ];then
+                dpkg -i ${BASE_DIR}/resources/${os_ver}_${arch}/sudo*.deb
+            fi
+        fi
     elif [ -z "${os_name##*SLES*}" ];then
         os_ver="SLES_12.4"
     elif [ -z "${os_name##*Kylin*}" ];then
