@@ -114,7 +114,8 @@ ascend-deployer
     注意事项：
         - 请按照“driver>firmware>CANN软件包（toolkit、nnrt等）”或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行安装。
         - 安装driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
-       - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖。
+        - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
+        - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
     - 指定场景安装
 `./install.sh --install-scene=<scene_name>`
 离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
