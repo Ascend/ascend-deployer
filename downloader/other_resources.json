@@ -18,9 +18,9 @@
         "dest":"resources/"
     },
     {
-        "filename":"gmp-6.1.2.tar.bz2",
-        "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.2.tar.bz2",
-        "sha256":"5275bb04f4863a13516b2f39392ac5e272f5e1bb8057b18aec1c9b79d73d8fb2",
+        "filename":"gmp-6.1.0.tar.bz2",
+        "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.0.tar.bz2",
+        "sha256":"498449a994efeba527885c10405993427995d3f86b8768d8cdf8d9dd7c6b73e8",
         "dest":"resources/"
     },
     {
