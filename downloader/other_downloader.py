@@ -23,7 +23,7 @@ from logger_config import get_logger
 LOG = get_logger(__file__)
 
 
-def download_other_packages():
+def download_other_packages(dst=None):
     """
     download_other_packages
 
@@ -31,7 +31,10 @@ def download_other_packages():
     """
     script = os.path.realpath(__file__)
     script_dir = os.path.dirname(script)
-    base_dir = os.path.dirname(script_dir)
+    if dst is None:
+        base_dir = os.path.dirname(script_dir)
+    else:
+        base_dir = dst
     resources_json = os.path.join(script_dir, 'other_resources.json')
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)

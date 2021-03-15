@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===========================================================================
-
+"""download os dependencies"""
 import json
 import os
 import sys
@@ -34,6 +33,39 @@ class OsDepDownloader:
         self.project_dir = os.path.dirname(CUR_DIR)
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
+    def download(self, os_item, dst):
+        """
+        download os packages. debs or rpms
+        :param os_itme:  Ubuntu_18.04_aarch64, CentOS_8.2_x86_64..
+        """
+        dst_dir = os.path.join(dst, os_item)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir, mode=0o755, exist_ok=True)
+        LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
+
+        config_file = os.path.join(CUR_DIR, 'config/{0}/pkg_info.json'.format(os_item))
+        source_list_file = os.path.join(CUR_DIR, 'config/{0}/source.list'.format(os_item))
+        downloader = None
+
+        if os.path.exists(source_list_file):
+            if 'aarch64' in os_item:
+                downloader = Apt(source_list_file, 'aarch64')
+            else:
+                downloader = Apt(source_list_file, 'x86_64')
+        else:
+            source_repo_file = f'downloader/config/{os_item}/source.repo'
+            if 'aarch64' in os_item:
+                downloader = Yum(source_repo_file, 'aarch64')
+            else:
+                downloader = Yum(source_repo_file, 'x86_64')
+        if downloader is not None:
+            downloader.make_cache()
+
+        with open(config_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            for item in data:
+                downloader.download(item, dst_dir)
+
     def prepare_download_dir(self):
         for os_item in self.os_list:
             dst_dir = os.path.join(self.resources_dir, os_item)
@@ -52,10 +84,11 @@ class OsDepDownloader:
             dst_dir = os.path.join(self.resources_dir, os_item)
             print('item:{} save dir: {}'.format(os_item, dst_dir))
             LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
-            config_file = os.path.join(CUR_DIR,
-                                       f'config/{os_item}/pkg_info.json')
+
+            config_file = os.path.join(CUR_DIR, 'config/{0}/pkg_info.json'.format(os_item))
+            source_list_file = os.path.join(CUR_DIR, 'config/{0}/source.list'.format(os_item))
             downloader = None
-            source_list_file = f'downloader/config/{os_item}/source.list'
+
             if os.path.exists(source_list_file):
                 if 'aarch64' in os_item:
                     downloader = Apt(source_list_file, 'aarch64')

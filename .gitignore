@@ -8,3 +8,5 @@
 *.bz2
 *.xz
 *.swp
+*.egg-info
+build
