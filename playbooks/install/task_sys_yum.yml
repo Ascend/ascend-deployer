@@ -2,5 +2,5 @@
   include_tasks: task_kernel.yml
 
 - name: yum install system packages
-  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/*.rpm
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm
   become: yes
