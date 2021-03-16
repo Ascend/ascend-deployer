@@ -1,0 +1,41 @@
+[
+    { "name": "gcc",            "autodependency":"true" },
+    { "name": "gcc-c++",        "autodependency":"true" },
+    { "name": "make",           "autodependency":"true" },
+    { "name": "cmake",          "autodependency":"true" },
+    { "name": "unzip",          "autodependency":"true" },
+    { "name": "gnutls",         "autodependency":"true", "info": "need upgrade to match the new openssl form repo"},
+    { "name": "openssh",        "autodependency":"true", "info": "need upgrade to match the new openssl form repo"},
+    { "name": "pciutils",       "autodependency":"true" },
+    { "name": "net-tools",      "autodependency":"true" },
+    { "name": "libffi-devel",   "autodependency":"true", "info": "python cffi"},
+    { "name": "zlib-devel",     "autodependency":"true", "info": "python zlib" },
+    { "name": "xz-devel",       "autodependency":"true", "info": "python lzma" },
+    { "name": "bzip2-devel",    "autodependency":"true", "info": "python bz2" },
+    { "name": "sqlite-devel",   "autodependency":"true", "info": "python sqlite" },
+    { "name": "openssl-devel",  "autodependency":"true", "info": "python ssl" },
+    { "name": "sshpass",        "autodependency":"true"},
+    { "name": "hdf5",           "autodependency":"true", "info": "tensorflow use" },
+    { "name": "hdf5-devel",     "autodependency":"true", "info": "tensorflow use" },
+    { "name": "libaec",         "autodependency":"true", "info": "hdf5 need" },
+    {
+        "name": "docker-ce-cli",
+        "version": "20.10.3",
+        "release": "3.el8"
+    },
+    {
+        "name": "containerd.io",
+        "version": "1.4.3",
+        "release": "3.1.el8"
+    },
+    {
+        "name": "docker-ce",
+        "version": "20.10.3",
+        "release": "3.el8"
+    },
+    {
+        "name": "docker-ce-rootless-extras",
+        "version": "20.10.3",
+        "release": "3.el8"
+    }
+]

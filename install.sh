@@ -11,7 +11,7 @@ OS_MAP["centos"]="CentOS"
 OS_MAP["euleros"]="EulerOS"
 OS_MAP["debian"]="Debian"
 OS_MAP["sles"]="SLES"
-OS_MAP["Kylin"]="Kylin"
+OS_MAP["kylin"]="Kylin"
 OS_MAP["bclinux"]="BigCloud"
 OS_MAP["Linx"]="Linx"
 OS_MAP["uos"]="UOS"
@@ -106,7 +106,7 @@ readonly g_os_name=$(get_os_name)
 function get_os_ver_arch()
 {
     local os_ver=$(grep -oP "^VERSION_ID=\"?\K\w+\.?\w*" /etc/os-release)
-    local codename=$(grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release)
+    local codename=$(grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release | awk -F_ '{print $1}')
     local os_name=$(get_os_name)
     local version=$(get_os_version ${os_name} ${os_ver} ${codename})
     local os_ver_arch=${g_os_name}_${version}_${arch}
@@ -190,7 +190,7 @@ function install_kernel_header_devel_euler()
     fi
 
     local euler=""
-    if [ -z "${os_version##*SP8*}" ];then
+    if [ -z "${g_os_ver_arch##*SP8*}" ];then
         euler="eulerosv2r8.${arch}"
     else
         euler="eulerosv2r9.${arch}"

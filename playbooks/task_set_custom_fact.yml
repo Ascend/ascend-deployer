@@ -12,7 +12,7 @@
   register: os_ver
 
 - name: get OS code name
-  shell: grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release
+  shell: grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release | awk -F_ '{print $1}'
   changed_when: false
   register: os_codename
   failed_when: false
