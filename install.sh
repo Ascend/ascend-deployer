@@ -12,7 +12,7 @@ OS_MAP["euleros"]="EulerOS"
 OS_MAP["debian"]="Debian"
 OS_MAP["sles"]="SLES"
 OS_MAP["kylin"]="Kylin"
-OS_MAP["bclinux"]="BigCloud"
+OS_MAP["bclinux"]="BCLinux"
 OS_MAP["Linx"]="Linx"
 OS_MAP["uos"]="UOS"
 

@@ -13,9 +13,9 @@
 |ubuntu|18.04|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
 |Debian|9.9|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
 |Debian|9.9|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
-|BigCloud|7.6|aarch64|镜像默认Minimal模式|
-|BigCloud|7.6|x86_64|镜像默认Minimal模式|
-|BigCloud|7.7|aarch64|镜像默认Minimal模式|
+|BCLinux|7.6|aarch64|镜像默认Minimal模式|
+|BCLinux|7.6|x86_64|镜像默认Minimal模式|
+|BCLinux|7.7|aarch64|镜像默认Minimal模式|
 |SLES|12.4|x86_64|镜像默认Minimal模式|
 |Kylin|V10Tercel|aarch64|镜像默认Minimal模式|
 |EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
@@ -89,8 +89,8 @@ ascend-deployer
    |- ...
    |- Ascend-cann-toolkit-xxx.run
    |- ...
-   |- BigCloud_7.6_aarch64
-   |- BigCloud_7.6_x86_64
+   |- BCLinux_7.6_aarch64
+   |- BCLinux_7.6_x86_64
    |- cert_ief_xxx.tar.gz
    |- edge-installer_xxx_arm64.tar.gz
    |- edge-register_xxx_arm64.tar.gz
@@ -303,7 +303,7 @@ userpassword=none   # 代理密码
 在downloader/config.ini文件中可进行下载行为配置，将其调整为下载所需OS的组件。
 ```
 [download]
-os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, ...          # 待安装部署的环境OS信息
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, ...          # 待安装部署的环境OS信息
 ```
 ###  <a name="sourceconfig">源配置</a>
 离线安装工具已提供源配置文件，用户可根据实际进行替换。

@@ -5,7 +5,7 @@ os_dict:
   debian: "Debian"
   sles: "SLES"
   kylin: "Kylin"
-  bclinux: "BigCloud"
+  bclinux: "BCLinux"
   Linx: "Linx"
   uos: "UOS"
 os_version_dict:
