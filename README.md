@@ -48,12 +48,25 @@
 ## 安装操作
 ### 安装须知
 
-- 离线安装工具在安装驱动、CANN软件包过程中，会默认创建HwHiAiUser用户作为软件包运行用户，若用户需自行指定运行用户和用户组，可自行修改inventory_file文件。文件内容如下：
-    ```
-    [ascend:vars]
-    user=HwHiAiUser
-    group=HwHiAiUser
-    ```
+- 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
+
+```bash
+#添加HiwHiAiUser用户组
+groupadd HwHiAiUser
+
+#添加HiwHiAiUser用户,并加入HwHiAiUser用户组
+#设置HwHiAiUser的HOME目录为/home/HwHiAiUser
+#并设置用户的shell为/bin/bash
+useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
+```
+
+- 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
+
+```
+[ascend:vars]
+user=HwHiAiUser
+group=HwHiAiUser
+```
 
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源定期更新。
 
