@@ -3,9 +3,9 @@
 
 - name: zypper check resource exist
   stat:
-    path: "{{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}"
+    path: "{{ resources_dir }}/{{ os_and_arch }}"
   register: zypper_st
 
 - name: zypper install system packages rpm
-  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ ansible_distribution }}_{{ os_version }}_{{ ansible_architecture }}/*.rpm
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm
   when: zypper_st.stat.exists

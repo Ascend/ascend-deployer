@@ -13,9 +13,9 @@ The offline installation tool supports the download and installation of the OSs 
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-| BigCloud |   7.6   |     AArch64      | A minimal image is installed by default. |
-| BigCloud |   7.6   |      x86_64      | A minimal image is installed by default. |
-| BigCloud |   7.7   |     AArch64      | A minimal image is installed by default. |
+| BCLinux |   7.6   |     AArch64      | A minimal image is installed by default. |
+| BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
+| BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
 | EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
@@ -47,12 +47,26 @@ The download function can be used in the Windows or Linux OSs.
     Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
 ## Installation
 ### Notice
-- When the offline installation tool installs the driver and CANN software packages, the **HwHiAiUser** user is created by default as the running user. If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
-    ```
-    [ascend:vars]
-    user=HwHiAiUser
-    group=HwHiAiUser
-    ```
+
+- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
+
+```bash
+#add HiwHiAiUser group
+groupadd HwHiAiUser
+
+#add HwHiAiUser user add it to HwHiAiUser group
+#set /home/HiwHiAiUser as HwHiAiUser's HOME directory and create
+#set /bin/bash HwHiAiUser's default shell
+useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
+```
+
+- If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
+
+```
+[ascend:vars]
+user=HwHiAiUser
+group=HwHiAiUser
+```
 
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly.
 
@@ -88,8 +102,8 @@ ascend-deployer
    |- ...
    |- Ascend-cann-toolkit-xxx.run
    |- ...
-   |- BigCloud_7.6_aarch64
-   |- BigCloud_7.6_x86_64
+   |- BCLinux_7.6_aarch64
+   |- BCLinux_7.6_x86_64
    |- cert_ief_xxx.tar.gz
    |- edge-installer_xxx_arm64.tar.gz
    |- edge-register_xxx_arm64.tar.gz
@@ -302,7 +316,7 @@ For security purposes, if the proxy account and password have been configured in
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
 [download]
-os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, BigCloud_7.6_aarch64, BigCloud_7.6_x86_64, ...          # OS information of the environment to be deployed.
+os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 ```
 ###  <a name="sourceconfig">Source Configuration</a>
 The offline installation tool provides the source configuration file. Replace it as required.

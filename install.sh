@@ -5,6 +5,16 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
+declare -A OS_MAP=(["ubuntu"]="Ubuntu")
+OS_MAP["ubuntu"]="Ubuntu"
+OS_MAP["centos"]="CentOS"
+OS_MAP["euleros"]="EulerOS"
+OS_MAP["debian"]="Debian"
+OS_MAP["sles"]="SLES"
+OS_MAP["kylin"]="Kylin"
+OS_MAP["bclinux"]="BCLinux"
+OS_MAP["Linx"]="Linx"
+OS_MAP["uos"]="UOS"
 
 unset DISPLAY
 if [ -z ${ASNIBLE_CONFIG} ];then
@@ -40,24 +50,82 @@ function ansible_playbook()
     fi
 }
 
+function get_os_version()
+{
+    local id=${1}
+    local ver=${2}
+    local codename=${3}
+    local version=${ver}
+
+    # Ubuntu, bclinux, SLES no need specific handle
+
+    # CentOS
+    if [ "${id}" == "CentOS" ];then
+        if [ "${ver}" == "7" ];then
+            version="7.6"
+        fi
+        if [ "${ver}" == "8" ];then
+            version="8.2"
+        fi
+    fi
+
+    # EulerOS
+    if [ "${id}" == "EulerOS" ];then
+        if [ "${ver}" == "2.0" ] && [ "${codename}" == "SP8" ];then
+            version="2.8"
+        elif [ "${ver}" == "2.0" ] && [ "${codename}" == "SP9" ];then
+            version="2.9"
+        fi
+    fi
+
+    # Debian
+    if [ "${id}" == "Debian" ];then
+        if [ "${ver}" == "9" ];then
+            version="9.9"
+        elif [ "${ver}" == "10" ];then
+            version="10.0"
+        fi
+    fi
+
+    # Kylin
+    if [ "${id}" == "Kylin" ];then
+        version=${ver}${codename}
+    fi
+
+    echo ${version}
+    return 0
+}
+
 function get_os_name()
 {
-    local os_name=$(grep "^NAME=" /etc/os-release)
-    os_name="${os_name#*=}"
-    os_name="${os_name%\"}"
-    os_name="${os_name#\"}"
+    local os_id=$(grep -oP "^ID=\"?\K\w+" /etc/os-release)
+    local os_name=${OS_MAP[$os_id]}
     echo ${os_name}
 }
 
 readonly g_os_name=$(get_os_name)
 
-function get_os_version()
+function get_os_ver_arch()
 {
-    local ver=$(grep "^VERSION=" /etc/os-release)
-    ver="${ver#*=}"
-    ver="${ver%\"}"
-    ver="${ver#\"}"
-    echo ${ver}
+    local os_ver=$(grep -oP "^VERSION_ID=\"?\K\w+\.?\w*" /etc/os-release)
+    local codename=$(grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release | awk -F_ '{print $1}')
+    local os_name=$(get_os_name)
+    local version=$(get_os_version ${os_name} ${os_ver} ${codename})
+    local os_ver_arch=${g_os_name}_${version}_${arch}
+    echo ${os_ver_arch}
+    return
+}
+
+readonly g_os_ver_arch=$(get_os_ver_arch)
+
+# check if resource of specific os is exists
+function check_resources()
+{
+    if [ -d ${BASE_DIR}/resources/${g_os_ver_arch} ];then
+        return
+    fi
+    echo "WARNING: no resources found for os ${g_os_ver_arch}, start downloading"
+    bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
 }
 
 function encrypt_inventory() {
@@ -124,7 +192,7 @@ function install_kernel_header_devel_euler()
     fi
 
     local euler=""
-    if [ -z "${os_version##*SP8*}" ];then
+    if [ -z "${g_os_ver_arch##*SP8*}" ];then
         euler="eulerosv2r8.${arch}"
     else
         euler="eulerosv2r9.${arch}"
@@ -166,55 +234,26 @@ function install_kernel_header_devel()
 
 function install_sys_packages()
 {
+    check_resources
     echo "install sys dependencies"
+
     install_kernel_header_devel
     install_kernel_header_devel_euler
     local have_rpm=$(command -v rpm | wc -l)
     local have_dnf=$(command -v dnf | wc -l)
     local have_dpkg=$(command -v dpkg | wc -l)
-
-    local os_name=$(get_os_name)
-    local os_version=$(get_os_version)
-    local os_ver=""
-    if [ "${os_name}" == "Ubuntu" ];then
-        os_ver="Ubuntu_18.04"
-    elif [ -z "${os_name##*CentOS*}" ];then
-        if [ -z "${os_version##*7*}" ];then
-            os_ver="CentOS_7.6"
-        else
-            os_ver="CentOS_8.2"
-        fi
-    elif [ "${os_name}" == "EulerOS" ]; then
-        if [ -z "${os_version##*SP8*}" ];then
-            os_ver="EulerOS_2.8"
-        else
-            os_ver="EulerOS_2.9"
-        fi
-    elif [ -z "${os_name##*BigCloud*}" ];then
-        os_ver="BigCloud_7.6"
-    elif [ -z "${os_name##*Debian*}" ];then
-        if [ -z "${os_version##*9*}" ];then
-            os_ver="Debian_9.9"
-        else
-            os_ver="Debian_10.0"
-            if [ $(id -u) -eq 0 ];then
-                dpkg -i ${BASE_DIR}/resources/${os_ver}_${arch}/sudo*.deb
-            fi
-        fi
-    elif [ -z "${os_name##*SLES*}" ];then
-        os_ver="SLES_12.4"
-    elif [ -z "${os_name##*Kylin*}" ];then
-        if [ -z "${os_version##*V10*Tercel*}" ];then
-            os_ver="Kylin_V10Tercel"
+    if [ ${g_os_ver_arch} =~ "Debian_10.0"]; then
+        if [ $(id -u) -eq 0 ];then
+            dpkg -i ${BASE_DIR}/resources/${g_os_ver_arch}/sudo*.deb
         fi
     fi
 
     if [ ${have_rpm} -eq 1 ]; then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     elif [ ${have_dnf} -eq 1 ]; then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${os_ver}_${arch}/*.rpm
+        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     elif [ ${have_dpkg} -eq 1 ]; then
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; sudo -E dpkg --force-all -i ${BASE_DIR}/resources/${os_ver}_${arch}/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; sudo -E dpkg --force-all -i ${BASE_DIR}/resources/${g_os_ver_arch}/*.deb
     fi
     check_sudo_cmd
 }

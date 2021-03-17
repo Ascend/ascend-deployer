@@ -12,9 +12,10 @@
   register: os_ver
 
 - name: get OS code name
-  shell: grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release
+  shell: grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release | awk -F_ '{print $1}'
   changed_when: false
   register: os_codename
+  failed_when: false
   ignore_errors: yes
 
 - name: set os_name
@@ -42,20 +43,18 @@
 
 - name: set os code name
   set_fact:
-    code_name: "{{ os_codename.stdout }}"
+    code_name: "{{ code_name_dict[os_id.stdout][os_codename.stdout] }}"
     cacheable: yes
   when: os_id.stdout in code_name_dict
-
-- name: set erleros os_version
-  set_fact:
-    os_version: "{{ os_version[0:2] + code_name[2] }}"
-    cacheable: yes
-  when: "'euler' in os_id.stdout"
 
 - name: set os_and_arch
   set_fact:
     os_and_arch: "{{os_name}}_{{os_version}}{{code_name}}_{{ansible_architecture}}"
     cacheable: yes
+
+- name: print current os
+  debug:
+    msg: "current os is {{ os_and_arch }}"
 
 - name: set resources_dir local
   set_fact:
