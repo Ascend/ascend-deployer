@@ -415,5 +415,8 @@
     },
     {
         "name": "pinentry-curses","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
+        "name": "gpgv","used_by": [  "driver", "cann", "framework" ]
     }
 ]

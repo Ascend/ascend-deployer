@@ -242,7 +242,7 @@ function install_sys_packages()
     local have_rpm=$(command -v rpm | wc -l)
     local have_dnf=$(command -v dnf | wc -l)
     local have_dpkg=$(command -v dpkg | wc -l)
-    if [ ${g_os_ver_arch} =~ "Debian_10.0"]; then
+    if [[ ${g_os_ver_arch} =~ Debian_10.0 ]]; then
         if [ $(id -u) -eq 0 ];then
             dpkg -i ${BASE_DIR}/resources/${g_os_ver_arch}/sudo*.deb
         fi
