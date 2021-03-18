@@ -9,24 +9,30 @@
 |CentOS|7.6|x86_64|镜像默认Minimal模式|
 |CentOS|8.2|aarch64|镜像默认Minimal模式|
 |CentOS|8.2|x86_64|镜像默认Minimal模式|
+|EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
+|EulerOS|2.0SP9|aarch64|镜像默认Minimal模式|
+|EulerOS|2.0SP9|x86_64|镜像默认Minimal模式|
 |ubuntu|18.04|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
 |ubuntu|18.04|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
 |Debian|9.9|aarch64|镜像默认Server模式、SmartKit默认Standard模式|
 |Debian|9.9|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
+|Debian|10.0|x86_64|镜像默认Server模式、SmartKit默认Standard模式|
 |BCLinux|7.6|aarch64|镜像默认Minimal模式|
 |BCLinux|7.6|x86_64|镜像默认Minimal模式|
 |BCLinux|7.7|aarch64|镜像默认Minimal模式|
 |SLES|12.4|x86_64|镜像默认Minimal模式|
+|SLES|12.5|x86_64|镜像默认Minimal模式|
+|Linx|9|aarch64|镜像默认Minimal模式|
 |Kylin|V10Tercel|aarch64|镜像默认Minimal模式|
-|EulerOS|2.0SP8|aarch64|镜像默认Minimal模式|
-|EulerOS|2.0SP9|aarch64|镜像默认Minimal模式|
-|EulerOS|2.0SP9|x86_64|镜像默认Minimal模式|
+|Kylin|V10Tercel|x86_64|镜像默认Minimal模式|
+|UOS|20|aarch64|镜像默认Minimal模式|
+|UOS|20|x86_64|镜像默认Minimal模式|
 ## 注意事项
 - 操作系统必须安装tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
-- EulerOS系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel软件包。若不存在，需自行准备相应的kernel-headers和kernel-devel软件包。
-- CentOS 8.2安装时，需要勾选“Additioanl Software for Selected Environment”中的Standard，若未勾选，系统安装完成后可能缺少tar等基本命令。
+- EulerOS、SLES、Debian等系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel等内核头软件包，若不存在，需自行准备。
+- SLES安装驱动时，需设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 # 操作指导
 ## 下载系统组件及python第三方依赖
@@ -42,7 +48,7 @@
 下载链接：[python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
 请根据界面提示完成安装。注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
     2. 启动下载。
-运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
+运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
 - linux
     执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
 ## 安装操作
@@ -81,7 +87,8 @@ group=HwHiAiUser
     - IEF相关证书和工具：[获取参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
     - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装；Atlas 500Pro支持本地和远程安装
-    - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，其他限制请参考usermanual-ief文档
+    - Atlas 500自带EulerOS2.8 aarch64裁剪版操作系统，不支持非root安装
+    - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，边缘节点是否成功纳管需到IEF的web前端观察，其他限制请参考usermanual-ief文档
 docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装。
 docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
 
@@ -118,7 +125,7 @@ ascend-deployer
     localhost ansible_connection='local' # root用户
     localhost ansible_connection='local' ansible_become_pass='password' # 非root用户
     ```
-    注意：支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与非root用户密码相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限。
+    注意：支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与非root用户密码相同，且非root用户必须有sudoer权限（在/etc/sudoer文件中配置）；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限（用chown -R命令配置属主）；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
 2. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
     - 指定软件安装
 `./install.sh --install=<package_name>`
@@ -147,18 +154,8 @@ ascend-deployer
     ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # 非root用户
     ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # 非root用户
     ```
-    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密；配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限。
-2. 执行ansible ping测试待安装设备连通性。
-    ```
-    #配置环境变量
-    export PATH=/usr/local/python3.7.5/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
-    #测试待安装设备连通性
-    ansible all -i ./inventory_file -m ping  # inventory_file未加密时
-    ansible all -i ./inventory_file -m ping --ask-vault-pass  # inventory_file已加密时
-    ```
-    若当前环境未安装ansible，可执行`./install.sh --check`
-    若inventory_file已加密，测试待安装设备连通性时需要添加--ask-vault-pass参数
+    注意：inventory文件中会配置远程设备的用户名和密码，支持root和非root用户；其中root用户不需要配置ansible_become_pass参数，非root用户必须配置ansible_become_pass参数，该参数与ansible_ssh_pass参数相同，且非root用户必须有sudoer权限（在/etc/sudoer文件中配置）；非root用户使用离线部署工具时，需拥有ascend-deployer目录的操作权限（用chown -R命令配置属主）；离线部署工具会对配置有密码的inventory文件采用ansible-vault机制加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
+2. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
 3. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
     - 指定软件安装
@@ -179,11 +176,12 @@ ascend-deployer
 `./install.sh --test=driver     //测试driver是否正常`
 
 # 配置环境变量
-安装过程会自动给待安装设备安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
+离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
+同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
 # 后续任务
 - 推理场景
 开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
