@@ -82,6 +82,8 @@ function get_os_version()
     if [ "${id}" == "Debian" ];then
         if [ "${ver}" == "9" ];then
             version="9.9"
+        elif [ "${ver}" == "10" ];then
+            version="10.0"
         fi
     fi
 
@@ -240,6 +242,11 @@ function install_sys_packages()
     local have_rpm=$(command -v rpm | wc -l)
     local have_dnf=$(command -v dnf | wc -l)
     local have_dpkg=$(command -v dpkg | wc -l)
+    if [[ ${g_os_ver_arch} =~ Debian_10.0 ]]; then
+        if [ $(id -u) -eq 0 ];then
+            dpkg -i ${BASE_DIR}/resources/${g_os_ver_arch}/sudo*.deb
+        fi
+    fi
 
     if [ ${have_rpm} -eq 1 ]; then
         sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
