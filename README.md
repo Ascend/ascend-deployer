@@ -1,10 +1,15 @@
 # 简介
+
 ## 功能描述
+
 离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device IP配置脚本，若有需要可取用。
+
 ## 环境要求
+
 离线安装工具现支持如下操作系统的组件下载及安装。
-|操作系统|版本|CPU架构|安装类型|
-|:----:|:----:|:----:|:----:|
+
+|操作系统|版本|CPU架构|    安装类型    |
+|:------:|:--:|:-----:|:--------------:|
 |CentOS|7.6|aarch64|镜像默认Minimal模式|
 |CentOS|7.6|x86_64|镜像默认Minimal模式|
 |CentOS|8.2|aarch64|镜像默认Minimal模式|
@@ -27,31 +32,65 @@
 |Kylin|V10Tercel|x86_64|镜像默认Minimal模式|
 |UOS|20|aarch64|镜像默认Minimal模式|
 |UOS|20|x86_64|镜像默认Minimal模式|
+|EulerOS|2.8|aarch64|镜像默认Minimal模式|
+|EulerOS|2.9|aarch64|镜像默认Minimal模式|
+|EulerOS|2.9|x86_64 |镜像默认Minimal模式|
+
 ## 注意事项
+
 - 操作系统必须安装tar, cd, ls, find, grep, chown, chmod等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
 - EulerOS、SLES、Debian等系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel等内核头软件包，若不存在，需自行准备。
 - SLES安装驱动时，需设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
-# 操作指导
+
+## 安装
+
+### pip安装
+
+```bash
+python3 -m pip install ascend-deployer
+```
+
+### git安装
+
+```bash
+git clone https://gitee.com/ascend/ascend-deployer.git
+```
+
+### 下载zip安装
+
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”,下载后解压使用。
+
+# 操作指导:源码方式
+
 ## 下载系统组件及python第三方依赖
+
 支持windows或linux系统使用下载功能。
+
 ### 须知
+
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 离线安装工具已提供源配置文件，默认使用华为源，用户可根据需要进行替换。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
 - 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++等第三方组件。
+
 ### 下载操作
+
 - windows
     1. windows环境需安装python3，推荐使用python3.7版本以上。
 下载链接：[python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
 请根据界面提示完成安装。注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
+
     2. 启动下载。
 运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+
 - linux
     执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
+
 ## 安装操作
+
 ### 安装须知
 
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
@@ -144,6 +183,7 @@ ascend-deployer
 `./install.sh --test=<target>`
 <target>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
 `./install.sh --test=driver     //测试driver是否正常`
+
 ### 批量安装
 
 1. 配置待安装的其他设备的ip地址、用户名和密码。
@@ -175,15 +215,51 @@ ascend-deployer
 <target>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
 `./install.sh --test=driver     //测试driver是否正常`
 
+# 操作指导:pip方式
+
+当本工具使用pip安装时，将提供2个入口方便操作
+- ascend-download     下载器
+- ascend-deployer     部署器
+
+可以使用如下方式操作:
+
+## 下载
+
+```bash
+ascend-download --os-list=<os list>
+```
+Win 10和Linux均可执行
+
+- 所有资源下载至ascend-deployer/resources
+
+- windows下在执行命令的当前目录生成ascend-deployer目录。下载完成后将
+整个目录拷贝至待部署linux服务器即可使用。
+
+- linux下将在HOME目录下生成ascend-deployer目录。可通过设置环境变量ASCEND_DEPLOYER_HOME修改下载目录。
+
+## 安装
+
+```bash
+ascend-deployer --install=<pkg1,pkg2>
+```
+ascend-deployer本质上是install.sh的一个wrapper。
+使用方法与直接执行ascend-deployer目录中的install.sh完全相同。
+ascend-deployer命令将自动寻找${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh文件执行。
+ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同
+
 # 配置环境变量
-离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
+
+安装过程会自动给待安装设备安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
+
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
 同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
 # 后续任务
+
 - 推理场景
+
 开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
 - 训练场景
 若需进行网络模型移植和训练，请参考《[TensorFlow网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》或《[PyTorch网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》。
@@ -191,6 +267,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
 # 升级
+
 可执行以下命令，升级指定软件：
 `./install.sh --upgrade=<package_name>`
 <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
@@ -208,13 +285,17 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
 
 # 更新离线部署工具
+
 能够通过以下操作实现离线安装工具自我更新。
 - windows
 运行upgrade_self.bat启动更新。
 - linux
 执行命令`./upgrade_self.sh`启动更新。
+
 # 参考信息
+
 ## <a name="parameter">参数说明</a>
+
 用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
 `./install.sh [options]`
 参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
@@ -285,8 +366,11 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
 
 如需自定义安装场景，可参考上述配置文件进行定制。
+
 ##  <a name="config">配置说明</a>
+
 ### 代理配置
+
 如需使用http代理，其一是在环境变量中配置代理（推荐），其二是在downloader/config.ini文件中配置代理
 1. 环境变量中配置代理，参考如下
 ```
@@ -311,22 +395,28 @@ userpassword=none   # 代理密码
 安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
 ### 下载行为配置
+
 在downloader/config.ini文件中可进行下载行为配置，将其调整为下载所需OS的组件。
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, ...          # 待安装部署的环境OS信息
 ```
+
 ###  <a name="sourceconfig">源配置</a>
+
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 -  Python源配置
 在downloader/config.ini文件中配置python源，默认使用华为源。
+
 ```
 [pypi]
 index_url=https://repo.huaweicloud.com/repository/pypi/simple
 ```
+
 - 系统源配置
 系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*
 以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：
+
 ```
 [base]
 baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
@@ -334,4 +424,5 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 [epel]
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
+
 表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。

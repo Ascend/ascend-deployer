@@ -29,7 +29,7 @@ from logger_config import get_logger
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-
+g_start_time = time.time()
 
 class ConfigUtil:
     config_file = os.path.join(CUR_DIR, 'config.ini')
@@ -127,7 +127,7 @@ class ProxyUtil:
 
 
 def Schedule(blocknum, blocksize, totalsize):
-    speed = (blocknum * blocksize) / (time.time() - start_time)
+    speed = (blocknum * blocksize) / (time.time() - g_start_time)
     speed_str = " Speed: {:.2f} KB".format(float(speed) / 1024)
     recv_size = blocknum * blocksize
     # config scheduler
@@ -167,8 +167,7 @@ class DownloadUtil:
                 LOG.info('downloading try: %s from %s', retry, url)
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
-                global start_time
-                start_time = time.time()
+                g_start_time = time.time()
                 print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
                 sys.stdout.write('\n')
@@ -185,6 +184,9 @@ class DownloadUtil:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
                 LOG.error(timeout)
+            except ConnectionResetError as rest:
+                print('connection reset by peer, retry...')
+
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
@@ -195,8 +197,7 @@ class DownloadUtil:
         try:
             LOG.info('downloading from %s', url)
             cls.proxy_inst.build_proxy_handler()
-            global start_time
-            start_time = time.time()
+            g_start_time = time.time()
             print("downloading {}".format(dst_file_name.split('/')[-1]))
             local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
             sys.stdout.write('\n')
