@@ -370,5 +370,17 @@
     },
     {
         "name": "containerd.io", "used_by": ["edge", "ha"]
-    }
+    },
+    { "name": "mindspore-1.1.1-cp37-cp37m-linux_aarch64.whl",
+     "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/cpu/ubuntu_aarch64/mindspore-1.1.1-cp37-cp37m-linux_aarch64.whl",
+      "dst_dir":"Ubuntu_18.04_aarch64/CPU",
+      "sha256": "8a7bdf4496fe1d4bcef408c7695be00590e64b7ddd188ba9921de6906eac38e8"},
+    { "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+     "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/ubuntu_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+     "dst_dir":"Ubuntu_18.04_aarch64/Ascend910",
+     "sha256": "274409037cf8b1af0f8d1f12205323976bdbe9e5972ca52999433d851dc71790"},
+    { "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+     "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/ascend310/ubuntu_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl" ,
+     "dst_dir":"Ubuntu_18.04_aarch64/Ascend310",
+     "sha256": "e26aeb12b2d35dd71e3b8a37f2473b3cde7970094a64cd7723521e9426c6c611"}
 ]
