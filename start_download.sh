@@ -63,15 +63,9 @@ function parse_script_args() {
         case "$1" in
         --help | -h)
             print_usage
-            shift 1
             ;;
         --os-list=*)
             OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            shift
-            if [ "x${OS_LIST}" == "x" ]; then
-                echo "ERROR" "Unsupported parameters: $1"
-                print_usage
-            fi
             break
             ;;
         *)
@@ -87,21 +81,22 @@ function parse_script_args() {
 
 function check_script_args()
 {
-    if [ -z ${OS_LIST} ];then
-        return
+    if [ -z "${OS_LIST}" ];then
+        echo "ERROR" "--os-list parameter is invalid"
+        print_usage
     fi
     local unsupport=${FALSE}
     IFS=','
-    for os in ${OS_LIST}
+    for os in "${OS_LIST}"
     do
-        if [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
+        if [ ! -d "${BASE_DIR}/downloader/config/${os}" ];then
             echo "Error: not support download for ${os}"
             unsupport=${TRUE}
         fi
     done
     unset IFS
     if [ ${unsupport} == ${TRUE} ];then
-        exit 1
+        print_usage
     fi
 }
 
@@ -109,8 +104,8 @@ function main()
 {
     parse_script_args $*
     check_script_args
-    if [ -z ${DOWNLOAD_OS_LIST} ] && [ ! -z ${OS_LIST} ];then
-        export DOWNLOAD_OS_LIST=${OS_LIST}
+    if [ -z ${DOWNLOAD_OS_LIST} ] && [ ! -z "${OS_LIST}" ];then
+        export DOWNLOAD_OS_LIST="${OS_LIST}"
     fi
     pycmd=$(get_python_cmd)
     ${pycmd} ${CUR_DIR}/downloader/downloader.py
