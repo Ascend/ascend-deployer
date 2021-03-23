@@ -1,6 +1,6 @@
 - name: find mindspore_cpu wheel package
   find:
-    paths: "{{ resources_dir }}/{{ ansible_distribution }}_{{ os_version}}_{{ ansible_architecture }}/CPU/"
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/CPU/"
     recurse: no
     file_type: file
     use_regex: yes

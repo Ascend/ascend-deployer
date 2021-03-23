@@ -1,6 +1,6 @@
 - name: find Ascend310 mindspore wheel package
   find:
-    paths: "{{ resources_dir }}/{{ ansible_distribution }}_{{ os_version}}_{{ ansible_architecture }}/Ascend310/"
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/Ascend310/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -10,7 +10,7 @@
 
 - name: find Ascend910 mindspore wheel package
   find:
-    paths: "{{ resources_dir }}/{{ ansible_distribution }}_{{ os_version}}_{{ ansible_architecture }}/Ascend910/"
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/Ascend910/"
     recurse: no
     file_type: file
     use_regex: yes
