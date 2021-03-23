@@ -396,9 +396,9 @@ function process_install()
 {
     IFS=','
     local unsupport=${FALSE}
-    for target in "${install_target}"
+    for target in ${install_target}
     do
-        if [ ! -f "${BASE_DIR}/playbooks/install/install_${target}.yml" ];then
+        if [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
             echo "Error: not support install for ${target}"
             unsupport=${TRUE}
         fi
@@ -429,9 +429,9 @@ function process_uninstall()
 {
     IFS=','
     not_supported=${FALSE}
-    for target in "${uninstall_target}"
+    for target in ${uninstall_target}
     do
-        if [ ! -f "${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml" ]; then
+        if [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
             echo "Error: not supported uninstall for ${target}"
             not_supported=${TRUE}
         fi
@@ -459,9 +459,9 @@ function process_upgrade()
 {
     IFS=','
     local not_supported=${FALSE}
-    for target in "${upgrade_target}"
+    for target in ${upgrade_target}
     do
-        if [ ! -f "${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml" ]; then
+        if [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
             echo "Error: not supported upgrade for ${target}"
             not_supported=${TRUE}
         fi
@@ -492,9 +492,9 @@ function process_test()
 {
     IFS=','
     local unsupport=${FALSE}
-    for target in "${test_target}"
+    for target in ${test_target}
     do
-        if [ ! -f "${BASE_DIR}/test/test_${target}.yml" ];then
+        if [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
             echo "Error: not support test for ${target}"
             unsupport=${TRUE}
         fi
@@ -520,7 +520,7 @@ function process_test()
 function process_scene()
 {
     local unsupport=${FALSE}
-    if [ ! -f "${BASE_DIR}/scene/scene_${install_scene}.yml" ];then
+    if [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
         echo "Error: not support install scene for ${install_scene}"
         unsupport=${TRUE}
     fi
@@ -621,72 +621,72 @@ function parse_script_args() {
             exit 0
             ;;
         --display=*)
-            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${display_target}" ];then
+            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${display_target} ];then
                 echo "ERROR" "--display parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --install=*)
-            install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${install_target}" ];then
+            install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${install_target} ];then
                 echo "ERROR" "--install parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --install-scene=*)
-            install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${install_scene}" ];then
+            install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${install_scene} ];then
                 echo "ERROR" "--install-scene parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${uninstall_target}" ];then
+            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${uninstall_target} ];then
                 echo "ERROR" "--uninstall parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --uninstall-version=*)
-            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${uninstall_version}" ];then
+            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${uninstall_version} ];then
                 echo "ERROR" "--uninstall-version parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${upgrade_target}" ];then
+            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${upgrade_target} ];then
                 echo "ERROR" "--upgrade parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --test=*)
-            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${test_target}" ];then
+            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${test_target} ];then
                 echo "ERROR" "--test parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --output-file=*)
-            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${output_file}" ];then
+            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${output_file} ];then
                 echo "ERROR" "--output-file parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --stdout_callback=*)
-            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            if [ -z "${STDOUT_CALLBACK}" ];then
+            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${STDOUT_CALLBACK} ];then
                 echo "ERROR" "--stdout_callback parameter is invalid"
                 print_usage
             fi
@@ -808,13 +808,13 @@ main()
     prepare_environment
 
     if [ "x${install_target}" != "x" ];then
-        process_install "${install_target}"
+        process_install ${install_target}
     fi
     if [ "x${install_scene}" != "x" ];then
-        process_scene "${install_scene}"
+        process_scene ${install_scene}
     fi
     if [ "x${test_target}" != "x" ];then
-        process_test "${test_target}"
+        process_test ${test_target}
     fi
     if [ "x${check_flag}" == "xy" ]; then
         process_check
@@ -823,10 +823,10 @@ main()
         process_chean
     fi
     if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall "${uninstall_target}" "${uninstall_version}"
+        process_uninstall ${uninstall_target} ${uninstall_version}
     fi
     if [ "x${upgrade_target}" != "x" ];then
-        process_upgrade "${upgrade_target}"
+        process_upgrade ${upgrade_target}
     fi
     if [ "x${display_target}" != "x" ]; then
         process_display
