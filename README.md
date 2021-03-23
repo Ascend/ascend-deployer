@@ -32,9 +32,6 @@
 |Kylin|V10Tercel|x86_64|镜像默认Minimal模式|
 |UOS|20|aarch64|镜像默认Minimal模式|
 |UOS|20|x86_64|镜像默认Minimal模式|
-|EulerOS|2.8|aarch64|镜像默认Minimal模式|
-|EulerOS|2.9|aarch64|镜像默认Minimal模式|
-|EulerOS|2.9|x86_64 |镜像默认Minimal模式|
 
 ## 注意事项
 
@@ -84,10 +81,10 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 请根据界面提示完成安装。注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
 
     2. 启动下载。
-运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
 
 - linux
-    执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载。
+    执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
 
 ## 安装操作
 
@@ -117,19 +114,17 @@ group=HwHiAiUser
 
 ### 准备软件包
 
-根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装）。
+1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
     - 驱动和固件：[获取链接](https://ascend.huawei.com/#/hardware/firmware-drivers)
     - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
-将待安装软件包放置于resources目录下。参考如下：
-软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
-支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
+2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
+3. 支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
     - IEF相关证书和工具：[获取参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
-    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装；Atlas 500Pro支持本地和远程安装
-    - Atlas 500自带EulerOS2.8 aarch64裁剪版操作系统，不支持非root安装
+    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装，也不支持非root安装；Atlas 500Pro支持本地和远程安装
+    - 依赖边缘节点atlasedge中间件正常工作，Atlas 500自带atlasedge中间件，Atlas 500Pro需要先安装atlasedge中间件
     - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，边缘节点是否成功纳管需到IEF的web前端观察，其他限制请参考usermanual-ief文档
-docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装。
-docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
+4. docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装；docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
 
 ```
 ascend-deployer
@@ -249,7 +244,7 @@ ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同
 
 # 配置环境变量
 
-安装过程会自动给待安装设备安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
+离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
 
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH

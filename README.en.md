@@ -24,14 +24,13 @@ The offline installation tool supports the download and installation of the OSs 
 | BCLinux |   7.6   |     AArch64      | A minimal image is installed by default. |
 | BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
 | BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
+|   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 |   SLES   |  12.5   |      x86_64      | A minimal image is installed by default. |
 |   Linx   |   9     |     AArch64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
+|  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
 |   UOS    |   20    |     AArch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
-| EulerOS  |   2.8   |     AArch64      | A minimal image is installed by default. |
-| EulerOS  |   2.9   |     AArch64      | A minimal image is installed by default. |
-| EulerOS  |   2.9   |      x86_64      | A minimal image is installed by default. |
 
 ## Precautions
 
@@ -62,9 +61,9 @@ The download function can be used in the Windows or Linux OSs.
       Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
       Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
     2. Start download.
-      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
+    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
 
 ## Installation
 
@@ -94,19 +93,17 @@ group=HwHiAiUser
 
 ### Obtaining Software Packages
 
-Prepare the software packages to be installed as required. (The driver, firmware, and CANN software packages can be installed.)
+1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
     - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-Save the software packages to be installed in the **resources** directory. The following is an example.
-ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
-Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
     - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
-    - Atlas 500 only supports the Euleros2.8 Aarch64 clipped operating system, and does not support other systems. Therefore, it does not support the offline deployment tool to run locally, but only supports remote installation.Atlas 500Pro supports both local and remote installations
-    - The Atlas 500 comes with the Euleros 2.8 Aarch64 tailoring operating system and does not support non-root installation
+    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
+    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
     - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
-The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.
-The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
+4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
 ascend-deployer
@@ -195,7 +192,7 @@ ascend-deployer
 
 # Environment Variable Configuration
 
-During the installation, Python 3.7.5 is automatically installed on the device. To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
+The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH

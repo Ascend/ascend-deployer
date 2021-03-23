@@ -65,7 +65,7 @@ function parse_script_args() {
             print_usage
             ;;
         --os-list=*)
-            OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
             break
             ;;
         *)
@@ -81,15 +81,15 @@ function parse_script_args() {
 
 function check_script_args()
 {
-    if [ -z "${OS_LIST}" ];then
+    if [ -z ${OS_LIST} ];then
         echo "ERROR" "--os-list parameter is invalid"
         print_usage
     fi
     local unsupport=${FALSE}
     IFS=','
-    for os in "${OS_LIST}"
+    for os in ${OS_LIST}
     do
-        if [ ! -d "${BASE_DIR}/downloader/config/${os}" ];then
+        if [ -z ${os} ] || [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
             echo "Error: not support download for ${os}"
             unsupport=${TRUE}
         fi
@@ -104,8 +104,8 @@ function main()
 {
     parse_script_args $*
     check_script_args
-    if [ -z ${DOWNLOAD_OS_LIST} ] && [ ! -z "${OS_LIST}" ];then
-        export DOWNLOAD_OS_LIST="${OS_LIST}"
+    if [ -z ${DOWNLOAD_OS_LIST} ] && [ ! -z ${OS_LIST} ];then
+        export DOWNLOAD_OS_LIST=${OS_LIST}
     fi
     pycmd=$(get_python_cmd)
     ${pycmd} ${CUR_DIR}/downloader/downloader.py
