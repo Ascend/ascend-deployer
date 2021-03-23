@@ -14,7 +14,7 @@ OS_MAP["sles"]="SLES"
 OS_MAP["kylin"]="Kylin"
 OS_MAP["bclinux"]="BCLinux"
 OS_MAP["Linx"]="Linx"
-OS_MAP["uos"]="UOS"
+OS_MAP["UOS"]="UOS"
 
 unset DISPLAY
 if [ -z ${ASNIBLE_CONFIG} ];then
