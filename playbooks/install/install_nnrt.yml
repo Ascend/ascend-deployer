@@ -15,7 +15,7 @@
       become: yes
       register: nnrt_from_zip_result
       when: nnrt_from_zip.matched > 0
-      failed_when: "nnrt_from_zip_result.rc != 0 and ('install success' not in nnrt_from_zip_result.stdout and 'already installed' not in nnrt_from_zip_result.stdout)"
+      failed_when: "nnrt_from_zip_result.rc != 0 and 'already installed' not in nnrt_from_zip_result.stdout"
 
     - name: find nnrt package
       find:
@@ -32,7 +32,7 @@
       become: yes
       register: nnrt_result
       when: nnrt_from_zip.matched == 0 and nnrt.matched > 0
-      failed_when: "nnrt_result.rc != 0 and ('install success' not in nnrt_result.stdout and 'already installed' not in nnrt_result.stdout)"
+      failed_when: "nnrt_result.rc != 0 and 'already installed' not in nnrt_result.stdout"
 
     - name: message
       debug:
