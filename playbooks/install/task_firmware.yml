@@ -51,14 +51,14 @@
   become: yes
   register: firmware_result_from_zip
   when: firmware_pkg_from_zip.matched > 0
-  failed_when: "firmware_result_from_zip.rc != 0 and ('install success' not in firmware_result_from_zip.stdout and 'already installed' not in firmware_result_from_zip.stdout)"
+  failed_when: firmware_result_from_zip.rc != 0
 
 - name: install firmware
   shell: "bash {{ firmware_pkg.files[0].path }} --full --quiet"
   become: yes
   register: firmware_result
   when: firmware_pkg_from_zip.matched == 0 and firmware_pkg.matched > 0
-  failed_when: "firmware_result.rc != 0 and ('install success' not in firmware_result.stdout and 'already installed' not in firmware_result.stdout)"
+  failed_when: firmware_result.rc != 0
 
 - name: message
   debug:

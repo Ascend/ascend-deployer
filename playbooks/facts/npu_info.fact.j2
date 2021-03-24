@@ -68,7 +68,7 @@ def get_profile_model(arch, model):
 
 def get_scene(profile_model):
     scene = ''
-    if profile_model in ['A300-3000', 'A300-3010', 'A300i-6000']:
+    if profile_model in ['A300-3000', 'A300-3010', 'A300i-6000', 'A200-3000']:
         scene = 'infer'
     if profile_model in ['A800-9000', 'A800-9010', 'Atlas 900 Compute Node']:
         scene = 'train'
@@ -136,6 +136,7 @@ def get_metadatas(bdf_path):
 def get_model():
     bdf_file_path = ''
     DEVNULL = open(os.devnull, 'w')
+    chip_count = 0
     for candidate_dir in glob.glob('/sys/bus/pci/devices/*'):
         find_metadata_cmd = ["grep", "0x1200",
                              os.path.join(candidate_dir, "class")]
@@ -143,7 +144,7 @@ def get_model():
                                       stdout=DEVNULL, stderr=subprocess.STDOUT)
         if return_code == 0:
             bdf_file_path = candidate_dir
-            break
+            chip_count = chip_count + 1
 
     ret = check_metadata_file_existance(bdf_file_path)
     if not ret:
@@ -188,6 +189,9 @@ def get_model():
     if 'Atlas' in product:
         return product.strip()
 
+    if chip_info == 'A300-3010' and chip_count == 1:
+        chip_info = 'A200-3000'
+
     return chip_info
 
 def get_product(model):
@@ -204,7 +208,8 @@ def get_product(model):
         'A300-3010': 'A300',
         'A300-3000': 'A300',
         'Atlas 500 (Model 3000)': 'A300',
-        'A300i-6000': 'A300i'
+        'A300i-6000': 'A300i',
+        'A200-3000': 'A200'
     }
     if model in product_dict.keys():
         return product_dict[model]
@@ -224,7 +229,8 @@ def get_model_number(model):
         'A300-3010': '3010',
         'A300-3000': '3000',
         'Atlas 500 (Model 3000)': '3000',
-        'A300i-6000': '6000'
+        'A300i-6000': '6000',
+        'A200-3000': '3000'
     }
     if model in model_dict.keys():
         return model_dict[model]

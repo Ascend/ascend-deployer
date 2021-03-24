@@ -424,5 +424,17 @@
     },
     {
         "name": "binutils", "used_by": ["driver", "cann", "framework"]
+    },
+    {
+        "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+        "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/centos_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+        "sha256": "e15c6a16194b4d6432dce05207018ee2117a5a5404c1cf86f45b1e52edbd26d9",
+        "dst_dir": "CentOS_8.2_aarch64/Ascend910"
+    },
+    {
+        "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+        "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/ascend310/centos_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
+        "sha256": "9c743455d5b9e4362c690794ea2809d1f70b713c749eaf60f9e95a9c5ae79347",
+        "dst_dir": "CentOS_8.2_aarch64/Ascend310"
     }
 ]

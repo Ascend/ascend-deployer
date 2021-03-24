@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ===========================================================================
-
+"""gui application using tk"""
 import configparser
 import os
 import sys
@@ -109,6 +109,12 @@ class Win(object):
         self.root.destroy()
         sys.exit(1)
 
+
+def win_main():
+    """start gui application"""
+    app = Win()
+    app.run()
+
+
 if __name__ == '__main__':
-    APP = Win()
-    APP.run()
+    win_main()

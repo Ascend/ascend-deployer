@@ -18,7 +18,7 @@
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
       register: nnae_from_zip_result
       when: nnae_from_zip.matched > 0
-      failed_when: "nnae_from_zip_result.rc != 0 and ('install success' not in nnae_from_zip_result.stdout and 'already installed' not in nnae_from_zip_result.stdout)"
+      failed_when: "nnae_from_zip_result.rc != 0 and 'already installed' not in nnae_from_zip_result.stdout"
 
     - name: find nnae package
       find:
@@ -38,7 +38,7 @@
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
       register: nnae_result
       when: nnae_from_zip.matched == 0 and nnae.matched > 0
-      failed_when: "nnae_result.rc != 0 and ('install success' not in nnae_result.stdout and 'already installed' not in nnae_result.stdout)"
+      failed_when: "nnae_result.rc != 0 and 'already installed' not in nnae_result.stdout"
 
     - name: message
       debug:

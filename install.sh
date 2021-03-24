@@ -319,7 +319,6 @@ function process_display()
     if [ ${unsupported} == ${TRUE} ];then
         echo "Error: not support display for ${display_target}"
         print_usage
-        exit 1
     fi
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
@@ -406,7 +405,6 @@ function process_install()
     done
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
-        exit 1
     fi
     verify_zip_redirect
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
@@ -440,7 +438,6 @@ function process_uninstall()
     done
     if [ "${not_supported}" == "${TRUE}" ]; then
         print_usage
-        exit 1
     fi
 
     local tmp_uninstall_play=${BASE_DIR}/playbooks/.tmp_uninstall.yml
@@ -471,7 +468,6 @@ function process_upgrade()
     done
     if [ "${not_supported}" == "${TRUE}" ]; then
         print_usage
-        exit 1
     fi
     verify_zip_redirect
     local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
@@ -505,7 +501,6 @@ function process_test()
     done
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
-        exit 1
     fi
 
     local tmp_test_play=${BASE_DIR}/test/tmp_test.yml
@@ -524,6 +519,15 @@ function process_test()
 
 function process_scene()
 {
+    local unsupport=${FALSE}
+    if [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
+        echo "Error: not support install scene for ${install_scene}"
+        unsupport=${TRUE}
+    fi
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+
     verify_zip_redirect
     local tmp_scene_play=${BASE_DIR}/scene/tmp_scene.yml
     echo "- import_playbook: ../playbooks/gather_npu_fact.yml" > ${tmp_scene_play}
@@ -541,6 +545,7 @@ function process_scene()
 
 function print_usage()
 {
+    unset IFS
     echo "Usage: ./install.sh [options]"
     echo " Options:"
     echo "--help  -h                     Print this message"
@@ -610,46 +615,81 @@ function parse_script_args() {
         case "$1" in
         --help | -h)
             print_usage
-            shift 1
             ;;
         --version)
             echo "this is version"
             exit 0
             ;;
         --display=*)
-            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${display_target} ];then
+                echo "ERROR" "--display parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --install=*)
-            install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${install_target} ];then
+                echo "ERROR" "--install parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --install-scene=*)
-            install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${install_scene} ];then
+                echo "ERROR" "--install-scene parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${uninstall_target} ];then
+                echo "ERROR" "--uninstall parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --uninstall-version=*)
-            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${uninstall_version} ];then
+                echo "ERROR" "--uninstall-version parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${upgrade_target} ];then
+                echo "ERROR" "--upgrade parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --test=*)
-            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${test_target} ];then
+                echo "ERROR" "--test parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --output-file=*)
-            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${output_file} ];then
+                echo "ERROR" "--output-file parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --stdout_callback=*)
-            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
+            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            if [ -z ${STDOUT_CALLBACK} ];then
+                echo "ERROR" "--stdout_callback parameter is invalid"
+                print_usage
+            fi
             shift
             ;;
         --nocopy)
@@ -684,7 +724,6 @@ function check_script_args()
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
         echo "ERROR" "Unsupported --install and --install-scene at same time"
         print_usage
-        exit 1
     fi
 }
 

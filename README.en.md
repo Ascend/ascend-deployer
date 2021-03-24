@@ -1,7 +1,11 @@
 # Overview
+
 ## Functions
+
 The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory contains an additional Device IP configuration script that can be used if needed.
+
 ## Environment Requirements
+
 The offline installation tool supports the download and installation of the OSs listed in the following table:
 |    OS    | Version | CPU Architecture |            Installation Type             |
 | :------: | :-----: | :--------------: | :--------------------------------------: |
@@ -9,34 +13,50 @@ The offline installation tool supports the download and installation of the OSs 
 |  CentOS  |   7.6   |      x86_64      | A minimal image is installed by default. |
 |  CentOS  |   8.2   |     AArch64      | A minimal image is installed by default. |
 |  CentOS  |   8.2   |      x86_64      | A minimal image is installed by default. |
+| EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
+| EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
+| EulerOS  | 2.0SP9  |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |  18.04  |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 |  Debian  |   9.9   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
+|  Debian  |   10.0   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
 | BCLinux |   7.6   |     AArch64      | A minimal image is installed by default. |
 | BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
 | BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
+|   SLES   |  12.5   |      x86_64      | A minimal image is installed by default. |
+|   Linx   |   9     |     AArch64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |      x86_64      | A minimal image is installed by default. |
+|  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
+|   UOS    |   20    |     AArch64      | A minimal image is installed by default. |
+|   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
+
 ## Precautions
+
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod** must be installed in the OS. The OpenSSH server is used by Ansible for connections over SSH. When installing the Ubuntu OS, you need to install it.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
-- For EulerOS, ensure that the source has the **kernel-headers** and **kernel-devel** software packages that match the kernel version (you can run the `uname -r` command to view the version). If the software packages do not exist, you need to prepare them.
-- When installing CentOS 8.2, select **Standard** in **Additional Software for Selected Environment**. Otherwise, basic commands such as **tar** may be missing after the OS is installed.
+- Euleros, SLES, Debian and other systems need to ensure that there are kernel-headers and kernel-devel packages that are consistent with the kernel version of the system (which can be viewed through 'uname -r' command). If not, you need to prepare your own kernel headers.
+- When installing the SLES driver, set the value "allow_unsupported_modules" in /etc/modprob.d /10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
+- Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
+
 # Operation Instructions
+
 ## Downloading OS Components and Python Third-party Dependencies
+
 The download function can be used in the Windows or Linux OSs.
+
 ### Notice
+
 - To configure a proxy or modify the configuration file to download required OS components, edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - The offline installation tool provides the source configuration file. The Huawei source is used by default. Replace it as required. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
 - After the installation, it is recommended to uninstall the third-party components such as GCC and G + + that may have security risks in the system.
+
 ### Download
+
 - Windows
     1. Python 3 is required in Windows. Python 3.7 or later is recommended.
       Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
@@ -44,8 +64,10 @@ The download function can be used in the Windows or Linux OSs.
     2. Start download.
       Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download.
+    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+
 ## Installation
+
 ### Notice
 
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
@@ -72,18 +94,17 @@ group=HwHiAiUser
 
 ### Obtaining Software Packages
 
-Prepare the software packages to be installed as required. (The driver, firmware, and CANN software packages can be installed.)
+1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
     - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-Save the software packages to be installed in the **resources** directory. The following is an example.
-ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
-Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
     - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
-    - Atlas 500 only supports the Euleros2.8 Aarch64 clipped operating system, and does not support other systems. Therefore, it does not support the offline deployment tool to run locally, but only supports remote installation.Atlas 500Pro supports both local and remote installations
-    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Refer to the usermanual-IEF documentation for other restrictions
-The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.
-The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
+    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
+    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
+    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
+4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
 ascend-deployer
@@ -110,7 +131,9 @@ ascend-deployer
    |- docker_images
    |- ...
 ```
+
 ### Single-Device Installation
+
 1. Configure a stand-alone inventory_file file.
     Edit the **inventory_file** file. The format is shown as follows:
     ```
@@ -118,7 +141,7 @@ ascend-deployer
     localhost ansible_connection='local' # root user
     localhost ansible_connection='local' ansible_become_pass='password' # not root user
     ```
-    Note: supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism. ./install.sh --check or install, test and other commands can be executed to complete the encryption of the file after the configuration is completed, otherwise the account password may be leaked;Non-root users using the offline deployment tool need to have access to the ASCEND -Deployer directory.
+    Note: Root and non-root users are supported;The ansible_become_pass parameter is not required for root users, and ansible_become_pass must be configured for non-root users. This parameter is the same as the password for non-root users, and non-root users must have sudoer permissions (configured in /etc/sudoer).Non-root users using the offline deployment tool should have access to the Ascend-Deployer directory (configure the owner with the chown-r command);The off-line deployment tool will encrypt the Inventory file with the password configuration using the Ansidia-Vault mechanism. After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
 2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
     - Software-specific installation
       `./install.sh --install=<package_name>`
@@ -147,18 +170,8 @@ ascend-deployer
     ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
     ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
     ```
-    Note: The Inventory file configures the user name and password of the remote device, supporting both root and non-root users;The root user does not need to configure ansible_become_pass parameter, and the non-root user must configure ansible_become_pass parameter, which is the same as the ansible_ssh_pass parameter, and the non-root user must have the sudoer privilege.The offline deployment tool encrypts the Inventory files with passwords using Ansidia-Vault mechanism. `./install.sh --check` or install, test and other commands can be executed to complete the encryption of the file after the configuration is completed, otherwise the account password may be leaked;Non-root users using the offline deployment tool need to have access to the ASCEND -Deployer directory.
-2. Run the **ansible ping** command to test the connectivity of the devices where the packages to be installed.
-    ```
-    # Configure environment variables.
-    export PATH=/usr/local/python3.7.5/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
-    # Test the connectivity of the devices.
-    ansible all -i ./inventory_file -m ping # Inventory_file is not encrypted
-    ansible all -i ./inventory_file -m ping --ask-vault-pass # Inventory_file is encrypted
-    ```
-    If Ansible is not installed in the current environment, run the `./install.sh --check` command.
-    If inventory_file is encrypted, you need to add the `--ask-vault-pass` parameter to test the connectivity of the device to be installed
+    Note: The Inventory file configures the user name and password for the remote device, supporting both root and non-root users;The ansible_become_pass parameter is not required for root users, and the ansible_become_pass parameter must be configured for non-root users, which is the same as the ansible_ssh_pass parameter. Non-root users must have sudoer permissions (configured in /etc/sudoer).Non-root users using the offline deployment tool should have access to the Ascend-Deployer directory (configure the owner with the chown-r command);The off-line deployment tool will encrypt the Inventory file with the password configuration using the Ansidia-Vault mechanism. After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
+2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 3. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
     - Software-specific installation
@@ -179,12 +192,15 @@ ascend-deployer
   `./install.sh --test=driver // Test whether the driver is normal.`
 
 # Environment Variable Configuration
-During the installation, Python 3.7.5 is automatically installed on the device. To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
+
+The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
+Similarly, other software packages or tools installed by offline deployment tools can be used normally only after users refer to the corresponding official information and configure environment variables or make other Settings.
 # Follow-up
+
 - Inference scenario
   You can develop applications in the development environment by referring to the [CANN Application Software Development Guide (C and C++)](https://www.huaweicloud.com/intl/en-us/ascend/cann) or [CANN Application Software Development Guide (Python)](https://www.huaweicloud.com/intl/en-us/ascend/cann).
 - Training scenario
@@ -193,6 +209,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
 # Upgrade
+
 Run the following command to upgrade the specified software:
 `./install.sh --upgrade=<package_name>`
 You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
@@ -201,7 +218,9 @@ Notes:
 
 - Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
 - After the driver or firmware is upgraded, run the `reboot` command to restart the device for the driver and firmware to take effect.
+
 # Uninstallation
+
 Run the following command to uninstall the specified software:
 `./install.sh --uninstall=<package_name>`
 You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
@@ -210,13 +229,17 @@ Note:
 Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
 
 # Offline Installation Tool Upgrade
+
 You can perform the following operation to upgrade the offline installation tool:
 - Windows
   Run **upgrade_self.bat** to start the upgrade.
 - Linux
   Run the `./upgrade_self.sh` command to start the upgrade.
+
 # Reference Information
+
 ## <a name="parameter">Parameter Description</a>
+
 Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
 `./install.sh [options]`
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
@@ -287,8 +310,11 @@ The configuration files for the preceding installation scenarios are stored in t
 ```
 
 To customize an installation scenario, refer to the preceding configuration file.
+
 ## <a name="config">Configuration Description</a>
+
 ### Proxy Configuration
+
 If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file.
 1. Configure the agent in the environment variable as follows
 ```
@@ -313,12 +339,15 @@ You need to change the enable parameter to true, and configure the available hos
 For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
 ### Download Configuration
+
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 ```
+
 ###  <a name="sourceconfig">Source Configuration</a>
+
 The offline installation tool provides the source configuration file. Replace it as required.
 - Python source configuration
   Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.

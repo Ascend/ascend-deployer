@@ -23,7 +23,7 @@
       become: yes
       register: atlasedge_result
       when: atlasedge.matched is defined and atlasedge.matched > 0
-      failed_when: "atlasedge_result.rc !=0 and ('install success' not in atlasedge_result.stdout and 'has been installed' not in atlasedge_result.stdout)"
+      failed_when: "atlasedge_result.rc !=0 and 'has been installed' not in atlasedge_result.stdout"
 
     - name: atlasedge scene message
       debug:

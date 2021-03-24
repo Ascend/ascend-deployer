@@ -47,7 +47,7 @@ function print_usage()
     echo " Options:"
     echo "--help  -h               Print this message"
     echo "--os-list=<OS1>,<OS2>    Specific OS list to download, supported os are:"
-    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d)
+    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d  | sort)
     do
         os_name=$(basename ${os})
         echo "                         ${os_name}"
@@ -63,15 +63,9 @@ function parse_script_args() {
         case "$1" in
         --help | -h)
             print_usage
-            shift 1
             ;;
         --os-list=*)
-            OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\/*$//g")
-            shift
-            if [ "x${OS_LIST}" == "x" ]; then
-                echo "ERROR" "Unsupported parameters: $1"
-                print_usage
-            fi
+            OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
             break
             ;;
         *)
@@ -88,20 +82,21 @@ function parse_script_args() {
 function check_script_args()
 {
     if [ -z ${OS_LIST} ];then
-        return
+        echo "ERROR" "--os-list parameter is invalid"
+        print_usage
     fi
     local unsupport=${FALSE}
     IFS=','
     for os in ${OS_LIST}
     do
-        if [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
+        if [ -z ${os} ] || [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
             echo "Error: not support download for ${os}"
             unsupport=${TRUE}
         fi
     done
     unset IFS
     if [ ${unsupport} == ${TRUE} ];then
-        exit 1
+        print_usage
     fi
 }
 
