@@ -71,6 +71,7 @@ class Apt(object):
         script = os.path.realpath(__file__)
         self.base_dir = os.path.dirname(os.path.dirname(script))
         self.repo_file = os.path.join(self.base_dir, source_file)
+        self.resources_dir = os.path.join(self.base_dir, 'resources')
         with open(self.repo_file) as file:
             for line in file.readlines():
                 tmp = line.split(' ')
@@ -94,7 +95,7 @@ class Apt(object):
             packages_url = '{0}/{1}/Packages.gz'.format(
                 sub_repo, binary_path)
             print('packages_url=[{0}]'.format(packages_url))
-            LOG.info('packages_url=[{0}]'.format(packages_url))
+            LOG.info('packages_url=[%s]', packages_url)
             packages = self.fetch_packages(packages_url)
             self.make_cache_from_packages(packages)
 
@@ -111,7 +112,7 @@ class Apt(object):
             return gzip.decompress(html).decode('utf-8')
         else:
             print('resp is None')
-            LOG.warn('resp is None')
+            LOG.warning('resp is None')
             return ''
 
     @staticmethod
@@ -155,7 +156,7 @@ class Apt(object):
             if len(line.strip()) == 0:
                 if package == 'cmake':
                     print('cmake =[{0}]'.format(filename))
-                    LOG.info('cmake =[{0}]'.format(filename))
+                    LOG.info('cmake =[%s]', filename)
                 if package in self.cache:
                     pkg = self.cache[package]
                     if self.version_compare(filename, pkg.get_filename()):
@@ -163,9 +164,32 @@ class Apt(object):
                 else:
                     self.cache[package] = Package(package, filename, sha256)
 
-    def download(self, pkg, dst_dir):
+    def download_by_url(self, pkg):
         """
-        download 
+        download_by_url
+        :param pkg:  package information
+        :return:
+        """
+        dst_dir = pkg['dst_dir']
+        url = pkg['url']
+        file_name = os.path.basename(url)
+        dst_file = os.path.join(self.resources_dir, dst_dir, file_name)
+
+        checksum = pkg['sha256'] if 'sha256' in pkg else None
+        if checksum and not self.need_download_again(checksum, dst_file):
+            print(file_name.ljust(60), 'exists')
+            return
+
+        try:
+            LOG.info('download from [%s]', url)
+            DOWNLOAD_INST.download(url, dst_file)
+        except HTTPError as http_error:
+            print('[{0}]->{1}'.format(url, http_error))
+            LOG.error('[%s]->[%s]', url, http_error)
+
+    def download_by_name(self, pkg, dst_dir):
+        """
+        download
 
         :param name:
         :param dst_dir:
@@ -179,18 +203,18 @@ class Apt(object):
             url = self.mirror_url + self.cache[name].get_filename()
         else:
             print("can't find package {0}".format(name))
-            LOG.error("can't find package {0}".format(name))
+            LOG.error("can't find package %s", name)
             return
         if name in ["docker-ce", "docker-ce-cli", "containerd.io"] and self.docker_url is not None:
             url = self.docker_url + self.cache[name].get_filename()
 
         try:
-            LOG.info('[{0}] download from [{1}]'.format(name, url))
+            LOG.info('[%s] download from [%s]', name, url)
             file_name = os.path.basename(self.cache[name].get_filename())
             dst_file = os.path.join(dst_dir, file_name)
             target_sha256 = self.cache[name].get_sha256()
             if not self.need_download_again(target_sha256, dst_file):
-                LOG.info("{0} no need download again".format(name))
+                LOG.info("%s no need download again", name)
                 print(name.ljust(60), 'exists')
                 return
             if DOWNLOAD_INST.download(url, dst_file):
@@ -199,7 +223,16 @@ class Apt(object):
             print(name.ljust(60), 'download failed')
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
-            LOG.error('[{0}]->{1}'.format(url, http_error))
+            LOG.error('[%s]->[%s]', url, http_error)
+
+    def download(self, pkg, dst_dir):
+        """
+        download
+        """
+        if 'url' in pkg:
+            self.download_by_url(pkg)
+        else:
+            self.download_by_name(pkg, dst_dir)
 
     def need_download_again(self, target_sha256, dst_file):
         """
@@ -215,8 +248,8 @@ class Apt(object):
             return True
         file_sha256 = calc_sha256(dst_file)
         if target_sha256 != file_sha256:
-            LOG.info('target sha256 : {}, existed file sha256 : {}'.format(
-                target_sha256, file_sha256))
+            LOG.info('target sha256 : %s, existed file sha256 : %s',
+                     target_sha256, file_sha256)
             print('target sha256 : {}, existed file sha256 : {}'.format(
                 target_sha256, file_sha256))
             return True
