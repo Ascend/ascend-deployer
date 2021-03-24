@@ -15,7 +15,7 @@
       become: yes
       register: toolbox_from_zip_result
       when: toolbox_from_zip.matched > 0
-      failed_when: "toolbox_from_zip_result.rc != 0 and ('install success' not in toolbox_from_zip_result.stdout and 'already installed' not in toolbox_from_zip_result.stdout)"
+      failed_when: "toolbox_from_zip_result.rc != 0 and 'already installed' not in toolbox_from_zip_result.stdout"
 
     - name: find toolbox package
       find:
@@ -32,6 +32,7 @@
       become: yes
       register: toolbox_result
       when: toolbox_from_zip.matched == 0 and toolbox.matched > 0
+      failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
 
     - name: message
       debug:

@@ -20,14 +20,14 @@
 - name: install driver for specific linux from run_from_zip_dir first
   shell: "bash {{driver_pkg_from_zip.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result_from_zip
-  failed_when: "'install success' not in driver_result_from_zip.stdout"
+  failed_when: driver_result_from_zip.rc != 0
   when: driver_pkg_from_zip.matched > 0
   become: yes
 
 - name: install driver for common linux from run_from_zip_dir first
   shell: "bash {{driver_pkg_linux_from_zip.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result_linux_from_zip
-  failed_when: "'install success' not in driver_result_linux_from_zip.stdout"
+  failed_when: driver_result_linux_from_zip.rc != 0
   when: driver_pkg_from_zip.matched == 0 and driver_pkg_linux_from_zip.matched > 0
   become: yes
 
@@ -54,14 +54,14 @@
 - name: install driver for specific linux
   shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
-  failed_when: "'install success' not in driver_result.stdout"
+  failed_when: driver_result.rc != 0
   when: driver_pkg_from_zip.matched == 0 and driver_pkg_linux_from_zip.matched == 0 and driver_pkg.matched > 0
   become: yes
 
 - name: install driver for common linux
   shell: "bash {{driver_pkg_linux.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result_linux
-  failed_when: "'install success' not in driver_result_linux.stdout"
+  failed_when: driver_result_linux.rc != 0
   when: driver_pkg_from_zip.matched == 0 and driver_pkg_linux_from_zip.matched == 0 and driver_pkg.matched == 0 and driver_pkg_linux.matched > 0
   become: yes
 

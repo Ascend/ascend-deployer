@@ -40,6 +40,7 @@ The offline installation tool supports the download and installation of the OSs 
 - Euleros, SLES, Debian and other systems need to ensure that there are kernel-headers and kernel-devel packages that are consistent with the kernel version of the system (which can be viewed through 'uname -r' command). If not, you need to prepare your own kernel headers.
 - When installing the SLES driver, set the value "allow_unsupported_modules" in /etc/modprob.d /10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
+- Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 
 # Operation Instructions
 
