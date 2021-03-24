@@ -52,17 +52,20 @@ class OsDepDownloader:
             dst_dir = os.path.join(self.resources_dir, os_item)
             print('item:{} save dir: {}'.format(os_item, dst_dir))
             LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
-            config_file = os.path.join(CUR_DIR,
-                                       f'config/{os_item}/pkg_info.json')
+            config_file = os.path.join(
+                CUR_DIR,
+                f'config/{os_item}/pkg_info.json')
             downloader = None
-            source_list_file = f'downloader/config/{os_item}/source.list'
+            source_list_file = os.path.join(
+                CUR_DIR,
+                f'config/{os_item}/source.list')
             if os.path.exists(source_list_file):
                 if 'aarch64' in os_item:
                     downloader = Apt(source_list_file, 'aarch64')
                 else:
                     downloader = Apt(source_list_file, 'x86_64')
             else:
-                source_repo_file = f'downloader/config/{os_item}/source.repo'
+                source_repo_file = os.path.join(CUR_DIR, 'config/{0}/source.repo'.format(os_item))
                 if 'aarch64' in os_item:
                     downloader = Yum(source_repo_file, 'aarch64')
                 else:
