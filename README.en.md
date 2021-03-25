@@ -152,6 +152,7 @@ ascend-deployer
         - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
         - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
         - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
+        - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
     - Scenario-specific installation
       `./install.sh --install-scene=<scene_name>`
       The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:

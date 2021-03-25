@@ -53,7 +53,7 @@ class OsDepDownloader:
             else:
                 downloader = Apt(source_list_file, 'x86_64')
         else:
-            source_repo_file = f'downloader/config/{os_item}/source.repo'
+            source_repo_file = os.path.join(CUR_DIR, 'downloader/config/{0}/source.repo'.format(os_item))
             if 'aarch64' in os_item:
                 downloader = Yum(source_repo_file, 'aarch64')
             else:
@@ -61,8 +61,8 @@ class OsDepDownloader:
         if downloader is not None:
             downloader.make_cache()
 
-        with open(config_file, 'r', encoding='utf-8') as file:
-            data = json.load(file)
+        with open(config_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
             for item in data:
                 downloader.download(item, dst_dir)
 
@@ -103,8 +103,8 @@ class OsDepDownloader:
             if downloader is not None:
                 downloader.make_cache()
 
-            with open(config_file, 'r', encoding='utf-8') as file:
-                data = json.load(file)
+            with open(config_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
                 for item in data:
                     downloader.download(item, dst_dir)
 
