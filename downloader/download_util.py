@@ -236,7 +236,7 @@ class DownloadUtil:
     def check_download_necessary(cls, dst_file_name):
         if not os.path.exists(dst_file_name):
             return True
-        return CONFIG_INST.get_download_delete_exists()
+        return False
 
     @staticmethod
     def delete_if_exist(dst_file_name: str):

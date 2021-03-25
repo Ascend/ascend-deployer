@@ -95,7 +95,7 @@ class OsDepDownloader:
                 else:
                     downloader = Apt(source_list_file, 'x86_64')
             else:
-                source_repo_file = f'downloader/config/{os_item}/source.repo'
+                source_repo_file = os.path.join(CUR_DIR, 'config/{0}/source.repo'.format(os_item))
                 if 'aarch64' in os_item:
                     downloader = Yum(source_repo_file, 'aarch64')
                 else:
