@@ -61,8 +61,8 @@ class OsDepDownloader:
         if downloader is not None:
             downloader.make_cache()
 
-        with open(config_file, 'r', encoding='utf-8') as file:
-            data = json.load(file)
+        with open(config_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
             for item in data:
                 downloader.download(item, dst_dir)
 
@@ -103,8 +103,8 @@ class OsDepDownloader:
             if downloader is not None:
                 downloader.make_cache()
 
-            with open(config_file, 'r', encoding='utf-8') as file:
-                data = json.load(file)
+            with open(config_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
                 for item in data:
                     downloader.download(item, dst_dir)
 

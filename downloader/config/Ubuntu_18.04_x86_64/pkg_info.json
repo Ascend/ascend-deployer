@@ -133,7 +133,6 @@
     { "name": "libitm1-arm64-cross" },
     { "name": "liblsan0-arm64-cross" },
     { "name": "libstdc++6-arm64-cross" },
-    { "name": "libstdc++7-arm64-cross" },
     { "name": "libstdc++-7-dev-arm64-cross" },
     { "name": "libtsan0-arm64-cross" },
     { "name": "libubsan0-arm64-cross" },
