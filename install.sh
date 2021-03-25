@@ -1,6 +1,7 @@
 #!/bin/bash
 readonly TRUE=1
 readonly FALSE=0
+readonly SIZE_THRESHOLD=$((5*1024*1024*1024))
 readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
@@ -328,6 +329,7 @@ function process_display()
 
 function verify_zip_redirect()
 {
+    check_extracted_size
     verify_zip > ${BASE_DIR}/tmp.log 2>&1
     local verify_result=$?
     cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install.log
@@ -335,6 +337,43 @@ function verify_zip_redirect()
     if [ ${verify_result} -ne 0 ];then
         exit 1
     fi
+}
+
+function check_extracted_size()
+{
+    local IFS_OLD=$IFS
+    unset IFS
+    for zip_package in $(find ${BASE_DIR}/resources/ -name "*.zip" 2>/dev/null)
+    do
+        unzip -l ${zip_package} >/dev/null 2>&1
+        if [[ $? != 0 ]];then
+            echo "Error: ${zip_package} does not look like a zip archive"
+            echo "Error: ${zip_package} does not look like a zip archive" >> ${BASE_DIR}/install.log
+            exit 1
+        fi
+        local check_zip=$(unzip -l ${zip_package} | awk -v size_threshold="$SIZE_THRESHOLD" 'END {print ($1 < size_threshold)}')
+        if [[ ${check_zip} == 0 ]];then
+            echo "Error: ${zip_package} extracted size over 5G"
+            echo "Error: ${zip_package} extracted size over 5G" >> ${BASE_DIR}/install.log
+            exit 1
+        fi
+    done
+    for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.gz" 2>/dev/null)
+    do
+        tar tvf ${tar_package} >/dev/null 2>&1
+        if [[ $? != 0 ]];then
+            echo "Error: ${tar_package} does not look like a tar archive"
+            echo "Error: ${tar_package} does not look like a tar archive" >> ${BASE_DIR}/install.log
+            exit 1
+        fi
+        local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="$SIZE_THRESHOLD" '{sum += $3} END {print (sum < size_threshold)}')
+        if [[ ${check_tar} == 0 ]];then
+            echo "Error: ${tar_package} extracted size over 5G"
+            echo "Error: ${tar_package} extracted size over 5G" >> ${BASE_DIR}/install.log
+            exit 1
+        fi
+    done
+    IFS=${IFS_OLD}
 }
 
 function verify_zip()
