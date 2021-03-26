@@ -297,11 +297,13 @@ function install_ansible()
             # ubuntu 18.04 is recoginized as debian buster/sid due tu /etc/debian_release
             sed -i "1520 i\      'buster/sid': /usr/bin/python3" ${ansible_path}/config/base.yml
             # euler os use python3 as default python interpreter
-            sed -i "1527 i\    euleros:"                    ${ansible_path}/config/base.yml
-            sed -i "1528 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1528 i\    euleros:"                    ${ansible_path}/config/base.yml
+            sed -i "1529 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
             # kylin should use python3. if selinux enalbed, the default python have no selinux
-            sed -i "1529 i\    kylin:"                      ${ansible_path}/config/base.yml
-            sed -i "1530 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            sed -i "1530 i\    kylin:"                      ${ansible_path}/config/base.yml
+            sed -i "1531 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            # debian 10.0
+            sed -i "1520 i\      '10.0': /usr/bin/python3" ${ansible_path}/config/base.yml
         fi
     fi
 }

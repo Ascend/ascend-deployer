@@ -97,7 +97,7 @@ group=HwHiAiUser
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
     - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package。
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
     - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
