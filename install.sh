@@ -716,7 +716,7 @@ function parse_script_args() {
             shift
             ;;
         --output-file=*)
-            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\)//g")
             if [ -z ${output_file} ];then
                 echo "ERROR" "--output-file parameter is invalid"
                 print_usage
