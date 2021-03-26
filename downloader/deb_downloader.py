@@ -96,29 +96,26 @@ class Apt(object):
                 sub_repo, binary_path)
             print('packages_url=[{0}]'.format(packages_url))
             LOG.info('packages_url=[%s]', packages_url)
-            packages = self.fetch_packages(packages_url)
+            packages = self.fetch_package_index(packages_url)
             self.make_cache_from_packages(packages)
 
-    def fetch_packages(self, packages_url):
+    def fetch_package_index(self, packages_url):
         """
-        fetch_packages
+        fetch_package_index
 
         :param packages_url:
         :return:
         """
-        resp = DOWNLOAD_INST.urlopen(packages_url)
-        if resp is not None:
+        tmp_file = DOWNLOAD_INST.download_to_tmp(packages_url)
+        with gzip.open(tmp_file) as resp:
             html = resp.read()
-            return gzip.decompress(html).decode('utf-8')
-        else:
-            print('resp is None')
-            LOG.warning('resp is None')
-            return ''
+        os.unlink(tmp_file)
+        return html.decode('utf-8')
 
     @staticmethod
     def version_compare(ver_a, ver_b):
         """
-        version_compare 
+        version_compare
 
         :param ver_a:
         :param ver_b:
@@ -133,7 +130,7 @@ class Apt(object):
 
     def make_cache_from_packages(self, packages_content):
         """
-        make_cache_from_packages 
+        make_cache_from_packages
 
         :param packages_content:
         :return:
@@ -154,9 +151,6 @@ class Apt(object):
                 filename = line.split(': ')[1]
 
             if len(line.strip()) == 0:
-                if package == 'cmake':
-                    print('cmake =[{0}]'.format(filename))
-                    LOG.info('cmake =[%s]', filename)
                 if package in self.cache:
                     pkg = self.cache[package]
                     if self.version_compare(filename, pkg.get_filename()):
@@ -164,13 +158,15 @@ class Apt(object):
                 else:
                     self.cache[package] = Package(package, filename, sha256)
 
-    def download_by_url(self, pkg):
+    def download_by_url(self, pkg, dst_dir):
         """
         download_by_url
         :param pkg:  package information
         :return:
         """
-        dst_dir = pkg['dst_dir']
+        if 'dst_dir' in pkg:
+            dst_dir = pkg['dst_dir']
+
         url = pkg['url']
         file_name = os.path.basename(url)
         dst_file = os.path.join(self.resources_dir, dst_dir, file_name)
@@ -230,7 +226,7 @@ class Apt(object):
         download
         """
         if 'url' in pkg:
-            self.download_by_url(pkg)
+            self.download_by_url(pkg, dst_dir)
         else:
             self.download_by_name(pkg, dst_dir)
 
@@ -261,7 +257,7 @@ def main():
     """main"""
     apt_inst = Apt('downloader/config/Ubuntu_18.04_x86_64/source.list', 'x86_64')
     apt_inst.make_cache()
-    apt_inst.download('libaec', "./")
+    apt_inst.download('containerd.io', "./")
 
 
 if __name__ == '__main__':
