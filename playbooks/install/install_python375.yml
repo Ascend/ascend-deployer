@@ -60,6 +60,7 @@
         - pyyaml
         - pandas
         - xlrd
+        - matplotlib
 
     - name: install python selinux
       shell: python3.7 -m pip install selinux --no-index --find-links {{ resources_dir }}/pylibs
