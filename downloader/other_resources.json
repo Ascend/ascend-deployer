@@ -76,5 +76,11 @@
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_aarch64.whl",
         "sha256":"e62ccf3884aea0d54e6e5f1af6b16868402df2c0f4ec143455939e99948f887d",
         "dest":"resources/pylibs"
+    },
+    {
+        "filename":"PyQt5-5.14.0-5.14.0-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl",
+        "url":"https://repo.huaweicloud.com/repository/pypi/packages/88/d0/4572492d633e311c0143ba20596cb5c090d37442d1cd431082193f3bbb3a/PyQt5-5.14.0-5.14.0-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl",
+        "sha256":"a757ba71c51f428b52ba404e781e2f19b4436b2c31298b8313339d5817781b65",
+        "dest":"resources/pylibs"
     }
 ]
