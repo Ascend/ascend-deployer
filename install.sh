@@ -839,9 +839,11 @@ main()
     if [ ${UID} == 0 ];then
         export PATH=/usr/local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+        unset PYTHONPATH
     else
         export PATH=${HOME}/.local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
+        unset PYTHONPATH
     fi
     bootstrap
     encrypt_inventory
