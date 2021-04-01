@@ -239,7 +239,7 @@ You can perform the following operation to upgrade the offline installation tool
 
 # Reference Information
 
-## <a name="parameter">Parameter Description</a>
+## <a name="parameter">Install Parameter Description</a>
 
 Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
 `./install.sh [options]`
@@ -259,6 +259,13 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --uninstall=<package_name>   | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled. |
 | --upgrade=<package_name>     | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded. |
 | --test=<target>              | Checks whether the specified component works properly. |
+
+## <a name="parameter">Download Parameter Description</a>
+
+| Parameter             | Description                                        |
+| :---------------------| -------------------------------------------------- |
+| --os-list=<os-list>   | set specific os softwares to download              |
+| --download            | download specific software. such as mindstudio     |
 
 ## <a name="scene">Installation Scenarios</a>
 
@@ -367,3 +374,7 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
+
+# Other Install Guide
+
+- [Install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)

@@ -22,6 +22,7 @@ from deb_downloader import Apt
 from rpm_downloader import Yum
 from download_util import CONFIG_INST
 from logger_config import get_logger
+import software_mgr
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -33,7 +34,11 @@ class OsDepDownloader:
         self.project_dir = os.path.dirname(CUR_DIR)
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
-    def download(self, os_item, dst):
+    def download(self, os_list, software_list, dst):
+        for os_item in os_list:
+            self.download_os(os_item, software_list, dst)
+
+    def download_os(self, os_item, software_list, dst):
         """
         download os packages. debs or rpms
         :param os_itme:  Ubuntu_18.04_aarch64, CentOS_8.2_x86_64..
@@ -53,7 +58,7 @@ class OsDepDownloader:
             else:
                 downloader = Apt(source_list_file, 'x86_64')
         else:
-            source_repo_file = os.path.join(CUR_DIR, 'downloader/config/{0}/source.repo'.format(os_item))
+            source_repo_file = os.path.join(CUR_DIR, 'config/{0}/source.repo'.format(os_item))
             if 'aarch64' in os_item:
                 downloader = Yum(source_repo_file, 'aarch64')
             else:
@@ -65,6 +70,12 @@ class OsDepDownloader:
             data = json.load(f)
             for item in data:
                 downloader.download(item, dst_dir)
+
+        for software in software_list:
+            pkg_list = software_mgr.get_software_sys(software, os_item)
+            soft_dst_dir = os.path.join(dst, software, os_item)
+            for pkg in pkg_list:
+                downloader.download(pkg, soft_dst_dir)
 
     def prepare_download_dir(self):
         for os_item in self.os_list:

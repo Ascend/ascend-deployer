@@ -291,7 +291,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 
 # 参考信息
 
-## <a name="parameter">参数说明</a>
+## <a name="parameter">安装参数说明</a>
 
 用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
 `./install.sh [options]`
@@ -311,6 +311,14 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 | --uninstall=<package_name>   | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。 |
 | --upgrade=<package_name>     | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。 |
 | --test=<target>              | 检查指定组件能否正常工作。                                   |
+
+
+## <a name="parameter">下载参数说明</a>
+
+| 参数                  | 说明                                                         |
+| :-------------------- | ------------------------------------------------------------ |
+| --os-list=<os-list>   | 指定下载的特定操作系统的相关依赖软件                         |
+| --download            | 指定下载可选的软件包。例如mindstudio                         |
 
 ## <a name="scene">安装场景介绍</a>
 
@@ -423,3 +431,7 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
 表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
+
+# 其他安装指导
+
+- [安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)

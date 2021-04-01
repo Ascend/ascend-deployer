@@ -19,8 +19,38 @@ import os
 import json
 from download_util import DOWNLOAD_INST, calc_sha256
 from logger_config import get_logger
+import software_mgr
 
 LOG = get_logger(__file__)
+
+
+def download_software(software, dst):
+    """
+    下载软件的其他资源
+    """
+    others = software_mgr.get_software_other(software)
+    download_dir = os.path.join(dst, "resources", software)
+    if not os.path.exists(download_dir):
+        os.mkdir(download_dir)
+
+    for item in others:
+        dest_file = os.path.join(download_dir, os.path.basename(item['url']))
+        if os.path.exists(dest_file) and 'sha256' in item:
+            file_hash = calc_sha256(dest_file)
+            url_hash = item['sha256']
+            if file_hash == url_hash:
+                print(item['filename'].ljust(60), 'exists')
+                continue
+        DOWNLOAD_INST.download(item['url'], dest_file)
+        print(item['filename'].ljust(60), 'download success')
+
+
+def download_other_software(software_list, dst):
+    """
+    按软件列表下载其他部分
+    """
+    for software in software_list:
+        download_software(software, dst)
 
 
 def download_other_packages(dst=None):
