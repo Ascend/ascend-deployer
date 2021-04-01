@@ -74,7 +74,7 @@ function get_os_version()
     if [ "${id}" == "EulerOS" ];then
         if [ "${ver}" == "2.0" ] && [ "${codename}" == "SP8" ];then
             version="2.8"
-        elif [ "${ver}" == "2.0" ] && [ "${codename}" == "SP9" ];then
+        elif [ "${ver}" == "2.0" ] && [[ "${codename}" =~ SP9 ]];then
             version="2.9"
         fi
     fi
