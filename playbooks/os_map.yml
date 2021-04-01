@@ -23,6 +23,7 @@ code_name_dict:
   euleros:
     "SP8": ".8"
     "SP9": ".9"
+    "SP9x86": ".9"
   kylin:
     "Tercel": "Tercel"
 code_name: ""

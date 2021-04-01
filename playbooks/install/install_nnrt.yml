@@ -13,6 +13,9 @@
     - name: install nnrt from run_from_zip_dir first
       shell: "bash {{ nnrt_from_zip.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       become: yes
+      environment:
+        PATH: /usr/local/python3.7.5/bin:{{ansible_env.PATH}}
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
       register: nnrt_from_zip_result
       when: nnrt_from_zip.matched > 0
       failed_when: "nnrt_from_zip_result.rc != 0 and 'already installed' not in nnrt_from_zip_result.stdout"
@@ -30,6 +33,9 @@
     - name: install nnrt
       shell: "bash {{ nnrt.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
       become: yes
+      environment:
+        PATH: /usr/local/python3.7.5/bin:{{ansible_env.PATH}}
+        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
       register: nnrt_result
       when: nnrt_from_zip.matched == 0 and nnrt.matched > 0
       failed_when: "nnrt_result.rc != 0 and 'already installed' not in nnrt_result.stdout"
