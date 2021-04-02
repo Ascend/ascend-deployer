@@ -7,7 +7,7 @@ os_dict:
   kylin: "Kylin"
   bclinux: "BCLinux"
   Linx: "Linx"
-  uos: "UOS"
+  UOS: "UOS"
   tlinux: "Tlinux"
 os_version_dict:
   euleros:

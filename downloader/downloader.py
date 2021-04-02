@@ -21,47 +21,33 @@ import shutil
 import argparse
 import platform
 
+FILE_PATH=os.path.abspath(__file__)
 CUR_DIR = os.path.dirname(__file__)
+
 sys.path.append(CUR_DIR)
 
 import logger_config
 import pip_downloader
 import os_dep_downloader
 import other_downloader
+import software_mgr
 
 LOG = logger_config.get_logger(__file__)
 
 dir_list = ['downloader', 'playbooks', 'scene', 'test']
 file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg', 'README.md', 'README.en.md']
 
-support_os_list = [
-'Ubuntu_18.04_x86_64',
-'Ubuntu_18.04_aarch64',
-'CentOS_8.2_x86_64',
-'CentOS_8.2_aarch64',
-'CentOS_7.6_x86_64',
-'CentOS_7.6_aarch64',
-'EulerOS_2.8_aarch64',
-'EulerOS_2.9_x86_64',
-'EulerOS_2.9_aarch64',
-'BCLinux_7.6_x86_64',
-'BCLinux_7.6_aarch64',
-'BCLinux_7.7_aarch6',
-'Debian_9.9_x86_64',
-'Debian_9.9_aarch64',
-'Debian_10.0_x86_64',
-'SLES_12.4_x86_64',
-'SLES_12.5_x86_64',
-'Kylin_V10Tercel_x86_64',
-'UOS_20_x86_64',
-'UOS_20_aarch64',
-'Kylin_V10Tercel_aarch64',
-'Linx_9_aarch64']
+support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
 
 
 def download_other_packages(dst=None):
     """download other resources, such as source code tar ball"""
     other_downloader.download_other_packages(dst)
+
+
+def download_other_software(sofware_list, dst):
+    """download other resources, such as source code tar ball"""
+    other_downloader.download_other_software(sofware_list, dst)
 
 
 def download_python_packages(dst=None):
@@ -80,22 +66,23 @@ def download_python_packages(dst=None):
             pip.download(line.strip(), repo_path)
 
 
-def download_os_packages(os_item=None, dst=None):
+def download_os_packages(os_list=None, software_list=None, dst=None):
     """download_os_packages"""
     os_dep = os_dep_downloader.OsDepDownloader()
-    if os_item is None and dst is None:
+    if os_list is None and dst is None:
         os_dep.prepare_download_dir()
         os_dep.download_pkg_from_json()
     else:
-        os_dep.download(os_item, dst)
+        os_dep.download(os_list, software_list, dst)
 
 
-def download_all(os_item, dst):
+def download_all(os_list, software_list, dst):
     """ download all resources for specific os list """
     res_dir = os.path.join(dst, "resources")
     download_python_packages(res_dir)
+    download_os_packages(os_list, software_list, res_dir)
+    download_other_software(software_list, dst)
     download_other_packages(dst)
-    download_os_packages(os_item, res_dir)
 
 
 def copy_scripts():
@@ -125,19 +112,43 @@ def copy_scripts():
             shutil.copy(src, dst)
 
 
-def main():
+def parse_argument():
     """
-    entry for console
+    解析参数
     """
     parser = argparse.ArgumentParser(description='download resources.', allow_abbrev=False)
     parser.add_argument('--os-list', action='store', dest='os_list',
             help='Specific OS list to download, supported os are:')
+    parser.add_argument('--download', action='store', dest='download',
+            help='Specific softwares list to download')
     args = parser.parse_args()
-    if args.os_list is None:
+    if args.os_list is None and args.download is None:
         parser.print_help()
         for osname in support_os_list:
             print('                     {}'.format(osname))
         return
+    if args.os_list is not None:
+        for os_item in args.os_list.split(','):
+            if os_item not in support_os_list:
+                print('os {} is not supportted'.format(os_item))
+                sys.exit(-1)
+    print(args.download)
+    if args.download is not None:
+        for soft in args.download.split(','):
+            if not software_mgr.is_software_support(soft):
+                print('software {} is not supportted'.format(soft))
+                sys.exit(-1)
+
+    return args
+
+
+def get_download_path():
+    """
+    get download path
+    """
+    if 'site-packages' not in CUR_DIR and 'dist-packages' not in CUR_DIR:
+        cur = os.path.dirname(FILE_PATH)
+        return os.path.dirname(cur)
 
     deployer_home = ''
     if platform.system() == 'Linux':
@@ -148,8 +159,23 @@ def main():
         deployer_home = os.getcwd()
 
     copy_scripts()
-    download_path = os.path.join(deployer_home, 'ascend-deployer')
-    download_all(args.os_list, download_path)
+    return os.path.join(deployer_home, 'ascend-deployer')
+
+
+def main():
+    """
+    entry for console
+    """
+    args = parse_argument()
+
+    download_path = get_download_path()
+    print(args.os_list)
+
+    os_list = args.os_list.split(',')
+    software_list = []
+    if args.download is not None:
+        software_list = args.download.split(',')
+    download_all(os_list, software_list, download_path)
 
 
 if __name__ == "__main__":
