@@ -75,7 +75,7 @@ function get_os_version()
     if [ "${id}" == "EulerOS" ];then
         if [ "${ver}" == "2.0" ] && [ "${codename}" == "SP8" ];then
             version="2.8"
-        elif [ "${ver}" == "2.0" ] && [ "${codename}" == "SP9" ];then
+        elif [ "${ver}" == "2.0" ] && [[ "${codename}" =~ SP9 ]];then
             version="2.9"
         fi
     fi
@@ -298,11 +298,13 @@ function install_ansible()
             # ubuntu 18.04 is recoginized as debian buster/sid due tu /etc/debian_release
             sed -i "1520 i\      'buster/sid': /usr/bin/python3" ${ansible_path}/config/base.yml
             # euler os use python3 as default python interpreter
-            sed -i "1527 i\    euleros:"                    ${ansible_path}/config/base.yml
-            sed -i "1528 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1528 i\    euleros:"                    ${ansible_path}/config/base.yml
+            sed -i "1529 i\      '2': /usr/bin/python3"     ${ansible_path}/config/base.yml
             # kylin should use python3. if selinux enalbed, the default python have no selinux
-            sed -i "1529 i\    kylin:"                      ${ansible_path}/config/base.yml
-            sed -i "1530 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            sed -i "1530 i\    kylin:"                      ${ansible_path}/config/base.yml
+            sed -i "1531 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            # debian 10.0
+            sed -i "1520 i\      '10.0': /usr/bin/python3" ${ansible_path}/config/base.yml
         fi
     fi
 }
@@ -717,7 +719,7 @@ function parse_script_args() {
             shift
             ;;
         --output-file=*)
-            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
+            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\)//g")
             if [ -z ${output_file} ];then
                 echo "ERROR" "--output-file parameter is invalid"
                 print_usage
@@ -838,9 +840,11 @@ main()
     if [ ${UID} == 0 ];then
         export PATH=/usr/local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+        unset PYTHONPATH
     else
         export PATH=${HOME}/.local/python3.7.5/bin:$PATH
         export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
+        unset PYTHONPATH
     fi
     bootstrap
     encrypt_inventory

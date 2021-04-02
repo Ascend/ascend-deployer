@@ -66,7 +66,11 @@ function parse_script_args() {
             ;;
         --os-list=*)
             OS_LIST=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            break
+            shift
+            ;;
+        --download=*)
+            PKG_LIST=$(echo $1| cut -d"=" -f2-)
+            shift
             ;;
         *)
             if [ "x$1" != "x" ]; then
@@ -103,12 +107,13 @@ function check_script_args()
 function main()
 {
     parse_script_args $*
-    check_script_args
-    if [ -z ${DOWNLOAD_OS_LIST} ] && [ ! -z ${OS_LIST} ];then
-        export DOWNLOAD_OS_LIST=${OS_LIST}
+    echo ${PKG_LIST}
+    local pycmd=$(get_python_cmd)
+    local download_cmd=""
+    if [ ! -z "${PKG_LIST}" ];then
+        download_cmd="--download ${PKG_LIST}"
     fi
-    pycmd=$(get_python_cmd)
-    ${pycmd} ${CUR_DIR}/downloader/downloader.py
+    ${pycmd} ${CUR_DIR}/downloader/downloader.py --os-list ${OS_LIST} ${download_cmd}
 }
 
 main $*

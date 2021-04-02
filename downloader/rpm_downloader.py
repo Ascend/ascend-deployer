@@ -190,17 +190,18 @@ class Yum(object):
                 with open(dst_file, 'wb') as uncompress_file:
                     uncompress_file.write(buf)
             return
-
-        if 'bz2' in compress_file:
+        if compress_file.endswith('.bz2'):
             with bz2.BZ2File(compress_file, 'rb') as bz_file:
                 buf = bz_file.read()
                 with open(dst_file, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
-        if 'xz' in compress_file:
+            return
+        if compress_file.endswith('.xz'):
             with lzma.open(compress_file, 'rb') as xz_file:
                 buf = xz_file.read()
                 with open(dst_file, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
+            return
 
     def parse_repomd(self, file_name, data_type):
         """

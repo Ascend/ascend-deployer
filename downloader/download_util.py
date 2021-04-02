@@ -29,7 +29,6 @@ from logger_config import get_logger
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-g_start_time = time.time()
 
 class ConfigUtil:
     config_file = os.path.join(CUR_DIR, 'config.ini')
@@ -120,14 +119,14 @@ class ProxyUtil:
 
     @staticmethod
     def create_unverified_context():
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.verify_mode = ssl.CERT_NONE
         context.check_hostname = False
         return context
 
 
 def Schedule(blocknum, blocksize, totalsize):
-    speed = (blocknum * blocksize) / (time.time() - g_start_time)
+    speed = (blocknum * blocksize) / (time.time() - DownloadUtil.start_time)
     speed_str = " Speed: {:.2f} KB".format(float(speed) / 1024)
     recv_size = blocknum * blocksize
     # config scheduler
@@ -144,6 +143,7 @@ def Schedule(blocknum, blocksize, totalsize):
 
 class DownloadUtil:
     proxy_inst = ProxyUtil()
+    start_time = time.time()
 
     @classmethod
     def download(cls, url: str, dst_file_name: str):
@@ -167,7 +167,7 @@ class DownloadUtil:
                 LOG.info('downloading try: %s from %s', retry, url)
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
-                g_start_time = time.time()
+                start_time = time.time()
                 print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
                 sys.stdout.write('\n')
@@ -197,7 +197,7 @@ class DownloadUtil:
         try:
             LOG.info('downloading from %s', url)
             cls.proxy_inst.build_proxy_handler()
-            g_start_time = time.time()
+            start_time = time.time()
             print("downloading {}".format(dst_file_name.split('/')[-1]))
             local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
             sys.stdout.write('\n')
@@ -217,6 +217,28 @@ class DownloadUtil:
                 cls.proxy_inst.build_proxy_handler()
                 resp = request.urlopen(url)
                 return resp
+            except ContentTooShortError as ex:
+                print(ex)
+                LOG.error(ex)
+            except URLError as err:
+                print(err)
+                LOG.error(err)
+            except socket.timeout as timeout:
+                socket.setdefaulttimeout(retry * 60)
+                print(timeout)
+                LOG.error(timeout)
+            print('please wait for a moment...')
+            LOG.info('please wait for a moment...')
+            time.sleep(retry * 2)
+        return None
+
+    @classmethod
+    def download_to_tmp(cls, url: str, retry_times=5):
+        for retry in [ x + 1 for x in range(retry_times)]:
+            try:
+                cls.proxy_inst.build_proxy_handler()
+                tmp_file, _ = request.urlretrieve(url)
+                return tmp_file
             except ContentTooShortError as ex:
                 print(ex)
                 LOG.error(ex)

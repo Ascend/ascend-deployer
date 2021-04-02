@@ -39,7 +39,7 @@
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
 - EulerOS、SLES、Debian等系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel等内核头软件包，若不存在，需自行准备。
-- SLES安装驱动时，需设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
+- SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 - 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 
@@ -118,7 +118,7 @@ group=HwHiAiUser
 1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
     - 驱动和固件：[获取链接](https://ascend.huawei.com/#/hardware/firmware-drivers)
     - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
-2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
+2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包；训练场景的驱动、固件暂不支持安装zip格式的软件包，仅支持安装run包。
 3. 支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
     - IEF相关证书和工具：[获取参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
@@ -291,7 +291,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 
 # 参考信息
 
-## <a name="parameter">参数说明</a>
+## <a name="parameter">安装参数说明</a>
 
 用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
 `./install.sh [options]`
@@ -311,6 +311,14 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 | --uninstall=<package_name>   | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。 |
 | --upgrade=<package_name>     | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。 |
 | --test=<target>              | 检查指定组件能否正常工作。                                   |
+
+
+## <a name="parameter">下载参数说明</a>
+
+| 参数                  | 说明                                                         |
+| :-------------------- | ------------------------------------------------------------ |
+| --os-list=<os-list>   | 指定下载的特定操作系统的相关依赖软件                         |
+| --download            | 指定下载可选的软件包。例如mindstudio                         |
 
 ## <a name="scene">安装场景介绍</a>
 
@@ -423,3 +431,7 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
 表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
+
+# 其他安装指导
+
+- [安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)

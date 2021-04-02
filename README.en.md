@@ -38,7 +38,7 @@ The offline installation tool supports the download and installation of the OSs 
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
 - Euleros, SLES, Debian and other systems need to ensure that there are kernel-headers and kernel-devel packages that are consistent with the kernel version of the system (which can be viewed through 'uname -r' command). If not, you need to prepare your own kernel headers.
-- When installing the SLES driver, set the value "allow_unsupported_modules" in /etc/modprob.d /10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
+- When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
 - Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 
@@ -97,7 +97,7 @@ group=HwHiAiUser
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
     - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
     - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package。
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
     - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
     - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
@@ -239,7 +239,7 @@ You can perform the following operation to upgrade the offline installation tool
 
 # Reference Information
 
-## <a name="parameter">Parameter Description</a>
+## <a name="parameter">Install Parameter Description</a>
 
 Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
 `./install.sh [options]`
@@ -259,6 +259,13 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --uninstall=<package_name>   | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled. |
 | --upgrade=<package_name>     | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded. |
 | --test=<target>              | Checks whether the specified component works properly. |
+
+## <a name="parameter">Download Parameter Description</a>
+
+| Parameter             | Description                                        |
+| :---------------------| -------------------------------------------------- |
+| --os-list=<os-list>   | set specific os softwares to download              |
+| --download            | download specific software. such as mindstudio     |
 
 ## <a name="scene">Installation Scenarios</a>
 
@@ -367,3 +374,7 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
+
+# Other Install Guide
+
+- [Install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
