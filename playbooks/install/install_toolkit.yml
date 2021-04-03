@@ -25,7 +25,7 @@
 
     - name: find toolkit package
       find:
-        paths: "{{ resources_dir }}"
+        paths: "{{ resources_dir }},{{ resources_dir }}/CANN"
         recurse: no
         file_type: file
         use_regex: yes

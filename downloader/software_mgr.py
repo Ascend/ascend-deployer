@@ -71,8 +71,10 @@ def load_software(json_file):
         json_obj = json.load(file_obj)
         soft = Software(json_obj['name'])
         soft.set_version(json_obj['version'])
-        for sys_obj in json_obj['systems']:
-            soft.set_sys_pkgs(sys_obj['system'], sys_obj['sys'])
+        if 'systems' in json_obj:
+            for sys_obj in json_obj['systems']:
+                soft.set_sys_pkgs(sys_obj['system'], sys_obj['sys'])
+        if 'other' in json_obj:
             soft.set_other_pkgs(json_obj['other'])
         g_software_list.append(soft)
 
@@ -84,6 +86,22 @@ def software_init():
         for file_name in files:
             if file_name.endswith('json'):
                 load_software(os.path.join(CUR_DIR, 'software', file_name))
+
+
+def get_software_name(name):
+    """
+    获取软件依包的正式名
+    :param in:  name      软件名,可能大小写与软件正式名不同
+    :return:   软件正式名。例如 cann->CANN, mindstudio->MindStudio
+    """
+    if len(g_software_list) == 0:
+        software_init()
+    g_software_list.reverse()
+    for soft in g_software_list:
+        if soft.get_name().lower() == name.lower():
+            return soft.get_name()
+
+    return []
 
 
 def get_software_sys(name, sys_name, version=None):
@@ -99,10 +117,10 @@ def get_software_sys(name, sys_name, version=None):
     g_software_list.reverse()
     for soft in g_software_list:
         if version is None:
-            if soft.get_name() == name:
+            if soft.get_name().lower() == name.lower():
                 return soft.get_sys_pkgs(sys_name)
         else:
-            if soft.get_name() == name and soft.get_version() == version:
+            if soft.get_name().lower() == name.lower() and soft.get_version() == version:
                 return soft.get_sys_pkgs(sys_name)
 
     return []
@@ -155,7 +173,9 @@ def is_software_support(software):
 
 
 if __name__ == '__main__':
-    x = get_software_other('MindStudio')
-    y = get_software_sys('MindStudio', 'Ubuntu_18.04_x86_64')
+    x = get_software_other('mindstudio')
+    y = get_software_sys('mindstudio', 'Ubuntu_18.04_x86_64')
+    z = get_software_name('cann')
     print(x)
     print(y)
+    print(z)

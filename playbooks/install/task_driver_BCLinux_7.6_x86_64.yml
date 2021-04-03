@@ -17,7 +17,7 @@
 
 - name: find driver package for BigCloud Linux 7.6
   find:
-    path: "{{ resources_dir }}"
+    path: "{{ resources_dir }},{{ resources_dir }}/CANN"
     recurse: no
     file_type: file
     use_regex: yes
