@@ -72,8 +72,9 @@ class OsDepDownloader:
                 downloader.download(item, dst_dir)
 
         for software in software_list:
+            formal_name = software_mgr.get_software_name(software)
             pkg_list = software_mgr.get_software_sys(software, os_item)
-            soft_dst_dir = os.path.join(dst, software, os_item)
+            soft_dst_dir = os.path.join(dst, formal_name, os_item)
             for pkg in pkg_list:
                 downloader.download(pkg, soft_dst_dir)
 
