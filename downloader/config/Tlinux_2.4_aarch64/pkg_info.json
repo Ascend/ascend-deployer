@@ -1,6 +1,6 @@
 [
     {
-        "name": "kernel-headers", "used_by": [ "driver", "cann", "framework" ]
+        "name": "devtoolset-8-gcc", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
