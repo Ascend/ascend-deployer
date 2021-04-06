@@ -107,7 +107,6 @@ function check_script_args()
 function main()
 {
     parse_script_args $*
-    echo ${PKG_LIST}
     local pycmd=$(get_python_cmd)
     local download_cmd=""
     if [ ! -z "${PKG_LIST}" ];then
