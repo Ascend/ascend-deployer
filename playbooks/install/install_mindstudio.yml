@@ -42,7 +42,7 @@
         - ansible_pkg_mgr == 'dnf'
 
     - name: install python libs for mindstudio
-      shell: python3.7 -m pip install {{ item }} --no-index --find-links {{ resources_dir }}/pylibs
+      shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs
       become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
