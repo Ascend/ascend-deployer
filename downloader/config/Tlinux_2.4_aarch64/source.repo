@@ -13,5 +13,8 @@ baseurl=https://mirrors.tencent.com/tlinux/2.4/arm64/tlinux-extras/aarch64/
 [epel]
 baseurl=https://mirrors.tencent.com/epel/7/aarch64/
 
+[gcc-update]
+baseurl=https://mirrors.tencent.com/tlinux/2.4/arm64/tlinux-sclo/aarch64/tl/
+
 [docker-ce]
 baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/aarch64/stable/
