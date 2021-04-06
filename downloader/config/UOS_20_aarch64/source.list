@@ -1,1 +1,2 @@
-deb https://enterprise-packages.chinauos.com/server-enterprise/ fou/sp3 main contrib non-free
+deb https://repo.huaweicloud.com/debian/ buster contrib main
+deb https://mirrors.huaweicloud.com/docker-ce/linux/debian/ stretch stable

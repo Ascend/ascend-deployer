@@ -37,29 +37,7 @@ LOG = logger_config.get_logger(__file__)
 dir_list = ['downloader', 'playbooks', 'scene', 'test']
 file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg', 'README.md', 'README.en.md']
 
-support_os_list = [
-'Ubuntu_18.04_x86_64',
-'Ubuntu_18.04_aarch64',
-'CentOS_8.2_x86_64',
-'CentOS_8.2_aarch64',
-'CentOS_7.6_x86_64',
-'CentOS_7.6_aarch64',
-'EulerOS_2.8_aarch64',
-'EulerOS_2.9_x86_64',
-'EulerOS_2.9_aarch64',
-'BCLinux_7.6_x86_64',
-'BCLinux_7.6_aarch64',
-'BCLinux_7.7_aarch6',
-'Debian_9.9_x86_64',
-'Debian_9.9_aarch64',
-'Debian_10.0_x86_64',
-'SLES_12.4_x86_64',
-'SLES_12.5_x86_64',
-'Kylin_V10Tercel_x86_64',
-'UOS_20_x86_64',
-'UOS_20_aarch64',
-'Kylin_V10Tercel_aarch64',
-'Linx_9_aarch64']
+support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
 
 
 def download_other_packages(dst=None):
