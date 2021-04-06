@@ -171,11 +171,3 @@ def is_software_support(software):
 
     return False
 
-
-if __name__ == '__main__':
-    x = get_software_other('mindstudio')
-    y = get_software_sys('mindstudio', 'Ubuntu_18.04_x86_64')
-    z = get_software_name('cann')
-    print(x)
-    print(y)
-    print(z)
