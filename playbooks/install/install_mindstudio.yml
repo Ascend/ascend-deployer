@@ -75,12 +75,19 @@
       when: ms.matched > 0
       become: yes
 
+    - name: check /usr/bin/python3.7
+      stat:
+        dest: /usr/bin/python3.7
+      register: stat_python37
+
     - name: create symbolic link python3.7
       file:
         src: /usr/local/python3.7.5/bin/python3
         dest: /usr/bin/python3.7
         state: link
-      when: ms.matched > 0
+      when:
+        - ms.matched > 0
+        - not stat_python37.stat.exists
       become: yes
 
     - name: create symbolic link pip3.7.3
@@ -91,12 +98,19 @@
       when: ms.matched > 0
       become: yes
 
+    - name: check /usr/bin/pip3.7
+      stat:
+        dest: /usr/bin/pip3.7
+      register: stat_pip37
+
     - name: create symbolic link pip3.7
       file:
         src: /usr/local/python3.7.5/bin/pip3
         dest: /usr/bin/pip3.7
         state: link
-      when: ms.matched > 0
+      when:
+        - ms.matched > 0
+        - not stat_pip37.stat.exits
       become: yes
 
     - name: unarchive MindStudio
