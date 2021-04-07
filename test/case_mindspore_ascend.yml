@@ -26,7 +26,8 @@
   when:
     - ms.matched > 0
     - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010" or ansible_local.npu_info.model_number == "9000" or ansible_local.npu_info.model_number == "9010"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'CentOS_8.2' in os_and_arch"
 
 - name: print mindspore ascend version
   debug: var=ms_version
-  when: ms.matched > 0
+  when: ms_version is defined
