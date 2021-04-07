@@ -42,6 +42,7 @@
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 - 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
+- Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 
 ## 安装
 
