@@ -19,8 +19,10 @@
     PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
   register: ms_version
-  when: ms.matched > 0
+  when:
+    - ms.matched > 0
+    - "'Ubuntu_18.04' in os_and_arch"
 
 - name: print mindspore cpu version
   debug: var=ms_version
-  when: ms.matched > 0
+  when: ms_version is defined
