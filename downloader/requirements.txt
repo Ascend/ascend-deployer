@@ -66,7 +66,6 @@ lazy-object-proxy==1.6.0
 mccabe==0.6.1
 toml==0.10.2
 typed-ast==1.4.2
-pandas==1.2.3
 coverage==5.5
 gnureadline==8.0.0
 matplotlib==3.4.0
