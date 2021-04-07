@@ -18,7 +18,8 @@
   shell: ascend-dmi -i
   environment:
     PATH: /usr/local/python3.7.5/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/add-ons
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/opp/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver
+    ASCEND_OPP_PATH: /usr/local/Ascend/nnae/latest/opp:/usr/local/Ascend/nnrt/latest/opp
   become: yes
   when: ascend_dmi.matched > 0
   register: ascend_dmi_info
