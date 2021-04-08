@@ -26,7 +26,7 @@ The offline installation tool supports the download and installation of the OSs 
 | BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 |   SLES   |  12.5   |      x86_64      | A minimal image is installed by default. |
-|   Linx   |   9     |     AArch64      | A minimal image is installed by default. |
+|   Linx   |   6     |     AArch64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
 |   UOS    |   20    |     AArch64      | A minimal image is installed by default. |

@@ -27,7 +27,7 @@
 |BCLinux|7.7|aarch64|镜像默认Minimal模式|
 |SLES|12.4|x86_64|镜像默认Minimal模式|
 |SLES|12.5|x86_64|镜像默认Minimal模式|
-|Linx|9|aarch64|镜像默认Minimal模式|
+|Linx|6|aarch64|镜像默认Minimal模式|
 |Kylin|V10Tercel|aarch64|镜像默认Minimal模式|
 |Kylin|V10Tercel|x86_64|镜像默认Minimal模式|
 |UOS|20|aarch64|镜像默认Minimal模式|

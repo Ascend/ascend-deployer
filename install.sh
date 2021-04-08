@@ -94,6 +94,13 @@ function get_os_version()
         version=${ver}${codename}
     fi
 
+    # Linx 6 is almost same with debian 9
+    if [ "${id}" == "Linx" ];then
+        if [ "${ver}" == "9" ];then
+            version="6"
+        fi
+    fi
+
     echo ${version}
     return 0
 }
