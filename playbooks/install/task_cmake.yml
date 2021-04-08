@@ -11,7 +11,7 @@
     copy: no
 
 - name: install cmake-3.18.6 bootstrap
-  shell: ./bootstrap --prefix=/usr/local
+  shell: ./bootstrap --parallel=4 --prefix=/usr/local
   args:
     chdir: "{{ build_dir }}/cmake-3.18.6"
 
