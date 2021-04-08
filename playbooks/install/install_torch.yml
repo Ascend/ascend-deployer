@@ -21,6 +21,13 @@
         - "os_version == '7.6'"
         - import_torch.rc != 0
 
+    - name: install gcc 7.3 for Tlinux if not exist
+      import_tasks: task_gcc.yml
+      when:
+        - not gcc_stat.stat.exists
+        - "'Tlinux' in os_and_arch"
+        - import_torch.rc != 0
+
     - name: install torch if import failed
       import_tasks: task_torch.yml
       when: import_torch.rc != 0
