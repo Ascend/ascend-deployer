@@ -20,6 +20,8 @@ os_version_dict:
     "10": "10.0"
   kylin:
     "V10": "V10"
+  Linx:
+    "9": "6"
 code_name_dict:
   euleros:
     "SP8": ".8"
