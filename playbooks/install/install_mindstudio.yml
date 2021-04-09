@@ -110,7 +110,7 @@
         state: link
       when:
         - ms.matched > 0
-        - not stat_pip37.stat.exits
+        - not stat_pip37.stat.exists
       become: yes
 
     - name: unarchive MindStudio
