@@ -1,48 +1,47 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-
-    - name: find toolbox package from run_from_zip_dir first
-      find:
-        paths: "{{ resources_dir }}/run_from_zip_dir"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: ".*toolbox.*{{ ansible_architecture }}.run"
-      register: toolbox_from_zip
-
-    - name: install toolbox from run_from_zip_dir first
-      shell: "bash {{ toolbox_from_zip.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
-      become: yes
-      register: toolbox_from_zip_result
-      when: toolbox_from_zip.matched > 0
-      failed_when: "toolbox_from_zip_result.rc != 0 and 'already installed' not in toolbox_from_zip_result.stdout"
-
     - name: find toolbox package
       find:
-        paths: "{{ resources_dir }}"
+        paths:
+          - "{{ resources_dir }}/run_from_zip_dir"
+          - "{{ resources_dir }}"
+          - "{{ resources_dir }}/CANN"
         recurse: no
         file_type: file
         use_regex: yes
         patterns: ".*toolbox.*{{ ansible_architecture }}.run"
       register: toolbox
-      when: toolbox_from_zip.matched == 0
+
+    - name: check ascend cann install info
+      stat:
+        path: /etc/Ascend/ascend_cann_install.info
+      register: install_info
+
+    - name: set install_path disable
+      set_fact:
+        ins_path_cmd: ""
+      when: install_info.stat.exists
+
+    - name: set install_path enable
+      set_fact:
+        ins_path_cmd: "--install-path={{ install_path }}"
+      when: not install_info.stat.exists
 
     - name: install toolbox
-      shell: "bash {{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
       become: yes
       register: toolbox_result
-      when: toolbox_from_zip.matched == 0 and toolbox.matched > 0
+      when: toolbox.matched > 0
       failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
 
     - name: message
       debug:
         msg:
           - "can not find toolbox package, toolbox install skipped"
-      when: toolbox_from_zip.matched == 0 and toolbox.matched == 0
+      when: toolbox.matched == 0
 
     - name: message
       debug:
         msg:
-          - "{{ toolbox_from_zip_result | default('NOT DEFINED') }}"
           - "{{ toolbox_result | default('NOT DEFINED') }}"
-      when: toolbox_from_zip_result.changed or toolbox_result.changed
+      when: toolbox_result.changed
