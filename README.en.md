@@ -2,7 +2,7 @@
 
 ## Functions
 
-The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory contains an additional Device IP configuration script that can be used if needed.
+The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory additionally places the Device IP configuration script, the use method can refer to <a href="#Device_IP">Device IP configuration specification</a>.
 
 ## Environment Requirements
 
@@ -325,7 +325,7 @@ To customize an installation scenario, refer to the preceding configuration file
 
 ### Proxy Configuration
 
-If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file.
+If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 1. Configure the agent in the environment variable as follows
 ```
 # Configure environment variables.
@@ -379,4 +379,74 @@ Indicates that both Base and EPEL sources are enabled from which system componen
 
 # Other Install Guide
 
-- [Install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+## [Install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+
+## <a name="Device_IP">Device IP configuration specification</a>
+The function of this script is to modify the IP address of NPU board card and realize batch configuration by using the batch deployment capability of Ansible tools. The following contents are only for the reference of users with use scenarios of batch configuration.
+
+### Data preparation
+- Server's operating system IP (OS IP) address file.
+- The server's operating system user name and password.
+- The Device IP address file to be configured.
+- Device IP configuration script (deviceip-conf.sh).
+
+### instructions
+- Device IP refers to the IP address of the NPU board to be modified.
+- Please refer to <a href="#IP format">OS IP address and Device IP address format</a> for the server's operating system IP (OS IP) address file and the Device IP address format to be configured.
+- Batch operation does not support mixed device types, that is, the selected device type, the number of NPU standard cards and the configured IP address number, the working mode must be consistent.
+- Each server has 2 NPU boards and each NPU board has 4 NPU chips.In SMP mode, four NPU chips on each NPU board need to be configured with IP addresses of four different network segments.
+
+### steps
+1. Upload the OS IP address file, the Device IP address file, and the Device IP configuration script to the specified directory of the target host (e.g., /root/ uploadDeviceIP, /root/ uploadDeviceIP, /root/ uploadDeviceIP).
+2. Execute the command at the target host specified directory (for example, /root/ uploadDeviceIP)
+```
+bash deviceip-conf. sh [Device type] [Number of NPU standard cards] [NPU standard card IP configuration] [Working mode] [OS IP address file] [DeviceIP address file]
+```
+Take 8 non-standard NPU board cards using SMP mode A800-9000 as an example, the command is
+```
+bash DeviceIP-conf.sh 1 0 0 SMP /root/uploadosip/OS_IP /root/uploaddeviceip/Device_IP
+```
+
+|parameter|instructions|selection|    note    |
+|:------:|:--:|:-----:|:--------------:|
+|Device type|A800-9000 with 8 NPU|1|npu-smi info query number of NPU = 8, enter 1; query number of NPU = 4, enter 2|
+|Number of NPU standard cards|Not NPU standard card|0|With the number of NPU standard cards, A800-9000 is set to 0|
+|NPU standard card IP configuration|Not NPU standard card|0|With the same IP number of NPU standard card, A800-9000 is set to 0|
+|Working mode|SMP|0|According to the actual configuration, SMP(symmetric multiprocessor mode), AMP (asymmetric multiprocessor mode)|
+
+### <a name="IP format">OS IP address and Device IP address format</a>
+You need to convert these two files to UNIX format.
+1. OS IP address file
+- Format 1 (Recommended)
+The IP address segment, like this IPx-IPy, ends with a carriage return, for example:
+```
+10.80.100.101~10.80.100.104
+```
+
+- Format 2
+List of IP addresses, one by one, with OS IP addresses, ending with Enter, for example:
+```
+10.80.100.101
+10.80.100.102
+10.80.100.103
+10.80.100.104
+```
+
+2. Device IP address file
+- Format 1 (Recommended)
+IP address segment, similar to the format of IPX-IPY /Netmask/Gateway. In SMP mode, the 4 NPU chips on each NPU board need to be configured with the Device IP addresses of 4 different network segments, ending with Enter, for example:
+```
+172.168.1.100~172.168.1.107/255.255.255.0/172.168.1.1
+172.168.2.100~172.168.2.107/255.255.255.0/172.168.2.1
+172.168.3.100~172.168.3.107/255.255.255.0/172.168.3.1
+172.168.4.100~172.168.4.107/255.255.255.0/172.168.4.1
+```
+
+- Format 2
+A list of IP addresses, in a format similar to this IP/Netmask/Gateway, gives the OS IP addresses one by one, ending with a press return, for example:
+```
+172.168.1.100/255.255.255.0/172.168.1.1
+172.168.2.100/255.255.255.0/172.168.2.1
+172.168.3.100/255.255.255.0/172.168.3.1
+172.168.4.100/255.255.255.0/172.168.4.1
+```
