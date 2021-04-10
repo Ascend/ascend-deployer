@@ -20,6 +20,8 @@
     { "name": "cmake" },
     { "name": "cmake-data" },
     { "name": "libcurl4" },
+    { "name": "libncurses5-dev" },
+    { "name": "libncurses5" },
     { "name": "libldap-2.4-2" },
     { "name": "libgssapi3-heimdal" },
     { "name": "libasn1-8-heimdal" },
