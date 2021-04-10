@@ -22,6 +22,7 @@
     { "name": "bzip2-devel",    "autodependency":"true", "info": "python bz2" },
     { "name": "sqlite-devel",   "autodependency":"true", "info": "python sqlite" },
     { "name": "openssl-devel",  "autodependency":"true", "info": "python ssl" },
+    { "name": "ncurses-devel",  "autodependency":"true", "info": "python gnureadline" },
     { "name": "sshpass",
       "url":"https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
       "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336" },
