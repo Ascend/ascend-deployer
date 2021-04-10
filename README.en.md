@@ -73,6 +73,27 @@ The download function can be used in the Windows or Linux OSs.
 
 ## Installation
 
+### install options
+
+- install options are in the inventory_file. default options is below:
+
+```bash
+[ascend]
+localhost ansible_connection='local'
+
+[ascend:vars]
+user=HwHiAiUser
+group=HwHiAiUser
+install_path=/usr/local/Ascend
+```
+
+| parameter  | remark                                                 |
+|:-----------|:-------------------------------------------------------|
+|user        | user，will be pass to --install-username options       |
+|group       | usergroup，will be pass to --install-usergroup options |
+|install_path | install path，will be pass to --install-path options   |
+
+
 ### Notice
 
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:

@@ -4,3 +4,4 @@ localhost ansible_connection='local'
 [ascend:vars]
 user=HwHiAiUser
 group=HwHiAiUser
+install_path=/usr/local/Ascend

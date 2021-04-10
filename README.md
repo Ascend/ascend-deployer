@@ -93,6 +93,29 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ## 安装操作
 
+### 安装参数
+
+- 安装过程基本参数可通过inventory_file文件配置
+
+默认配置如下：
+
+```bash
+[ascend]
+localhost ansible_connection='local'
+
+[ascend:vars]
+user=HwHiAiUser
+group=HwHiAiUser
+install_path=/usr/local/Ascend
+```
+
+| 配置项     | 说明                                                 |
+|:-----------|:-----------------------------------------------------|
+|user        | 用户，该参数将传递给run包的--install-username选项    |
+|group       | 用户组，该参数将传递给run包的--install-usergroup选项 |
+|install_path| 安装路径，该参数将传递给run包的--install-path选项    |
+
+
 ### 安装须知
 
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：

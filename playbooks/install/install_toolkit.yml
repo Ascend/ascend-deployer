@@ -4,98 +4,88 @@
     - name: create user if not exist
       import_tasks: ../create_user.yml
 
-    - name: find toolkit package from run_from_zip_dir first
-      find:
-        paths: "{{ resources_dir }}/run_from_zip_dir"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: ".*toolkit.*{{ ansible_architecture }}.run"
-      register: toolkit_from_zip
+    - name: check ascend cann install info
+      stat:
+        path: /etc/Ascend/ascend_cann_install.info
+      register: install_info
 
-    - name: install toolkit from run_from_zip_dir first
-      shell: "bash {{ toolkit_from_zip.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
-      become: yes
-      environment:
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-      register: toolkit_from_zip_result
-      when: toolkit_from_zip.matched > 0
-      failed_when: "toolkit_from_zip_result.rc != 0 and 'already installed' not in toolkit_from_zip_result.stdout"
+    - name: set install_path disable
+      set_fact:
+        ins_path_cmd: ""
+      when: install_info.stat.exists
+
+    - name: set install_path enable
+      set_fact:
+        ins_path_cmd: "--install-path={{ install_path }}"
+      when: not install_info.stat.exists
 
     - name: find toolkit package
       find:
-        paths: "{{ resources_dir }},{{ resources_dir }}/CANN"
+        paths:
+          - "{{ resources_dir }}/run_from_zip_dir"
+          - "{{ resources_dir }}"
+          - "{{ resources_dir }}/CANN"
         recurse: no
         file_type: file
         use_regex: yes
         patterns: ".*toolkit.*{{ ansible_architecture }}.run"
       register: toolkit
-      when: toolkit_from_zip.matched == 0
 
     - name: install toolkit
-      shell: "bash {{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+      shell: "bash {{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
       become: yes
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
       register: toolkit_result
-      when: toolkit_from_zip.matched == 0 and toolkit.matched > 0
+      when: toolkit.matched > 0
       failed_when: "toolkit_result.rc != 0 and 'already installed' not in toolkit_result.stdout"
 
-    - name: find toolkit package from run_from_zip_dir first for Ubuntu_18.04_x86_64
+    - name: find toolkit aarch64 package
       find:
-        paths: "{{ resources_dir }}/run_from_zip_dir"
+        paths:
+          - "{{ resources_dir }}/run_from_zip_dir"
+          - "{{ resources_dir }}"
+          - "{{ resources_dir }}/CANN"
         recurse: no
         file_type: file
         use_regex: yes
         patterns: ".*toolkit.*aarch64.run"
-      register: toolkit_from_zip_ubuntux86
-      when: "'Ubuntu_18.04_x86_64' in os_and_arch"
+      register: toolkit_aarch64
 
-    - name: install toolkit from run_from_zip_dir first for Ubuntu_18.04_x86_64
-      shell: "bash {{ toolkit_from_zip_ubuntux86.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+    - name: check ascend cann install info
+      stat:
+        path: /etc/Ascend/ascend_cann_install.info
+      register: install_info
+
+    - name: set install_path disable for toolkit aarch64
+      set_fact:
+        ins_path_cmd: ""
+      when: install_info.stat.exists
+
+    - name: install toolkit aarch64 for Ubuntu_18.04_x86_64
+      shell: "bash {{ toolkit_aarch64.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ ins_path_cmd }}"
       become: yes
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-      register: toolkit_from_zip_result_ubuntux86
-      when: toolkit_from_zip_ubuntux86.matched is defined and toolkit_from_zip_ubuntux86.matched > 0
-      failed_when: "toolkit_from_zip_result_ubuntux86.rc != 0 and 'already installed' not in toolkit_from_zip_result_ubuntux86.stdout"
-
-    - name: find toolkit package for Ubuntu_18.04_x86_64
-      find:
-        paths: "{{ resources_dir }}"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: ".*toolkit.*aarch64.run"
-      register: toolkit_ubuntux86
-      when: toolkit_from_zip_ubuntux86.matched is defined and toolkit_from_zip_ubuntux86.matched == 0
-
-    - name: install toolkit for Ubuntu_18.04_x86_64
-      shell: "bash {{ toolkit_ubuntux86.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
-      become: yes
-      environment:
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-      register: toolkit_result_ubuntux86
-      when: toolkit_ubuntux86.matched is defined and toolkit_ubuntux86.matched > 0
-      failed_when: "toolkit_result_ubuntux86.rc != 0 and 'already installed' not in toolkit_result_ubuntux86.stdout"
+      register: toolkit_result_ubuntu
+      when:
+        - os_and_arch == 'Ubuntu_18.04_x86_64'
+        - toolkit_aarch64.matched > 0
+      failed_when: "toolkit_result_ubuntu.rc != 0 and 'already installed' not in toolkit_result_ubuntu.stdout"
 
     - name: message
       debug:
         msg:
           - "can not find toolkit package, toolkit install skipped"
       when:
-        - toolkit.matched is defined and toolkit.matched == 0
-        - toolkit_ubuntux86.matched is defined and toolkit_ubuntux86.matched == 0
+        - toolkit.matched == 0
+        - toolkit_aarch64.matched == 0
 
     - name: message
       debug:
         msg:
-          - "{{ toolkit_from_zip_result | default('NOT DEFINED') }}"
           - "{{ toolkit_result | default('NOT DEFINED') }}"
-          - "{{ toolkit_from_zip_result_ubuntux86 | default('NOT DEFINED') }}"
-          - "{{ toolkit_result_ubuntux86 | default('NOT DEFINED') }}"
-      when: toolkit_from_zip_result.changed or toolkit_result.changed or toolkit_from_zip_result_ubuntux86.changed or toolkit_result_ubuntux86.changed
+          - "{{ toolkit_result_ubuntu | default('NOT DEFINED') }}"
+      when: toolkit_result.changed or toolkit_result_ubuntu.changed
