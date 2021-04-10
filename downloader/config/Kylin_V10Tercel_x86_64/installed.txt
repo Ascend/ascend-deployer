@@ -141,7 +141,6 @@ graphite2.x86_64                              1.3.13-2.ky10              @anacon
 grep.x86_64                                   3.4-0.1.ky10               @anaconda
 groff.x86_64                                  1.22.4-4.ky10              @anaconda
 grub2-common.noarch                            1:2.02-73.1.se.03.ky10     @anaconda
-grub2-efi-aa64.x86_64                         1:2.02-73.1.se.03.ky10     @anaconda
 grub2-tools.x86_64                            1:2.02-73.1.se.03.ky10     @anaconda
 grubby.x86_64                                 8.40-24.ky10               @anaconda
 gsettings-desktop-schemas.x86_64              3.34.0-1.ky10              @anaconda
@@ -717,3 +716,18 @@ zenity.x86_64                                 3.30.0-2.ky10              @anacon
 zip.x86_64                                    3.0-25.ky10                @anaconda
 zlib.x86_64                                   1.2.11-17.1.ky10           @anaconda
 zstd.x86_64                                   1.3.6-3.ky10               @anaconda
+boost-atomic.x86_64                         1.66.0-18.ky10             @anaconda
+boost-chrono.x86_64                         1.66.0-18.ky10             @anaconda
+boost-date-time.x86_64                      1.66.0-18.ky10             @anaconda
+boost-system.x86_64                         1.66.0-18.ky10             @anaconda
+boost-thread.x86_64                         1.66.0-18.ky10             @anaconda
+dyninst.x86_64                              9.3.2-13.ky10              @anaconda
+fcoe-utils.x86_64                           1.0.32-7.p01.ky10          @anaconda
+grub2-efi-x64.x86_64                        1:2.02-73.1.se.03.ky10     @anaconda
+grub2-pc.x86_64                             1:2.02-73.1.se.03.ky10     @anaconda
+grub2-pc-modules.noarch                     1:2.02-73.1.se.03.ky10     @anaconda
+libconfig.x86_64                            1.7.2-8.ky10               @anaconda
+libdwarf.x86_64                             20180809-2.ky10            @anaconda
+libipt.x86_64                               2.0.1-1.ky10               @anaconda
+lldpad.x86_64                               1.0.1-13.ky10              @anaconda
+usermode.x86_64                             1.112-8.ky10               @anaconda
