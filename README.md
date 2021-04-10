@@ -43,6 +43,8 @@
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 - 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
+- Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
+- 如果系统默认使用dpkg包安装工具，且系统还安装rpm工具，需卸载rpm工具。
 
 ## 安装
 

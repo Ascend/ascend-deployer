@@ -42,6 +42,9 @@ The offline installation tool supports the download and installation of the OSs 
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
 - Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
+- You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
+
+- If the dpkg package installation tool is used by default in the system and the rpm tool is also installed , the rpm tool needs to be uninstalled.
 
 # Operation Instructions
 
