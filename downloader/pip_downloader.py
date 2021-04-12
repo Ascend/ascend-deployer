@@ -310,15 +310,17 @@ class MyPip(object):
                 os.makedirs(dest_path)
 
             if self.download_wheel(name, "none", 'cp37', dest_path):
-                return
+                return True
 
             if not self.download_x86(name, dest_path):
                 self.download_source(name, dest_path)
 
             if not self.download_arm(name, dest_path):
                 self.download_source(name, dest_path)
+            return True
         except Exception as e:
             print(name.ljust(60), "download failed")
+            return False
 
 
 def main():

@@ -227,10 +227,13 @@ class Yum(object):
         """
         try:
             LOG.info('download from [{0}]'.format(url))
-            DOWNLOAD_INST.download(url, dst_file)
+            if DOWNLOAD_INST.download(url, dst_file):
+                return True
+            return False
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[{0}]->{1}'.format(url, http_error))
+            return False
 
     def get_requires(self, conn, pkg_name):
         """
@@ -409,14 +412,15 @@ class Yum(object):
         :returns: pakcages to be download
         """
         if name in self.to_be_download.keys():
-            return
+            return True
         pkg, require_list = self.get_package(name, ver, rel, True)
         if pkg is None:
             print(name.ljust(60), "can't find")
-            return
+            return False
         self.to_be_download[name] = pkg
         for require in require_list:
             self.build_to_be_download(require, None, None)
+        return True
 
     def download_with_dep(self, name, dst_dir, ver=None, rel=None):
         """
@@ -429,9 +433,9 @@ class Yum(object):
         :return:
         """
         if name in self.downloaded:
-            return
+            return True
         self.to_be_download = {}
-        self.build_to_be_download(name, ver, rel)
+        res = [self.build_to_be_download(name, ver, rel)]
         for name, pkg in self.to_be_download.items():
             if name in self.downloaded:
                 continue
@@ -442,9 +446,10 @@ class Yum(object):
                 LOG.info('{0} no need download again'.format(file_name))
                 self.downloaded.append(name)
                 continue
-            self.download_file(pkg.get_url(), dst_file)
+            res.append(self.download_file(pkg.get_url(), dst_file))
             self.downloaded.append(name)
             print(file_name.ljust(60), 'download success')
+        return all(res)
 
     def download_without_dep(self, name, dst_dir, ver=None, release=None):
         """
@@ -460,16 +465,18 @@ class Yum(object):
         if pkg is None:
             print(name.ljust(60), 'can not find')
             LOG.error('can not find {0}'.format(name))
-            return
+            return False
         file_name = os.path.basename(pkg.href)
         dst_file = os.path.join(dst_dir, file_name)
         LOG.info('url of [{0}] = [{1}]'.format(name, pkg.get_url()))
         if not self.need_download_again(pkg.checksum, dst_file):
             print(file_name.ljust(60), 'exists')
             LOG.info('{0} no need download again'.format(file_name))
-            return
-        self.download_file(pkg.get_url(), dst_file)
-        print(file_name.ljust(60), 'download success')
+            return True
+        if self.download_file(pkg.get_url(), dst_file):
+            print(file_name.ljust(60), 'download success')
+            return True
+        return False
 
     def download(self, pkg, dst_dir):
         """
@@ -479,7 +486,7 @@ class Yum(object):
         :param dst_dir: download target directory
         """
         if 'name' not in pkg:
-            return
+            return False
 
         name = pkg['name']
         ver = pkg['version'] if 'version' in pkg else None
@@ -496,15 +503,17 @@ class Yum(object):
             checksum = pkg['sha256'] if 'sha256' in pkg else None
             if checksum and not self.need_download_again(checksum, dst_file):
                 print(file_name.ljust(60), 'exists')
-                return
-            self.download_file(pkg['url'], dst_file)
-            print(file_name.ljust(60), 'download success')
-            return
+                return True
+            if self.download_file(pkg['url'], dst_file):
+                print(file_name.ljust(60), 'download success')
+                return True
+            print(file_name.ljust(60), 'download failed')
+            return False
 
         if 'autodependency' in pkg and pkg['autodependency'] == 'true':
-            self.download_with_dep(name, download_dir, ver, rel)
+            return self.download_with_dep(name, download_dir, ver, rel)
         else:
-            self.download_without_dep(name, download_dir, ver, rel)
+            return self.download_without_dep(name, download_dir, ver, rel)
 
 
     @staticmethod

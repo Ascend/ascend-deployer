@@ -33,7 +33,7 @@ def download_software(software, dst):
     download_dir = os.path.join(dst, "resources", formal_name)
     if not os.path.exists(download_dir):
         os.mkdir(download_dir)
-
+    results = []
     for item in others:
         dest_file = os.path.join(download_dir, os.path.basename(item['url']))
         if os.path.exists(dest_file) and 'sha256' in item:
@@ -42,16 +42,23 @@ def download_software(software, dst):
             if file_hash == url_hash:
                 print(item['filename'].ljust(60), 'exists')
                 continue
-        DOWNLOAD_INST.download(item['url'], dest_file)
+        results.append(DOWNLOAD_INST.download(item['url'], dest_file))
         print(item['filename'].ljust(60), 'download success')
+    return all(results)
 
 
 def download_other_software(software_list, dst):
     """
     按软件列表下载其他部分
     """
+    results = {'ok': [], 'failed': []}
     for software in software_list:
-        download_software(software, dst)
+        res = download_software(software, dst)
+        if res:
+            results['ok'].append(software)
+            continue
+        results['failed'].append(software)
+    return results
 
 
 def download_other_packages(dst=None):
@@ -67,6 +74,7 @@ def download_other_packages(dst=None):
     else:
         base_dir = dst
     resources_json = os.path.join(script_dir, 'other_resources.json')
+    results = {'ok': [], 'failed': []}
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
         for item in data:
@@ -78,8 +86,12 @@ def download_other_packages(dst=None):
                     print(item['filename'].ljust(60), 'exists')
                     continue
             LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
-            DOWNLOAD_INST.download(item['url'], dest_file)
-            print(item['filename'].ljust(60), 'download success')
+            if DOWNLOAD_INST.download(item['url'], dest_file):
+                results['ok'].append(item['filename'])
+                print(item['filename'].ljust(60), 'download success')
+                continue
+            results['failed'].append(item['filename'])
+    return results
 
 
 if __name__ == '__main__':

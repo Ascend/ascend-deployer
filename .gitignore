@@ -10,3 +10,4 @@
 *.swp
 *.egg-info
 build
+*.gz
