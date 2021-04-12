@@ -8,6 +8,7 @@ os_dict:
   bclinux: "BCLinux"
   Linx: "Linx"
   UOS: "UOS"
+  uos: "UOS"
   tlinux: "Tlinux"
 os_version_dict:
   euleros:
