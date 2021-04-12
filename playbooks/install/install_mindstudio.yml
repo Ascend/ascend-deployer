@@ -119,3 +119,21 @@
         dest: ~/
         copy: no
       when: ms.matched > 0
+
+    - name: unarchive jdk for aarch64
+      unarchive:
+        src: "{{ resources_dir }}/MindStudio/jbr-11_0_7-linux-aarch64-b765.65.tar.gz"
+        dest: ~/MindStudio
+        copy: no
+      when:
+        - ms.matched > 0
+        - ansible_architecture == 'aarch64'
+
+    - name: unarchive jdk for x86_64
+      unarchive:
+        src: "{{ resources_dir }}/MindStudio/jbr-11_0_7-linux-x64-b765.65.tar.gz"
+        dest: ~/MindStudio
+        copy: no
+      when:
+        - ms.matched > 0
+        - ansible_architecture == 'x86_64'
