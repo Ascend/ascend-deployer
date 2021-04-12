@@ -42,12 +42,12 @@ support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
 
 def download_other_packages(dst=None):
     """download other resources, such as source code tar ball"""
-    other_downloader.download_other_packages(dst)
+    return other_downloader.download_other_packages(dst)
 
 
 def download_other_software(sofware_list, dst):
     """download other resources, such as source code tar ball"""
-    other_downloader.download_other_software(sofware_list, dst)
+    return other_downloader.download_other_software(sofware_list, dst)
 
 
 def download_python_packages(dst=None):
@@ -60,10 +60,15 @@ def download_python_packages(dst=None):
         repo_path = os.path.join(dst, 'pylibs')
 
     pip = pip_downloader.MyPip()
+    results = {'ok': [], 'failed': []}
     with open(require_file) as file_content:
         for line in file_content.readlines():
             LOG.info('[{0}]'.format(line.strip()))
-            pip.download(line.strip(), repo_path)
+            if pip.download(line.strip(), repo_path):
+                results['ok'].append(line.strip())
+                continue
+            results['failed'].append(line.strip())
+    return results
 
 
 def download_os_packages(os_list=None, software_list=None, dst=None):
@@ -71,9 +76,9 @@ def download_os_packages(os_list=None, software_list=None, dst=None):
     os_dep = os_dep_downloader.OsDepDownloader()
     if os_list is None and dst is None:
         os_dep.prepare_download_dir()
-        os_dep.download_pkg_from_json()
+        return os_dep.download_pkg_from_json()
     else:
-        os_dep.download(os_list, software_list, dst)
+        return os_dep.download(os_list, software_list, dst)
 
 
 def download_all(os_list, software_list, dst):

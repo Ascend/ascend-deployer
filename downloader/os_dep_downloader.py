@@ -35,8 +35,11 @@ class OsDepDownloader:
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
     def download(self, os_list, software_list, dst):
+        results = {}
         for os_item in os_list:
-            self.download_os(os_item, software_list, dst)
+            res = self.download_os(os_item, software_list, dst)
+            results[os_item] = res
+        return results
 
     def download_os(self, os_item, software_list, dst):
         """
@@ -66,17 +69,27 @@ class OsDepDownloader:
         if downloader is not None:
             downloader.make_cache()
 
+        res = {'ok': [], 'failed':[]}
         with open(config_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
             for item in data:
-                downloader.download(item, dst_dir)
+                if downloader.download(item, dst_dir):
+                    res['ok'].append(item['name'])
+                    continue
+                print('download failed', item['name'])
+                res['failed'].append(item['name'])
 
         for software in software_list:
             formal_name = software_mgr.get_software_name(software)
             pkg_list = software_mgr.get_software_sys(software, os_item)
             soft_dst_dir = os.path.join(dst, formal_name, os_item)
             for pkg in pkg_list:
-                downloader.download(pkg, soft_dst_dir)
+                if downloader.download(pkg, soft_dst_dir):
+                    res['ok'].append(pkg['name'])
+                    continue
+                print('download failed', pkg['name'])
+                res['failed'].append(pkg['name'])
+        return res
 
     def prepare_download_dir(self):
         for os_item in self.os_list:
@@ -92,6 +105,7 @@ class OsDepDownloader:
         LOG.info('clean resources directory successfully')
 
     def download_pkg_from_json(self):
+        results = {}
         for os_item in self.os_list:
             dst_dir = os.path.join(self.resources_dir, os_item)
             print('item:{} save dir: {}'.format(os_item, dst_dir))
@@ -117,8 +131,14 @@ class OsDepDownloader:
 
             with open(config_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                for item in data:
-                    downloader.download(item, dst_dir)
+            res = {'ok': [], 'failed': []}
+            for item in data:
+                if downloader.download(item, dst_dir):
+                    res['ok'].append(item['name'])
+                    continue
+                res['failed'].append(item['name'])
+            results[os_item] = res
+        return results
 
 
 def main():

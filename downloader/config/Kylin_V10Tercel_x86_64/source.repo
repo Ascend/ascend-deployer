@@ -2,4 +2,4 @@
 baseurl = https://repo.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/x86_64/
 
 [docker-ce]
-baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/8/x86_64/stable/
+baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/x86_64/stable/

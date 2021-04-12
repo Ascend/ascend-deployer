@@ -46,11 +46,11 @@ def get_info_dict_list(pkg_name, target_paths, target_file):
         install_path = target_path
         with open(install_config_file) as config_f:
             for line in config_f:
-                if 'version' in line.lower():
+                if line.lower().startswith('version'):
                     pkg_version = line.strip().split('=')[-1]
-                if 'arch' in line.lower():
+                if line.lower().startswith('arch'):
                     install_arch = line.strip().split('=')[-1]
-                if 'path' in line.lower():
+                if line.lower().startswith('path'):
                     install_path = line.strip().split('=')[-1]
 
         info_dict['install_path'] = install_path

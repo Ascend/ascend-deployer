@@ -174,14 +174,15 @@ class Apt(object):
         checksum = pkg['sha256'] if 'sha256' in pkg else None
         if checksum and not self.need_download_again(checksum, dst_file):
             print(file_name.ljust(60), 'exists')
-            return
+            return True
 
         try:
             LOG.info('download from [%s]', url)
-            DOWNLOAD_INST.download(url, dst_file)
+            return DOWNLOAD_INST.download(url, dst_file)
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[%s]->[%s]', url, http_error)
+            return False
 
     def download_by_name(self, pkg, dst_dir):
         """
@@ -192,7 +193,7 @@ class Apt(object):
         :return:
         """
         if 'name' not in pkg:
-            return
+            return False
         name = pkg['name']
         url = None
         if name in self.cache.keys():
@@ -200,7 +201,7 @@ class Apt(object):
         else:
             print("can't find package {0}".format(name))
             LOG.error("can't find package %s", name)
-            return
+            return False
         if name in ["docker-ce", "docker-ce-cli", "containerd.io"] and self.docker_url is not None:
             url = self.docker_url + self.cache[name].get_filename()
 
@@ -212,23 +213,25 @@ class Apt(object):
             if not self.need_download_again(target_sha256, dst_file):
                 LOG.info("%s no need download again", name)
                 print(name.ljust(60), 'exists')
-                return
+                return True
             if DOWNLOAD_INST.download(url, dst_file):
                 print(name.ljust(60), 'download success')
-                return
+                return True
             print(name.ljust(60), 'download failed')
+            return False
         except HTTPError as http_error:
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[%s]->[%s]', url, http_error)
+            return False
 
     def download(self, pkg, dst_dir):
         """
         download
         """
         if 'url' in pkg:
-            self.download_by_url(pkg, dst_dir)
+            return self.download_by_url(pkg, dst_dir)
         else:
-            self.download_by_name(pkg, dst_dir)
+            return self.download_by_name(pkg, dst_dir)
 
     def need_download_again(self, target_sha256, dst_file):
         """
