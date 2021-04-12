@@ -137,3 +137,10 @@
       when:
         - ms.matched > 0
         - ansible_architecture == 'x86_64'
+
+    - name: set MINDSTUDIO_JDK
+      shell: sed -i "2 i\export MINDSTUDIO_JDK=~/MindStudio/jbr" ~/MindStudio/bin/MindStudio.sh
+      failed_when: false
+      when:
+        - ms.matched > 0
+        - ansible_architecture == 'aarch64'
