@@ -42,6 +42,7 @@ The offline installation tool supports the download and installation of the OSs 
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
 - Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
+- After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 
 # Operation Instructions
