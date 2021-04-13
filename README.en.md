@@ -31,6 +31,8 @@ The offline installation tool supports the download and installation of the OSs 
 |  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
 |   UOS    |   20    |     AArch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
+|  Tlinux  |  2.4    |     AArch64      | A server image is installed by default.  |
+|  Tlinux  |  2.4    |     x86_64       | A server image is installed by default.  |
 
 ## Precautions
 
@@ -44,6 +46,7 @@ The offline installation tool supports the download and installation of the OSs 
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
+- After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
 
 # Operation Instructions
 
