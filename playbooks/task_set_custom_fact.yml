@@ -73,6 +73,12 @@
     build_dir: "{{ ansible_user_dir }}/build"
     cacheable: yes
 
+- name: set default install path
+  set_fact:
+    install_path: /usr/local/Ascend
+    cacheable: yes
+  when: install_path is not defined
+
 - name: check if need prepare
   local_action: stat path=prepare_{{os_and_arch}}.yml
   register: optional_file
