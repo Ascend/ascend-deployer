@@ -16,6 +16,7 @@
       stat:
         path: /etc/Ascend/ascend_cann_install.info
       register: install_info
+      become: yes
 
     - name: set install_path disable
       set_fact:
