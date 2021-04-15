@@ -32,6 +32,8 @@
 |Kylin|V10Tercel|x86_64|镜像默认Minimal模式|
 |UOS|20|aarch64|镜像默认Minimal模式|
 |UOS|20|x86_64|镜像默认Minimal模式|
+|Tlinux|2.4|aarch64|镜像默认Server模式|
+|Tlinux|2.4|x86_64|镜像默认Server模式|
 
 ## 注意事项
 

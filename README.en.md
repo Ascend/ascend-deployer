@@ -31,6 +31,8 @@ The offline installation tool supports the download and installation of the OSs 
 |  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
 |   UOS    |   20    |     AArch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
+|  Tlinux  |  2.4    |     AArch64      | A server image is installed by default.  |
+|  Tlinux  |  2.4    |     x86_64       | A server image is installed by default.  |
 
 ## Precautions
 
