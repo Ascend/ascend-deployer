@@ -64,11 +64,11 @@ The download function can be used in the Windows or Linux OSs.
 ### Download
 
 - Windows
-    1. Python 3 is required in Windows. Python 3.7 or later is recommended.
-      Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
-      Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
-    2. Start download.
-      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
+  1. Python 3 is required in Windows. Python 3.7 or later is recommended.
+     Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
+     Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
+  2. Start download.
+     Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
     Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
 
@@ -88,12 +88,11 @@ group=HwHiAiUser
 install_path=/usr/local/Ascend
 ```
 
-| parameter  | remark                                                 |
-|:-----------|:-------------------------------------------------------|
-|user        | user，will be pass to --install-username options       |
-|group       | usergroup，will be pass to --install-usergroup options |
-|install_path | install path，will be pass to --install-path options   |
-
+| parameter    | remark                                                |
+|:------------ |:----------------------------------------------------- |
+| user         | user，will be pass to --install-username options       |
+| group        | usergroup，will be pass to --install-usergroup options |
+| install_path | install path，will be pass to --install-path options   |
 
 ### Notice
 
@@ -122,15 +121,15 @@ group=HwHiAiUser
 ### Obtaining Software Packages
 
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
-    - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
-    - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
+   - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
+   - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
 2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package。
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
-    - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
-    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
-    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
-    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
-    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
+   - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+   - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
+   - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
+   - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
+   - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
 4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
@@ -163,70 +162,93 @@ ascend-deployer
 
 1. Configure a stand-alone inventory_file file.
     Edit the **inventory_file** file. The format is shown as follows:
-    ```
-    [ascend]
-    localhost ansible_connection='local' # root user
-    localhost ansible_connection='local' ansible_become_pass='password' # not root user
-    ```
-    Note: Root and non-root users are supported;The ansible_become_pass parameter is not required for root users, and ansible_become_pass must be configured for non-root users. This parameter is the same as the password for non-root users, and non-root users must have sudoer permissions (configured in /etc/sudoer).Non-root users using the offline deployment tool should have access to the Ascend-Deployer directory (configure the owner with the chown-r command);The off-line deployment tool will encrypt the Inventory file with the password configuration using the Ansidia-Vault mechanism. After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
-2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
-    - Software-specific installation
-      `./install.sh --install=<package_name>`
-      You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-      `./install.sh --install=npu //Install the driver and firmware.`
-      Notes:
-        - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-        - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
-        - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
-        - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
-        - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
-    - Scenario-specific installation
-      `./install.sh --install-scene=<scene_name>`
-      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
-       `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
-3. After the installation, run the following command to check whether the specified component works properly:
-  `./install.sh --test=<target>`
-  You can run the `./install.sh --help` command to view the options of <target>. Example command:
-  `./install.sh --test=driver // Test whether the driver is normal.`
-### Batch Installation
 
-1. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
+   ```
+   [ascend]
+   localhost ansible_connection='local' # root user
+   ```
+
+    Note: only support root user due to safety reason.
+
+2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
+
+   - Software-specific installation
+     `./install.sh --install=<package_name>`
+     You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
+     `./install.sh --install=npu //Install the driver and firmware.`
+     Notes:
+     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
+     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
+     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
+     - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
+     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
+   - Scenario-specific installation
+     `./install.sh --install-scene=<scene_name>`
+     The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
+      `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
+
+3. After the installation, run the following command to check whether the specified component works properly:
+   `./install.sh --test=<target>`
+   You can run the `./install.sh --help` command to view the options of <target>. Example command:
+   `./install.sh --test=driver // Test whether the driver is normal.`
+
+   ### Batch Installation
+
+4. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
     Edit the **inventory_file** file. The format is shown as follows:
-    ```
-    [ascend]
-    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1' # root user
-    ip_address_2 ansible_ssh_user='username2' ansible_ssh_pass='password2' ansible_become_pass='password2' # not root user
-    ip_address_3 ansible_ssh_user='username3' ansible_ssh_pass='password3' ansible_become_pass='password3' # not root user
-    ```
-    Note: The Inventory file configures the user name and password for the remote device, supporting both root and non-root users;The ansible_become_pass parameter is not required for root users, and the ansible_become_pass parameter must be configured for non-root users, which is the same as the ansible_ssh_pass parameter. Non-root users must have sudoer permissions (configured in /etc/sudoer).Non-root users using the offline deployment tool should have access to the Ascend-Deployer directory (configure the owner with the chown-r command);The off-line deployment tool will encrypt the Inventory file with the password configuration using the Ansidia-Vault mechanism. After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
-2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+
+   ```
+   [ascend]
+   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
+   ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
+   ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+   ```
+
+    Note:
+
+   - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
+
+   - For safety, strongly suggest to use ansible-vaule encrypt the inventory_file and then edit it with ansible-edit. for example
+
+     ```bash
+     ansible-vault encrypt inventory_file
+     ansible_vault edit inventory_file
+     ```
+
+5. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
-3. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
-    - Software-specific installation
-      `./install.sh --install=<package_name>`
-      You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-      `./install.sh --install=npu //Install the driver and firmware.`
-      Notes:
-        - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-        - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
-        - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, and TensorFlow and npubridge require TFPlugin to provide runtime dependencies.
-    - Scenario-specific installation
-      `./install.sh --install-scene=<scene_name>`
-      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
-       `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
-4. After the installation, run the following command to check whether the specified component works properly:
-  `./install.sh --test=<target>`
-  You can run the `./install.sh --help` command to view the options of <target>. Example command:
-  `./install.sh --test=driver // Test whether the driver is normal.`
+
+6. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
+
+   - Software-specific installation
+     `./install.sh --install=<package_name>`
+     You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
+     `./install.sh --install=npu //Install the driver and firmware.`
+     Notes:
+     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
+     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
+     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, and TensorFlow and npubridge require TFPlugin to provide runtime dependencies.
+   - Scenario-specific installation
+     `./install.sh --install-scene=<scene_name>`
+     The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
+      `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
+
+7. After the installation, run the following command to check whether the specified component works properly:
+   `./install.sh --test=<target>`
+   You can run the `./install.sh --help` command to view the options of <target>. Example command:
+   `./install.sh --test=driver // Test whether the driver is normal.`
 
 # Environment Variable Configuration
 
 The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
+
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 ```
+
 Similarly, other software packages or tools installed by offline deployment tools can be used normally only after users refer to the corresponding official information and configure environment variables or make other Settings.
+
 # Follow-up
 
 - Inference scenario
@@ -259,6 +281,7 @@ Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > 
 # Offline Installation Tool Upgrade
 
 You can perform the following operation to upgrade the offline installation tool:
+
 - Windows
   Run **upgrade_self.bat** to start the upgrade.
 - Linux
@@ -272,41 +295,41 @@ Select corresponding parameters to install, upgrade, or uninstall the software. 
 `./install.sh [options]`
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
 
-| Parameter                    | Description                              |
-| :--------------------------- | ---------------------------------------- |
-| --help  -h                   | Queries help information.                |
-| --check                      | Check the environment to ensure that the control machine has installed Python 3.7.5, Ansible and other components, and check the connectivity with the device to be installed.                  |
-| --clean                      | Clean the Resources directory under the user's home directory for the device to be installed.          |
-| --nocopy                     | Forbids resources copying during batch installation. |
-| --debug                      | Performs debugging.                      |
-| --output-file                | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                    |
-| --stdout_callback=<callback_name>| Performs debugging.                      |
-| --install=<package_name>     | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed. |
-| --install-scene=<scene_name> | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>. |
-| --uninstall=<package_name>   | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled. |
-| --upgrade=<package_name>     | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded. |
-| --test=<target>              | Checks whether the specified component works properly. |
+| Parameter                         | Description                                                                                                                                                                    |
+|:--------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| --help  -h                        | Queries help information.                                                                                                                                                      |
+| --check                           | Check the environment to ensure that the control machine has installed Python 3.7.5, Ansible and other components, and check the connectivity with the device to be installed. |
+| --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
+| --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
+| --debug                           | Performs debugging.                                                                                                                                                            |
+| --output-file                     | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
+| --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
+| --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
+| --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
+| --uninstall=<package_name>        | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled.                                                           |
+| --upgrade=<package_name>          | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded.                                                                  |
+| --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
 
 ## <a name="parameter">Download Parameter Description</a>
 
-| Parameter             | Description                                        |
-| :---------------------| -------------------------------------------------- |
-| --os-list=<os-list>   | set specific os softwares to download              |
-| --download            | download specific software. such as mindstudio     |
+| Parameter           | Description                                    |
+|:------------------- | ---------------------------------------------- |
+| --os-list=<os-list> | set specific os softwares to download          |
+| --download          | download specific software. such as mindstudio |
 
 ## <a name="scene">Installation Scenarios</a>
 
 The offline installation tool provides several basic installation scenarios.
 
-| Installation Scenario | Installed Components                     | Description                              |
-| --------------------- | ---------------------------------------- | ---------------------------------------- |
-| auto                  | all                                      | All software packages that can be found are installed. |
-| infer_dev             | Driver, firmware, nnrt, toolbox, the Toolkit, torch, TFPlugin, and TensorFlow | Inference development scenario.          |
-| infer_run             | Driver, firmware, nnrt, and toolbox      | Inference running scenario               |
-| train_dev             | Driver, firmware, nnae、toolbox, the Toolkit, torch, TFPlugin, and TensorFlow | Training development scenario            |
-| train_run             | Driver, firmware, nnae, toolbox, torch, TFPlugin, and TensorFlow | Training running scenario                |
-| vmhost                | Driver, firmware, and toolbox            | VM host scenario                         |
-| edge                  | Driver, firmware, atlasedge, ha          | Install MindX middleware, HA                        |
+| Installation Scenario | Installed Components                                                          | Description                                            |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| auto                  | all                                                                           | All software packages that can be found are installed. |
+| infer_dev             | Driver, firmware, nnrt, toolbox, the Toolkit, torch, TFPlugin, and TensorFlow | Inference development scenario.                        |
+| infer_run             | Driver, firmware, nnrt, and toolbox                                           | Inference running scenario                             |
+| train_dev             | Driver, firmware, nnae、toolbox, the Toolkit, torch, TFPlugin, and TensorFlow  | Training development scenario                          |
+| train_run             | Driver, firmware, nnae, toolbox, torch, TFPlugin, and TensorFlow              | Training running scenario                              |
+| vmhost                | Driver, firmware, and toolbox                                                 | VM host scenario                                       |
+| edge                  | Driver, firmware, atlasedge, ha                                               | Install MindX middleware, HA                           |
 
 The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_infer_run.yml** of the inference development scenario:
 
@@ -351,54 +374,65 @@ To customize an installation scenario, refer to the preceding configuration file
 ### Proxy Configuration
 
 If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
+
 1. Configure the agent in the environment variable as follows
-```
-# Configure environment variables.
-export http_proxy="http://user:password@proxyserverip:port"
-export https_proxy="http://user:password@proxyserverip:port"
-```
-Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port.
+
+   ```
+   # Configure environment variables.
+   export http_proxy="http://user:password@proxyserverip:port"
+   export https_proxy="http://user:password@proxyserverip:port"
+   ```
+
+   Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port.
 
 2. Configure the agent in the downloader/config.ini file as follows:
-```
-[proxy]
-enable=false        # Whether to enable or disable the proxy.
-verify=true         # Whether to verify the HTTPS certificate.
-protocol=https      # The HTTP protocol
-hostname=           # proxy server
-port=               # proxy port
-username=none       # Proxy account
-userpassword=none   # Proxy password
-```
-You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
-For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
+
+   ```
+   [proxy]
+   enable=false        # Whether to enable or disable the proxy.
+   verify=true         # Whether to verify the HTTPS certificate.
+   protocol=https      # The HTTP protocol
+   hostname=           # proxy server
+   port=               # proxy port
+   username=none       # Proxy account
+   userpassword=none   # Proxy password
+   ```
+
+   You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
+   For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
 ### Download Configuration
 
 You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
+
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 ```
 
-###  <a name="sourceconfig">Source Configuration</a>
+### <a name="sourceconfig">Source Configuration</a>
 
 The offline installation tool provides the source configuration file. Replace it as required.
+
 - Python source configuration
   Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.
-```
+
+  ```
   [pypi]
   index_url=https://repo.huaweicloud.com/repository/pypi/simple
-```
+  ```
 - OS source configuration
   OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
   Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:
-```
-[base]
-baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+
+  ```
+  [base]
+  baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+  ```
 
 [epel]
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
+
 ```
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
@@ -425,13 +459,16 @@ The function of this script is to modify the IP address of NPU board card and re
 1. Upload the OS IP address file, the Device IP address file, and the Device IP configuration script to the specified directory of the target host (e.g., /root/ uploadDeviceIP, /root/ uploadDeviceIP, /root/ uploadDeviceIP).
 2. Execute the command at the target host specified directory (for example, /root/ uploadDeviceIP)
 ```
+
 bash deviceip-conf. sh [Device type] [Number of NPU standard cards] [NPU standard card IP configuration] [Working mode] [OS IP address file] [DeviceIP address file]
+
 ```
 Take 8 non-standard NPU board cards using SMP mode A800-9000 as an example, the command is
 ```
-bash DeviceIP-conf.sh 1 0 0 SMP /root/uploadosip/OS_IP /root/uploaddeviceip/Device_IP
-```
 
+bash DeviceIP-conf.sh 1 0 0 SMP /root/uploadosip/OS_IP /root/uploaddeviceip/Device_IP
+
+```
 |parameter|instructions|selection|    note    |
 |:------:|:--:|:-----:|:--------------:|
 |Device type|A800-9000 with 8 NPU|1|npu-smi info query number of NPU = 8, enter 1; query number of NPU = 4, enter 2|
@@ -445,33 +482,40 @@ You need to convert these two files to UNIX format.
 - Format 1 (Recommended)
 The IP address segment, like this IPx-IPy, ends with a carriage return, for example:
 ```
-10.80.100.101~10.80.100.104
-```
 
+10.80.100.101~10.80.100.104
+
+```
 - Format 2
 List of IP addresses, one by one, with OS IP addresses, ending with Enter, for example:
 ```
+
 10.80.100.101
 10.80.100.102
 10.80.100.103
 10.80.100.104
-```
 
+```
 2. Device IP address file
 - Format 1 (Recommended)
 IP address segment, similar to the format of IPX-IPY /Netmask/Gateway. In SMP mode, the 4 NPU chips on each NPU board need to be configured with the Device IP addresses of 4 different network segments, ending with Enter, for example:
 ```
+
 172.168.1.100~172.168.1.107/255.255.255.0/172.168.1.1
 172.168.2.100~172.168.2.107/255.255.255.0/172.168.2.1
 172.168.3.100~172.168.3.107/255.255.255.0/172.168.3.1
 172.168.4.100~172.168.4.107/255.255.255.0/172.168.4.1
-```
 
+```
 - Format 2
 A list of IP addresses, in a format similar to this IP/Netmask/Gateway, gives the OS IP addresses one by one, ending with a press return, for example:
 ```
+
 172.168.1.100/255.255.255.0/172.168.1.1
 172.168.2.100/255.255.255.0/172.168.2.1
 172.168.3.100/255.255.255.0/172.168.3.1
 172.168.4.100/255.255.255.0/172.168.4.1
+
+```
+
 ```
