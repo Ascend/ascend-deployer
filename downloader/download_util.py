@@ -128,7 +128,10 @@ class ProxyUtil:
 
 def Schedule(blocknum, blocksize, totalsize):
     speed = (blocknum * blocksize) / (time.time() - DownloadUtil.start_time)
-    speed_str = " Speed: {:.2f} KB".format(float(speed) / 1024)
+    speed = float(speed) / 1024
+    speed_str = " {:.2f} KB/s".format(speed)
+    if speed >= 1024:
+        speed_str = " {:.2f} MB/s".format(speed / 1024)
     recv_size = blocknum * blocksize
     # config scheduler
     f = sys.stdout
@@ -137,8 +140,10 @@ def Schedule(blocknum, blocksize, totalsize):
         pervent = 1
     percent_str = "{:.2f}%".format(pervent * 100)
     n = round(pervent * 50)
-    s = ('=' * n).ljust(50, '-')
-    f.write('\r' + percent_str.ljust(4, ' ') + '[' + s + ']' + speed_str)
+    s = ('=' * (n - 1) + '>').ljust(50, '-')
+    if pervent == 1:
+        s = ('=' * n).ljust(50, '-')
+    f.write('\r' + percent_str.ljust(7, ' ') + '[' + s + ']' + speed_str.ljust(20))
     f.flush()
 
 
@@ -188,7 +193,7 @@ class DownloadUtil:
                 LOG.info('downloading try: %s from %s', retry, url)
                 cls.delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
-                start_time = time.time()
+                DownloadUtil.start_time = time.time()
                 print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
                 sys.stdout.write('\n')
@@ -218,7 +223,7 @@ class DownloadUtil:
         try:
             LOG.info('downloading from %s', url)
             cls.proxy_inst.build_proxy_handler()
-            start_time = time.time()
+            DownloadUtil.start_time = time.time()
             print("downloading {}".format(dst_file_name.split('/')[-1]))
             local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
             sys.stdout.write('\n')

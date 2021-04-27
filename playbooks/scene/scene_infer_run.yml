@@ -1,0 +1,19 @@
+- hosts: '{{ hosts_name }}'
+
+- name: install system dependencies
+  import_playbook: ../install/install_sys_pkg.yml
+
+- name: install python3.7.5
+  import_playbook: ../install/install_python375.yml
+
+- name: install driver and firmware
+  import_playbook: ../install/install_npu.yml
+
+- name: install nnrt
+  import_playbook: ../install/install_nnrt.yml
+
+- name: install toolbox
+  import_playbook: ../install/install_toolbox.yml
+
+- name: install protobuf
+  import_playbook: ../install/install_protobuf.yml

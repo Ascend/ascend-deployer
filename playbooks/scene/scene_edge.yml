@@ -1,0 +1,10 @@
+- hosts: '{{ hosts_name }}'
+
+- name: install system dependencies
+  import_playbook: ../install/install_sys_pkg.yml
+
+- name: install atlasedge
+  import_playbook: ../install/install_atlasedge.yml
+
+- name: install ha
+  import_playbook: ../install/install_ha.yml
