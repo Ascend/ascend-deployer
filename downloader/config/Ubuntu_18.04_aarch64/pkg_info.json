@@ -342,12 +342,6 @@
         "name": "inotify-tools", "used_by": ["edge", "ha"]
     },
     {
-        "name": "libssl1.1", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "openssl", "used_by": ["edge", "ha"]
-    },
-    {
         "name": "libtcl8.6", "used_by": ["edge", "ha"]
     },
     {

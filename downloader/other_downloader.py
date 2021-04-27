@@ -22,6 +22,19 @@ from logger_config import get_logger
 import software_mgr
 
 LOG = get_logger(__file__)
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+def get_sha256_map():
+    """
+    从CANN_<Version>.json文件读取sha256字典，其中记录run包的sha256
+    """
+    sha256_map = {}
+    with open(os.path.join(CUR_DIR, 'sha256.txt')) as sha256_cache:
+        for line in sha256_cache.readlines():
+            [sha256, name] = [t.strip() for t in line.split(' ') if len(t) > 0]
+            sha256_map[name] = sha256
+    return sha256_map
 
 
 def download_software(software, dst):
@@ -31,8 +44,11 @@ def download_software(software, dst):
     formal_name, version = software_mgr.get_software_name_version(software)
     others = software_mgr.get_software_other(formal_name, version)
     download_dir = os.path.join(dst, "resources", "{0}_{1}".format(formal_name, version))
+    sha256_map = get_sha256_map()
+
     if not os.path.exists(download_dir):
-        os.mkdir(download_dir)
+        os.makedirs(download_dir, mode=0o755, exist_ok=True)
+    LOG.info('item:{} save dir: {}'.format(software, download_dir))
     results = []
     for item in others:
         dest_file = os.path.join(download_dir, os.path.basename(item['url']))
@@ -42,8 +58,16 @@ def download_software(software, dst):
             if file_hash == url_hash:
                 print(item['filename'].ljust(60), 'exists')
                 continue
-        results.append(DOWNLOAD_INST.download(item['url'], dest_file))
-        print(item['filename'].ljust(60), 'download success')
+        if os.path.exists(dest_file) and formal_name == "CANN":
+            file_name = os.path.basename(dest_file)
+            sha256 = calc_sha256(dest_file)
+            if file_name in sha256_map and sha256 == sha256_map[file_name]:
+                print(item['filename'].ljust(60), 'exists')
+                continue
+        ret = DOWNLOAD_INST.download(item['url'], dest_file)
+        if ret:
+            print(item['filename'].ljust(60), 'download success')
+        results.append(ret)
     return all(results)
 
 

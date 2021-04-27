@@ -142,35 +142,16 @@ def Schedule(blocknum, blocksize, totalsize):
     f.flush()
 
 
-def get_sha256_map():
-    """
-    从文件读取sha256字典，其中记录文件的sha256
-    """
-    sha256_map = {}
-    with open(os.path.join(CUR_DIR, 'sha256.txt')) as sha256_cache:
-        for line in sha256_cache.readlines():
-            [sha256, name] = [t.strip() for t in line.split(' ') if len(t) > 0]
-            sha256_map[name] = sha256
-    return sha256_map
-
-
 class DownloadUtil:
     proxy_inst = ProxyUtil()
     start_time = time.time()
-    sha256_map = get_sha256_map()
 
     @classmethod
     def download(cls, url: str, dst_file_name: str):
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
             LOG.info("mkdir : %s", parent_dir)
-            os.makedirs(parent_dir)
-
-        if os.path.exists(dst_file_name):
-            file_name = os.path.basename(dst_file_name)
-            sha256 = calc_sha256(dst_file_name)
-            if file_name in cls.sha256_map and sha256 == cls.sha256_map[file_name]:
-                return True
+            os.makedirs(parent_dir, mode=0o755, exist_ok=True)
 
         res = cls.download_with_retry(url, dst_file_name)
         if not res:

@@ -93,13 +93,13 @@ class Win(object):
         config.read(self.config_file)
 
         oslist = []
-        for os_name, var in self.os_dict.items():
+        for os_name, var in sorted(self.os_dict.items()):
             if var.get() == 1:
                 oslist.append(os_name)
 
         config['download']['os_list'] = ','.join(oslist)
         with open(self.config_file, 'w+') as cfg:
-            config.write(cfg)
+            config.write(cfg, space_around_delimiters=False)
 
     def on_closing(self):
         """

@@ -3,49 +3,49 @@
         "filename":"Python-3.7.5.tar.xz",
         "url":"https://mirrors.huaweicloud.com/python/3.7.5/Python-3.7.5.tar.xz",
         "sha256":"e85a76ea9f3d6c485ec1780fca4e500725a4a7bbc63c78ebc44170de9b619d94",
-        "dest":"resources"
+        "dest":"resources/sources"
     },
     {
         "filename":"protobuf-python-3.11.3.tar.gz",
         "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/protobuf-python-3.11.3.tar.gz",
         "sha256":"a9c6c3821ece08f8db55392edbbec4d4a5392fa5df148188309ed6c5a842e3b7",
-        "dest":"resources"
+        "dest":"resources/sources"
     },
     {
         "filename":"gcc-7.3.0.tar.gz",
         "url":"https://mirrors.huaweicloud.com/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz",
         "sha256":"fa06e455ca198ddc11ea4ddf2a394cf7cfb66aa7e0ab98cc1184189f1d405870",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"gmp-6.1.0.tar.bz2",
         "url":"https://mirrors.huaweicloud.com/gnu/gmp/gmp-6.1.0.tar.bz2",
         "sha256":"498449a994efeba527885c10405993427995d3f86b8768d8cdf8d9dd7c6b73e8",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"mpfr-3.1.4.tar.bz2",
         "url":"https://mirrors.huaweicloud.com/gnu/mpfr/mpfr-3.1.4.tar.bz2",
         "sha256":"d3103a80cdad2407ed581f3618c4bed04e0c92d1cf771a65ead662cc397f7775",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"mpc-1.0.3.tar.gz",
         "url":"https://mirrors.huaweicloud.com/gnu/mpc/mpc-1.0.3.tar.gz",
         "sha256":"617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"isl-0.16.1.tar.bz2",
         "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/isl-0.16.1.tar.bz2",
         "sha256":"412538bb65c799ac98e17e8cfcdacbb257a57362acfaaff254b0fcae970126d2",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"cmake-3.18.6.tar.gz",
         "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/cmake-3.18.6.tar.gz",
         "sha256":"124f571ab70332da97a173cb794dfa09a5b20ccbb80a08e56570a500f47b6600",
-        "dest":"resources/"
+        "dest":"resources/sources"
     },
     {
         "filename":"torch-1.5.0+ascend-cp37-cp37m-linux_aarch64.whl",
