@@ -80,9 +80,9 @@ class OsDepDownloader:
                 res['failed'].append(item['name'])
 
         for software in software_list:
-            formal_name = software_mgr.get_software_name(software)
-            pkg_list = software_mgr.get_software_sys(software, os_item)
-            soft_dst_dir = os.path.join(dst, formal_name, os_item)
+            formal_name, version = software_mgr.get_software_name_version(software)
+            pkg_list = software_mgr.get_software_sys(formal_name, os_item, version)
+            soft_dst_dir = os.path.join(dst, "{0}_{1}".format(formal_name, version), os_item)
             for pkg in pkg_list:
                 if downloader.download(pkg, soft_dst_dir):
                     res['ok'].append(pkg['name'])

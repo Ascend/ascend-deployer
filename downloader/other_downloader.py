@@ -28,9 +28,9 @@ def download_software(software, dst):
     """
     下载软件的其他资源
     """
-    formal_name = software_mgr.get_software_name(software)
-    others = software_mgr.get_software_other(software)
-    download_dir = os.path.join(dst, "resources", formal_name)
+    formal_name, version = software_mgr.get_software_name_version(software)
+    others = software_mgr.get_software_other(formal_name, version)
+    download_dir = os.path.join(dst, "resources", "{0}_{1}".format(formal_name, version))
     if not os.path.exists(download_dir):
         os.mkdir(download_dir)
     results = []
