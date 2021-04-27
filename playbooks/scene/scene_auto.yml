@@ -36,5 +36,5 @@
 - name: install protobuf
   import_playbook: ../install/install_protobuf.yml
 
-- name: install mindspore_ascend
-  import_playbook: ../install/install_mindspore_ascend.yml
+- name: install mindspore
+  import_playbook: ../install/install.yml

@@ -337,34 +337,34 @@ The configuration files for the preceding installation scenarios are stored in t
 - hosts: '{{ hosts_name }}'
 
 - name: install system dependencies
-  import_playbook: ../playbooks/install/install_sys_pkg.yml
+  import_playbook: ../install/install_sys_pkg.yml
 
 - name: install python3.7.5
-  import_playbook: ../playbooks/install/install_python375.yml
+  import_playbook: ../install/install_python375.yml
 
 - name: install driver and firmware
-  import_playbook: ../playbooks/install/install_npu.yml
+  import_playbook: ../install/install_npu.yml
 
 - name: install nnrt
-  import_playbook: ../playbooks/install/install_nnrt.yml
+  import_playbook: ../install/install_nnrt.yml
 
 - name: install toolbox
-  import_playbook: ../playbooks/install/install_toolbox.yml
+  import_playbook: ../install/install_toolbox.yml
 
 - name: install toolkit
-  import_playbook: ../playbooks/install/install_toolkit.yml
+  import_playbook: ../install/install_toolkit.yml
 
 - name: install torch
-  import_playbook: ../playbooks/install/install_torch.yml
+  import_playbook: ../install/install_torch.yml
 
 - name: install tfplugin
-  import_playbook: ../playbooks/install/install_tfplugin.yml
+  import_playbook: ../install/install_tfplugin.yml
 
 - name: install tensorflow
-  import_playbook: ../playbooks/install/install_tensorflow.yml
+  import_playbook: ../install/install_tensorflow.yml
 
 - name: install protobuf
-  import_playbook: ../playbooks/install/install_protobuf.yml
+  import_playbook: ../install/install_protobuf.yml
 ```
 
 To customize an installation scenario, refer to the preceding configuration file.
