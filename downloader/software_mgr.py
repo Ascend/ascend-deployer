@@ -25,8 +25,9 @@ class Software(object):
     """
     软件类，用于存储软件信息
     """
-    def __init__(self, name):
+    def __init__(self, name, default=False):
         self.name = name
+        self.default = default
         self.sys_pkgs = {}
         self.other_pkgs = {}
         self.version = ""
@@ -37,6 +38,10 @@ class Software(object):
     def get_name(self):
         """get name"""
         return self.name
+
+    def get_default(self):
+        """get default"""
+        return self.default
 
     def get_version(self):
         """get version"""
@@ -69,7 +74,7 @@ def load_software(json_file):
     """从文件读取软件信息"""
     with open(json_file) as file_obj:
         json_obj = json.load(file_obj)
-        soft = Software(json_obj['name'])
+        soft = Software(json_obj['name'], json_obj['default'])
         soft.set_version(json_obj['version'])
         if 'systems' in json_obj:
             for sys_obj in json_obj['systems']:
@@ -88,20 +93,25 @@ def software_init():
                 load_software(os.path.join(CUR_DIR, 'software', file_name))
 
 
-def get_software_name(name):
+def get_software_name_version(software):
     """
-    获取软件依包的正式名
-    :param in:  name      软件名,可能大小写与软件正式名不同
-    :return:   软件正式名。例如 cann->CANN, mindstudio->MindStudio
+    获取软件依包的正式名和版本号
+    :param in:  software      软件名,可能带==<version>
+    :return:   正式名和版本号。例如 CANN==20.2.RC1->CANN,20.2.RC1; MindStudio==2.0.0->MindStudio,2.0.0
     """
     if len(g_software_list) == 0:
         software_init()
-    g_software_list.reverse()
-    for soft in g_software_list:
-        if soft.get_name().lower() == name.lower():
-            return soft.get_name()
 
-    return []
+    if '==' in software:
+        name = software.split('==')[0]
+        version = software.split('==')[1]
+    else:
+        name = software
+        for soft in g_software_list:
+            if soft.get_default() and soft.get_name() == name:
+                version = soft.get_version()
+
+    return name, version
 
 
 def get_software_sys(name, sys_name, version=None):

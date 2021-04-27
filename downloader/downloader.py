@@ -136,12 +136,12 @@ def parse_argument():
         for os_item in args.os_list.split(','):
             if os_item not in support_os_list:
                 print('os {} is not supportted'.format(os_item))
-                sys.exit(-1)
+                sys.exit(1)
     if args.download is not None:
         for soft in args.download.split(','):
             if not software_mgr.is_software_support(soft):
                 print('software {} is not supportted'.format(soft))
-                sys.exit(-1)
+                sys.exit(1)
 
     return args
 
@@ -174,7 +174,9 @@ def main():
 
     download_path = get_download_path()
 
-    os_list = args.os_list.split(',')
+    os_list = []
+    if args.os_list is not None:
+        os_list = args.os_list.split(',')
     software_list = []
     if args.download is not None:
         software_list = args.download.split(',')
