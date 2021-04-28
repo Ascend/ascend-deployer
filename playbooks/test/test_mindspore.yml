@@ -1,0 +1,7 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: set custom fact tasks
+    import_tasks: ../task_set_custom_fact.yml
+
+  - name: test mindspore
+    import_tasks: case_mindspore.yml

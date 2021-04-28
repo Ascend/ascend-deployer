@@ -553,7 +553,7 @@ function process_test()
     local unsupport=${FALSE}
     for target in ${test_target}
     do
-        if [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
+        if [ ! -f ${BASE_DIR}/playbooks/test/test_${target}.yml ];then
             echo "Error: not support test for ${target}"
             unsupport=${TRUE}
         fi
@@ -562,7 +562,7 @@ function process_test()
         print_usage
     fi
 
-    local tmp_test_play=${BASE_DIR}/test/tmp_test.yml
+    local tmp_test_play=${BASE_DIR}/playbooks/test/tmp_test.yml
     touch ${tmp_test_play}
     for target in ${test_target}
     do
@@ -579,7 +579,7 @@ function process_test()
 function process_scene()
 {
     local unsupport=${FALSE}
-    if [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
+    if [ ! -f ${BASE_DIR}/playbooks/scene/scene_${install_scene}.yml ];then
         echo "Error: not support install scene for ${install_scene}"
         unsupport=${TRUE}
     fi
@@ -588,10 +588,10 @@ function process_scene()
     fi
 
     verify_zip_redirect
-    local tmp_scene_play=${BASE_DIR}/scene/tmp_scene.yml
-    echo "- import_playbook: ../playbooks/gather_npu_fact.yml" > ${tmp_scene_play}
+    local tmp_scene_play=${BASE_DIR}/playbooks/scene/tmp_scene.yml
+    echo "- import_playbook: ../gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "- import_playbook: ../playbooks/distribution.yml" >> ${tmp_scene_play}
+        echo "- import_playbook: ../distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene_${install_scene}.yml" >> ${tmp_scene_play}
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
@@ -624,7 +624,7 @@ function print_usage()
     done
     echo "The \"npu\" will install driver and firmware together"
     echo "--install-scene=<scene_name>   Install specific scene:"
-    for scene in `find ${BASE_DIR}/scene/scene_*.yml`
+    for scene in `find ${BASE_DIR}playbooks/scene/scene_*.yml`
     do
         scene=$(basename ${scene})
         tmp=${scene#*_}
@@ -650,7 +650,7 @@ function print_usage()
     done
     echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
-    for test in `find ${BASE_DIR}/test/test_*.yml`
+    for test in `find ${BASE_DIR}/playbooks/test/test_*.yml`
     do
         test=$(basename ${test})
         tmp=${test#*_}

@@ -21,13 +21,28 @@
     TBE_IMPL_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe
     ASCEND_OPP_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp
     PYTHONPATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/
-  register: ms_version
+  register: mindspore_ascend_version
   become: yes
   when:
     - ms.matched > 0
     - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010" or ansible_local.npu_info.model_number == "9000" or ansible_local.npu_info.model_number == "9010"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'CentOS_8.2' in os_and_arch"
 
+- name: test import mindspore cpu
+  shell: python3.7 -c "import mindspore as tf; print(tf.__version__)"
+  environment:
+    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
+  register: mindspore_cpu_version
+  when:
+    - ms.matched > 0
+    - "'Ubuntu_18.04' in os_and_arch"
+    - ansible_local.npu_info.model_number != "3000" and ansible_local.npu_info.model_number != "3010" and ansible_local.npu_info.model_number != "9000" and ansible_local.npu_info.model_number != "9010"
+
 - name: print mindspore ascend version
-  debug: var=ms_version
-  when: ms_version is defined
+  debug: var=mindspore_ascend_version
+  when: mindspore_ascend_version is defined and not 'skipped' in mindspore_ascend_version
+
+- name: print mindspore cpu version
+  debug: var=mindspore_cpu_version
+  when: mindspore_cpu_version is defined and not 'skipped' in mindspore_cpu_version
