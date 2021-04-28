@@ -159,8 +159,8 @@ def get_model():
     chip_info = get_chip_info(
         metadata_dict['vid'], metadata_dict['did'], metadata_dict['svid'],
         metadata_dict['sdid'], arch)
-    if chip_info == '--':
-        return '--'
+    if chip_info == '--' or chip_info == 'A300i-pro':
+        return chip_info
 
     find_a500_cmd = ["stat", "/run/board_cfg.ini"]
     return_code = subprocess.call(find_a500_cmd, shell=False,
