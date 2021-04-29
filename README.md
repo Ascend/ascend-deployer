@@ -6,7 +6,7 @@
 
 ## 环境要求
 
-离线安装工具现支持如下操作系统的组件下载及安装。
+### 支持的操作系统说明
 
 | 操作系统    | 版本        | CPU架构   | 安装类型                              |
 |:-------:|:---------:|:-------:|:---------------------------------:|
@@ -34,6 +34,17 @@
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Tlinux  | 2.4       | aarch64 | 镜像默认Server模式                      |
 | Tlinux  | 2.4       | x86_64  | 镜像默认Server模式                      |
+
+### 支持的硬件形态说明
+
+|  中心推理硬件  |  中心训练硬件  |  智能边缘硬件  |
+|:-------------:|:-------------:|:-------------:|
+|  A300-3000    |  A300T-9000   |  A500 Pro-3000|
+|  A300-3010    |  A800-9000    |               |
+|  A300I Pro    |  A800-9010    |               |
+|  A800-3000    |               |               |
+|  A800-3010    |               |               |
+
 
 ## 注意事项
 
@@ -237,6 +248,7 @@ ascend-deployer
 ansible-vault encrypt inventory_file        // 加密文件
 ansible-vault edit inventory_file           // 编辑加密后的文件
 ```
+- 设置环境变量ANSIBLE_VAULT_PASSWORD_FILE可以指定ansible-valut密码的文件；例如，如果用户设置ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt，Ansible将自动在该文件中搜索密码，避免用户交互式输入ansible-valut密码；该功能由ansible提供，详情请参见[ansible官方文档](https://docs.ansible.com/ansible/latest/user_guide/vault.html)。
 
 2. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
@@ -300,6 +312,10 @@ ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+```
+本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量
+```
+source /usr/local/ascendrc
 ```
 
 同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
