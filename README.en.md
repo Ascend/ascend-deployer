@@ -6,7 +6,7 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Environment Requirements
 
-The offline installation tool supports the download and installation of the OSs listed in the following table:
+### Description of the supported operating system
 |    OS    | Version | CPU Architecture |            Installation Type             |
 | :------: | :-----: | :--------------: | :--------------------------------------: |
 |  CentOS  |   7.6   |     AArch64      | A minimal image is installed by default. |
@@ -33,6 +33,15 @@ The offline installation tool supports the download and installation of the OSs 
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Tlinux  |  2.4    |     AArch64      | A server image is installed by default.  |
 |  Tlinux  |  2.4    |     x86_64       | A server image is installed by default.  |
+
+### Description of supported hardware configuration
+|  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
+|:-------------:|:-------------:|:-------------:|
+|  A300-3000    |  A300T-9000   |  A500 Pro-3000|
+|  A300-3010    |  A800-9000    |               |
+|  A300I Pro    |  A800-9010    |               |
+|  A800-3000    |               |               |
+|  A800-3010    |               |               |
 
 ## Precautions
 
@@ -215,6 +224,9 @@ ascend-deployer
      ansible_vault edit inventory_file
      ```
 
+   - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the Ansibled-Valut password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the Ansible_Valut password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
+
+
 5. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
@@ -245,6 +257,10 @@ The offline deployment tool can install Python 3.7.5, To ensure that the built-i
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+```
+This tool will automatically install the Python 3.7.5 environment variable in /usr/local/ascendrc file. You can easily set the Python 3.7.5 environment variable by following the following command
+```
+source /usr/local/ascendrc
 ```
 
 Similarly, other software packages or tools installed by offline deployment tools can be used normally only after users refer to the corresponding official information and configure environment variables or make other Settings.
