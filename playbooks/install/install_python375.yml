@@ -8,7 +8,7 @@
 
     - name: install python3.7.5 unarchive
       unarchive:
-        src: "{{ resources_dir }}/Python-3.7.5.tar.xz"
+        src: "{{ resources_dir }}/sources/Python-3.7.5.tar.xz"
         dest: "{{ build_dir }}"
         copy: no
 
