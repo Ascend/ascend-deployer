@@ -5,7 +5,8 @@ readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly CUR_DIR=$(cd $(dirname "$0"); pwd)
 OS_LIST=""
 
-function get_python_cmd()
+
+function get_python3()
 {
     # try this first
     py36="/usr/bin/python3.6"
@@ -28,17 +29,38 @@ function get_python_cmd()
         return 0
     fi
 
+    return 1
+}
+
+function install_python3()
+{
+    if [ $(id -u) -ne 0 ];then
+        echo "ERROR" "you are not root user and python3 is not available, please install python3 first by yourselt"
+        exit 1
+    fi
+
+    if [[ ! -e ${BASE_DIR}/install_python3.log ]];then
+        touch ${BASE_DIR}/install_python3.log
+    fi
+    chmod 600 ${BASE_DIR}/install_python3.log
+
     have_yum=`command -v yum | wc -l`
     if [ ${have_yum} -eq 1 ];then
-        sudo -E yum install -y python3 > install_python3.log
+        yum install -y python3 >> ${BASE_DIR}/install_python3.log 2>&1
+        if [[ $? != 0 ]];then
+            echo 'ERROR: python3 is not available and "yum install -y python3" failed, please check network or yum'
+            exit 1
+        fi
     fi
 
     have_apt=`command -v apt | wc -l`
     if [ ${have_apt} -eq 1 ];then
-        sudo -E DEBIAN_FRONTEND=noninteractive apt -y install python3 > install_python3.log
+        apt install -y python3 >> ${BASE_DIR}/install_python3.log 2>&1
+        if [[ $? != 0 ]];then
+            echo 'ERROR: python3 is not available and "apt install -y python3" failed, please check network or apt'
+            exit 1
+        fi
     fi
-    echo python3
-    return 0
 }
 
 function print_usage()
@@ -107,7 +129,13 @@ function check_script_args()
 function main()
 {
     parse_script_args $*
-    local pycmd=$(get_python_cmd)
+    get_python3 >/dev/null 2>&1
+    if [[ $? == 0 ]];then
+        local pycmd=$(get_python3)
+    else
+        install_python3
+        local pycmd="python3"
+    fi
     local download_cmd=""
     if [ ! -z "${PKG_LIST}" ];then
         download_cmd="--download ${PKG_LIST}"

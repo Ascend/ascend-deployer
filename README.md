@@ -103,8 +103,9 @@ git clone https://gitee.com/ascend/ascend-deployer.git
      运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
 
 - linux
-    执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
 
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  2. 支持root和非root用户执行下载操作；执行`./start_download.sh`时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用；
 ## 安装操作
 
 ### 安装参数

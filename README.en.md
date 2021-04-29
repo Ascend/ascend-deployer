@@ -79,7 +79,8 @@ The download function can be used in the Windows or Linux OSs.
   2. Start download.
      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  2. Support root and non-root users to perform download operations;When `./start_download.sh` is executed, it will check if python3 exists on the environment first. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
 
