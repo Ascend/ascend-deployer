@@ -6,7 +6,7 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Environment Requirements
 
-The offline installation tool supports the download and installation of the OSs listed in the following table:
+### Description of the supported operating system
 |    OS    | Version | CPU Architecture |            Installation Type             |
 | :------: | :-----: | :--------------: | :--------------------------------------: |
 |  CentOS  |   7.6   |     AArch64      | A minimal image is installed by default. |
@@ -33,6 +33,15 @@ The offline installation tool supports the download and installation of the OSs 
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Tlinux  |  2.4    |     AArch64      | A server image is installed by default.  |
 |  Tlinux  |  2.4    |     x86_64       | A server image is installed by default.  |
+
+### Description of supported hardware configuration
+|  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
+|:-------------:|:-------------:|:-------------:|
+|  A300-3000    |  A300T-9000   |  A500 Pro-3000|
+|  A300-3010    |  A800-9000    |               |
+|  A300I Pro    |  A800-9010    |               |
+|  A800-3000    |               |               |
+|  A800-3010    |               |               |
 
 ## Precautions
 
@@ -70,7 +79,8 @@ The download function can be used in the Windows or Linux OSs.
   2. Start download.
      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-    Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
 
@@ -215,6 +225,9 @@ ascend-deployer
      ansible_vault edit inventory_file
      ```
 
+   - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the Ansibled-Valut password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the Ansible_Valut password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
+
+
 5. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
@@ -245,6 +258,10 @@ The offline deployment tool can install Python 3.7.5, To ensure that the built-i
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+```
+This tool will automatically install the Python 3.7.5 environment variable in /usr/local/ascendrc file. You can easily set the Python 3.7.5 environment variable by following the following command
+```
+source /usr/local/ascendrc
 ```
 
 Similarly, other software packages or tools installed by offline deployment tools can be used normally only after users refer to the corresponding official information and configure environment variables or make other Settings.
@@ -302,20 +319,23 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
 | --debug                           | Performs debugging.                                                                                                                                                            |
-| --output-file                     | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
+| --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
 | --uninstall=<package_name>        | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled.                                                           |
 | --upgrade=<package_name>          | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded.                                                                  |
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
+| --display=<target>                | Displays installed packages                                                                 |
 
 ## <a name="parameter">Download Parameter Description</a>
 
 | Parameter           | Description                                    |
 |:------------------- | ---------------------------------------------- |
 | --os-list=<os-list> | set specific os softwares to download          |
-| --download          | download specific software. such as mindstudio |
+| --download=          | download specific software. such as 如MindStudio、CANN |
+
+Currently, MindStudio is only supported on Ubuntu_18.04_x86_64, Ubuntu_18.04_aarch64, and Euleros_2.8_aarch64. when --download=MindStudio, the --os-list needs to specify one or more of these three Os at the same time.
 
 ## <a name="scene">Installation Scenarios</a>
 
