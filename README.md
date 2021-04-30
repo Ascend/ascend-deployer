@@ -105,7 +105,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - linux
 
   1. 执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
-  2. 支持root和非root用户执行下载操作；执行`./start_download.sh`时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用；
+  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用.
 ## 安装操作
 
 ### 安装参数
@@ -377,20 +377,23 @@ source /usr/local/ascendrc
 | --clean                           | 清理待安装设备用户家目录下的resources目录。                           |
 | --nocopy                          | 在批量安装时不进行资源拷贝。                                       |
 | --debug                           | 开发调测使用。                                              |
-| --output-file                     | 重定向命令执行的输出结果到指定文件。                                   |
+| --output-file=<output_file>       | 重定向命令执行的输出结果到指定文件。                                   |
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
-| --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。           |
+| --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
 | --uninstall=<package_name>        | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。     |
 | --upgrade=<package_name>          | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。       |
-| --test=<target>                   | 检查指定组件能否正常工作。                                        |
+| --test=<target>                   | 检查指定组件能否正常工作。                                            |
+| --display=<target>                | 显示已安装软件包。                                                   |
 
 ## <a name="parameter">下载参数说明</a>
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
 | --os-list=<os-list> | 指定下载的特定操作系统的相关依赖软件      |
-| --download          | 指定下载可选的软件包。例如mindstudio |
+| --download=         | 指定下载可选的软件包。例如MindStudio、CANN |
+
+目前只支持在Ubuntu_18.04_x86_64、Ubuntu_18.04_aarch64、EulerOS_2.8_aarch64上安装MindStudio，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
 
 ## <a name="scene">安装场景介绍</a>
 
