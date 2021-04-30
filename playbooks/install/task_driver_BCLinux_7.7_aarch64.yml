@@ -1,52 +1,46 @@
 # BigCloud Linux 7.7 use the driver of CentOS 7.6
-- name: find driver package for BigCloud Linux 7.7 from run_from_zip_dir first
+- name: find driver package train only
   find:
-    path: "{{ resources_dir }}/run_from_zip_dir"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
-  register: driver_pkg_from_zip
-
-- name: install driver for BigCloud Linux from run_from_zip_dir first
-  shell: "bash {{driver_pkg_from_zip.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  become: yes
-  register: driver_result_from_zip
-  failed_when: driver_result_from_zip.rc == 1
-  when: driver_pkg_from_zip.matched > 0
+    patterns:
+      - "npu-driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+  when: ansible_local.npu_info.scene == 'train'
 
 - name: find driver package for BigCloud Linux 7.7
   find:
-    path: "{{ resources_dir }},{{ resources_dir }}/CANN"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
     patterns: "{{ npu_product }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg
-  when: driver_pkg_from_zip.matched == 0
+  when: 'skipped' in driver_pkg or driver_pkg.matched == 0
 
 - name: install driver for BigCloud Linux
   shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   become: yes
   register: driver_result
   failed_when: driver_result.rc == 1
-  when: driver_pkg_from_zip.matched == 0 and driver_pkg.matched > 0
+  when: driver_pkg.matched > 0
 
 - name: message
   debug:
     msg:
       - "can not find driver package, driver install skipped"
-  when: driver_pkg_from_zip.matched == 0 and driver_pkg.matched == 0
+  when: driver_pkg.matched == 0
 
 - name: message
   debug:
     msg:
-      - "{{ driver_result_from_zip | default('NOT DEFINED') }}"
       - "{{ driver_result | default('NOT DEFINED') }}"
-  when: driver_result_from_zip.changed or driver_result.changed
+  when: driver_result.changed
 
 - name: service host_sys_init start
   shell: service host_sys_init start
   become: yes
   failed_when: false
-  when: driver_result_from_zip.changed or driver_result.changed
+  when: driver_result.changed

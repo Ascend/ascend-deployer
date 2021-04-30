@@ -1,9 +1,6 @@
 - name: find driver package train only
   find:
-    path:
-      - "{{ resources_dir }}/run_from_zip_dir"
-      - "{{ resources_dir }}"
-      - "{{ resources_dir }}/CANN"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
@@ -19,10 +16,7 @@
 
 - name: find driver package common
   find:
-    path:
-      - "{{ resources_dir }}/run_from_zip_dir"
-      - "{{ resources_dir }}"
-      - "{{ resources_dir }}/CANN"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
@@ -35,10 +29,7 @@
 
 - name: find driver package specific os
   find:
-    path:
-      - "{{ resources_dir }}/run_from_zip_dir"
-      - "{{ resources_dir }}"
-      - "{{ resources_dir }}/CANN"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
@@ -48,6 +39,17 @@
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: driver_pkg.matched > 0
+
+- name: set /etc/modprobe.d/10-unsupported-modules.conf allow_unsupported_modules 1
+  lineinfile:
+    dest: /etc/modprobe.d/10-unsupported-modules.conf
+    regexp: "^allow_unsupported_modules"
+    line: "allow_unsupported_modules 1"
+    state: present
+  become: yes
+  when: 
+    - driver_pkg.matched > 0
+    - 'SLES' in os_and_arch
 
 - name: install driver
   shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"

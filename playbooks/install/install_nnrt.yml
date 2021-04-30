@@ -2,10 +2,7 @@
   tasks:
     - name: find nnrt package
       find:
-        paths:
-          - "{{ resources_dir }}/run_from_zip_dir"
-          - "{{ resources_dir }}"
-          - "{{ resources_dir }}/CANN"
+        paths: "{{ cann_dirs }}"
         recurse: no
         file_type: file
         use_regex: yes

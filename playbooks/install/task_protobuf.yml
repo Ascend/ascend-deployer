@@ -6,7 +6,7 @@
 
 - name: install protobuf-python-3.11.3 unarchive
   unarchive:
-    src: "{{ resources_dir }}/protobuf-python-3.11.3.tar.gz"
+    src: "{{ resources_dir }}/sources/protobuf-python-3.11.3.tar.gz"
     dest: "{{ build_dir }}"
     copy: no
 

@@ -279,13 +279,13 @@ function install_sys_packages()
 
 function install_python375()
 {
-    if [ ! -f ${BASE_DIR}/resources/Python-3.7.5.tar.xz ];then
+    if [ ! -f ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz ];then
         echo "can't find Python-3.7.5.tar.xz"
         return
     fi
     echo "installing Python 3.7.5"
     mkdir -p ~/build
-    tar -xvf ${BASE_DIR}/resources/Python-3.7.5.tar.xz -C ~/build
+    tar -xvf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j4
