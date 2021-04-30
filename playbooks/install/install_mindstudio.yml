@@ -1,8 +1,27 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: find mindstudio dir
+      find:
+        path: "{{ resources_dir }}"
+        recurse: no
+        file_type: directory
+        use_regex: yes
+        patterns: "MindStudio.*"
+      register: mindstudio_dir_tmp
+
+    - name: set mindstudio dir
+      set_fact:
+        mindstudio_dir: "{{ mindstudio_dir_tmp.files[0].path }}"
+      when: mindstudio_dir_tmp.matched > 0
+
+    - name: set mindstudio dir if not defined
+      set_fact:
+        mindstudio_dir: "{{ resources_dir }}/MindStudio"
+      when: mindstudio_dir is not defined
+
     - name: find mindstudio package
       find:
-        paths: "{{ resources_dir }}/MindStudio/"
+        paths: "{{ mindstudio_dir }}"
         recurse: no
         file_type: file
         use_regex: yes
@@ -18,7 +37,7 @@
       become: yes
 
     - name: install system packages apt
-      shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ resources_dir }}/MindStudio/{{ os_and_arch }}/*.deb
+      shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/*.deb
       become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
@@ -28,14 +47,14 @@
         - ansible_pkg_mgr == 'apt'
 
     - name: install system packages rpm
-      shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/MindStudio/{{ os_and_arch }}/*.rpm
+      shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
       become: yes
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'yum'
 
     - name: install system packages dnf
-      shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/MindStudio/{{ os_and_arch }}/*.rpm
+      shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
       become: yes
       when:
         - ms.matched > 0
@@ -122,7 +141,7 @@
 
     - name: unarchive jdk for aarch64
       unarchive:
-        src: "{{ resources_dir }}/MindStudio/jbr-11_0_7-linux-aarch64-b765.65.tar.gz"
+        src: "{{ mindstudio_dir }}/jbr-11_0_7-linux-aarch64-b765.65.tar.gz"
         dest: ~/MindStudio
         copy: no
       when:
@@ -131,7 +150,7 @@
 
     - name: unarchive jdk for x86_64
       unarchive:
-        src: "{{ resources_dir }}/MindStudio/jbr-11_0_7-linux-x64-b765.65.tar.gz"
+        src: "{{ mindstudio_dir }}/jbr-11_0_7-linux-x64-b765.65.tar.gz"
         dest: ~/MindStudio
         copy: no
       when:

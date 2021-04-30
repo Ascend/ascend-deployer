@@ -86,3 +86,27 @@
 - name: process prepare
   include_tasks: "prepare_{{os_and_arch}}.yml"
   when: optional_file.stat.exists
+
+- name: find cann dirs
+  find:
+    path: "{{ resources_dir }}"
+    recurse: no
+    file_type: directory
+    use_regex: yes
+    patterns: "CANN.*"
+  register: cann_dirs_tmp
+
+- name: set cann dirs
+  set_fact:
+     cann_dirs:
+       - "{{ resources_dir }}/run_from_zip_dir"
+       - "{{ resources_dir }}"
+     cacheable: yes
+  when: cann_dirs is not defined
+
+- name: add new cann dirs
+  with_items: "{{ cann_dirs_tmp.files }}"
+  set_fact:
+    cann_dirs: "{{ cann_dirs + [item.path] }}"
+    cacheable: yes
+  when: cann_dirs_tmp.matched > 0
