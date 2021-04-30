@@ -624,7 +624,7 @@ function print_usage()
     done
     echo "The \"npu\" will install driver and firmware together"
     echo "--install-scene=<scene_name>   Install specific scene:"
-    for scene in `find ${BASE_DIR}playbooks/scene/scene_*.yml`
+    for scene in `find ${BASE_DIR}/playbooks/scene/scene_*.yml`
     do
         scene=$(basename ${scene})
         tmp=${scene#*_}
