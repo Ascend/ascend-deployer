@@ -420,9 +420,6 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
 
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
-
-- name: install protobuf
-  import_playbook: ../install/install_protobuf.yml
 ```
 
 如需自定义安装场景，可参考上述配置文件进行定制。
