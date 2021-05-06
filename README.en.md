@@ -382,9 +382,6 @@ The configuration files for the preceding installation scenarios are stored in t
 
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
-
-- name: install protobuf
-  import_playbook: ../install/install_protobuf.yml
 ```
 
 To customize an installation scenario, refer to the preceding configuration file.

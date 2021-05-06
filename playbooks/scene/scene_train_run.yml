@@ -24,8 +24,5 @@
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
 
-- name: install protobuf
-  import_playbook: ../install/install_protobuf.yml
-
 - name: install mindspore
   import_playbook: ../install/install_mindspore.yml
