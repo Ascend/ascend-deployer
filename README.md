@@ -104,7 +104,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 - linux
 
-  1. 执行`./start_download.sh --os-list=<OS1>,<OS2>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载；以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
   2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用.
 ## 安装操作
 
@@ -159,7 +159,7 @@ group=HwHiAiUser
 1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
    - 驱动和固件：[获取链接](https://ascend.huawei.com/#/hardware/firmware-drivers)
    - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
-2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包；训练场景的驱动、固件暂不支持安装zip格式的软件包，仅支持安装run包。
+2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包。
 3. 支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
    - IEF相关证书和工具：[参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
    - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
@@ -390,10 +390,10 @@ source /usr/local/ascendrc
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
-| --os-list=<os-list> | 指定下载的特定操作系统的相关依赖软件      |
-| --download=         | 指定下载可选的软件包。例如MindStudio、CANN |
+| `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
+| `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的软件包。例如MindStudio、CANN |
 
-目前只支持在Ubuntu_18.04_x86_64、Ubuntu_18.04_aarch64、EulerOS_2.8_aarch64上安装MindStudio，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
+当前MindStudio支持2.0.0版本，CANN支持20.2.RC1版本，更多版本持续更新中；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="scene">安装场景介绍</a>
 
@@ -513,8 +513,6 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
 
 # 其他安装指导
-
-## [安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="Device_IP">Device IP配置说明</a>
 
