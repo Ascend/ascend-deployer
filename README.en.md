@@ -79,7 +79,7 @@ The download function can be used in the Windows or Linux OSs.
   2. Start download.
      Run **start_download_ui.bat** (recommended because it allows you to select the OS components to be downloaded on the displayed UI) or **start_download.bat**.
 - Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
   2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
@@ -133,7 +133,7 @@ group=HwHiAiUser
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
    - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
    - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package。
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first.
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
    - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
@@ -332,10 +332,10 @@ The following table describes the parameters. You can run the `./install.sh --he
 
 | Parameter           | Description                                    |
 |:------------------- | ---------------------------------------------- |
-| --os-list=<os-list> | set specific os softwares to download          |
-| --download=          | download specific software. such as 如MindStudio、CANN |
+| `--os-list=<OS1>,<OS2>`| set specific os softwares to download          |
+| `--download=<PK1>,<PK2>==<Version>`| download specific software. such as 如MindStudio、CANN |
 
-Currently, MindStudio is only supported on Ubuntu_18.04_x86_64, Ubuntu_18.04_aarch64, and Euleros_2.8_aarch64. when --download=MindStudio, the --os-list needs to specify one or more of these three Os at the same time.
+Currently MindStudio supports version 2.0.0, CANN supports version 20.2.rc1, and more versions are in the pipeline. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 
 ## <a name="scene">Installation Scenarios</a>
 
@@ -454,8 +454,6 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
 # Other Install Guide
-
-## [Install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="Device_IP">Device IP configuration specification</a>
 The function of this script is to modify the IP address of NPU board card and realize batch configuration by using the batch deployment capability of Ansible tools. The following contents are only for the reference of users with use scenarios of batch configuration.

@@ -49,7 +49,7 @@
   become: yes
   when: 
     - driver_pkg.matched > 0
-    - 'SLES' in os_and_arch
+    - "'SLES' in os_and_arch"
 
 - name: install driver
   shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"

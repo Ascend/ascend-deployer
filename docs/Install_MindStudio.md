@@ -1,16 +1,17 @@
 # 安装MindStudio
+版本配套、环境要求等详情请参考MindStudio官网及手册
+https://www.hiascend.com/software/mindstudio/download
 
 ## 支持的操作系统
 
-- Ubuntu_18.04_x86_64  desktop版本
+- Ubuntu_18.04_x86_64、Ubuntu_18.04_aarch64、EulerOS_2.8_aarch64
 
 ## 下载
 
 ```bash
-./start_download.sh --os-list=Ubuntu_18.04_x86_64 --download=mindstudio
+./start_download.sh --os-list=Ubuntu_18.04_x86_64 --download=MindStudio
 ```
-
-MindStudio软件包比较大，下载耗时间较长
+目前MindStudio 2.0.0版本只支持在以上3个OS，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
 
 ## 安装
 
