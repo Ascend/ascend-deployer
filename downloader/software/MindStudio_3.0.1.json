@@ -1,6 +1,6 @@
 {"name": "MindStudio",
-"version":"2.0.0",
-"default":false,
+"version":"3.0.1",
+"default":true,
 "systems": [
     {"system":"Ubuntu_18.04_x86_64",
     "sys":[
@@ -484,8 +484,8 @@
 ],
 "other": [
     {"filename":"minstudio.tar.gz",
-     "url":"https://obs-9be7.obs.myhuaweicloud.com/turing/resource/mindstudio/2.0.0-release/MindStudio_2.0.0_linux.tar.gz",
-     "sha256": "dc14ee956458b8023bdfb4fadffff6339d39058b05f60d470c6afa899665a9d9"},
+     "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/mindstudio/3.0.1/MindStudio_3.0.1_linux.tar.gz",
+     "sha256": "e8492c8019b2335c4fddc6804de4d5e59507db4858788060db5a713895148f5e"},
     {"filename":"jbr-11_0_7-linux-aarch64-b765.65.tar.gz",
      "url":"http://jetbrains.bintray.com/intellij-jbr/jbr-11_0_7-linux-aarch64-b765.65.tar.gz",
      "sha256": "3b872e145f8bf4fb3c0400df25012823ea3acd11979dec9caac56d715c9b3636"},
