@@ -36,6 +36,18 @@
       when: ms.matched > 0
       become: yes
 
+    - name: check ubuntu desktop
+      shell: dpkg -l ubuntu-desktop | wc -l
+      register: ubuntu_desktop
+      changed_when: false
+      when: "'Ubuntu' in os_and_arch"
+
+    - name: install ubuntu desktop
+      shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/desktop/*.deb
+      when:
+        - ubuntu_desktop is not skipped and ubuntu_desktop.stdout=='0'
+        - "'Ubuntu' in os_and_arch"
+
     - name: install system packages apt
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/*.deb
       become: yes
