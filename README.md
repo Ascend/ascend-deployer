@@ -135,10 +135,10 @@ install_path=/usr/local/Ascend
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
 
 ```bash
-#添加HiwHiAiUser用户组
+#添加HwHiAiUser用户组
 groupadd HwHiAiUser
 
-#添加HiwHiAiUser用户,并加入HwHiAiUser用户组
+#添加HwHiAiUser用户,并加入HwHiAiUser用户组
 #设置HwHiAiUser的HOME目录为/home/HwHiAiUser
 #并设置用户的shell为/bin/bash
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash

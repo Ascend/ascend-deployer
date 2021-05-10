@@ -675,10 +675,6 @@ function parse_script_args() {
         --help | -h)
             print_usage
             ;;
-        --version)
-            echo "this is version"
-            exit 0
-            ;;
         --display=*)
             display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
             if [ -z ${display_target} ];then
