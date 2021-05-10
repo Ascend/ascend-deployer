@@ -1,0 +1,28 @@
+{"name": "CANN",
+"version":"5.0.1",
+"default":true,
+"systems": {},
+"other": [
+
+    {"filename":"Ascend-cann-nnae_5.0.1_linux-aarch64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-nnae_5.0.1_linux-aarch64.zip"},
+    {"filename":"Ascend-cann-nnae_5.0.1_linux-x86_64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-nnae_5.0.1_linux-x86_64.zip"},
+    {"filename":"Ascend-cann-nnrt_5.0.1_linux-aarch64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-nnrt_5.0.1_linux-aarch64.zip"},
+    {"filename":"Ascend-cann-nnrt_5.0.1_linux-x86_64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-nnrt_5.0.1_linux-x86_64.zip"},
+    {"filename":"Ascend-cann-tfplugin_5.0.1_linux-aarch64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-tfplugin_5.0.1_linux-aarch64.zip"},
+    {"filename":"Ascend-cann-tfplugin_5.0.1_linux-x86_64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-tfplugin_5.0.1_linux-x86_64.zip"},
+    {"filename":"Ascend-cann-toolbox_5.0.1_linux-aarch64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-toolbox_5.0.1_linux-aarch64.zip"},
+    {"filename":"Ascend-cann-toolbox_5.0.1_linux-x86_64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-toolbox_5.0.1_linux-x86_64.zip"},
+    {"filename":"Ascend-cann-toolkit_5.0.1_linux-aarch64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-toolkit_5.0.1_linux-aarch64.zip"},
+    {"filename":"Ascend-cann-toolkit_5.0.1_linux-x86_64.zip",
+        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/Ascend-cann-toolkit_5.0.1_linux-x86_64.zip"}
+]
+}

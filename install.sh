@@ -379,7 +379,7 @@ function check_extracted_size()
             exit 1
         fi
     done
-    for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.gz" 2>/dev/null)
+    for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.*z*" 2>/dev/null)
     do
         tar tvf ${tar_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
@@ -676,77 +676,73 @@ function parse_script_args() {
         --help | -h)
             print_usage
             ;;
-        --version)
-            echo "this is version"
-            exit 0
-            ;;
         --display=*)
-            display_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${display_target} ];then
+            display_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${display_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--display parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --install=*)
-            install_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${install_target} ];then
+            install_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${install_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--install parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --install-scene=*)
-            install_scene=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${install_scene} ];then
+            install_scene=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${install_scene}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--install-scene parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${uninstall_target} ];then
+            uninstall_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${uninstall_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--uninstall parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --uninstall-version=*)
-            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${uninstall_version} ];then
+            uninstall_version=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${uninstall_version}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--uninstall-version parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${upgrade_target} ];then
+            upgrade_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${upgrade_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--upgrade parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --test=*)
-            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${test_target} ];then
+            test_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--test parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --output-file=*)
-            output_file=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\)//g")
-            if [ -z ${output_file} ];then
+            output_file=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${output_file}" | grep -Evq '^[a-zA-Z0-9._,/]*$');then
                 echo "ERROR" "--output-file parameter is invalid"
                 print_usage
             fi
             shift
             ;;
         --stdout_callback=*)
-            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${STDOUT_CALLBACK} ];then
+            STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${STDOUT_CALLBACK}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--stdout_callback parameter is invalid"
                 print_usage
             fi
