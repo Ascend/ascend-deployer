@@ -109,11 +109,11 @@ install_path=/usr/local/Ascend
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
 
 ```bash
-#add HiwHiAiUser group
+#add HwHiAiUser group
 groupadd HwHiAiUser
 
 #add HwHiAiUser user add it to HwHiAiUser group
-#set /home/HiwHiAiUser as HwHiAiUser's HOME directory and create
+#set /home/HwHiAiUser as HwHiAiUser's HOME directory and create
 #set /bin/bash HwHiAiUser's default shell
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
