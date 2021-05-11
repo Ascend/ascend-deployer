@@ -15,10 +15,12 @@
 # limitations under the License.
 # ===========================================================================
 
+import os
+import sys
+import gzip
+import sqlite3 as sqlite
 import urllib.request
 import configparser
-import os
-import gzip
 from urllib.error import HTTPError
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
@@ -62,7 +64,6 @@ class Apt(object):
     """downloader for apt"""
     def __init__(self, source_file, arch):
         self.arch = arch
-        self.cache = {}
         """读取源配置"""
         self.source = {}
         self.source_list = []
@@ -88,16 +89,24 @@ class Apt(object):
 
     def make_cache(self):
         """make_cache"""
+        self.primary_connection = sqlite.Connection(':memory:')
+        self.primary_cur = self.primary_connection.cursor()
+        try:
+            self.primary_cur.executescript("CREATE TABLE packages \
+                    (name TEXT, version TEXT, url TEXT, sha256 TEXT);")
+        except sqlite.OperationalError as e:
+            pass
+
         for sub_repo in self.source_list:
             binary_path = 'binary-amd64'
             if 'x86' not in self.arch:
                 binary_path = 'binary-arm64'
             packages_url = '{0}/{1}/Packages.gz'.format(
                 sub_repo, binary_path)
-            print('packages_url=[{0}]'.format(packages_url))
             LOG.info('packages_url=[%s]', packages_url)
             packages = self.fetch_package_index(packages_url)
             self.make_cache_from_packages(packages)
+        self.primary_connection.commit()
 
     def fetch_package_index(self, packages_url):
         """
@@ -138,11 +147,15 @@ class Apt(object):
 
         lines = packages_content.split('\n')
         package = ''
+        version = ''
         filename = ''
         sha256 = None
         for line in lines:
             if line.startswith("Package:"):
                 package = line.split(': ')[1]
+
+            if line.startswith("Version:"):
+                version = line.split(': ')[1]
 
             if line.startswith("SHA256:"):
                 sha256 = line.split(': ')[1]
@@ -151,12 +164,13 @@ class Apt(object):
                 filename = line.split(': ')[1]
 
             if len(line.strip()) == 0:
-                if package in self.cache:
-                    pkg = self.cache[package]
-                    if self.version_compare(filename, pkg.get_filename()):
-                        self.cache[package] = Package(package, filename, sha256)
-                else:
-                    self.cache[package] = Package(package, filename, sha256)
+                params = {'name': package,
+                    'version': version,
+                    'url': filename,
+                    'sha256': sha256}
+                self.primary_cur.execute("INSERT INTO \
+                        PACKAGES (name, version, url, sha256) \
+                        VALUES (:name, :version, :url, :sha256);", params)
 
     def download_by_url(self, pkg, dst_dir):
         """
@@ -194,23 +208,44 @@ class Apt(object):
         """
         if 'name' not in pkg:
             return False
-        name = pkg['name']
+        if 'dst_dir' in pkg:
+            dst_dir = os.path.join(dst_dir, pkg['dst_dir'])
+
         url = None
-        if name in self.cache.keys():
-            url = self.mirror_url + self.cache[name].get_filename()
-        else:
+        name = pkg['name']
+        cur = self.primary_connection.cursor()
+        sql = 'SELECT packages.version, packages.url, packages.sha256 \
+                FROM packages \
+                WHERE name=:name ORDER by packages.version;'
+        param = {'name': name}
+        cur.execute(sql, param)
+        results = cur.fetchall()
+
+        if len(results) == 0:
             print("can't find package {0}".format(name))
             LOG.error("can't find package %s", name)
             return False
-        if name in ["docker-ce", "docker-ce-cli", "containerd.io"] and self.docker_url is not None:
-            url = self.docker_url + self.cache[name].get_filename()
+
+        pkg_sha256 = ''
+        pkg_list = []
+        version = results[0][0]
+        url = self.mirror_url + results[0][1]
+        pkg_sha256 =  results[0][2]
+        for item in results:
+            if not self.version_compare(version, item[0]):
+                version = item[0]
+                url = self.mirror_url + item[1]
+                pkg_sha256 =  item[2]
+            if 'version' in pkg and pkg['version'] in item[0]:
+                url = self.mirror_url + item[1]
+                pkg_sha256 = item[2]
+                break
 
         try:
             LOG.info('[%s] download from [%s]', name, url)
-            file_name = os.path.basename(self.cache[name].get_filename())
+            file_name = os.path.basename(url)
             dst_file = os.path.join(dst_dir, file_name)
-            target_sha256 = self.cache[name].get_sha256()
-            if not self.need_download_again(target_sha256, dst_file):
+            if not self.need_download_again(pkg_sha256, dst_file):
                 LOG.info("%s no need download again", name)
                 print(name.ljust(60), 'exists')
                 return True
@@ -260,7 +295,9 @@ def main():
     """main"""
     apt_inst = Apt('downloader/config/Ubuntu_18.04_x86_64/source.list', 'x86_64')
     apt_inst.make_cache()
-    apt_inst.download('containerd.io', "./")
+    pkg = {}
+    pkg['name'] = sys.argv[1]
+    apt_inst.download(pkg, "./")
 
 
 if __name__ == '__main__':

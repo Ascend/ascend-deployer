@@ -20,6 +20,8 @@
     { "name": "cmake" },
     { "name": "cmake-data" },
     { "name": "libcurl4" },
+    { "name": "libtinfo5" },
+    { "name": "libtinfo-dev" },
     { "name": "libncurses5-dev" },
     { "name": "libncurses5" },
     { "name": "libldap-2.4-2" },
