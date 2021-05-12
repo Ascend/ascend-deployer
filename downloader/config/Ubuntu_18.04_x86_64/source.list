@@ -1,3 +1,4 @@
 deb https://mirrors.huaweicloud.com/ubuntu/ bionic main multiverse restricted universe
 deb https://mirrors.huaweicloud.com/ubuntu/ bionic-updates main multiverse restricted universe
 deb https://mirrors.huaweicloud.com/ubuntu/ bionic-security main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/docker-ce/linux/ubuntu/ bionic stable

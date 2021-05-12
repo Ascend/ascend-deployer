@@ -38,6 +38,28 @@ muitiverse：非自由软件，完全不提供支持和补丁。
 LOG=get_logger(__file__)
 
 
+class DebianSource(object):
+    """
+    source
+    """
+    def __init__(self, line):
+        tmp = line.split(' ')
+        self.url = tmp[1].strip()
+        self.distro = tmp[2].strip()
+        self.repoList= [i.strip() for i in tmp[3:]]
+
+    def GetUrl(self):
+        """get source url"""
+        return self.url
+
+    def Repos(self):
+        """get source repos"""
+        repos = {}
+        for repo in self.repoList:
+            repo_url = "{0}dists/{1}/{2}".format(self.url, self.distro, repo)
+            yield repo, repo_url
+
+
 class Package(object):
     """
     Package
@@ -64,28 +86,17 @@ class Apt(object):
     """downloader for apt"""
     def __init__(self, source_file, arch):
         self.arch = arch
+        self.binary_path = 'binary-amd64' if 'x86' in self.arch else 'binary-arm64'
         """读取源配置"""
-        self.source = {}
         self.source_list = []
-        self.mirror_url = None
-        self.docker_url = None
         script = os.path.realpath(__file__)
         self.base_dir = os.path.dirname(os.path.dirname(script))
         self.repo_file = os.path.join(self.base_dir, source_file)
         self.resources_dir = os.path.join(self.base_dir, 'resources')
         with open(self.repo_file) as file:
             for line in file.readlines():
-                tmp = line.split(' ')
-                if 'docker-ce' not in tmp[1]:
-                    self.mirror_url = tmp[1]
-                else:
-                    self.docker_url = tmp[1]
-                url = tmp[1] + 'dists/' + tmp[2]
-                self.source[url] = tmp[3:]
-
-        for url, type_list in self.source.items():
-            for k in type_list:
-                self.source_list.append("{0}/{1}".format(url, k).strip('\n'))
+                source = DebianSource(line)
+                self.source_list.append(source)
 
     def make_cache(self):
         """make_cache"""
@@ -93,19 +104,17 @@ class Apt(object):
         self.primary_cur = self.primary_connection.cursor()
         try:
             self.primary_cur.executescript("CREATE TABLE packages \
-                    (name TEXT, version TEXT, url TEXT, sha256 TEXT);")
+                    (name TEXT, version TEXT, source TEXT, repo TEXT, \
+                    url TEXT, sha256 TEXT);")
         except sqlite.OperationalError as e:
             pass
 
-        for sub_repo in self.source_list:
-            binary_path = 'binary-amd64'
-            if 'x86' not in self.arch:
-                binary_path = 'binary-arm64'
-            packages_url = '{0}/{1}/Packages.gz'.format(
-                sub_repo, binary_path)
-            LOG.info('packages_url=[%s]', packages_url)
-            packages = self.fetch_package_index(packages_url)
-            self.make_cache_from_packages(packages)
+        for source in self.source_list:
+            for repo, url in source.Repos():
+                index_url = '{0}/{1}/Packages.gz'.format(url, self.binary_path)
+                LOG.info('packages_url=[%s]', index_url)
+                packages = self.fetch_package_index(index_url)
+                self.make_cache_from_packages(source.GetUrl(), repo, packages)
         self.primary_connection.commit()
 
     def fetch_package_index(self, packages_url):
@@ -137,7 +146,7 @@ class Apt(object):
                 return ver_a > ver_b
             return len(ver_a) > len(ver_b)
 
-    def make_cache_from_packages(self, packages_content):
+    def make_cache_from_packages(self, source_url, repo, packages_content):
         """
         make_cache_from_packages
 
@@ -166,11 +175,14 @@ class Apt(object):
             if len(line.strip()) == 0:
                 params = {'name': package,
                     'version': version,
+                    'source': source_url,
+                    'repo': repo,
                     'url': filename,
                     'sha256': sha256}
                 self.primary_cur.execute("INSERT INTO \
-                        PACKAGES (name, version, url, sha256) \
-                        VALUES (:name, :version, :url, :sha256);", params)
+                        PACKAGES (name, version, source, repo, url, sha256) \
+                        VALUES (:name, :version, :source, :repo, :url, \
+                        :sha256);", params)
 
     def download_by_url(self, pkg, dst_dir):
         """
@@ -214,7 +226,8 @@ class Apt(object):
         url = None
         name = pkg['name']
         cur = self.primary_connection.cursor()
-        sql = 'SELECT packages.version, packages.url, packages.sha256 \
+        sql = 'SELECT packages.version, packages.url, packages.sha256, \
+                packages.source, packages.repo \
                 FROM packages \
                 WHERE name=:name ORDER by packages.version;'
         param = {'name': name}
@@ -227,18 +240,18 @@ class Apt(object):
             return False
 
         pkg_sha256 = ''
-        pkg_list = []
         version = results[0][0]
-        url = self.mirror_url + results[0][1]
+        url = results[0][3] + results[0][1]
         pkg_sha256 =  results[0][2]
         for item in results:
-            if not self.version_compare(version, item[0]):
-                version = item[0]
-                url = self.mirror_url + item[1]
-                pkg_sha256 =  item[2]
-            if 'version' in pkg and pkg['version'] in item[0]:
-                url = self.mirror_url + item[1]
-                pkg_sha256 = item[2]
+            [cur_ver, cur_url, cur_sha256, cur_source, cur_repo] = item
+            if not self.version_compare(version, cur_ver):
+                version = cur_ver
+                url =  cur_source + cur_url
+                pkg_sha256 =  cur_sha256
+            if 'version' in pkg and pkg['version'] in cur_ver:
+                url =  cur_source + cur_url
+                pkg_sha256 =  cur_sha256
                 break
 
         try:
@@ -293,7 +306,7 @@ class Apt(object):
 
 def main():
     """main"""
-    apt_inst = Apt('downloader/config/Ubuntu_18.04_x86_64/source.list', 'x86_64')
+    apt_inst = Apt('downloader/config/Ubuntu_18.04_aarch64/source.list', 'aarch64')
     apt_inst.make_cache()
     pkg = {}
     pkg['name'] = sys.argv[1]
