@@ -1,2 +1,2 @@
-deb https://repo.huaweicloud.com/debian/ buster contrib main
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster contrib main
 deb https://mirrors.huaweicloud.com/docker-ce/linux/debian/ stretch stable
