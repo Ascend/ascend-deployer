@@ -378,7 +378,7 @@ function check_extracted_size()
             exit 1
         fi
     done
-    for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.gz" 2>/dev/null)
+    for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.*z*" 2>/dev/null)
     do
         tar tvf ${tar_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
