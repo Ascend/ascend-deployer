@@ -326,27 +326,6 @@ function install_ansible()
     fi
 }
 
-function process_display()
-{
-    IFS=' '
-    unsupported=${TRUE}
-    for target in ${app_name_list[*]}
-    do
-        if [ "${target}" == "${display_target}" ];then
-            unsupported=${FALSE}
-            break
-        fi
-    done
-    if [ ${unsupported} == ${TRUE} ];then
-        echo "Error: not support display for ${display_target}"
-        print_usage
-    fi
-    unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
-
-}
-
 function verify_zip_redirect()
 {
     echo "The system is busy with checking compressed files, Please wait for a moment..."
@@ -454,24 +433,13 @@ function verify_zip()
 
 function process_install()
 {
-    IFS=','
-    local unsupport=${FALSE}
-    for target in ${install_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
-            echo "Error: not support install for ${target}"
-            unsupport=${TRUE}
-        fi
-    done
-    if [ ${unsupport} == ${TRUE} ];then
-        print_usage
-    fi
     verify_zip_redirect
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
         echo "- import_playbook: distribution.yml" >> ${tmp_install_play}
     fi
+    IFS=','
     for target in ${install_target}
     do
         echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
@@ -485,23 +453,28 @@ function process_install()
     fi
 }
 
+function process_scene()
+{
+    verify_zip_redirect
+    local tmp_scene_play=${BASE_DIR}/playbooks/tmp_scene.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_scene_play}
+    if [ "x${nocopy_flag}" != "xy" ];then
+        echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
+    fi
+    echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_scene_play}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    if [ -f ${tmp_scene_play} ];then
+        rm -f ${tmp_scene_play}
+    fi
+}
+
 function process_uninstall()
 {
+    local tmp_uninstall_play=${BASE_DIR}/playbooks/tmp_uninstall.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_uninstall_play}
     IFS=','
-    not_supported=${FALSE}
-    for target in ${uninstall_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
-            echo "Error: not supported uninstall for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
-
-    local tmp_uninstall_play=${BASE_DIR}/playbooks/.tmp_uninstall.yml
-    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     for target in ${uninstall_target}
     do
         echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
@@ -517,24 +490,13 @@ function process_uninstall()
 
 function process_upgrade()
 {
-    IFS=','
-    local not_supported=${FALSE}
-    for target in ${upgrade_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
-            echo "Error: not supported upgrade for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
     verify_zip_redirect
     local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
     if [ "x${nocopy_flag}" != "xy" ];then
         echo "- import_playbook: distribution.yml" >> ${tmp_upgrade_play}
     fi
+    IFS=','
     for target in ${upgrade_target}
     do
         echo "- import_playbook: upgrade/upgrade_${target}.yml" >> ${tmp_upgrade_play}
@@ -550,57 +512,27 @@ function process_upgrade()
 
 function process_test()
 {
-    IFS=','
-    local unsupport=${FALSE}
-    for target in ${test_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/test/test_${target}.yml ];then
-            echo "Error: not support test for ${target}"
-            unsupport=${TRUE}
-        fi
-    done
-    if [ ${unsupport} == ${TRUE} ];then
-        print_usage
-    fi
-
     local tmp_test_play=${BASE_DIR}/playbooks/test/tmp_test.yml
     touch ${tmp_test_play}
+    IFS=','
     for target in ${test_target}
     do
         echo "- import_playbook: test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    cat ${tmp_test_play}
     ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" ${DEBUG_CMD}
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
     fi
 }
 
-function process_scene()
+function process_display()
 {
-    local unsupport=${FALSE}
-    if [ ! -f ${BASE_DIR}/playbooks/scene/scene_${install_scene}.yml ];then
-        echo "Error: not support install scene for ${install_scene}"
-        unsupport=${TRUE}
-    fi
-    if [ ${unsupport} == ${TRUE} ];then
-        print_usage
-    fi
+    echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
 
-    verify_zip_redirect
-    local tmp_scene_play=${BASE_DIR}/playbooks/scene/tmp_scene.yml
-    echo "- import_playbook: ../gather_npu_fact.yml" > ${tmp_scene_play}
-    if [ "x${nocopy_flag}" != "xy" ];then
-        echo "- import_playbook: ../distribution.yml" >> ${tmp_scene_play}
-    fi
-    echo "- import_playbook: scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
-    cat ${tmp_scene_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
-    if [ -f ${tmp_scene_play} ];then
-        rm -f ${tmp_scene_play}
-    fi
 }
 
 function print_usage()
@@ -676,14 +608,6 @@ function parse_script_args() {
         --help | -h)
             print_usage
             ;;
-        --display=*)
-            display_target=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${display_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--display parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
         --install=*)
             install_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${install_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
@@ -728,6 +652,14 @@ function parse_script_args() {
             test_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--test parameter is invalid"
+                print_usage
+            fi
+            shift
+            ;;
+        --display=*)
+            display_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${display_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
+                echo "ERROR" "--display parameter is invalid"
                 print_usage
             fi
             shift
@@ -777,6 +709,100 @@ function parse_script_args() {
 
 function check_script_args()
 {
+    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${uninstall_target} ] && [ -z ${upgrade_target} ] && [ -z ${test_target} ] && [ -z ${display_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
+        echo "ERROR" "expected one valid argument at least"
+        print_usage
+    fi
+
+    # --install
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${install_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
+            echo "Error: not support install for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+    unset IFS
+
+    # --install-scene
+    local unsupport=${FALSE}
+    if [ ! -z ${install_scene} ] && [ ! -f ${BASE_DIR}/playbooks/scene/scene_${install_scene}.yml ];then
+        echo "Error: not support install scene for ${install_scene}"
+        unsupport=${TRUE}
+    fi
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+
+    # --uninstall
+    IFS=','
+    local not_supported=${FALSE}
+    for target in ${uninstall_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
+            echo "Error: not supported uninstall for ${target}"
+            not_supported=${TRUE}
+        fi
+    done
+    if [ "${not_supported}" == "${TRUE}" ]; then
+        print_usage
+    fi
+    unset IFS
+
+    # --upgrade
+    IFS=','
+    local not_supported=${FALSE}
+    for target in ${upgrade_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
+            echo "Error: not supported upgrade for ${target}"
+            not_supported=${TRUE}
+        fi
+    done
+    if [ "${not_supported}" == "${TRUE}" ]; then
+        print_usage
+    fi
+    unset IFS
+
+    # --test
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${test_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/test/test_${target}.yml ];then
+            echo "Error: not support test for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+    unset IFS
+
+    # --display
+    if [ ! -z ${display_target} ];then
+        IFS=' '
+        local unsupported=${TRUE}
+        for target in ${app_name_list[*]}
+        do
+            if [ "${target}" == "${display_target}" ];then
+                unsupported=${FALSE}
+                break
+            fi
+        done
+        if [ ${unsupported} == ${TRUE} ];then
+            echo "Error: not support display for ${display_target}"
+            print_usage
+        fi
+        unset IFS
+    fi
+
+    # --custom
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
         echo "ERROR" "Unsupported --install and --install-scene at same time"
         print_usage
@@ -870,15 +896,6 @@ main()
     if [ "x${install_scene}" != "x" ];then
         process_scene ${install_scene}
     fi
-    if [ "x${test_target}" != "x" ];then
-        process_test ${test_target}
-    fi
-    if [ "x${check_flag}" == "xy" ]; then
-        process_check
-    fi
-    if [ "x${clean_flag}" == "xy" ]; then
-        process_chean
-    fi
     if [ "x${uninstall_target}" != "x" ];then
         process_uninstall ${uninstall_target} ${uninstall_version}
     fi
@@ -888,6 +905,16 @@ main()
     if [ "x${display_target}" != "x" ]; then
         process_display
     fi
+    if [ "x${test_target}" != "x" ];then
+        process_test ${test_target}
+    fi
+    if [ "x${check_flag}" == "xy" ]; then
+        process_check
+    fi
+    if [ "x${clean_flag}" == "xy" ]; then
+        process_chean
+    fi
+
 }
 
 main $*
