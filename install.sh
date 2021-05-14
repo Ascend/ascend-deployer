@@ -381,7 +381,7 @@ function verify_zip()
     rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir ${BASE_DIR}/resources/run_from_zip_dir
     local IFS_OLD=$IFS
     unset IFS
-    for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip && find ${BASE_DIR}/resources/*.zip 2>/dev/null)
+    for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
