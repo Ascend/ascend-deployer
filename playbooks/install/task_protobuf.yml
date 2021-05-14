@@ -21,4 +21,3 @@
 
 - name: install protobuf-python-3.11.3 make install
   shell: "make -C {{ build_dir }}/protobuf-3.11.3 install"
-  become: yes

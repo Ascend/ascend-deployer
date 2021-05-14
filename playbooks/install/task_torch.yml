@@ -1,13 +1,11 @@
 - name: install torch
-  shell: python3.7 -m pip install torch --no-index --find-links {{ resources_dir }}/pylibs
+  shell: python3.7 -m pip install torch --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
-  become: yes
+    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
 
 - name: install apex
-  shell: python3.7 -m pip install apex --no-index --find-links {{ resources_dir }}/pylibs
+  shell: python3.7 -m pip install apex --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
-  become: yes
+    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"

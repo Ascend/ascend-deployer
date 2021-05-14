@@ -348,6 +348,9 @@
         "name": "binutils", "used_by": ["driver", "cann", "framework"]
     },
     {
+        "name": "bzip2", "used_by": ["driver", "cann", "framework"]
+    },
+    {
         "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_x86_64.whl",
         "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/centos_x86/mindspore_ascend-1.1.1-cp37-cp37m-linux_x86_64.whl",
         "sha256": "2863bbed0c9cbcf466089eeeda3d9064208ff00ea9ff0ba5510358133f9acb1f",

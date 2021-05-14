@@ -1,5 +1,7 @@
 /resources/*
 !/resources/docker_images/
+!/resources/MindStudio/
+!/resources/CANN/
 *.pyc
 *.whl
 *.log

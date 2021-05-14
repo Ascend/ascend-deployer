@@ -327,9 +327,6 @@
         "name": "containerd.io","used_by": [  "cann", "framework" ]
     },
     {
-        "name": "sudo","used_by": [  "deployer", "framework" ]
-    },
-    {
         "name": "linux-compiler-gcc-8-x86","used_by": [  "cann", "framework" ]
     },
     {

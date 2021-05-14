@@ -6,7 +6,6 @@
     - name: get A500pro_exist
       shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
       register: a500pro_exist
-      become: yes
 
     - name: find atlasedge package
       find:
@@ -29,7 +28,6 @@
 
     - name: upgrade atlasedge
       shell: "{{ atlasedge_run.files[0].path }} upgrade -i normal -f {{ atlasedge.files[0].path }} -s {{ atlasedge.files[0].path }}.cms -c {{ atlasedge.files[0].path }}.crl -e now -t AtlasEdge"
-      become: yes
       register: atlasedge_result
       when: atlasedge.matched is defined and atlasedge.matched > 0
       failed_when: "atlasedge_result.rc !=0 and 'upgrade ok' not in atlasedge_result.stdout"

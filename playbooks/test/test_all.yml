@@ -1,5 +1,12 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+  - name: gather facts again
+    setup:
+      fact_path: ~/ansible/facts.d/
+
+  - name: set custom fact tasks
+    import_tasks: ../task_set_custom_fact.yml
+
   - name: test driver
     include_tasks: case_driver.yml
 
@@ -14,3 +21,6 @@
 
   - name: test torch
     include_tasks: case_torch.yml
+
+  - name: test mindspore
+    import_tasks: case_mindspore.yml

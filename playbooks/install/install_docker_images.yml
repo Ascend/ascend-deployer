@@ -10,7 +10,6 @@
     - name: restart docker
       shell: "systemctl restart docker"
       when: docker_exists.stdout != '0'
-      become: yes
 
     - name: find docker images
       find:
@@ -27,7 +26,6 @@
       failed_when: x.rc != 0
       with_items: "{{ images.files }}"
       when: images.matched > 0
-      become: yes
 
     - name: load docker images message
       debug:

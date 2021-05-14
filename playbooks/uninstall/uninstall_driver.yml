@@ -5,14 +5,12 @@
 
     - name: find uninstall.sh in driver without version params
       shell: find /usr/local/Ascend/driver/ -type f | grep -E "/driver/script/uninstall.sh" | head -n 1
-      become: yes
       register: uninstall_driver
       when: uninstall_version is not defined
 
     - name: uninstall driver without version params
       shell: "{{ uninstall_driver.stdout }}"
       register: result
-      become: yes
       when:
         - uninstall_version is not defined
         - uninstall_driver.rc == 0
@@ -28,7 +26,6 @@
 
     - name: uninstall driver with version params
       shell: "{{ item.install_path }}/driver/script/uninstall.sh"
-      become: yes
       register: uninstall_result
       when:
         - uninstall_version is defined

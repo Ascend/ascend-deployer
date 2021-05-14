@@ -22,7 +22,6 @@
 
 - name: install driver for BigCloud Linux
   shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  become: yes
   register: driver_result
   failed_when: driver_result.rc == 1
   when: driver_pkg.matched > 0
@@ -41,6 +40,5 @@
 
 - name: service host_sys_init start
   shell: service host_sys_init start
-  become: yes
   failed_when: false
   when: driver_result.changed

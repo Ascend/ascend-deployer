@@ -46,7 +46,6 @@
     regexp: "^allow_unsupported_modules"
     line: "allow_unsupported_modules 1"
     state: present
-  become: yes
   when: 
     - driver_pkg.matched > 0
     - "'SLES' in os_and_arch"
@@ -58,7 +57,6 @@
   register: driver_result
   failed_when: driver_result.rc == 1
   when: (driver_run is defined) and (driver_run|length > 0)
-  become: yes
 
 - name: message
   debug:
@@ -74,6 +72,5 @@
 
 - name: service host_sys_init start
   shell: service host_sys_init start
-  become: yes
   failed_when: false
   when: driver_result.changed

@@ -5,14 +5,12 @@
 
     - name: find uninstall.sh in nnrt without version params
       shell: find /usr/local/Ascend/nnrt/latest/ -type f | grep -E "/*-linux/script/uninstall.sh" | head -n 1
-      become: yes
       register: uninstall_nnrt
       when: uninstall_version is not defined
 
     - name: uninstall nnrt without version params
       shell: "{{ uninstall_nnrt.stdout }}"
       register: result
-      become: yes
       when:
         - uninstall_version is not defined
         - uninstall_nnrt.rc == 0
@@ -28,7 +26,6 @@
 
     - name: uninstall nnrt with version params
       shell: "{{ item.install_path }}/script/uninstall.sh"
-      become: yes
       register: uninstall_result
       when:
         - uninstall_version is defined

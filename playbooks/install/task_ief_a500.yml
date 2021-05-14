@@ -29,7 +29,6 @@
     src: /opt/middleware/AtlasEdge/software/IEF/edge-installer
     dest: /opt
     remote_src: yes
-  become: yes
   when: edge_installer_dir.stat.exists and edge_register_dir.stat.exists
 
 - name: copy edge-register a500
@@ -37,7 +36,6 @@
     src: /opt/middleware/AtlasEdge/software/IEF/edge-register
     dest: /opt
     remote_src: yes
-  become: yes
   when: edge_installer_dir.stat.exists and edge_register_dir.stat.exists
 
 - name: find edge-installer_*_arm64.tar.gz
@@ -74,7 +72,6 @@
     src: "{{ edge_installer_tar.files[0].path }}"
     dest: /opt
     copy: no
-  become: yes
   when: edge_installer_tar.matched is defined and edge_register_tar.matched is defined 
 
 - name: edge-register tar.gz unarchive
@@ -82,7 +79,6 @@
     src: "{{ edge_register_tar.files[0].path }}"
     dest: /opt
     copy: no
-  become: yes
   when: edge_installer_tar.matched is defined and edge_register_tar.matched is defined 
 
 - name: cert tar.gz unarchive
@@ -90,13 +86,11 @@
     src: "{{ cert.files[0].path }}"
     dest: /opt/edge-register
     copy: no
-  become: yes
 
 - name: ief register
   shell: ./register --mode=cert
   args:
     chdir: /opt/edge-register
-  become: yes
   register: ief_result
 
 - name: ief register message

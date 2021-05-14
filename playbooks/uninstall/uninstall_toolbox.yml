@@ -5,14 +5,12 @@
 
     - name: find uninstall.sh in toolbox without version params
       shell: find /usr/local/Ascend/toolbox/latest/ -type f | grep -E "/latest/script/uninstall.sh" | head -n 1
-      become: yes
       register: uninstall_toolbox
       when: uninstall_version is not defined
 
     - name: uninstall toolbox
       shell: "{{ uninstall_toolbox.stdout }}"
       register: result
-      become: yes
       when:
         - uninstall_version is not defined
         - uninstall_toolbox.rc == 0
@@ -28,7 +26,6 @@
 
     - name: uninstall tfplugin with version params
       shell: "{{ item.install_path }}/script/uninstall.sh"
-      become: yes
       register: uninstall_result
       when:
         - uninstall_version is defined
