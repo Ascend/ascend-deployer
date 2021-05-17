@@ -22,7 +22,6 @@
         src: facts/npu_info.fact.j2
         dest: ~/ansible/facts.d/npu_info.fact
         mode: "0555"
-      failed_when: false
 
     - name: gather facts again
       setup:
