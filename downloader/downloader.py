@@ -38,6 +38,7 @@ dir_list = ['downloader', 'playbooks', 'scene', 'test']
 file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg', 'README.md', 'README.en.md']
 
 support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
+support_pkg_list = os.listdir(os.path.join(CUR_DIR, 'software'))
 
 
 def download_other_packages(dst=None):
@@ -121,26 +122,36 @@ def parse_argument():
     """
     解析参数
     """
-    parser = argparse.ArgumentParser(description='download resources.', allow_abbrev=False)
+    os_list_help = 'Specific OS list to download, supported os are:\n'
+    for osname in sorted(support_os_list):
+        os_list_help += '{}\n'.format(osname)
+    download_help = 'Specific package list to download, supported packages are:\n'
+    for pkg in support_pkg_list:
+        pkg_name, version = pkg.split('_')
+        download_help += '{}=={}\n'.format(pkg_name, version[:-5])
+
+    parser = argparse.ArgumentParser(description="Download resources. Multiple parameter values should be separated by ','.", allow_abbrev=False,
+                epilog="notes: When package's version is missing, it will download the latest version.",
+                formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--os-list', action='store', dest='os_list',
-            help='Specific OS list to download, supported os are:')
-    parser.add_argument('--download', action='store', dest='download',
-            help='Specific softwares list to download')
+            help=os_list_help)
+    parser.add_argument('--download', action='store', dest='packages',
+            help=download_help)
+
     args = parser.parse_args()
-    if args.os_list is None and args.download is None:
+    if args.os_list is None and args.packages is None:
         parser.print_help()
-        for osname in support_os_list:
-            print('                     {}'.format(osname))
         return
+
     if args.os_list is not None:
         for os_item in args.os_list.split(','):
             if os_item not in support_os_list:
-                print('os {} is not supportted'.format(os_item))
+                print('os {} is not supported'.format(os_item))
                 sys.exit(1)
-    if args.download is not None:
-        for soft in args.download.split(','):
+    if args.packages is not None:
+        for soft in args.packages.split(','):
             if not software_mgr.is_software_support(soft):
-                print('software {} is not supportted'.format(soft))
+                print('software {} is not supported'.format(soft))
                 sys.exit(1)
 
     return args
@@ -180,8 +191,8 @@ def main():
     if args.os_list is not None:
         os_list = args.os_list.split(',')
     software_list = []
-    if args.download is not None:
-        software_list = args.download.split(',')
+    if args.packages is not None:
+        software_list = args.packages.split(',')
     download_all(os_list, software_list, download_path)
 
 

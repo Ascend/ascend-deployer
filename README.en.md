@@ -127,7 +127,16 @@ group=HwHiAiUser
 ```
 
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly.
+- List of software supported by non-root users
 
+|Software name | description|
+|:------------ |:------------------------------------- |
+|Python375 | python3.7.5 is installed in the $HOME/.local/ directory|
+|Python framework | tensorflow, torch, mindpore|
+|CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
+|MindStudio | installed in the $HOME/ directory|
+
+Note: non root users need root users to install system components and driver before they can install the above components.
 ### Obtaining Software Packages
 
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
@@ -192,7 +201,7 @@ ascend-deployer
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
      - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
-   - Scenario-specific installation
+   - Scenario-specific installation(only support for root user)
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
       `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
@@ -211,7 +220,7 @@ ascend-deployer
    [ascend]
    ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-   ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+   ip_address_3 ansible_ssh_user='non-root' ansible_ssh_pass='password3'
    ```
 
     Note:
