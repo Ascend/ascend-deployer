@@ -6,7 +6,6 @@
     - name: get A500pro_exist
       shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
       register: a500pro_exist
-      become: yes
 
     - name: find ha package
       find:
@@ -29,7 +28,6 @@
 
     - name: upgrade ha
       shell: "{{ atlasedge_run.files[0].path }} upgrade -i normal -f {{ ha.files[0].path }} -s {{ ha.files[0].path }}.cms -c {{ ha.files[0].path }}.crl -e now -t HA"
-      become: yes
       register: ha_result
       when: ha.matched is defined and ha.matched > 0
       failed_when: "ha_result.rc !=0 and 'upgrade ok' not in ha_result.stdout"

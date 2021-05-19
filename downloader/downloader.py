@@ -173,6 +173,8 @@ def main():
     args = parse_argument()
 
     download_path = get_download_path()
+    if args is None:
+        sys.exit(0)
 
     os_list = []
     if args.os_list is not None:

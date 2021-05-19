@@ -6,7 +6,6 @@
     - name: get A500pro_exist
       shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
       register: a500pro_exist
-      become: yes
 
     - name: find atlasedge path
       find:
@@ -20,7 +19,6 @@
 
     - name: install atlasedge
       shell: "bash {{ atlasedge.files[0].path }}/install.sh --install_dir=/usr/local/"
-      become: yes
       register: atlasedge_result
       when: atlasedge.matched is defined and atlasedge.matched > 0
       failed_when: "atlasedge_result.rc !=0 and 'has been installed' not in atlasedge_result.stdout"

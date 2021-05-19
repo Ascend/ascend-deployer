@@ -186,7 +186,7 @@ function check_python375()
     return ${TRUE}
 }
 
-function check_sudo_cmd()
+function check_cmd_isok()
 {
     if [[ $? != 0 ]];then
         exit 1
@@ -213,12 +213,12 @@ function install_kernel_header_devel_euler()
     local kh_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
     local kd_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
-        check_sudo_cmd
+        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        check_cmd_isok
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
-        check_sudo_cmd
+        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        check_cmd_isok
     fi
 }
 
@@ -233,12 +233,12 @@ function install_kernel_header_devel()
     local kh=$(rpm -q kernel-headers | grep ${kernel_version} | wc -l)
     local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
-        check_sudo_cmd
+        rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
+        check_cmd_isok
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
-        check_sudo_cmd
+        rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
+        check_cmd_isok
     fi
 }
 
@@ -263,18 +263,12 @@ function install_sys_packages()
         ;;
     esac
 
-    if [[ ${g_os_ver_arch} =~ Debian_10.0 ]]; then
-        if [ $(id -u) -eq 0 ];then
-            dpkg -i ${BASE_DIR}/resources/${g_os_ver_arch}/sudo*.deb
-        fi
-    fi
-
     if [ ${have_rpm} -eq 1 ]; then
-        sudo rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
+        rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     else
-        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; sudo -E dpkg --force-all -i ${BASE_DIR}/resources/${g_os_ver_arch}/*.deb
+        export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ${BASE_DIR}/resources/${g_os_ver_arch}/*.deb
     fi
-    check_sudo_cmd
+    check_cmd_isok
 }
 
 function install_python375()
@@ -834,8 +828,10 @@ function bootstrap()
     local have_ansible=`command -v ansible | wc -l`
     check_python375
     local py37_status=$?
-    if [ ${py37_status} == ${FALSE} ];then
+    if [ ${py37_status} == ${FALSE} ] && [ $UID -eq 0 ];then
         install_sys_packages
+        install_python375
+    elif [ ${py37_status} == ${FALSE} ] && [ $UID -ne 0 ];then
         install_python375
     fi
 

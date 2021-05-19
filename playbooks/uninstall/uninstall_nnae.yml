@@ -5,14 +5,12 @@
 
     - name: find uninstall.sh in nnae without version params
       shell: find /usr/local/Ascend/nnae/latest/ -type f | grep -E "/script/uninstall.sh" | head -n 1
-      become: yes
       register: uninstall_nnae
       when: uninstall_version is not defined
 
     - name: uninstall nnae
       shell: "{{ uninstall_nnae.stdout }}"
       register: result
-      become: yes
       when:
         - uninstall_version is not defined
         - uninstall_nnae.rc == 0
@@ -28,7 +26,6 @@
 
     - name: uninstall nnae with version params
       shell: "{{ item.install_path }}/script/uninstall.sh"
-      become: yes
       register: uninstall_result
       when:
         - uninstall_version is defined

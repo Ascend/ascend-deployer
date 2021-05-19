@@ -12,7 +12,6 @@
     - name: uninstall ha
       shell: "{{ uninstall_ha.files[0].path }} -q"
       register: uninstall_ha_result
-      become: yes
       when: uninstall_ha.matched > 0
       failed_when: "uninstall_ha_result.rc != 0"
 

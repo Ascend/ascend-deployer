@@ -5,14 +5,12 @@
 
     - name: find uninstall.sh in toolkit without version params
       shell: find /usr/local/Ascend/ascend-toolkit/latest/ -type f | grep -E "/*-linux/script/uninstall.sh" | head -n 1
-      become: yes
       register: uninstall_toolkit
       when: uninstall_version is not defined
 
     - name: uninstall toolkit
       shell: "{{ uninstall_toolkit.stdout }}"
       register: result
-      become: yes
       when:
         - uninstall_version is not defined
         - uninstall_toolkit.rc == 0
@@ -28,7 +26,6 @@
 
     - name: uninstall toolkit with version params
       shell: "{{ item.install_path }}/script/uninstall.sh"
-      become: yes
       register: uninstall_result
       when:
         - uninstall_version is defined

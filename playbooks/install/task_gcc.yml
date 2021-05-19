@@ -49,7 +49,7 @@
   when: makefile_stat.stat.exists
 
 - name: install gcc 7.3.0 configure
-  shell: "./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix=/usr/local/gcc7.3.0"
+  shell: "./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix={{ local_path }}/gcc7.3.0"
   args:
     chdir: "{{ build_dir }}/gcc-7.3.0"
   register: configure_result
@@ -67,4 +67,3 @@
 - name: install gcc 7.3.0 make install
   shell: "make -C {{ build_dir }}/gcc-7.3.0 install"
   when: "'0' in cxx.stdout"
-  become: yes

@@ -15,7 +15,6 @@
 
 - name: install kernel headers rpm
   shell: rpm -ivh --force --nodeps --replacepkgs {{ kh_rpm.files[0].path }}
-  become: yes
   when: kh_cnt.stdout == "0" and kh_rpm.matched > 0
   failed_when: false
 
@@ -36,6 +35,5 @@
 
 - name: install kernel devel rpm
   shell: rpm -ivh --force --nodeps --replacepkgs {{ kd_rpm.files[0].path }}
-  become: yes
   when: kd_cnt.stdout == "0" and kd_rpm.matched > 0
   failed_when: false

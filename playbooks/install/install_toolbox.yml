@@ -13,21 +13,19 @@
       stat:
         path: /etc/Ascend/ascend_cann_install.info
       register: install_info
-      become: yes
-
-    - name: set install_path disable
-      set_fact:
-        ins_path_cmd: ""
-      when: install_info.stat.exists
 
     - name: set install_path enable
       set_fact:
         ins_path_cmd: "--install-path={{ install_path }}"
       when: not install_info.stat.exists
 
+    - name: set install_path disable
+      set_fact:
+        ins_path_cmd: ""
+      when: install_info.stat.exists or ansible_user_uid != 0
+
     - name: install toolbox
-      shell: "bash {{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
-      become: yes
+      shell: "bash {{ toolbox.files[0].path }} {{ cann_install_params }} {{ins_path_cmd}}"
       register: toolbox_result
       when: toolbox.matched > 0
       failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"

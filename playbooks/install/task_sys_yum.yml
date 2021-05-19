@@ -3,4 +3,3 @@
 
 - name: yum install system packages
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm
-  become: yes

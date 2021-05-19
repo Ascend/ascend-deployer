@@ -13,7 +13,8 @@
         copy: no
 
     - name: install python3.7.5 config
-      shell: ./configure --enable-shared --prefix=/usr/local/python3.7.5
+      shell: ./configure --enable-shared --prefix={{ local_path }}/python3.7.5
+      when: ansible_user_uid == 0
       args:
         chdir: "{{ build_dir }}/Python-3.7.5"
 
@@ -22,30 +23,26 @@
 
     - name: install python3.7.5 make install
       shell: "make -C {{ build_dir }}/Python-3.7.5 install"
-      become: yes
 
     - name: install python ensurepip
       shell: python3.7 -m ensurepip
-      become: yes
       environment:
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       failed_when: false
 
     - name: install python upgrade pip
-      shell: python3.7 -m pip install --upgrade pip --no-index --find-links {{ resources_dir }}/pylibs
-      become: yes
+      shell: python3.7 -m pip install --upgrade pip --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
       environment:
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: "{{local_path}}/python3.7.5/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/Ascend/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       failed_when: false
 
     - name: install python libs
-      shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs
-      become: yes
+      shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
       environment:
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       failed_when: false
       with_items:
         - cython
@@ -71,20 +68,17 @@
         - cffi
 
     - name: install python selinux
-      shell: python3.7 -m pip install selinux --no-index --find-links {{ resources_dir }}/pylibs
-      become: yes
+      shell: python3.7 -m pip install selinux --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
       environment:
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/Ascend/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       when: "'EulerOS' in os_and_arch"
       failed_when: false
 
     - name: set python environment PATH
-      shell: echo "export PATH=/usr/local/python3.7.5/bin:\$PATH" > /usr/local/ascendrc 2>/dev/null
-      become: yes
+      shell: echo "export PATH={{ local_path }}/python3.7.5/bin:\$PATH" > {{ local_path }}/ascendrc 2>/dev/null
       failed_when: false
 
     - name: set python environment LD_LIBRARY_PATH
-      shell: echo "export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:\$LD_LIBRARY_PATH" >> /usr/local/ascendrc 2>/dev/null
-      become: yes
+      shell: echo "export LD_LIBRARY_PATH={{ local_path }}/python3.7.5/lib:\$LD_LIBRARY_PATH" >> {{ local_path }}/ascendrc 2>/dev/null
       failed_when: false

@@ -1,11 +1,12 @@
 - name: test if toolbox installed
   find:
-    path: /usr/local/Ascend/toolbox
+    paths:
+      - /usr/local/Ascend/toolbox
+      - ~/Ascend/toolbox
     recurse: yes
     file_type: file
     use_regex: yes
     patterns: "ascend-dmi"
-  become: yes
   register: ascend_dmi
 
 - name: message
@@ -17,10 +18,9 @@
 - name: execute ascend-dmi -i
   shell: ascend-dmi -i
   environment:
-    PATH: /usr/local/python3.7.5/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/opp/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64:/usr/local/gcc7.3.0/lib64:/usr/local/Ascend/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver
-    ASCEND_OPP_PATH: /usr/local/Ascend/nnae/latest/opp:/usr/local/Ascend/nnrt/latest/opp
-  become: yes
+    PATH: "{{ local_path }}/python3.7.5/bin:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:{{ ascend_install_path }}/nnae/latest/opp/fwkacllib/lib64:{{ ascend_install_path }}/nnrt/latest/acllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+    ASCEND_OPP_PATH: "{{ ascend_install_path }}/nnae/latest/opp:{{ ascend_install_path }}/nnrt/latest/opp"
   when: ascend_dmi.matched > 0
   register: ascend_dmi_info
 

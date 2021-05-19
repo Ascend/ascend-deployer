@@ -129,9 +129,9 @@ class ProxyUtil:
 def Schedule(blocknum, blocksize, totalsize):
     speed = (blocknum * blocksize) / (time.time() - DownloadUtil.start_time)
     speed = float(speed) / 1024
-    speed_str = " {:.2f} KB/s".format(speed)
+    speed_str = r" {:.2f} KB/s".format(speed)
     if speed >= 1024:
-        speed_str = " {:.2f} MB/s".format(speed / 1024)
+        speed_str = r" {:.2f} MB/s".format(speed / 1024)
     recv_size = blocknum * blocksize
     # config scheduler
     f = sys.stdout

@@ -110,3 +110,51 @@
     cann_dirs: "{{ cann_dirs + [item.path] }}"
     cacheable: yes
   when: cann_dirs_tmp.matched > 0
+
+- name: set pip install option
+  set_fact:
+     pip_install_option: ""
+     cacheable: yes
+  when: ansible_user_uid == 0
+
+- name: set pip install option for non-root
+  set_fact:
+     pip_install_option: "--user"
+     cacheable: yes
+  when: ansible_user_uid != 0
+
+- name: set Ascend install path
+  set_fact:
+     ascend_install_path: "/usr/local/Ascend"
+     cacheable: yes
+  when: ansible_user_uid == 0
+
+- name: set Ascend install path for non-root
+  set_fact:
+     ascend_install_path: "{{ansible_user_dir}}/Ascend"
+     cacheable: yes
+  when: ansible_user_uid != 0
+
+- name: set local path
+  set_fact:
+     local_path: "/usr/local"
+     cacheable: yes
+  when: ansible_user_uid == 0
+
+- name: set local path for non-root
+  set_fact:
+     local_path: "{{ansible_user_dir}}/.local"
+     cacheable: yes
+  when: ansible_user_uid != 0
+
+- name: set cann install params
+  set_fact:
+     cann_install_params: "--install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
+     cacheable: yes
+  when: ansible_user_uid == 0
+
+- name: set cann install params for non-root
+  set_fact:
+     cann_install_params: "--install --quiet"
+     cacheable: yes
+  when: ansible_user_uid != 0

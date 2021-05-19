@@ -1,7 +1,6 @@
 - name: get npu info for Atlas 800 and Atlas 900
   shell: dmidecode -t 1 |egrep "Atlas 800 \(Model 90|Atlas 900" | awk -d" " '{print $4"-"$6}' | head -c -2
   register: npu_info
-  become: yes
 
 - name: set npu product name for A800 and A900
   set_fact: npu_product="A{{ npu_info.stdout }}"

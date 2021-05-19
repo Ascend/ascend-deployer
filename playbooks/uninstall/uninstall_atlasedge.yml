@@ -12,7 +12,6 @@
     - name: uninstall atlasedge
       shell: "{{ uninstall_atlasedge.files[0].path }} uninstall"
       register: uninstall_atlasedge_result
-      become: yes
       when: uninstall_atlasedge.matched > 0
       failed_when: "uninstall_atlasedge_result.rc != 0"
 

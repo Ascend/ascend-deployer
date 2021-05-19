@@ -11,31 +11,26 @@
     - name: gather facts first
       setup:
         fact_path: /notexist
-      become: yes
 
     - name: set custom fact tasks
       import_tasks: task_set_custom_fact.yml
 
     - name: create facts.d folder
       file:
-        path: /etc/ansible/facts.d/
+        path: ~/ansible/facts.d/
         state: directory
         mode: 0755
         recurse: yes
-      become: yes
 
     - name: copy app_info.fact to host
       template:
         src: facts/app_info.fact.j2
-        dest: /etc/ansible/facts.d/app_info.fact
-        owner: "root"
-        group: "root"
+        dest: ~/ansible/facts.d/app_info.fact
         mode: "0555"
-      become: yes
 
     - name: gather facts again
       setup:
-      become: yes
+        fact_path: ~/ansible/facts.d/
 
     - name: show app install info
       debug:

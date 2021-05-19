@@ -33,51 +33,50 @@
         src: /usr/local/python3.7.5/lib/python3.7/py_compile.py
         dest: /usr/lib/python3.7/py_compile.py
         remote_src: no
-      when: ms.matched > 0
-      become: yes
+      when: ms.matched > 0 and ansible_user_uid == 0
 
     - name: check ubuntu desktop
       shell: dpkg -l ubuntu-desktop | wc -l
       register: ubuntu_desktop
       changed_when: false
-      when: "'Ubuntu' in os_and_arch"
+      when: "'Ubuntu' in os_and_arch and ansible_user_uid == 0"
 
     - name: install ubuntu desktop
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/desktop/*.deb
       when:
         - ubuntu_desktop is not skipped and ubuntu_desktop.stdout=='0'
         - "'Ubuntu' in os_and_arch"
+        - ansible_user_uid == 0
 
     - name: install system packages apt
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/*.deb
-      become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'apt'
+        - ansible_user_uid == 0
 
     - name: install system packages rpm
       shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
-      become: yes
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'yum'
+        - ansible_user_uid == 0
 
     - name: install system packages dnf
       shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
-      become: yes
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'dnf'
+        - ansible_user_uid == 0
 
     - name: install python libs for mindstudio
-      shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs
-      become: yes
+      shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
       environment:
-        PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/gcc7.3.0/lib64
+        PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       failed_when: false
       when: ms.matched > 0
       with_items:
@@ -103,13 +102,27 @@
         src: /usr/local/python3.7.5/bin/python3
         dest: /usr/bin/python3.7.5
         state: link
-      when: ms.matched > 0
-      become: yes
+      when: ms.matched > 0 and ansible_user_uid == 0
+
+    - name: create symbolic link python3.7.5 for non-root
+      file:
+        src: ~/.local/python3.7.5/bin/python3
+        dest: /usr/local/bin/python3.7.5
+        state: link
+      when: ms.matched > 0 and ansible_user_uid != 0
+      failed_when: false
 
     - name: check /usr/bin/python3.7
       stat:
         dest: /usr/bin/python3.7
       register: stat_python37
+      when: ansible_user_uid == 0
+
+    - name: check /usr/bin/python3.7 for non-root
+      stat:
+        dest: /usr/local/bin/python3.7
+      register: stat_python37
+      when: ansible_user_uid != 0
 
     - name: create symbolic link python3.7
       file:
@@ -118,21 +131,46 @@
         state: link
       when:
         - ms.matched > 0
+        - ansible_user_uid == 0
         - not stat_python37.stat.exists
-      become: yes
 
-    - name: create symbolic link pip3.7.3
+    - name: create symbolic link python3.7 for non-root
+      file:
+        src: ~/.local/python3.7.5/bin/python3
+        dest: /usr/local/bin/python3.7
+        state: link
+      failed_when: false
+      when:
+        - ms.matched > 0
+        - ansible_user_uid != 0
+        - not stat_python37.stat.exists
+
+    - name: create symbolic link pip3.7.5
       file:
         src: /usr/local/python3.7.5/bin/pip3
         dest: /usr/bin/pip3.7.5
         state: link
-      when: ms.matched > 0
-      become: yes
+      when: ms.matched > 0 and ansible_user_uid == 0
+
+    - name: create symbolic link pip3.7.5 for non-root
+      file:
+        src: ~/.local/python3.7.5/bin/pip3
+        dest: /usr/local/bin/pip3.7.5
+        state: link
+      when: ms.matched > 0 and ansible_user_uid != 0
+      failed_when: false
 
     - name: check /usr/bin/pip3.7
       stat:
         dest: /usr/bin/pip3.7
       register: stat_pip37
+      when: ansible_user_uid == 0
+
+    - name: check /usr/bin/pip3.7 for non-root
+      stat:
+        dest: /usr/local/bin/pip3.7
+      register: stat_pip37
+      when: ansible_user_uid != 0
 
     - name: create symbolic link pip3.7
       file:
@@ -141,8 +179,19 @@
         state: link
       when:
         - ms.matched > 0
+        - ansible_user_uid == 0
         - not stat_pip37.stat.exists
-      become: yes
+
+    - name: create symbolic link pip3.7 for non-root
+      file:
+        src: ~/.local/python3.7.5/bin/pip3
+        dest: /usr/local/bin/pip3.7
+        state: link
+      failed_when: false
+      when:
+        - ms.matched > 0
+        - ansible_user_uid != 0
+        - not stat_pip37.stat.exists
 
     - name: unarchive MindStudio
       unarchive:

@@ -45,27 +45,23 @@
     src: "{{ edge_installer_tar.files[0].path }}"
     dest: /opt
     copy: no
-  become: yes
 
 - name: edge-register tar.gz unarchive
   unarchive:
     src: "{{ edge_register_tar.files[0].path }}"
     dest: /opt
     copy: no
-  become: yes
 
 - name: cert tar.gz unarchive
   unarchive:
     src: "{{ cert.files[0].path }}"
     dest: /opt/edge-register
     copy: no
-  become: yes
 
 - name: ief register
   shell: ./register --mode=cert
   args:
     chdir: /opt/edge-register
-  become: yes
   register: ief_result
 
 - name: ief register message

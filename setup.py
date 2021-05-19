@@ -27,8 +27,6 @@ if os.path.exists('dist'):
 os.mkdir('ascend_deployer')
 shutil.copytree('downloader', 'ascend_deployer/downloader')
 shutil.copytree('playbooks', 'ascend_deployer/playbooks')
-shutil.copytree('scene', 'ascend_deployer/scene')
-shutil.copytree('test', 'ascend_deployer/test')
 shutil.copyfile('install.sh', 'ascend_deployer/install.sh')
 shutil.copyfile('start_download.sh', 'ascend_deployer/start_download.sh')
 shutil.copyfile('inventory_file', 'ascend_deployer/inventory_file')
@@ -46,7 +44,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setuptools.setup(
     name='ascend-deployer',
-    version='0.0.2',
+    version='0.0.3',
     description=('ascend offline installer'),
     url = 'https://gitee.com/ascend/ascend-deployer',
     long_description_content_type = "text/markdown",

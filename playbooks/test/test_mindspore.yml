@@ -1,5 +1,9 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+  - name: gather facts again
+    setup:
+      fact_path: ~/ansible/facts.d/
+
   - name: set custom fact tasks
     import_tasks: ../task_set_custom_fact.yml
 
