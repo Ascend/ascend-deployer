@@ -31,6 +31,7 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 class OsDepDownloader:
     def __init__(self):
         self.os_list = CONFIG_INST.get_download_os_list()
+        self.pkg_list = CONFIG_INST.get_download_pkg_list()
         self.project_dir = os.path.dirname(CUR_DIR)
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
@@ -38,6 +39,14 @@ class OsDepDownloader:
         results = {}
         for os_item in os_list:
             res = self.download_os(os_item, software_list, dst)
+            results[os_item] = res
+        return results
+
+    def download_pkg_from_json(self):
+        results = {}
+        software_list = [software.replace("_", "==") for software in self.pkg_list]
+        for os_item in self.os_list:
+            res = self.download_os(os_item, software_list, self.resources_dir)
             results[os_item] = res
         return results
 
@@ -104,43 +113,6 @@ class OsDepDownloader:
         print('clean resources directory successfully')
         LOG.info('clean resources directory successfully')
 
-    def download_pkg_from_json(self):
-        results = {}
-        for os_item in self.os_list:
-            dst_dir = os.path.join(self.resources_dir, os_item)
-            print('item:{} save dir: {}'.format(os_item, dst_dir))
-            LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
-
-            config_file = os.path.join(CUR_DIR, 'config/{0}/pkg_info.json'.format(os_item))
-            source_list_file = os.path.join(CUR_DIR, 'config/{0}/source.list'.format(os_item))
-            downloader = None
-
-            if os.path.exists(source_list_file):
-                if 'aarch64' in os_item:
-                    downloader = Apt(source_list_file, 'aarch64')
-                else:
-                    downloader = Apt(source_list_file, 'x86_64')
-            else:
-                source_repo_file = os.path.join(CUR_DIR, 'config/{0}/source.repo'.format(os_item))
-                if 'aarch64' in os_item:
-                    downloader = Yum(source_repo_file, 'aarch64')
-                else:
-                    downloader = Yum(source_repo_file, 'x86_64')
-            if downloader is not None:
-                downloader.make_cache()
-
-            with open(config_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            res = {'ok': [], 'failed': []}
-            for item in data:
-                if downloader.download(item, dst_dir):
-                    res['ok'].append(item['name'])
-                    continue
-                res['failed'].append(item['name'])
-            results[os_item] = res
-        return results
-
-
 def main():
     os_dep = OsDepDownloader()
     if len(sys.argv) == 2 and sys.argv[1] == 'clean':
@@ -149,7 +121,6 @@ def main():
         os_dep.clean_download_dir()
     else:
         time_start = time.time()
-        os_dep.prepare_download_dir()
         os_dep.download_pkg_from_json()
         print('total time: {} seconds'.format(time.time() - time_start))
         LOG.info('total time: {} seconds'.format(time.time() - time_start))

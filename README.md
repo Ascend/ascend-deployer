@@ -100,7 +100,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
      请根据界面提示完成安装。注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
 
   2. 启动下载。
-     运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS组件）。
+     运行start_download.bat或start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS或PKG相关组件）。
 
 - linux
 

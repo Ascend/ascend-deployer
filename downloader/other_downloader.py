@@ -17,12 +17,14 @@
 
 import os
 import json
-from download_util import DOWNLOAD_INST, calc_sha256
+from download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
 from logger_config import get_logger
 import software_mgr
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+PROJECT_DIR = os.path.dirname(CUR_DIR)
+PKG_LIST = CONFIG_INST.get_download_pkg_list()
 
 
 def get_sha256_map():
@@ -71,13 +73,28 @@ def download_software(software, dst):
     return all(results)
 
 
-def download_other_software(software_list, dst):
+def download(software_list, dst):
     """
     按软件列表下载其他部分
     """
     results = {'ok': [], 'failed': []}
     for software in software_list:
         res = download_software(software, dst)
+        if res:
+            results['ok'].append(software)
+            continue
+        results['failed'].append(software)
+    return results
+
+
+def download_pkg_from_json():
+    """
+    按config.ini下载其他部分
+    """
+    results = {'ok': [], 'failed': []}
+    software_list = [software.replace("_", "==") for software in PKG_LIST]
+    for software in software_list:
+        res = download_software(software, PROJECT_DIR)
         if res:
             results['ok'].append(software)
             continue
