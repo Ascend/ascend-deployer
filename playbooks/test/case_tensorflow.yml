@@ -1,8 +1,8 @@
 - name: test if tensorflow installed
   find:
     paths:
-      - /usr/local/python3.7.5/lib
-      - ~/.local/lib/python3.7/
+      - "{{ local_path }}/python3.7.5/lib"
+      - "{{ local_path }}/lib/python3.7/"
     recurse: yes
     file_type: directory
     use_regex: yes

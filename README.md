@@ -153,7 +153,16 @@ group=HwHiAiUser
 ```
 
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。
+- 非root用户支持安装的软件列表
 
+| 软件名        | 说明                                  |
+|:------------ |:------------------------------------- |
+| python375    | python3.7.5，安装在$HOME/.local/目录下  |
+| python框架   | tensorflow、torch、mindspore           |
+| CANN         | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
+| MindStudio   | 安装在$HOME/目录下  |
+
+注意：非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
 ### 准备软件包
 
 1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
@@ -204,8 +213,6 @@ ascend-deployer
    localhost ansible_connection='local' # root用户
    ```
 
-    注意：由于安全原因，目前只支持使用root用户执行安装；
-
 2. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
 
    - 指定软件安装
@@ -218,7 +225,7 @@ ascend-deployer
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
-   - 指定场景安装
+   - 指定场景安装（仅支持root用户）
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
      `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`
@@ -235,9 +242,9 @@ ascend-deployer
 
    ```
    [ascend]
-   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
+   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'      # root用户
    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-   ip_address_3 ansible_ssh_user='root' ansible_ssh_pass='password3'
+   ip_address_3 ansible_ssh_user='username' ansible_ssh_pass='password3'  # 非root用户
    ```
 
    #### 注意事项：

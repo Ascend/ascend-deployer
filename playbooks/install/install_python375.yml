@@ -14,7 +14,6 @@
 
     - name: install python3.7.5 config
       shell: ./configure --enable-shared --prefix={{ local_path }}/python3.7.5
-      when: ansible_user_uid == 0
       args:
         chdir: "{{ build_dir }}/Python-3.7.5"
 

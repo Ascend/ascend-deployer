@@ -534,7 +534,7 @@ function print_usage()
     unset IFS
     echo "Usage: ./install.sh [options]"
     echo " Options:"
-    echo "--help  -h                     Print this message"
+    echo "--help  -h                     show this help message and exit"
     echo "--check                        check environment"
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
