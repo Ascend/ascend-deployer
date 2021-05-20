@@ -122,16 +122,17 @@ def parse_argument():
     """
     解析参数
     """
-    os_list_help = 'Specific OS list to download, supported os are:\n'
+    os_list_help = 'for example: --os-list=<OS1>,<OS2>\nSpecific OS list to download, supported os are:\n'
     for osname in sorted(support_os_list):
         os_list_help += '{}\n'.format(osname)
-    download_help = 'Specific package list to download, supported packages are:\n'
-    for pkg in support_pkg_list:
+    download_help = 'for example: --download=<PK1>,<PK2>==<Version>\n' \
+                    'Specific package list to download, supported packages are:\n'
+    for pkg in sorted(support_pkg_list):
         pkg_name, version = pkg.split('_')
         download_help += '{}=={}\n'.format(pkg_name, version[:-5])
 
-    parser = argparse.ArgumentParser(description="Download resources. Multiple parameter values should be separated by ','.", allow_abbrev=False,
-                epilog="notes: When package's version is missing, it will download the latest version.",
+    parser = argparse.ArgumentParser(allow_abbrev=False,
+                epilog="  notes: When <Version> is missing, <PK> is the latest.\r\n",
                 formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--os-list', action='store', dest='os_list',
             help=os_list_help)
@@ -147,11 +148,13 @@ def parse_argument():
         for os_item in args.os_list.split(','):
             if os_item not in support_os_list:
                 print('os {} is not supported'.format(os_item))
+                parser.print_help()
                 sys.exit(1)
     if args.packages is not None:
         for soft in args.packages.split(','):
             if not software_mgr.is_software_support(soft):
                 print('software {} is not supported'.format(soft))
+                parser.print_help()
                 sys.exit(1)
 
     return args

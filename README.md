@@ -242,9 +242,9 @@ ascend-deployer
 
    ```
    [ascend]
-   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'
+   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'      # root用户
    ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-   ip_address_3 ansible_ssh_user='non-root' ansible_ssh_pass='password3'
+   ip_address_3 ansible_ssh_user='username' ansible_ssh_pass='password3'  # 非root用户
    ```
 
    #### 注意事项：

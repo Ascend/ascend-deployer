@@ -68,23 +68,24 @@ function install_python3()
 
 function print_usage()
 {
-    echo "Usage: ./start_download.sh [options]"
-    echo " Options:"
-    echo "--help  -h               Print this message"
+    echo "Usage: ./start_download.sh [-h] [--os-list=OS_LIST] [--download=PACKAGES]]"
+    echo ""
+    echo " optional arguments:"
+    echo "--help  -h               show this help message and exit"
     echo "--os-list=<OS1>,<OS2>    Specific OS list to download, supported os are:"
     for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d  | sort)
     do
         os_name=$(basename ${os})
         echo "                         ${os_name}"
     done
-    echo -e "\n--download=<PK1>,<PK2>==<Version>"
+    echo "--download=<PK1>,<PK2>==<Version>"
     echo "                         Specific package list to download, supported packages are:"
     for package_json in $(find ${BASE_DIR}/downloader/software -mindepth 1 -type f -name "*.json" | sort)
     do
         package=$(basename ${package_json} .json | sed "s/_/==/g")
         echo "                         ${package}"
     done
-    echo "  notes: When <Version> is missing, <PK> is the latest."
+    echo -e "\n  notes: When <Version> is missing, <PK> is the latest.\n"
     exit 0
 }
 
