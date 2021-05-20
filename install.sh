@@ -279,7 +279,7 @@ function install_python375()
     fi
     echo "installing Python 3.7.5"
     mkdir -p ~/build
-    tar -xvf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
+    tar --no-same-owner -xf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j4
