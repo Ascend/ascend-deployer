@@ -2,12 +2,23 @@
   find:
     paths:
       - "{{ local_path }}/python3.7.5/lib"
+    recurse: yes
+    file_type: directory
+    use_regex: yes
+    patterns: "tensorflow"
+  register: tf
+  when: ansible_user_uid == 0
+
+- name: test if tensorflow installed
+  find:
+    paths:
       - "{{ local_path }}/lib/python3.7/"
     recurse: yes
     file_type: directory
     use_regex: yes
     patterns: "tensorflow"
   register: tf
+  when: ansible_user_uid != 0
 
 - name: message
   debug:

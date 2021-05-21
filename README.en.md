@@ -57,6 +57,25 @@ The offline installation tool provides automatic download and one-click installa
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
 
+## Tool installation
+
+### pip install
+
+```bash
+pip3 install ascend-deployer -i https://mirrors.huaweicloud.com/repository/pypi/simple
+```
+版本要求：python >= 3.6
+
+### git install
+
+```bash
+git clone https://gitee.com/ascend/ascend-deployer.git
+```
+
+### download zip
+
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use.
+
 # Operation Instructions
 
 ## Downloading OS Components and Python Third-party Dependencies
@@ -129,9 +148,9 @@ group=HwHiAiUser
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly.
 - List of software supported by non-root users
 
-|Software name | description|
-|:------------ |:------------------------------------- |
-|Python375 | python3.7.5 is installed in the $HOME/.local/ directory|
+|Software name  | description|
+|:------------- |:------------------------------------- |
+|Python375, gcc | python3.7.5 and gcc7.3.0 is installed in the $HOME/.local/ directory|
 |Python framework | tensorflow, torch, mindpore|
 |CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
 |MindStudio | installed in the $HOME/ directory|
@@ -260,17 +279,56 @@ ascend-deployer
    You can run the `./install.sh --help` command to view the options of <target>. Example command:
    `./install.sh --test=driver // Test whether the driver is normal.`
 
+# Operation instruction: pip install
+
+When the tool is installed with pip, two entrances will be provided for easy operation.
+
+- ascend-download
+- ascend-deployer
+
+It can be operated in the following ways:
+
+## Download
+
+```bash
+ascend-download --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>
+```
+
+Both win10 and Linux can execute
+
+- Download all resources to "ascend-deployer/resources/"
+
+- In windows, the ascend deployer directory is generated in the current directory where the command is executed. When the download is complete, copy the whole directory to the Linux server to be deployed.
+
+- In Linux, the ascend-deployer directory will be generated under the HOME directory. You can set the environment variable ASCEND_DEPLOYER_HOME to modify the download directory.
+
+## Installation
+
+```bash
+ascend-deployer --install=<pkg1,pkg2>
+```
+
+The ascend-deployer command is essentially a wrapper of install.sh.
+The use method is exactly the same as directly executing install.sh in the ascend deployer directory.
+The ascend-deployer command will automatically find the file of "${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh" to execute.
+The default value of ASCEND_DEPLOYER_HOME is the same as user home, non-root users must ensure that the directory exists and can read and write normally.
+Non-root users do not need sudo permission to install.
+
 # Environment Variable Configuration
 
 The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
 
 ```
-export PATH=/usr/local/python3.7.5/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+export PATH=/usr/local/python3.7.5/bin:$PATH                         # root
+export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH   # root
+
+export PATH=~/.local/python3.7.5/bin:$PATH                         # non-root
+export LD_LIBRARY_PATH=~/.local/python3.7.5/lib:$LD_LIBRARY_PATH   # non-root
 ```
 This tool will automatically install the Python 3.7.5 environment variable in /usr/local/ascendrc file. You can easily set the Python 3.7.5 environment variable by following the following command
 ```
-source /usr/local/ascendrc
+source /usr/local/ascendrc    # root
+source ~/.local/ascendrc      # non-root
 ```
 
 Similarly, other software packages or tools installed by offline deployment tools can be used normally only after users refer to the corresponding official information and configure environment variables or make other Settings.
