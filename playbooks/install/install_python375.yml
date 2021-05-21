@@ -11,6 +11,8 @@
         src: "{{ resources_dir }}/Python-3.7.5.tar.xz"
         dest: "{{ build_dir }}"
         copy: no
+        extra_opts:
+        - --no-same-owner
 
     - name: install python3.7.5 config
       shell: ./configure --enable-shared --prefix=/usr/local/python3.7.5

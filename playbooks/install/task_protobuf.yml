@@ -9,6 +9,8 @@
     src: "{{ resources_dir }}/protobuf-python-3.11.3.tar.gz"
     dest: "{{ build_dir }}"
     copy: no
+    extra_opts:
+    - --no-same-owner
 
 - name: install protobuf-python-3.11.3 configure
   shell: ./configure --prefix=/usr/local
