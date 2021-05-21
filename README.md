@@ -65,8 +65,9 @@
 ### pip安装
 
 ```bash
-python3 -m pip install ascend-deployer
+pip3 install ascend-deployer -i https://mirrors.huaweicloud.com/repository/pypi/simple
 ```
+版本要求：python >= 3.6
 
 ### git安装
 
@@ -155,12 +156,12 @@ group=HwHiAiUser
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。
 - 非root用户支持安装的软件列表
 
-| 软件名        | 说明                                  |
-|:------------ |:------------------------------------- |
-| python375    | python3.7.5，安装在$HOME/.local/目录下  |
-| python框架   | tensorflow、torch、mindspore           |
-| CANN         | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
-| MindStudio   | 安装在$HOME/目录下  |
+| 软件名                 | 说明                                  |
+|:---------------------- |:------------------------------------- |
+| python375、gcc         | python3.7.5和gcc7.3.0，安装在$HOME/.local/目录下  |
+| python框架             | tensorflow、torch、mindspore           |
+| CANN                   | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
+| MindStudio             | 安装在$HOME/目录下  |
 
 注意：非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
 ### 准备软件包
@@ -290,7 +291,7 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
 ## 下载
 
 ```bash
-ascend-download --os-list=<os list>
+ascend-download --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>
 ```
 
 Win 10和Linux均可执行
@@ -311,19 +312,24 @@ ascend-deployer --install=<pkg1,pkg2>
 ascend-deployer本质上是install.sh的一个wrapper。
 使用方法与直接执行ascend-deployer目录中的install.sh完全相同。
 ascend-deployer命令将自动寻找${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh文件执行。
-ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同
+ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同，非root用户须保证该目录存在且能正常读写。
+非root用户不需要sudo权限也可执行安装。
 
 # 配置环境变量
 
 离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
 
 ```
-export PATH=/usr/local/python3.7.5/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+export PATH=/usr/local/python3.7.5/bin:$PATH                         # root
+export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH   # root
+
+export PATH=~/.local/python3.7.5/bin:$PATH                           # non-root
+export LD_LIBRARY_PATH=~/.local/python3.7.5/lib:$LD_LIBRARY_PATH     # non-root
 ```
 本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量
 ```
-source /usr/local/ascendrc
+source /usr/local/ascendrc     # root
+source ~/.local/ascendrc       # non-root
 ```
 
 同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
