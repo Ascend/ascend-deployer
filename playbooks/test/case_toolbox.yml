@@ -1,7 +1,7 @@
 - name: test if toolbox installed
   find:
     paths:
-      - "{{ local_path }}Ascend/toolbox"
+      - "{{ ascend_install_path }}/toolbox"
     recurse: yes
     file_type: file
     use_regex: yes
