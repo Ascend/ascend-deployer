@@ -6,9 +6,14 @@
     file_type: file
     use_regex: yes
     patterns:
-      - "npu-driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+      - "npu-driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg
   when: ansible_local.npu_info.scene == 'train'
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when:
+    - not 'skipped' in driver_pkg
+    - driver_pkg.matched > 0
 
 - name: find driver package for BigCloud Linux 7.6
   find:
@@ -16,21 +21,23 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "{{ npu_product }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
+    patterns: "{{ ansible_local.npu_info.product }}.*driver.*centos7.6.*{{ ansible_architecture }}.run"
   register: driver_pkg
-  when: 'skipped' in driver_pkg or driver_pkg.matched == 0
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: driver_pkg.matched > 0
 
 - name: install driver for BigCloud Linux
-  shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: driver_result.rc == 1
-  when: driver_pkg.matched > 0
+  when: (driver_run is defined) and (driver_run|length > 0)
 
 - name: message
   debug:
     msg:
       - "can not find driver package, driver install skipped"
-  when: driver_pkg.matched == 0
+  when: (driver_run is not defined) or (driver_run|length == 0)
 
 - name: message
   debug:

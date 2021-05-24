@@ -1,4 +1,20 @@
-- name: find driver package train only
+- name: find driver package train only common
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns:
+      - "npu-driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+  when: ansible_local.npu_info.scene == 'train'
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when:
+    - not 'skipped' in driver_pkg
+    - driver_pkg.matched > 0
+
+- name: find driver package train only specific os
   find:
     paths: "{{ cann_dirs }}"
     recurse: no
@@ -21,7 +37,7 @@
     file_type: file
     use_regex: yes
     patterns:
-      - "{{ npu_product }}.*driver.*linux.*{{ ansible_architecture }}.run"
+      - "{{ ansible_local.npu_info.product }}.*driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
@@ -34,7 +50,7 @@
     file_type: file
     use_regex: yes
     patterns:
-      - "{{ npu_product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+      - "{{ ansible_local.npu_info.product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
@@ -47,7 +63,7 @@
     line: "allow_unsupported_modules 1"
     state: present
   when: 
-    - driver_pkg.matched > 0
+    - (driver_run is defined) and (driver_run|length > 0)
     - "'SLES' in os_and_arch"
 
 - name: install driver

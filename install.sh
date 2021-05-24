@@ -506,12 +506,12 @@ function process_upgrade()
 
 function process_test()
 {
-    local tmp_test_play=${BASE_DIR}/playbooks/test/tmp_test.yml
-    touch ${tmp_test_play}
+    local tmp_test_play=${BASE_DIR}/playbooks/tmp_test.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_test_play}
     IFS=','
     for target in ${test_target}
     do
-        echo "- import_playbook: test_${target}.yml" >> ${tmp_test_play}
+        echo "- import_playbook: test/test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend ${DEBUG_CMD}"

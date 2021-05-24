@@ -1,5 +1,4 @@
 - hosts: '{{ hosts_name }}'
-  gather_facts: True
 
 - name: install system dependencies
   import_playbook: ../install/install_sys_pkg.yml

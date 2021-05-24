@@ -1,26 +1,19 @@
 - hosts: '{{ hosts_name }}'
-  tasks:
-  - name: gather facts again
-    setup:
-      fact_path: ~/ansible/facts.d/
 
-  - name: set custom fact tasks
-    import_tasks: ../task_set_custom_fact.yml
+- name: test driver
+  import_playbook: test_driver.yml
 
-  - name: test driver
-    include_tasks: case_driver.yml
+- name: test firmware
+  import_playbook: test_firmware.yml
 
-  - name: test firmware
-    include_tasks: case_firmware.yml
+- name: test toolbox
+  import_playbook: test_toolbox.yml
 
-  - name: test toolbox
-    include_tasks: case_toolbox.yml
+- name: test tensorflow
+  import_playbook: test_tensorflow.yml
 
-  - name: test tensorflow
-    include_tasks: case_tensorflow.yml
+- name: test torch
+  import_playbook: test_torch.yml
 
-  - name: test torch
-    include_tasks: case_torch.yml
-
-  - name: test mindspore
-    import_tasks: case_mindspore.yml
+- name: test mindspore
+  import_playbook: test_mindspore.yml
