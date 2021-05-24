@@ -56,6 +56,18 @@ logging.basicConfig(filename=LOG_CONF.LOG_FILE,
              datefmt=LOG_CONF.LOG_DATE_FORMAT)
 
 
+ROTATING_FILE_LOG_CONF = dict(
+    filename=LOG_CONF.LOG_FILE,
+    mode='a',
+    maxBytes=10 * 1024 * 1024,
+    backupCount=50,
+    encoding="UTF-8"
+)
+
+
 def get_logger(name):
     """get_logger"""
-    return logging.getLogger(name)
+    logger = logging.getLogger(name)
+    rotating_log_handler = logging.Handler.RotatingFileHandler(**ROTATING_FILE_LOG_CONF)
+    logger.addHandler(rotating_log_handler)
+    return logger
