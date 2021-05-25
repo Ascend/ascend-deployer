@@ -62,9 +62,9 @@ The offline installation tool provides automatic download and one-click installa
 ### pip install
 
 ```bash
-pip3 install ascend-deployer -i https://mirrors.huaweicloud.com/repository/pypi/simple
+pip3 install ascend-deployer -i https://pypi.mirrors.ustc.edu.cn/simple/
 ```
-版本要求：python >= 3.6
+Version requirement: python >= 3.6
 
 ### git install
 
