@@ -65,6 +65,11 @@ class ConfigUtil:
             os_list = self.config.get('download', 'os_list')
         return [x.strip() for x in os_list.split(',') if len(x.strip()) != 0]
 
+    def get_download_pkg_list(self):
+        pkg_list = os.getenv('DOWNLOAD_PKG_LIST')
+        if pkg_list is None:
+            pkg_list = self.config.get('software', 'pkg_list')
+        return [x.strip() for x in pkg_list.split(',') if len(x.strip()) != 0]
 
 CONFIG_INST = ConfigUtil()
 

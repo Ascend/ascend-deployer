@@ -17,7 +17,6 @@
 import logging
 import os
 import platform
-from logging.handlers import RotatingFileHandler
 
 
 DOCUMENTION=r"""
@@ -70,6 +69,6 @@ ROTATING_FILE_LOG_CONF = dict(
 def get_logger(name):
     """get_logger"""
     logger = logging.getLogger(name)
-    rotating_log_handler = RotatingFileHandler(**ROTATING_FILE_LOG_CONF)
+    rotating_log_handler = logging.Handler.RotatingFileHandler(**ROTATING_FILE_LOG_CONF)
     logger.addHandler(rotating_log_handler)
     return logger

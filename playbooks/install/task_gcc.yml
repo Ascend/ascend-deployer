@@ -9,6 +9,8 @@
     src: "{{ resources_dir }}/sources/gcc-7.3.0.tar.gz"
     dest: "{{ build_dir }}"
     copy: no
+    extra_opts:
+    - --no-same-owner
 
 - name: install gcc 7.3.0 copy mpfr
   copy:
@@ -33,6 +35,11 @@
     src: "{{ resources_dir }}/sources/isl-0.16.1.tar.bz2"
     dest: "{{ build_dir }}/gcc-7.3.0"
     remote_src: yes
+
+- name: set MINDSTUDIO_JDK
+  shell: sed -i "246s/tar -xf "${ar}"/tar --no-same-owner -xf "${ar}"/" contrib/download_prerequisites
+  args:
+    chdir: "{{ build_dir }}/gcc-7.3.0"
 
 - name: install gcc 7.3.0 download_prerequisites
   shell: ./contrib/download_prerequisites

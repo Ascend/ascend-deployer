@@ -46,9 +46,12 @@ def download_other_packages(dst=None):
     return other_downloader.download_other_packages(dst)
 
 
-def download_other_software(sofware_list, dst):
+def download_other_software(sofware_list=None, dst=None):
     """download other resources, such as source code tar ball"""
-    return other_downloader.download_other_software(sofware_list, dst)
+    if sofware_list is None and dst is None:
+        return other_downloader.download_pkg_from_json()
+    else:
+        return other_downloader.download(sofware_list, dst)
 
 
 def download_python_packages(dst=None):
@@ -76,7 +79,6 @@ def download_os_packages(os_list=None, software_list=None, dst=None):
     """download_os_packages"""
     os_dep = os_dep_downloader.OsDepDownloader()
     if os_list is None and dst is None:
-        os_dep.prepare_download_dir()
         return os_dep.download_pkg_from_json()
     else:
         return os_dep.download(os_list, software_list, dst)
@@ -203,6 +205,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         download_python_packages()
         download_os_packages()
+        download_other_software()
         download_other_packages()
         sys.exit(0)
     main()
