@@ -163,7 +163,10 @@ group=HwHiAiUser
 | CANN                   | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
 | MindStudio             | 安装在$HOME/目录下  |
 
-注意：非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
+注意：
+    1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
+    2. 非root用户需要加入driver安装的属组，才可以正常安装和使用CANN组件，默认driver安装的属组为HwHiAiUser。
+
 ### 准备软件包
 
 1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
@@ -286,7 +289,11 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
 - ascend-download     下载器
 - ascend-deployer     部署器
 
-可以使用如下方式操作:
+非root用户安装后如果找不到这两个命令，需要配置PATH环境变量，配置命令如下：
+
+```bash
+export PATH=~/.local/bin:$PATH
+```
 
 ## 下载
 

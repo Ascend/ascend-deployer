@@ -102,6 +102,7 @@ def get_software_name_version(software):
     if len(g_software_list) == 0:
         software_init()
 
+    version = ''
     if '==' in software:
         name = software.split('==')[0]
         version = software.split('==')[1]
