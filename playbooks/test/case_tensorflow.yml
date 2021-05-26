@@ -20,15 +20,11 @@
   register: tf_non_root
   when: ansible_user_uid != 0
 
-- set_fact: tf={{tf_root}}
+- set_fact: tf={{ tf_root }}
   when: ansible_user_uid == 0
 
-- set_fact: tf={{tf_non_root}}
+- set_fact: tf={{ tf_non_root }}
   when: ansible_user_uid != 0
-
-- name: message
-  debug:
-    msg: "{{ tf }}"
 
 - name: message
   debug:
