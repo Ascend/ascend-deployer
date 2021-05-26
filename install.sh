@@ -278,7 +278,7 @@ function install_python375()
         return
     fi
     echo "installing Python 3.7.5"
-    mkdir -p ~/build
+    mkdir -p -m 750 ~/build
     tar --no-same-owner -xf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
@@ -372,7 +372,7 @@ function check_extracted_size()
 
 function verify_zip()
 {
-    rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir ${BASE_DIR}/resources/run_from_zip_dir
+    rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir -m 750 ${BASE_DIR}/resources/run_from_zip_dir
     local IFS_OLD=$IFS
     unset IFS
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
@@ -388,28 +388,28 @@ function verify_zip()
                 unzip -o ${zip_file} -d ${BASE_DIR}/resources/run_from_zip_dir
             elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
                 local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_x86_64
-                rm -rf ${atlasedge_dir} && mkdir ${atlasedge_dir}
+                rm -rf ${atlasedge_dir} && mkdir -m 750 ${atlasedge_dir}
                 cp ${zip_file} ${atlasedge_dir}
                 cp ${cms_file} ${atlasedge_dir}
                 cp ${crl_file} ${atlasedge_dir}
                 tar -xf ${zip_file} -C ${atlasedge_dir}
             elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
                 local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_x86_64
-                rm -rf ${ha_dir} && mkdir ${ha_dir}
+                rm -rf ${ha_dir} && mkdir -m 750 ${ha_dir}
                 cp ${zip_file} ${ha_dir}
                 cp ${cms_file} ${ha_dir}
                 cp ${crl_file} ${ha_dir}
                 tar -xf ${zip_file} -C ${ha_dir}
             elif [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
                 local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_aarch64
-                rm -rf ${atlasedge_dir} && mkdir ${atlasedge_dir}
+                rm -rf ${atlasedge_dir} && mkdir -m 750 ${atlasedge_dir}
                 cp ${zip_file} ${atlasedge_dir}
                 cp ${cms_file} ${atlasedge_dir}
                 cp ${crl_file} ${atlasedge_dir}
                 tar -xf ${zip_file} -C ${atlasedge_dir}
             elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
                 local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_aarch64
-                rm -rf ${ha_dir} && mkdir ${ha_dir}
+                rm -rf ${ha_dir} && mkdir -m 750 -m 750 ${ha_dir}
                 cp ${zip_file} ${ha_dir}
                 cp ${cms_file} ${ha_dir}
                 cp ${crl_file} ${ha_dir}
