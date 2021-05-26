@@ -307,7 +307,7 @@ class MyPip(object):
         """
         try:
             if not os.path.exists(dest_path):
-                os.makedirs(dest_path)
+                os.makedirs(dest_path, mode=0o750, exist_ok=True)
 
             if self.download_wheel(name, "none", 'cp37', dest_path):
                 return True

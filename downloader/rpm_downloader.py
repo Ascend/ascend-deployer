@@ -495,7 +495,7 @@ class Yum(object):
         if 'dst_dir' in pkg:
             download_dir = os.path.join(self.resources_dir, pkg['dst_dir'])
             if not os.path.exists(download_dir):
-                os.makedirs(download_dir, mode=0o755, exist_ok=True)
+                os.makedirs(download_dir, mode=0o750, exist_ok=True)
 
         if 'url' in pkg:
             file_name = os.path.basename(pkg['url'])

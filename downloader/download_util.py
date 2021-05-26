@@ -161,7 +161,7 @@ class DownloadUtil:
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
             LOG.info("mkdir : %s", parent_dir)
-            os.makedirs(parent_dir, mode=0o755, exist_ok=True)
+            os.makedirs(parent_dir, mode=0o750, exist_ok=True)
 
         res = cls.download_with_retry(url, dst_file_name)
         if not res:

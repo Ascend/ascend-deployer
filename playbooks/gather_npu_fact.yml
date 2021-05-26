@@ -14,14 +14,14 @@
       file:
         path: ~/ansible/facts.d/
         state: directory
-        mode: 0755
+        mode: 0750
         recurse: yes
 
     - name: copy npu_info.fact to host
       template:
         src: facts/npu_info.fact.j2
         dest: ~/ansible/facts.d/npu_info.fact
-        mode: "0555"
+        mode: "0550"
 
     - name: gather facts again
       setup:
