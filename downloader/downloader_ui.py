@@ -45,16 +45,20 @@ class Win(object):
         self.frame_right.pack(fill="both", side="right", expand="yes")
         self.frame_bottom = tk.LabelFrame(self.root)
         self.frame_bottom.pack(side="bottom")
-        self.os_opt = tk.IntVar()
-        self.os_opt.set(1)
-        self.pkg_opt = tk.IntVar()
-        self.pkg_opt.set(1)
+        self.all_opt = tk.IntVar()
+        self.all_opt.set(1)
+        self.all_not_opt = tk.IntVar()
+        self.all_not_opt.set(0)
         self.os_dict = {}
         self.pkg_dict = {}
-        tk.Button(self.frame_left, text="全选/全不选",
-                  command=self.select_os_all).grid(row=0, column=0)
-        tk.Button(self.frame_right, text="全选/全不选",
-                  command=self.select_pkg_all).grid(row=0, column=0)
+        tk.Button(self.frame_left, text="全选",
+                  command=lambda: self.select_os_all(self.all_opt)).grid(row=0, column=0, sticky='w')
+        tk.Button(self.frame_left, text="全不选",
+                  command=lambda: self.select_os_all(self.all_not_opt)).grid(row=0, column=0)
+        tk.Button(self.frame_right, text="全选",
+                  command=lambda: self.select_pkg_all(self.all_opt)).grid(row=0, column=0, sticky='w')
+        tk.Button(self.frame_right, text="全不选",
+                  command=lambda: self.select_pkg_all(self.all_not_opt)).grid(row=0, column=0)
         tk.Button(self.frame_bottom, text='开始下载',
                   command=self.start_download).pack()
         self.read_config()
@@ -150,33 +154,29 @@ class Win(object):
         with open(self.config_file, 'w+') as cfg:
             config.write(cfg, space_around_delimiters=False)
 
-    def select_os_all(self):
+    def select_os_all(self, opt):
         """
         Note:
             select os all
         """
-        if self.os_opt.get() == 1:
-            self.os_opt.set(0)
+        if opt.get() == 1:
             for os_name in OS_LIST:
                 self.os_dict[os_name].set(1)
         else:
-            self.os_opt.set(1)
             for os_name in OS_LIST:
                 self.os_dict[os_name].set(0)
 
         self.display()
 
-    def select_pkg_all(self):
+    def select_pkg_all(self, opt):
         """
         Note:
             select pkg all
         """
-        if self.pkg_opt.get() == 1:
-            self.pkg_opt.set(0)
+        if opt.get() == 1:
             for pkg_name in PKG_LIST:
                 self.pkg_dict[pkg_name].set(1)
         else:
-            self.pkg_opt.set(1)
             for pkg_name in PKG_LIST:
                 self.pkg_dict[pkg_name].set(0)
 
