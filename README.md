@@ -164,8 +164,12 @@ group=HwHiAiUser
 | MindStudio             | 安装在$HOME/目录下  |
 
 注意：
-    1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
-    2. 非root用户需要加入driver安装的属组，才可以正常安装和使用CANN组件，默认driver安装的属组为HwHiAiUser。
+  1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
+  2. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
+
+```bash
+usermod -a -G HwHiAiUser 非root用户名
+```
 
 ### 准备软件包
 
@@ -308,7 +312,7 @@ Win 10和Linux均可执行
 - windows下在执行命令的当前目录生成ascend-deployer目录。下载完成后将
   整个目录拷贝至待部署linux服务器即可使用。
 
-- linux下将在HOME目录下生成ascend-deployer目录。可通过设置环境变量ASCEND_DEPLOYER_HOME修改下载目录。
+- linux下将在HOME目录下生成ascend-deployer目录。可通过设置环境变量ASCEND_DEPLOYER_HOME修改该目录。
 
 ## 安装
 

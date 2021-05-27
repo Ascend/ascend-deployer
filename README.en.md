@@ -156,8 +156,12 @@ group=HwHiAiUser
 |MindStudio | installed in the $HOME/ directory|
 
 Note:
-    1. Non-root users need root users to install system components and driver before they can install the above components.
-    2. Non-root users need to join the driver installation group to install and use cann components normally. The default driver installation group is HwHiAiUser.
+  1. Non-root users need root users to install system components and driver before they can install the above components.
+  2. Non-root users need to join the driver installation group to install and use nnrt and toolkit normally. The default driver installation group is HwHiAiUser, Modify the user group command as follows:
+
+```bash
+usermod -a -G HwHiAiUser non-root-user
+```
 
 ### Obtaining Software Packages
 
@@ -307,7 +311,7 @@ Both win10 and Linux can execute
 
 - In windows, the ascend deployer directory is generated in the current directory where the command is executed. When the download is complete, copy the whole directory to the Linux server to be deployed.
 
-- In Linux, the ascend-deployer directory will be generated under the HOME directory. You can set the environment variable ASCEND_DEPLOYER_HOME to modify the download directory.
+- In Linux, the ascend-deployer directory will be generated under the HOME directory. it can be modified by setting the environment variable ASCEND_DEPLOYER_HOME.
 
 ## Installation
 

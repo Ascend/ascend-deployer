@@ -1,0 +1,35 @@
+- name: get A500pro_exist
+  shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
+  register: a500pro_exist
+
+- name: find ha path
+  find:
+    paths: "{{ resources_dir }}/run_from_zip_dir"
+    recurse: no
+    file_type: directory
+    use_regex: yes
+    patterns: ".*ha.*{{ansible_architecture}}"
+  when: ansible_local.npu_info.scene == 'infer' and a500pro_exist.stdout != ""
+  register: ha
+
+- name: install ha
+  shell: "bash {{ ha.files[0].path }}/install.sh -f -p /usr/local/"
+  register: ha_result
+  when: ha.matched is defined and ha.matched > 0
+  failed_when: "ha_result.rc !=0 and 'has been installed' not in ha_result.stdout"
+
+- name: ha scene message
+  debug:
+    msg:
+      - "scene is not infer or server is not A500 Pro, ha install skipped"
+  when: ha.matched is undefined
+
+- name: ha message
+  debug:
+    msg:
+      - "can not find ha package, ha install skipped"
+  when: ha.matched is defined and ha.matched == 0
+
+- name: ha install message
+  debug: var=ha_result
+  when: ha_result.changed is defined and ha_result.changed

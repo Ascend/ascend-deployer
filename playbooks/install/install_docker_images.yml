@@ -1,34 +1,11 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: install system packages
-      include_tasks: "task_sys_{{ansible_pkg_mgr}}.yml"
+    - name: install docker images
+      import_tasks: task_docker_images.yml
+      when: ansible_user_uid == 0
 
-    - name: find docker command
-      shell: command -v docker | wc -l
-      register: docker_exists
-
-    - name: restart docker
-      shell: "systemctl restart docker"
-      when: docker_exists.stdout != '0'
-
-    - name: find docker images
-      find:
-        paths: "{{ resources_dir }}/docker_images/"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: ".*{{ansible_architecture}}.tar.*"
-      register: images
-
-    - name: load docker images
-      shell: "docker load -i {{ item.path }}"
-      register: x
-      failed_when: x.rc != 0
-      with_items: "{{ images.files }}"
-      when: images.matched > 0
-
-    - name: load docker images message
+    - name: message
       debug:
         msg:
-          - "can not match any docker images, please check the file name of images."
-      when: images.matched == 0
+        - "not support installing docker_images by non-root user, please switch to root user"
+      when: ansible_user_uid != 0
