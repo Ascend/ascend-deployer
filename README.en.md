@@ -155,7 +155,10 @@ group=HwHiAiUser
 |CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
 |MindStudio | installed in the $HOME/ directory|
 
-Note: non root users need root users to install system components and driver before they can install the above components.
+Note:
+    1. Non-root users need root users to install system components and driver before they can install the above components.
+    2. Non-root users need to join the driver installation group to install and use cann components normally. The default driver installation group is HwHiAiUser.
+
 ### Obtaining Software Packages
 
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
@@ -286,7 +289,11 @@ When the tool is installed with pip, two entrances will be provided for easy ope
 - ascend-download
 - ascend-deployer
 
-It can be operated in the following ways:
+If the non root user cannot find these two commands after installation, it is necessary to configure the PATH environment variable. The configuration command is as follows:
+
+```bash
+export PATH=~/.local/bin:$PATH
+```
 
 ## Download
 

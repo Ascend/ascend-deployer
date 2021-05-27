@@ -27,7 +27,13 @@
       debug:
         msg:
           - "scene is not infer or server is not A500 Pro, ha install skipped"
-      when: ha.matched is undefined
+      when: ha.matched is undefined and ansible_user_uid == 0
+
+    - name: ha scene message for non-root
+      debug:
+        msg:
+          - "Installation of ha is not supported for non-root users, ha install skipped"
+      when: ansible_user_uid != 0
 
     - name: ha message
       debug:

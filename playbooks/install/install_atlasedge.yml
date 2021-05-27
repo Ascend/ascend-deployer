@@ -27,7 +27,13 @@
       debug:
         msg:
           - "scene is not infer or server is not A500 Pro, atlasedge install skipped"
-      when: atlasedge.matched is undefined
+      when: atlasedge.matched is undefined and ansible_user_uid == 0
+
+    - name: atlasedge scene message for non-root
+      debug:
+        msg:
+          - "Installation of atlasedge is not supported for non-root users, atlasedge install skipped"
+      when: ansible_user_uid != 0
 
     - name: atlasedge message
       debug:
