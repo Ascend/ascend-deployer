@@ -18,6 +18,7 @@
 import os
 import sys
 import gzip
+import re
 import sqlite3 as sqlite
 import urllib.request
 import configparser
@@ -139,12 +140,22 @@ class Apt(object):
         :param ver_b:
         :return:
         """
-        if len(ver_a) == len(ver_b):
-            return ver_a > ver_b
-        else:
-            if 'containerd.io' in ver_a:
-                return ver_a > ver_b
-            return len(ver_a) > len(ver_b)
+        list1 = str(ver_a).split(".")
+        list2 = str(ver_b).split(".")
+        for i in range(len(list1)) if len(list1) < len(list2) else range(len(list2)):
+            list1[i] = re.sub(r'\D', '', list1[i])
+            list2[i] = re.sub(r'\D', '', list2[i])
+            try:
+                list1[i] = int(list1[i])
+                list2[i] = int(list2[i])
+            except:
+                list1[i] = str(list1[i])
+                list2[i] = str(list2[i])
+            if list1[i] == list2[i]:
+                continue
+            else:
+                return list1[i] > list2[i]
+        return len(ver_a) > len(ver_b)
 
     def make_cache_from_packages(self, source_url, repo, packages_content):
         """
