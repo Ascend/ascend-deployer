@@ -24,7 +24,7 @@ if os.path.exists('ascend_deployer'):
 if os.path.exists('dist'):
     shutil.rmtree('dist')
 
-os.mkdir('ascend_deployer')
+os.mkdir('ascend_deployer', mode=0o750)
 shutil.copytree('downloader', 'ascend_deployer/downloader')
 shutil.copytree('playbooks', 'ascend_deployer/playbooks')
 shutil.copyfile('install.sh', 'ascend_deployer/install.sh')

@@ -1,0 +1,14 @@
+- name: check user group
+  getent:
+    database: group
+    key: "{{group}}"
+    fail_key: no
+  register: group_info
+
+- name: message
+  debug:
+    msg:
+      - "non-root user {{ansible_user_id}} not in group {{group}}, please switch to root and add non-root user to group"
+      - "for example: usermod -a -G {{group}} {{ansible_user_id}}"
+  failed_when: true
+  when: ansible_user_id not in (group_info.ansible_facts.getent_group.values()|list)[0][-1].split(',') and ansible_user_id != group

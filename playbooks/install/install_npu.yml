@@ -1,5 +1,9 @@
 - hosts: '{{ hosts_name }}'
   tasks:
+    - name: create user if not exist
+      import_tasks: ../create_user.yml
+      when: ansible_user_uid == 0
+
     # check the driver, always success
     # set changed when npu-smi info not work
     - name: check if driver is already installed
@@ -10,17 +14,22 @@
       register: smi_info
       failed_when: false
       changed_when: smi_info.rc != 0
-
-    - name: create user if not exist
-      import_tasks: ../create_user.yml
+      when: ansible_user_uid == 0
 
     - name: install firmware
       import_tasks: task_firmware.yml
-      when: smi_info.rc == 0
+      when: ansible_user_uid == 0 and smi_info.rc == 0
 
     - name: install driver
       import_tasks: task_driver.yml
+      when: ansible_user_uid == 0
 
     - name: install firmware
       import_tasks: task_firmware.yml
-      when: smi_info.rc != 0
+      when: ansible_user_uid == 0 and smi_info.rc != 0
+
+    - name: message
+      debug:
+        msg:
+        - "not support installing npu by non-root user, please switch to root user"
+      when: ansible_user_uid != 0

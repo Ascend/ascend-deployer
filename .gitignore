@@ -1,7 +1,6 @@
 /resources/*
 !/resources/docker_images/
-!/resources/MindStudio/
-!/resources/CANN/
+facts_cache
 *.pyc
 *.whl
 *.log

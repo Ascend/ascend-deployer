@@ -2,6 +2,7 @@
   file:
     path: "{{ build_dir }}"
     state: directory
+    mode: 0750
     recurse: yes
 
 - name: install gcc 7.3.0 unarchive

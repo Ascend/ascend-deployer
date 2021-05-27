@@ -49,7 +49,7 @@ def download_software(software, dst):
     sha256_map = get_sha256_map()
 
     if not os.path.exists(download_dir):
-        os.makedirs(download_dir, mode=0o755, exist_ok=True)
+        os.makedirs(download_dir, mode=0o750, exist_ok=True)
     LOG.info('item:{} save dir: {}'.format(software, download_dir))
     results = []
     for item in others:

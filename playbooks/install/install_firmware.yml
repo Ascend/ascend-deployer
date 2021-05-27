@@ -2,3 +2,10 @@
   tasks:
     - name: install firmware
       import_tasks: task_firmware.yml
+      when: ansible_user_uid == 0
+
+    - name: message
+      debug:
+        msg:
+        - "not support installing firmware by non-root user, please switch to root user"
+      when: ansible_user_uid != 0

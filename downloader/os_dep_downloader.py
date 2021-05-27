@@ -57,7 +57,7 @@ class OsDepDownloader:
         """
         dst_dir = os.path.join(dst, os_item)
         if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir, mode=0o755, exist_ok=True)
+            os.makedirs(dst_dir, mode=0o750, exist_ok=True)
         LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
 
         config_file = os.path.join(CUR_DIR, 'config/{0}/pkg_info.json'.format(os_item))
@@ -104,7 +104,7 @@ class OsDepDownloader:
         for os_item in self.os_list:
             dst_dir = os.path.join(self.resources_dir, os_item)
             if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir, mode=0o755, exist_ok=True)
+                os.makedirs(dst_dir, mode=0o750, exist_ok=True)
 
     def clean_download_dir(self):
         if os.path.exists(self.resources_dir):

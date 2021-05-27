@@ -1,5 +1,4 @@
 - hosts: '{{ hosts_name }}'
-  gather_facts: True
 
 - name: upgrade firmware if installed
   import_playbook: upgrade_firmware.yml

@@ -1,5 +1,4 @@
 - hosts: '{{ hosts_name }}'
-  gather_facts: True
 
 - name: install system dependencies
   import_playbook: ../install/install_sys_pkg.yml
@@ -12,11 +11,9 @@
 
 - name: install nnrt
   import_playbook: ../install/install_nnrt.yml
-  when: ansible_local.npu_info.scene == 'infer'
 
 - name: install nnae
   import_playbook: ../install/install_nnae.yml
-  when: ansible_local.npu_info.scene == 'train'
 
 - name: install tfplugin
   import_playbook: ../install/install_tfplugin.yml

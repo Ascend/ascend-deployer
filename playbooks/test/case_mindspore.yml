@@ -6,18 +6,24 @@
     file_type: directory
     use_regex: yes
     patterns: "mindspore"
-  register: ms
+  register: ms_root
   when: ansible_user_uid == 0
 
-- name: test if mindspore installed
+- name: test if mindspore installed for non-root
   find:
     paths:
-      - "{{ local_path }}/lib/python3.7/"
+      - "{{ local_path }}/lib"
     recurse: yes
     file_type: directory
     use_regex: yes
     patterns: "mindspore"
-  register: ms
+  register: ms_non_root
+  when: ansible_user_uid != 0
+
+- set_fact: ms={{ ms_root }}
+  when: ansible_user_uid == 0
+
+- set_fact: ms={{ ms_non_root }}
   when: ansible_user_uid != 0
 
 - name: message
@@ -29,7 +35,7 @@
 - name: test import mindspore ascend
   shell: python3.7 -c "import mindspore as ms; print(ms.__version__)"
   environment:
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}:{{ ascend_install_path }}/ascend-toolkit/latest/atc/ccec_compiler/bin/"
+    PATH: "{{ local_path }}/python3.7.5/bin:{{ ascend_install_path }}/ascend-toolkit/latest/atc/ccec_compiler/bin/:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/acllib/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/driver/lib64:{{ ascend_install_path }}/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ local_path }}/python3.7.5/lib/python3.7/site-packages/mindspore/lib:{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ansible_user_dir}}/Ascend/ascend-toolkit/latest/fwkacllib/lib64/plugin/opskernel"
     TBE_IMPL_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe"
     ASCEND_OPP_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp"

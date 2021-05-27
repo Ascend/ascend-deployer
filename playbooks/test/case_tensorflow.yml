@@ -6,18 +6,24 @@
     file_type: directory
     use_regex: yes
     patterns: "tensorflow"
-  register: tf
+  register: tf_root
   when: ansible_user_uid == 0
 
-- name: test if tensorflow installed
+- name: test if tensorflow installed for non-root
   find:
     paths:
-      - "{{ local_path }}/lib/python3.7/"
+      - "{{ local_path }}/lib"
     recurse: yes
     file_type: directory
     use_regex: yes
     patterns: "tensorflow"
-  register: tf
+  register: tf_non_root
+  when: ansible_user_uid != 0
+
+- set_fact: tf={{ tf_root }}
+  when: ansible_user_uid == 0
+
+- set_fact: tf={{ tf_non_root }}
   when: ansible_user_uid != 0
 
 - name: message

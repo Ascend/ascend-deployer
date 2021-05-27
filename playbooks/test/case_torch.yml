@@ -6,18 +6,24 @@
     file_type: directory
     use_regex: yes
     patterns: "torch.*ascend"
-  register: torch_ascend
+  register: torch_ascend_root
   when: ansible_user_uid == 0
 
-- name: test if torch installed
+- name: test if torch installed for non-root
   find:
     paths:
-      - "{{ local_path }}/lib/python3.7/"
+      - "{{ local_path }}/lib"
     recurse: yes
     file_type: directory
     use_regex: yes
     patterns: "torch.*ascend"
-  register: torch_ascend
+  register: torch_ascend_non_root
+  when: ansible_user_uid != 0
+
+- set_fact: torch_ascend={{ torch_ascend_root }}
+  when: ansible_user_uid == 0
+
+- set_fact: torch_ascend={{ torch_ascend_non_root }}
   when: ansible_user_uid != 0
 
 - name: message

@@ -2,3 +2,10 @@
   tasks:
   - name: test firmware
     include_tasks: case_firmware.yml
+    when: ansible_user_uid == 0
+
+  - name: message
+    debug:
+      msg:
+      - "not support test firmware by non-root user, please switch to root user"
+    when: ansible_user_uid != 0

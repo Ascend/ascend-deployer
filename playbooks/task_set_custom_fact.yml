@@ -147,6 +147,18 @@
      cacheable: yes
   when: ansible_user_uid != 0
 
+- name: set cann info path
+  set_fact:
+     cann_info_path: "/etc/Ascend"
+     cacheable: yes
+  when: ansible_user_uid == 0
+
+- name: set cann info path for non-root
+  set_fact:
+     cann_info_path: "{{ansible_user_dir}}/Ascend"
+     cacheable: yes
+  when: ansible_user_uid != 0
+
 - name: set cann install params
   set_fact:
      cann_install_params: "--install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
