@@ -2,10 +2,19 @@
   tasks:
     - name: install gcc 7.3.0
       import_tasks: task_gcc.yml
-      when: "'CentOS_8.2' not in os_and_arch and 'EulerOS' not in os_and_arch and 'Debian_10.0' not in os_and_arch"
+      when:
+        - "'CentOS_8.2' not in os_and_arch"
+        - "'EulerOS' not in os_and_arch"
+        - "'Debian_10.0' not in os_and_arch"
+        - "'Kylin_V10' not in os_and_arch"
 
     - name: message
       debug:
         msg:
-        - "not support installing gcc7.3.0 for CentOS_8.2 or EulerOS or Debian_10.0, please use install=sys_pkg instead"
-      when: "'CentOS_8.2' in os_and_arch or 'EulerOS' in os_and_arch or 'Debian_10.0' in os_and_arch"
+        - "not support installing gcc7.3.0 for these systems below, please use install=sys_pkg instead"
+        - "CentOS_8.2, EulerOS, Debian_10.0, Kylin_V10"
+      when:
+        - "'CentOS_8.2' in os_and_arch"
+        - "'EulerOS' in os_and_arch"
+        - "'Debian_10.0' in os_and_arch"
+        - "'Kylin_V10' in os_and_arch"

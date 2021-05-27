@@ -17,6 +17,8 @@
 import logging
 import os
 import platform
+import stat
+
 from logging.handlers import RotatingFileHandler
 
 
@@ -30,12 +32,13 @@ class BasicLogConfig(object):
     DEBUG = False
 
     LOG_DIR = os.path.dirname(os.path.realpath(__file__))
+    LOG_DIR = os.path.dirname(LOG_DIR)
     if platform.system() == 'Linux':
         if 'site-pacakges' in LOG_DIR or 'dist-packages' in LOG_DIR:
             ad_home = os.getenv('ASCEND_DEPLOYER_HOME')
             if ad_home is None:
                 ad_home = os.getenv('HOME')
-            LOG_DIR = os.path.join(ad_home, 'ascend-deployer', 'downloader')
+            LOG_DIR = os.path.join(ad_home, 'ascend-deployer')
 
         if not os.path.exists(LOG_DIR):
             LOG_DIR = os.getcwd()
@@ -43,6 +46,15 @@ class BasicLogConfig(object):
         LOG_DIR = os.getcwd()
 
     LOG_FILE = os.path.join(LOG_DIR, 'downloader.log')
+    if not os.path.exists(LOG_FILE):
+        os.close(
+            os.open(
+                LOG_FILE, os.O_CREAT,
+                stat.S_IRUSR | stat.S_IWUSR
+            )
+        )
+    else:
+        os.chmod(LOG_FILE, stat.S_IRUSR | stat.S_IWUSR)
     LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     LOG_FORMAT_STRING = \
             "[%(asctime)s] downloader %(levelname)s [pid:%(process)d] " \
@@ -61,8 +73,8 @@ logging.basicConfig(filename=LOG_CONF.LOG_FILE,
 ROTATING_FILE_LOG_CONF = dict(
     filename=LOG_CONF.LOG_FILE,
     mode='a',
-    maxBytes=10 * 1024 * 1024,
-    backupCount=50,
+    maxBytes=20 * 1024 * 1024,
+    backupCount=5,
     encoding="UTF-8"
 )
 
