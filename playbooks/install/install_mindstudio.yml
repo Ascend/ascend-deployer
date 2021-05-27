@@ -43,14 +43,14 @@
       changed_when: false
       when: 
         - ms.matched > 0
-        - 'Ubuntu' in os_and_arch
+        - "'Ubuntu' in os_and_arch"
         - ansible_user_uid == 0
 
     - name: install ubuntu desktop
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/desktop/*.deb
       when:
         - ms.matched > 0
-        - 'Ubuntu' in os_and_arch
+        - "'Ubuntu' in os_and_arch"
         - ubuntu_desktop is not skipped and ubuntu_desktop.stdout=='0'
         - ansible_user_uid == 0
 
