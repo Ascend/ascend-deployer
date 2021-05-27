@@ -138,16 +138,6 @@
         - ms.matched > 0
         - ansible_user_uid != 0
 
-    - set_fact: stat_python37={{ stat_python37_root }}
-      when:
-        - ms.matched > 0
-        - ansible_user_uid == 0
-    
-    - set_fact: stat_python37={{ stat_python37_non_root }}
-      when:
-        - ms.matched > 0
-        - ansible_user_uid != 0
-
     - name: create symbolic link python3.7
       file:
         src: /usr/local/python3.7.5/bin/python3
@@ -156,7 +146,7 @@
       when:
         - ms.matched > 0
         - ansible_user_uid == 0
-        - not stat_python37.stat.exists
+        - not stat_python37_root.stat.exists
 
     - name: create symbolic link python3.7 for non-root
       file:
@@ -167,7 +157,7 @@
       when:
         - ms.matched > 0
         - ansible_user_uid != 0
-        - not stat_python37.stat.exists
+        - not stat_python37_non_root.stat.exists
 
     - name: create symbolic link pip3.7.5
       file:
@@ -204,16 +194,6 @@
         - ms.matched > 0
         - ansible_user_uid != 0
 
-    - set_fact: stat_pip37={{ stat_pip37_root }}
-      when:
-        - ms.matched > 0
-        - ansible_user_uid == 0
-    
-    - set_fact: stat_pip37={{ stat_pip37_non_root }}
-      when:
-        - ms.matched > 0
-        - ansible_user_uid != 0
-
     - name: create symbolic link pip3.7
       file:
         src: /usr/local/python3.7.5/bin/pip3
@@ -222,7 +202,7 @@
       when:
         - ms.matched > 0
         - ansible_user_uid == 0
-        - not stat_pip37.stat.exists
+        - not stat_pip37_root.stat.exists
 
     - name: create symbolic link pip3.7 for non-root
       file:
@@ -233,7 +213,7 @@
       when:
         - ms.matched > 0
         - ansible_user_uid != 0
-        - not stat_pip37.stat.exists
+        - not stat_pip37_non_root.stat.exists
 
     - name: unarchive MindStudio
       unarchive:
@@ -266,3 +246,9 @@
       when:
         - ms.matched > 0
         - ansible_architecture == 'aarch64'
+
+    - name: message
+      debug:
+        msg:
+        - "can not find mindstudio package, mindstudio install skipped"
+      when: ms.matched == 0
