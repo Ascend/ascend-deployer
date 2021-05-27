@@ -1,5 +1,5 @@
-/resources/*
-!/resources/docker_images/
+resources/*
+!.gitkeep
 facts_cache
 *.pyc
 *.whl

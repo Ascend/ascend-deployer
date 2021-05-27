@@ -108,8 +108,6 @@ The download function can be used in the Windows or Linux OSs.
 - install options are in the inventory_file. default options is below:
 
 ```bash
-[ascend]
-localhost ansible_connection='local'
 
 [ascend:vars]
 user=HwHiAiUser
@@ -121,10 +119,11 @@ install_path=/usr/local/Ascend
 |:------------ |:----------------------------------------------------- |
 | user         | user，will be pass to --install-username options       |
 | group        | usergroup，will be pass to --install-usergroup options |
-| install_path | install path，will be pass to --install-path options   |
+| install_path | The installation path of the CANN package，will be pass to --install-path options   |
 
 ### Notice
 
+- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package. The driver package can only be installed to the default path /usr/local/Ascend
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
 
 ```bash
@@ -410,15 +409,19 @@ The offline installation tool provides several basic installation scenarios.
 
 | Installation Scenario | Installed Components                                                          | Description                                            |
 | --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
-| auto                  | all                                                                           | All software packages that can be found are installed. |
-| infer_dev             | Driver, firmware, nnrt, toolbox, the Toolkit, torch, TFPlugin, and TensorFlow | Inference development scenario.                        |
-| infer_run             | Driver, firmware, nnrt, and toolbox                                           | Inference running scenario                             |
-| train_dev             | Driver, firmware, nnae、toolbox, the Toolkit, torch, TFPlugin, and TensorFlow  | Training development scenario                          |
-| train_run             | Driver, firmware, nnae, toolbox, torch, TFPlugin, and TensorFlow              | Training running scenario                              |
-| vmhost                | Driver, firmware, and toolbox                                                 | VM host scenario                                       |
-| edge                  | Driver, firmware, atlasedge, ha                                               | Install MindX middleware, HA                           |
+| auto        | all                                                              | All software packages that can be found are installed |
+| vmhost      | sys_pkg、npu、toolbox                                            | VM host scene                                         |
+| edge        | sys_pkg、atlasedge、ha                                           | Install MindX middleware, HA                          |
+| offline_dev | sys_pkg、python375、npu、toolkit                                  | Offline development scene                            |
+| offline_run | sys_pkg、python375、npu、nnrt                                     | Offline run scene                                    |
+| mindspore   | sys_pkg、python375、npu、toolkit、mindspore                       | mindspore scene                                      |
+| tensorflow_dev | sys_pkg、python375、npu、toolkit、tfplugin、tensorflow         | tensorflow development scene                         |
+| tensorflow_run | sys_pkg、python375、npu、nnae、tfplugin、tensorflow            | tensorflow run scene                                 | 
+| torch_dev | sys_pkg、python375、npu、toolkit、torch                             | torch development scene                              |
+| torch_run | sys_pkg、python375、npu、nnae、torch                                | torch run scene                                      |
 
-The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_infer_run.yml** of the inference development scenario:
+
+The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_auto.yml** of the auto scene:
 
 ```
 - hosts: '{{ hosts_name }}'
@@ -432,23 +435,29 @@ The configuration files for the preceding installation scenarios are stored in t
 - name: install driver and firmware
   import_playbook: ../install/install_npu.yml
 
-- name: install nnrt
-  import_playbook: ../install/install_nnrt.yml
-
-- name: install toolbox
-  import_playbook: ../install/install_toolbox.yml
-
 - name: install toolkit
   import_playbook: ../install/install_toolkit.yml
 
-- name: install torch
-  import_playbook: ../install/install_torch.yml
+- name: install nnrt
+  import_playbook: ../install/install_nnrt.yml
+
+- name: install nnae
+  import_playbook: ../install/install_nnae.yml
 
 - name: install tfplugin
   import_playbook: ../install/install_tfplugin.yml
 
+- name: install toolbox
+  import_playbook: ../install/install_toolbox.yml
+
+- name: install torch
+  import_playbook: ../install/install_torch.yml
+
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
+
+- name: install mindspore
+  import_playbook: ../install/install_mindspore.yml
 ```
 
 To customize an installation scenario, refer to the preceding configuration file.
