@@ -1,0 +1,35 @@
+- name: get A500pro_exist
+  shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
+  register: a500pro_exist
+
+- name: find atlasedge path
+  find:
+    paths: "{{ resources_dir }}/run_from_zip_dir"
+    recurse: no
+    file_type: directory
+    use_regex: yes
+    patterns: ".*atlasedge.*{{ansible_architecture}}"
+  when: ansible_local.npu_info.scene == 'infer' and a500pro_exist.stdout != ""
+  register: atlasedge
+
+- name: install atlasedge
+  shell: "bash {{ atlasedge.files[0].path }}/install.sh --install_dir=/usr/local/"
+  register: atlasedge_result
+  when: atlasedge.matched is defined and atlasedge.matched > 0
+  failed_when: "atlasedge_result.rc !=0 and 'has been installed' not in atlasedge_result.stdout"
+
+- name: atlasedge scene message
+  debug:
+    msg:
+      - "scene is not infer or server is not A500 Pro, atlasedge install skipped"
+  when: atlasedge.matched is undefined
+
+- name: atlasedge message
+  debug:
+    msg:
+      - "can not find atlasedge package, atlasedge install skipped"
+  when: atlasedge.matched is defined and atlasedge.matched == 0
+
+- name: atlasedge install message
+  debug: var=atlasedge_result
+  when: atlasedge_result.changed is defined and atlasedge_result.changed

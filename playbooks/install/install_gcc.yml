@@ -14,7 +14,4 @@
         - "not support installing gcc7.3.0 for these systems below, please use install=sys_pkg instead"
         - "CentOS_8.2, EulerOS, Debian_10.0, Kylin_V10"
       when:
-        - "'CentOS_8.2' in os_and_arch"
-        - "'EulerOS' in os_and_arch"
-        - "'Debian_10.0' in os_and_arch"
-        - "'Kylin_V10' in os_and_arch"
+        - "'CentOS_8.2' in os_and_arch or 'EulerOS' in os_and_arch or 'Debian_10.0' in os_and_arch or 'Kylin_V10' in os_and_arch"

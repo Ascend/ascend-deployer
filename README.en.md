@@ -156,8 +156,8 @@ group=HwHiAiUser
 |MindStudio | installed in the $HOME/ directory|
 
 Note:
-    1. Non-root users need root users to install system components and driver before they can install the above components.
-    2. Non-root users need to join the driver installation group to install and use cann components normally. The default driver installation group is HwHiAiUser.
+  1. Non-root users need root users to install system components and driver before they can install the above components.
+  2. Non-root users need to join the driver installation group to install and use cann components normally. The default driver installation group is HwHiAiUser.
 
 ### Obtaining Software Packages
 

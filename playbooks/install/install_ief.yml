@@ -1,26 +1,11 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-
-    - name: get A500_exist
-      stat: 
-        path: /run/board_cfg.ini
-      register: a500_exist
-
-    - name: install ief a500
-      import_tasks: task_ief_a500.yml
-      when: a500_exist.stat.exists
-
-    - name: get A500pro_exist
-      shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
-      register: a500pro_exist
-
-    - name: install ief a500pro
-      import_tasks: task_ief_a500pro.yml
-      when: a500pro_exist.stdout != ""
+    - name: install ief
+      import_tasks: task_ief.yml
+      when: ansible_user_uid == 0
 
     - name: message
       debug:
         msg:
-        - "only support installing ief for a500 or a500pro, please check your device"
-      when: not a500_exist.stat.exists and a500pro_exist.stdout == ""
-      failed_when: not a500_exist.stat.exists and a500pro_exist.stdout == ""
+        - "not support installing ief by non-root user, please switch to root user"
+      when: ansible_user_uid != 0

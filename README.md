@@ -164,8 +164,8 @@ group=HwHiAiUser
 | MindStudio             | 安装在$HOME/目录下  |
 
 注意：
-    1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
-    2. 非root用户需要加入driver安装的属组，才可以正常安装和使用CANN组件，默认driver安装的属组为HwHiAiUser。
+  1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
+  2. 非root用户需要加入driver安装的属组，才可以正常安装和使用CANN组件，默认driver安装的属组为HwHiAiUser。
 
 ### 准备软件包
 
