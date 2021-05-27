@@ -12,17 +12,5 @@
 - name: install nnae
   import_playbook: ../install/install_nnae.yml
 
-- name: install toolbox
-  import_playbook: ../install/install_toolbox.yml
-
 - name: install torch
   import_playbook: ../install/install_torch.yml
-
-- name: install tfplugin
-  import_playbook: ../install/install_tfplugin.yml
-
-- name: install tensorflow
-  import_playbook: ../install/install_tensorflow.yml
-
-- name: install mindspore
-  import_playbook: ../install/install_mindspore.yml

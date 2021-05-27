@@ -9,26 +9,11 @@
 - name: install driver and firmware
   import_playbook: ../install/install_npu.yml
 
-- name: install toolkit
-  import_playbook: ../install/install_toolkit.yml
-
-- name: install nnrt
-  import_playbook: ../install/install_nnrt.yml
-
 - name: install nnae
   import_playbook: ../install/install_nnae.yml
 
 - name: install tfplugin
   import_playbook: ../install/install_tfplugin.yml
 
-- name: install toolbox
-  import_playbook: ../install/install_toolbox.yml
-
-- name: install torch
-  import_playbook: ../install/install_torch.yml
-
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
-
-- name: install mindspore
-  import_playbook: ../install/install_mindspore.yml
