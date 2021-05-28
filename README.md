@@ -129,10 +129,11 @@ install_path=/usr/local/Ascend
 |:------------ |:------------------------------------- |
 | user         | 用户，该参数将传递给run包的--install-username选项   |
 | group        | 用户组，该参数将传递给run包的--install-usergroup选项 |
-| install_path | 安装路径，该参数将传递给run包的--install-path选项     |
+| install_path | CANN软件包的安装路径，该参数将传递给run包的--install-path选项     |
 
 ### 安装须知
 
+- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效，非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包的安装路径，驱动包只能安装到默认路径/usr/local/Ascend
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
 
 ```bash
@@ -233,7 +234,7 @@ ascend-deployer
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
-   - 指定场景安装（仅支持root用户）
+   - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
      `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`
@@ -423,17 +424,20 @@ source ~/.local/ascendrc       # non-root
 
 离线部署工具提供几个基本安装场景。
 
-| 安装场景      | 安装的组件                                                            | 说明            |
-| --------- | ---------------------------------------------------------------- | ------------- |
-| auto      | all                                                              | 安装所有能找到的软件包   |
-| infer_dev | driver、firmware、 nnrt、toolbox、toolkit、 torch、tfplugin、tensorflow | 推理开发场景        |
-| infer_run | driver、 firmware、nnrt、toolbox                                    | 推理运行场景        |
-| train_dev | driver、firmware、nnae、toolbox、toolkit、torch、tfplugin、tensorflow   | 训练开发场景        |
-| train_run | driver、firmware、nnae、toolbox、torch、tfplugin、tensorflow           | 训练运行场景        |
-| vmhost    | driver、firmware、toolbox                                          | 虚拟机host场景     |
-| edge      | driver、firmware、atlasedge、ha                                     | 安装MindX中间件、HA |
+| 安装场景     | 安装的组件                                                        | 说明            |
+| ---------   | ---------------------------------------------------------------- | ----------------|
+| auto        | all                                                              | 安装所有能找到的软件包 |
+| vmhost      | sys_pkg、npu、toolbox                                            | 虚拟机场景             |
+| edge        | sys_pkg、atlasedge、ha                                           | 安装MindX中间件、HA    |
+| offline_dev | sys_pkg、python375、npu、toolkit                                  | 离线开发场景          |
+| offline_run | sys_pkg、python375、npu、nnrt                                     | 离线运行场景          |
+| mindspore   | sys_pkg、python375、npu、toolkit、mindspore                       | mindspore场景         |
+| tensorflow_dev | sys_pkg、python375、npu、toolkit、tfplugin、tensorflow         | tensorflow开发场景    |
+| tensorflow_run | sys_pkg、python375、npu、nnae、tfplugin、tensorflow            | tensorflow运行场景    |
+| torch_dev | sys_pkg、python375、npu、toolkit、torch                             | torch开发场景         |
+| torch_run | sys_pkg、python375、npu、nnae、torch                                | torch运行场景         |
 
-上述安装场景的配置文件位于scene目录下，如推理开发场景的配置文件scene/scene_infer_run.yml:
+上述安装场景的配置文件位于scene目录下，如auto场景的配置文件scene/scene_auto.yml:
 
 ```
 - hosts: '{{ hosts_name }}'
@@ -447,23 +451,29 @@ source ~/.local/ascendrc       # non-root
 - name: install driver and firmware
   import_playbook: ../install/install_npu.yml
 
-- name: install nnrt
-  import_playbook: ../install/install_nnrt.yml
-
-- name: install toolbox
-  import_playbook: ../install/install_toolbox.yml
-
 - name: install toolkit
   import_playbook: ../install/install_toolkit.yml
 
-- name: install torch
-  import_playbook: ../install/install_torch.yml
+- name: install nnrt
+  import_playbook: ../install/install_nnrt.yml
+
+- name: install nnae
+  import_playbook: ../install/install_nnae.yml
 
 - name: install tfplugin
   import_playbook: ../install/install_tfplugin.yml
 
+- name: install toolbox
+  import_playbook: ../install/install_toolbox.yml
+
+- name: install torch
+  import_playbook: ../install/install_torch.yml
+
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
+
+- name: install mindspore
+  import_playbook: ../install/install_mindspore.yml
 ```
 
 如需自定义安装场景，可参考上述配置文件进行定制。

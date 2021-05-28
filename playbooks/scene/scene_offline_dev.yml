@@ -9,8 +9,5 @@
 - name: install driver and firmware
   import_playbook: ../install/install_npu.yml
 
-- name: install nnrt
-  import_playbook: ../install/install_nnrt.yml
-
-- name: install toolbox
-  import_playbook: ../install/install_toolbox.yml
+- name: install toolkit
+  import_playbook: ../install/install_toolkit.yml
