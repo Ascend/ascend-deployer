@@ -18,6 +18,7 @@ OS_MAP["Linx"]="Linx"
 OS_MAP["UOS"]="UOS"
 OS_MAP["uos"]="UOS"
 OS_MAP["tlinux"]="Tlinux"
+OS_MAP["openEuler"]="OpenEuler"
 
 unset DISPLAY
 if [ -z ${ASNIBLE_CONFIG} ];then
@@ -102,6 +103,11 @@ function get_os_version()
         fi
     fi
 
+    # OpenEuler
+    if [ "${id}" == "OpenEuler" ];then
+        version=${ver}${codename}
+    fi
+
     echo ${version}
     return 0
 }
@@ -118,7 +124,7 @@ readonly g_os_name=$(get_os_name)
 function get_os_ver_arch()
 {
     local os_ver=$(grep -oP "^VERSION_ID=\"?\K\w+\.?\w*" /etc/os-release)
-    local codename=$(grep -oP "^VERSION=(.*?)\(\K[\w\.\ ]+" /etc/os-release | awk -F_ '{print $1}')
+    local codename=$(grep -oP "^VERSION=(.*?)\(\K[\w\.\ -]+" /etc/os-release | awk -F_ '{print $1}')
     local os_name=$(get_os_name)
     local version=$(get_os_version ${os_name} ${os_ver} ${codename})
     local os_ver_arch=${g_os_name}_${version}_${arch}
@@ -251,7 +257,7 @@ function install_sys_packages()
     install_kernel_header_devel_euler
     local have_rpm=0
     case ${g_os_name} in
-    CentOS|EulerOS|SLES|Kylin|BCLinuxL|Tlinux)
+    CentOS|EulerOS|SLES|Kylin|BCLinuxL|Tlinux|OpenEuler)
         local have_rpm=1
         ;;
     Ubuntu|Debian|Linx|UOS)
@@ -289,7 +295,7 @@ function install_python375()
     python3.7 -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
     # install wheel, if not pip will use legacy setup.py install for installation
     python3.7 -m pip install wheel --no-index --find-links ${PYLIB_PATH}
-    if [ "${g_os_name}" == "EulerOS" ];then
+    if [[ "${g_os_name}" == "EulerOS" ]] || [[ "${g_os_name}" == "OpenEuler" ]];then
         python3.7 -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
     echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
@@ -316,6 +322,9 @@ function install_ansible()
             sed -i "1531 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
             # debian 10.0
             sed -i "1520 i\      '10.0': /usr/bin/python3" ${ansible_path}/config/base.yml
+            # openeuler os use python3 as default python interpreter
+            sed -i "1533 i\    openeuler:"                    ${ansible_path}/config/base.yml
+            sed -i "1534 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
         fi
     fi
 }

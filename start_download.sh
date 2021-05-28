@@ -125,7 +125,7 @@ function check_script_args()
     fi
 
     # --os-list
-    if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
+    if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,-]*$');then
         echo "ERROR" "--os-list ${OS_LIST} is invalid"
         print_usage
     fi

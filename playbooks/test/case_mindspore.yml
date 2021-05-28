@@ -20,10 +20,12 @@
   register: ms_non_root
   when: ansible_user_uid != 0
 
-- set_fact: ms={{ ms_root }}
+- name: set_fact
+  set_fact: ms={{ ms_root }}
   when: ansible_user_uid == 0
 
-- set_fact: ms={{ ms_non_root }}
+- name: set_fact for non-root
+  set_fact: ms={{ ms_non_root }}
   when: ansible_user_uid != 0
 
 - name: message
