@@ -19,4 +19,4 @@
         - "not support installing gcc7.3.0 for these systems below or gcc version is upper than 7.3.0"
         - "CentOS_8.2, EulerOS, Debian_10.0, Kylin_V10"
       when:
-        - "'CentOS_8.2' in os_and_arch or 'EulerOS' in os_and_arch or 'Debian_10.0' in os_and_arch or 'Kylin_V10' in os_and_arch or gcc_ver.stdout is version('7.3.0', '>=')"
+        - "'CentOS_8.2' in os_and_arch or 'EulerOS' in os_and_arch or 'Debian_10.0' in os_and_arch or 'Kylin_V10' in os_and_arch or (gcc_ver.stdout != '' and gcc_ver.stdout is version('7.3.0', '>='))"

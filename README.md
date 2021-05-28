@@ -234,7 +234,7 @@ ascend-deployer
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
-   - 指定场景安装（仅支持root用户）
+   - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
      `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`

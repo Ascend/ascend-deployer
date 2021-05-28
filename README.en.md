@@ -226,7 +226,7 @@ ascend-deployer
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
      - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
-   - Scenario-specific installation(only support for root user)
+   - Scenario-specific installation
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
       `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
