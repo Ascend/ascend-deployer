@@ -34,8 +34,9 @@ import software_mgr
 
 LOG = logger_config.get_logger(__file__)
 
-dir_list = ['downloader', 'playbooks', 'scene', 'test']
-file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg', 'README.md', 'README.en.md']
+dir_list = ['downloader', 'playbooks', 'scene', 'test', 'docs']
+file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg',
+             'README.md', 'README.en.md', 'start_download_ui.bat', 'start_download.bat']
 
 support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
 support_pkg_list = os.listdir(os.path.join(CUR_DIR, 'software'))
