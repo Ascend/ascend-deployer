@@ -34,7 +34,7 @@ class BasicLogConfig(object):
     LOG_DIR = os.path.dirname(os.path.realpath(__file__))
     LOG_DIR = os.path.dirname(LOG_DIR)
     if platform.system() == 'Linux':
-        if 'site-pacakges' in LOG_DIR or 'dist-packages' in LOG_DIR:
+        if 'site-packages' in LOG_DIR or 'dist-packages' in LOG_DIR:
             ad_home = os.getenv('ASCEND_DEPLOYER_HOME')
             if ad_home is None:
                 ad_home = os.getenv('HOME')
