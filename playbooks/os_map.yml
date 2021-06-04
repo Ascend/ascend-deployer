@@ -10,6 +10,7 @@ os_dict:
   UOS: "UOS"
   uos: "UOS"
   tlinux: "Tlinux"
+  openEuler: "OpenEuler"
 os_version_dict:
   euleros:
     "2.0": "2"
@@ -30,4 +31,7 @@ code_name_dict:
     "SP9x86": ".9"
   kylin:
     "Tercel": "Tercel"
+  openEuler:
+    "LTS-SP1": "LTS-SP1"
+    "LTS": "LTS"
 code_name: ""

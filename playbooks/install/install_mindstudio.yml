@@ -103,6 +103,16 @@
         - pyqt5
         - attrs
 
+    - name: create symbolic link python for ubuntu
+      file:
+        src: /usr/bin/python3.6
+        dest: /usr/bin/python
+        state: link
+      when:
+        - ms.matched > 0
+        - ansible_user_uid == 0
+        - "'Ubuntu' in os_and_arch"
+
     - name: create symbolic link python3.7.5
       file:
         src: /usr/local/python3.7.5/bin/python3
@@ -220,6 +230,7 @@
         src: "{{ ms.files[0].path }}"
         dest: ~/
         copy: no
+        mode: 0750
       when: ms.matched > 0
 
     - name: unarchive jdk for aarch64
@@ -227,6 +238,7 @@
         src: "{{ mindstudio_dir }}/jbr-11_0_7-linux-aarch64-b765.65.tar.gz"
         dest: ~/MindStudio
         copy: no
+        mode: 0750
       when:
         - ms.matched > 0
         - ansible_architecture == 'aarch64'
@@ -239,6 +251,13 @@
       when:
         - ms.matched > 0
         - ansible_architecture == 'x86_64'
+
+    - name: chmod MindStudio to 750
+      file:
+        path: ~/MindStudio
+        mode: 0750
+        recurse: yes
+      when: ms.matched > 0
 
     - name: set MINDSTUDIO_JDK
       shell: sed -i "2 i\export MINDSTUDIO_JDK=~/MindStudio/jbr" ~/MindStudio/bin/MindStudio.sh
