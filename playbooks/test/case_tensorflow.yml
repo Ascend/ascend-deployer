@@ -61,7 +61,7 @@
   environment:
     PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64"
-    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages"
+    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge
   when:
     - tf.matched > 0
@@ -77,8 +77,8 @@
   shell: python3.7 -c "import npu_bridge.estimator; import npu_bridge.hccl; from tensorflow.core.protobuf import rewriter_config_pb2"
   environment:
     PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/atc/lib64/:{{ ascend_install_path }}/ascend-toolkit/latest/x86_64-linux/atc/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/add-ons/"
-    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages"
+    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/add-ons/"
+    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge_with_add_ons
   when:
     - tf.matched > 0
