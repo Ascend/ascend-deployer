@@ -27,7 +27,8 @@ class ChipMetaData():
 
 
 CHIPS_DICT = {
-    ChipMetaData('0x19e5', '0xd100', '0x0200', '0x0100', 'x86_64'): 'A300-3010',
+    ChipMetaData('0x19e5', '0xd100', '0x0200', '0x0100',
+                 'x86_64'): 'A300-3010',
     ChipMetaData('0x19e5', '0xd100', '0x0200', '0x0100',
                  'aarch64'): 'A300-3000',
     ChipMetaData('0x19e5', '0xd801', '0x0200', '0x0100',
@@ -194,6 +195,7 @@ def get_model():
 
     return chip_info
 
+
 def get_product(model):
     product_dict = {
         'Atlas 800 (Model 9000)': 'A800',
@@ -214,6 +216,7 @@ def get_product(model):
     if model in product_dict.keys():
         return product_dict[model]
     return ""
+
 
 def get_model_number(model):
     model_dict = {
@@ -237,6 +240,24 @@ def get_model_number(model):
     return ""
 
 
+ALL_MODEL_DICT = {
+'Atlas 800 (Model 9000)': 'A800-9000',
+'Atlas 800 (Model 9010)': 'A800-9010',
+'Atlas 900 (Model 9000)': 'A900-9000',
+'Atlas 900 Compute Node': 'A900-9000',
+'A300T-9000': 'A300t-9000',
+'Atlas 800 (Model 3000)': 'A300-3000',
+'Atlas 800 (Model 3010)': 'A300-3010',
+'Atlas 500 Pro (Model 3000)': 'A300-3000',
+'Atlas 500 Pro(Model 3000)': 'A300-3000',
+'A300-3010': 'A300-3010',
+'A300-3000': 'A300-3000',
+'Atlas 500 (Model 3000)': 'A300-3000',
+'A300i-pro': 'A300i-pro',
+'A200-3000': 'A200-3000'
+}
+
+
 def main():
     arch = platform.machine()
     model = get_model()
@@ -248,7 +269,8 @@ def main():
         "scene": scene,
         "python375_installed": os.path.exists('/usr/local/python3.7.5'),
         "product": get_product(model),
-        "model_number": get_model_number(model)
+        "model_number": get_model_number(model),
+        "all_model_dict": ALL_MODEL_DICT
     }
     json.dump(ret, sys.stdout, indent=2)
 
