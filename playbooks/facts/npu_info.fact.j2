@@ -69,7 +69,9 @@ def get_profile_model(arch, model):
 
 def get_scene(profile_model):
     scene = ''
-    if profile_model in ['A300-3000', 'A300-3010', 'A300i-pro', 'A200-3000']:
+    if profile_model in ['A300i-pro']:
+        scene = 'a300i'
+    if profile_model in ['A300-3000', 'A300-3010', 'A200-3000']:
         scene = 'infer'
     if profile_model in ['A800-9000', 'A800-9010', 'Atlas 900 Compute Node']:
         scene = 'train'

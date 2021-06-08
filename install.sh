@@ -2,10 +2,17 @@
 readonly TRUE=1
 readonly FALSE=0
 readonly SIZE_THRESHOLD=$((5*1024*1024*1024))
+readonly LOG_SIZE_THRESHOLD=$((20*1024*1024))
+readonly LOG_COUNT_THRESHOLD=5
 readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
+readonly A300I_PRODUCT_LIST="A300i-pro"
+readonly INFER_PRODUCT_LIST="A300-3000,A300-3010"
+readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
+readonly CANN_PRODUCT_LIST="Ascend-cann"
+
 declare -A OS_MAP=(["ubuntu"]="Ubuntu")
 OS_MAP["ubuntu"]="Ubuntu"
 OS_MAP["centos"]="CentOS"
@@ -44,6 +51,13 @@ else
     readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
 fi
 readonly app_name_list=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
+
+function log_info()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/install.log
+}
 
 function ansible_playbook()
 {
@@ -199,7 +213,6 @@ function check_cmd_isok()
     fi
 }
 
-
 function install_kernel_header_devel_euler()
 {
     local os_name=$(get_os_name)
@@ -208,7 +221,7 @@ function install_kernel_header_devel_euler()
     fi
 
     local euler=""
-    if [ -z "${g_os_ver_arch##*SP8*}" ];then
+    if [[ "${g_os_ver_arch}" =~ 2.8 ]];then
         euler="eulerosv2r8.${arch}"
     else
         euler="eulerosv2r9.${arch}"
@@ -251,7 +264,8 @@ function install_kernel_header_devel()
 function install_sys_packages()
 {
     check_resources
-    echo "install sys dependencies"
+    echo "install system packages"
+    log_info "install system packages"
 
     install_kernel_header_devel
     install_kernel_header_devel_euler
@@ -283,12 +297,14 @@ function install_python375()
         echo "can't find Python-3.7.5.tar.xz"
         return
     fi
-    echo "installing Python 3.7.5"
+    echo "install Python 3.7.5"
+    log_info "install Python 3.7.5"
+
     mkdir -p -m 750 ~/build
     tar --no-same-owner -xf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
     cd ~/build/Python-3.7.5
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
-    make -j4
+    make -j20
     make install
     cd -
     python3.7 -m ensurepip
@@ -304,6 +320,7 @@ function install_python375()
 
 function install_ansible()
 {
+    log_info "install ansible"
     local ansible_path=${PYTHON_PREFIX}/lib/python3.7/site-packages/ansible
     python3.7 -m pip install ansible --no-index --find-links ${PYLIB_PATH}
     # patch the INTERPRETER_PYTHON_DISTRO_MAP, make it support EulerOS
@@ -332,7 +349,8 @@ function install_ansible()
 function verify_zip_redirect()
 {
     echo "The system is busy with checking compressed files, Please wait for a moment..."
-    rm -rf ${BASE_DIR}/resources/run_from_zip_dir && mkdir -m 750 ${BASE_DIR}/resources/run_from_zip_dir
+    log_info "verify zip"
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
     check_extracted_size
     verify_zip > ${BASE_DIR}/tmp.log 2>&1
     local verify_result=$?
@@ -380,6 +398,22 @@ function check_extracted_size()
     IFS=${IFS_OLD}
 }
 
+function check_npu_scene()
+{
+    IFS=","
+    for product in $1
+    do
+        if [[ "$2" =~ ${product} ]];then
+            echo 1
+            unset IFS
+            return 0
+        fi
+    done
+    echo 0
+    unset IFS
+    return 0
+}
+
 function verify_zip()
 {
     local IFS_OLD=$IFS
@@ -390,39 +424,37 @@ function verify_zip()
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null
+        openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null \
+        && openssl crl -verify -in ${crl_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -noout
         local verify_success=$?
         if [[ ${verify_success} -eq 0 ]];then
             if [[ "$(basename ${zip_file})" =~ zip ]];then
-                unzip -o ${zip_file} -d ${BASE_DIR}/resources/run_from_zip_dir
-            elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_x86_64
-                rm -rf ${atlasedge_dir} && mkdir -m 750 ${atlasedge_dir}
-                cp ${zip_file} ${atlasedge_dir}
-                cp ${cms_file} ${atlasedge_dir}
-                cp ${crl_file} ${atlasedge_dir}
+                if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                    local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
+                elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                    local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
+                elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                    local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
+                elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                    local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+                else
+                    echo "Error: ${zip_file} not in PRODUCT_LIST"
+                    return 1
+                fi
+                mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
+            else
+                if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
+                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
+                elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
+                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_aarch64
+                elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
+                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_x86_64
+                elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
+                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_x86_64
+                fi
+                mkdir -p -m 750 ${atlasedge_dir}
+                cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
                 tar -xf ${zip_file} -C ${atlasedge_dir}
-            elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
-                local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_x86_64
-                rm -rf ${ha_dir} && mkdir -m 750 ${ha_dir}
-                cp ${zip_file} ${ha_dir}
-                cp ${cms_file} ${ha_dir}
-                cp ${crl_file} ${ha_dir}
-                tar -xf ${zip_file} -C ${ha_dir}
-            elif [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_zip_dir/atlasedge_aarch64
-                rm -rf ${atlasedge_dir} && mkdir -m 750 ${atlasedge_dir}
-                cp ${zip_file} ${atlasedge_dir}
-                cp ${cms_file} ${atlasedge_dir}
-                cp ${crl_file} ${atlasedge_dir}
-                tar -xf ${zip_file} -C ${atlasedge_dir}
-            elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
-                local ha_dir=${BASE_DIR}/resources/run_from_zip_dir/ha_aarch64
-                rm -rf ${ha_dir} && mkdir -m 750 -m 750 ${ha_dir}
-                cp ${zip_file} ${ha_dir}
-                cp ${cms_file} ${ha_dir}
-                cp ${crl_file} ${ha_dir}
-                tar -xf ${zip_file} -C ${ha_dir}
             fi
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp
@@ -850,8 +882,40 @@ function bootstrap()
     fi
 }
 
+rotate_log()
+{
+    local log_list=$(ls $BASE_DIR/install.log* | sort -r)
+    for item in $log_list; do
+        local suffix=${item##*.}
+        local prefix=${item%.*}
+        if [[ ${suffix} != "log" ]]; then
+            if [[ ${suffix} -lt ${LOG_COUNT_THRESHOLD} ]];then
+                suffix=$(($suffix+1))
+                mv -f $item $prefix.$suffix
+            fi
+        else
+            mv -f ${item} ${item}.1
+            cat /dev/null > ${item}
+        fi
+    done
+}
+
+function check_log()
+{
+    if [[ ! -e $BASE_DIR/install.log ]];then
+        touch $BASE_DIR/install.log
+    fi
+    local log_size=$(ls -l $BASE_DIR/install.log | awk '{ print $5 }')
+    if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
+        rotate_log
+    fi
+}
+
 function set_permission()
 {
+    chmod 750 $BASE_DIR/ 2>/dev/null
+    chmod -R 640  $(find ${BASE_DIR}/  -type f ! -path "./.git*") 2>/dev/null
+    chmod -R 750  $(find ${BASE_DIR}/  -type d ! -path "./.git*") 2>/dev/null
     for f in $(find ${BASE_DIR}/  -type f  -name "*.sh" -o -name "*.py" ! -path "./.git*")
     do
         is_exe=$(file ${f} | grep executable | wc -l)
@@ -859,11 +923,7 @@ function set_permission()
             chmod 550 ${f} 2>/dev/null
         fi
     done
-    if [[ ! -e $BASE_DIR/install.log ]];then
-        touch $BASE_DIR/install.log
-    fi
-    chmod 600 $BASE_DIR/install.log 2>/dev/null
-    chmod 600 ${BASE_DIR}/inventory_file
+    chmod 600 $BASE_DIR/install.log* $BASE_DIR/downloader.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini ${BASE_DIR}/playbooks/rootca.pem 2>/dev/null
 }
 
 function prepare_environment()
@@ -875,6 +935,7 @@ function prepare_environment()
 
 main()
 {
+    check_log
     set_permission
     parse_script_args $*
     check_script_args

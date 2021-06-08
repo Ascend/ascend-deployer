@@ -4,7 +4,7 @@
 
 - name: find ha path
   find:
-    paths: "{{ resources_dir }}/run_from_zip_dir"
+    paths: "{{ resources_dir }}/run_from_cann_zip"
     recurse: no
     file_type: directory
     use_regex: yes

@@ -1,32 +1,31 @@
-- name: find firmware package train only
+- name: include vars
+  include_vars: ../os_map.yml
+
+- set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+
+- name: find firmware package only zip
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns:
-      - "npu-firmware.*.run"
+    patterns: "npu-firmware.*.run"
   register: firmware_pkg
-  when: ansible_local.npu_info.scene == 'train'
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when:
-    - not 'skipped' in firmware_pkg
-    - firmware_pkg.matched > 0
+  when: firmware_pkg.matched > 0
 
 - name: find firmware package
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns:
-      - "{{ ansible_local.npu_info.product }}.*firmware.*.run"
+    patterns: "{{ ansible_local.npu_info.product }}.*firmware.*.run"
   register: firmware_pkg
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when:
-    - firmware_pkg.matched > 0
+  when: firmware_pkg.matched > 0
 
 - name: find upgrade tool
   find:
@@ -42,7 +41,7 @@
     msg:
     - "firmware install failed: driver not installed"
   failed_when: true
-  when: up_tool.matched == 0 and (firmware_pkg.matched > 0)
+  when: up_tool.matched == 0 and (firmware_run is defined and firmware_run|length > 0)
 
 - name: install firmware
   shell: "bash {{ firmware_run }} --full --quiet"

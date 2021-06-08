@@ -1,0 +1,7 @@
+- hosts: localhost
+  tasks:
+    - name: set facts_cache dir permission
+      file:
+        path: ../facts_cache
+        mode: 0750
+        recurse: yes
