@@ -9,7 +9,7 @@
 
     - name: find atlasedge package
       find:
-        paths: "{{ resources_dir }}/run_from_zip_dir/atlasedge_{{ ansible_architecture }}"
+        paths: "{{ resources_dir }}/run_from_cann_zip/atlasedge_{{ ansible_architecture }}"
         recurse: no
         file_type: file
         use_regex: yes

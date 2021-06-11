@@ -1,56 +1,51 @@
-- name: find driver package train only common
+- name: include vars
+  include_vars: ../os_map.yml
+
+- set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+
+- name: find driver package linux only zip
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns:
-      - "npu-driver.*linux.*{{ ansible_architecture }}.run"
-  register: driver_pkg
-  when: ansible_local.npu_info.scene == 'train'
-
-- set_fact: driver_run={{driver_pkg.files[0].path}}
-  when:
-    - not 'skipped' in driver_pkg
-    - driver_pkg.matched > 0
-
-- name: find driver package train only specific os
-  find:
-    paths: "{{ cann_dirs }}"
-    recurse: no
-    file_type: file
-    use_regex: yes
-    patterns:
-      - "npu-driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
-  register: driver_pkg
-  when: ansible_local.npu_info.scene == 'train'
-
-- set_fact: driver_run={{driver_pkg.files[0].path}}
-  when:
-    - not 'skipped' in driver_pkg
-    - driver_pkg.matched > 0
-
-- name: find driver package common
-  find:
-    paths: "{{ cann_dirs }}"
-    recurse: no
-    file_type: file
-    use_regex: yes
-    patterns:
-      - "{{ ansible_local.npu_info.product }}.*driver.*linux.*{{ ansible_architecture }}.run"
+    patterns: "npu-driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: driver_pkg.matched > 0
 
-- name: find driver package specific os
+- name: find driver package specific_os only zip
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns:
-      - "{{ ansible_local.npu_info.product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+    patterns: "npu-driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: driver_pkg.matched > 0
+
+- name: find driver package linux
+  find:
+    paths: "{{ run_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: driver_pkg.matched > 0
+
+- name: find driver package specific_os
+  find:
+    paths: "{{ run_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}.*driver.*{{ ansible_distribution.lower() }}{{ os_version }}.*{{ ansible_architecture }}.run"
   register: driver_pkg
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}

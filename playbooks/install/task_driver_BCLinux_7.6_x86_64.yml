@@ -1,23 +1,47 @@
-# BigCloud Linux 7.6 use the driver of CentOS 7.6
-- name: find driver package train only
+- name: include vars
+  include_vars: ../os_map.yml
+
+- set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+
+- name: find driver package linux only zip
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns:
-      - "npu-driver.*centos7.6.*{{ ansible_architecture }}.run"
+    patterns: "npu-driver.*linux.*{{ ansible_architecture }}.run"
   register: driver_pkg
-  when: ansible_local.npu_info.scene == 'train'
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
-  when:
-    - not 'skipped' in driver_pkg
-    - driver_pkg.matched > 0
+  when: driver_pkg.matched > 0
 
-- name: find driver package for BigCloud Linux 7.6
+- name: find driver package specific_os only zip
   find:
-    paths: "{{ cann_dirs }}"
+    paths: "{{ run_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "npu-driver.*centos7.6.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: driver_pkg.matched > 0
+
+- name: find driver package linux
+  find:
+    paths: "{{ run_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "{{ ansible_local.npu_info.product }}.*driver.*linux.*{{ ansible_architecture }}.run"
+  register: driver_pkg
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: driver_pkg.matched > 0
+
+- name: find driver package specific_os
+  find:
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
@@ -27,7 +51,7 @@
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: driver_pkg.matched > 0
 
-- name: install driver for BigCloud Linux
+- name: install driver
   shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: driver_result.rc == 1

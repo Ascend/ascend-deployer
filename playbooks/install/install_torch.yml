@@ -21,6 +21,6 @@
         - "os_version == '7.6' or 'Tlinux' in os_and_arch"
         - import_torch.rc != 0
 
-    - name: install torch if import failed
+    - name: install torch if not import
       import_tasks: task_torch.yml
       when: import_torch.rc != 0

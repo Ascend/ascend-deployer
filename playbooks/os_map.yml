@@ -35,3 +35,13 @@ code_name_dict:
     "LTS-SP1": "LTS-SP1"
     "LTS": "LTS"
 code_name: ""
+scene_dict:
+  a300i:
+    - "{{ resources_dir }}/run_from_a300i_zip"
+    - "{{ resources_dir }}"
+  infer:
+    - "{{ resources_dir }}/run_from_infer_zip"
+    - "{{ resources_dir }}"
+  train:
+    - "{{ resources_dir }}/run_from_train_zip"
+    - "{{ resources_dir }}"

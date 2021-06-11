@@ -9,7 +9,7 @@
 
     - name: find ha package
       find:
-        paths: "{{ resources_dir }}/run_from_zip_dir/ha_{{ ansible_architecture }}"
+        paths: "{{ resources_dir }}/run_from_cann_zip/ha_{{ ansible_architecture }}"
         recurse: no
         file_type: file
         use_regex: yes

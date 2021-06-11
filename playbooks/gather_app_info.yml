@@ -35,3 +35,6 @@
     - name: show app install info
       debug:
         var=ansible_local.app_info
+
+- name: set facts_cache dir permission
+  import_playbook: set_facts_cache_permission.yml

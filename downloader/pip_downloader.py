@@ -197,7 +197,7 @@ class MyPip(object):
         index = self.get_simple_index(distribution)
         file_name, url = self.wheel_filter(index, version, platform, implement)
         if len(url) == 0:
-            LOG.error('can not find {0} for {1} {2}'.format(name, platform, implement))
+            LOG.info('can not find {0} for {1} {2}'.format(name, platform, implement))
             return False
         if file_name in self.downloaded:
             return

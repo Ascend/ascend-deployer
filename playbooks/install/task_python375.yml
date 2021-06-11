@@ -19,7 +19,7 @@
     chdir: "{{ build_dir }}/Python-3.7.5"
 
 - name: install python3.7.5 make
-  shell: "make -C {{ build_dir }}/Python-3.7.5 -j4"
+  shell: "make -C {{ build_dir }}/Python-3.7.5 -j20"
 
 - name: install python3.7.5 make install
   shell: "make -C {{ build_dir }}/Python-3.7.5 install"

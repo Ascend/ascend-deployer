@@ -26,3 +26,6 @@
     - name: gather facts again
       setup:
         fact_path: ~/ansible/facts.d/
+
+- name: set facts_cache dir permission
+  import_playbook: set_facts_cache_permission.yml
