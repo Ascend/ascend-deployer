@@ -11,7 +11,7 @@ readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
 readonly A300I_PRODUCT_LIST="A300i-pro"
 readonly INFER_PRODUCT_LIST="A300-3000,A300-3010"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
-readonly CANN_PRODUCT_LIST="Ascend-cann"
+readonly CANN_PRODUCT_LIST="Ascend-cann,MindX"
 
 declare -A OS_MAP=(["ubuntu"]="Ubuntu")
 OS_MAP["ubuntu"]="Ubuntu"
@@ -339,9 +339,11 @@ function install_ansible()
             sed -i "1531 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
             # debian 10.0
             sed -i "1520 i\      '10.0': /usr/bin/python3" ${ansible_path}/config/base.yml
+            # ubuntu 20.04 is recoginized as debian bullseye/sid due to /etc/debian_version
+            sed -i "1522 i\      'bullseye/sid': /usr/bin/python3" ${ansible_path}/config/base.yml
             # openeuler os use python3 as default python interpreter
-            sed -i "1533 i\    openeuler:"                    ${ansible_path}/config/base.yml
-            sed -i "1534 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1534 i\    openeuler:"                    ${ansible_path}/config/base.yml
+            sed -i "1535 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
         fi
     fi
 }
@@ -913,16 +915,16 @@ function check_log()
 
 function set_permission()
 {
-    chmod 750 $BASE_DIR/ 2>/dev/null
-    chmod -R 640  $(find ${BASE_DIR}/  -type f ! -path "./.git*") 2>/dev/null
-    chmod -R 750  $(find ${BASE_DIR}/  -type d ! -path "./.git*") 2>/dev/null
-    for f in $(find ${BASE_DIR}/  -type f  -name "*.sh" -o -name "*.py" ! -path "./.git*")
+    chmod -R 750  $(find ${BASE_DIR}/  -type d ! -path "${BASE_DIR}/.git*" ! -path "${BASE_DIR}/resources/run_from_*_zip/*") 2>/dev/null
+    chmod -R 640  $(find ${BASE_DIR}/  -type f ! -path "${BASE_DIR}/.git*" ! -path "${BASE_DIR}/resources/run_from_*_zip/*") 2>/dev/null
+    for f in $(find ${BASE_DIR}/ -maxdepth 2 -type f  -name "*.sh" -o -name "*.py" ! -path "${BASE_DIR}/.git*" ! -path "${BASE_DIR}/resources/run_from_*_zip/*")
     do
         is_exe=$(file ${f} | grep executable | wc -l)
         if [[ ${is_exe} -eq 1 ]];then
             chmod 550 ${f} 2>/dev/null
         fi
     done
+    chmod 750 $BASE_DIR/ $BASE_DIR/playbooks/install
     chmod 600 $BASE_DIR/install.log* $BASE_DIR/downloader.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini ${BASE_DIR}/playbooks/rootca.pem 2>/dev/null
 }
 
