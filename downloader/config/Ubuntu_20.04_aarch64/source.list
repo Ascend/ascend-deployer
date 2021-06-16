@@ -1,0 +1,4 @@
+deb https://mirrors.huaweicloud.com/ubuntu-ports/ focal main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/ubuntu-ports/ focal-updates main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/ubuntu-ports/ focal-security main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/docker-ce/linux/ubuntu/ focal stable
