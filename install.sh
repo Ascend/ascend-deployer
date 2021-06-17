@@ -2,6 +2,8 @@
 readonly TRUE=1
 readonly FALSE=0
 readonly SIZE_THRESHOLD=$((5*1024*1024*1024))
+readonly ZIP_COUNT_THRESHOLD=3000
+readonly TAR_COUNT_THRESHOLD=100000
 readonly LOG_SIZE_THRESHOLD=$((20*1024*1024))
 readonly LOG_COUNT_THRESHOLD=5
 readonly kernel_version=$(uname -r)
@@ -12,6 +14,17 @@ readonly A300I_PRODUCT_LIST="A300i-pro"
 readonly INFER_PRODUCT_LIST="A300-3000,A300-3010"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,MindX"
+readonly APP_NAME_LIST=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
+
+if [ ${UID} == 0 ];then
+    readonly PYTHON_PREFIX=/usr/local/python3.7.5
+else
+    readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
+fi
+
+VAULT_CMD=""
+DEBUG_CMD=""
+STDOUT_CALLBACK=""
 
 declare -A OS_MAP=(["ubuntu"]="Ubuntu")
 OS_MAP["ubuntu"]="Ubuntu"
@@ -27,7 +40,6 @@ OS_MAP["uos"]="UOS"
 OS_MAP["tlinux"]="Tlinux"
 OS_MAP["openEuler"]="OpenEuler"
 
-unset DISPLAY
 if [ -z ${ASNIBLE_CONFIG} ];then
     export ANSIBLE_CONFIG=$BASE_DIR/ansible.cfg
 fi
@@ -41,31 +53,28 @@ if [ -z ${ANSIBLE_CACHE_PLUGIN_CONNECTION} ];then
     export ANSIBLE_CACHE_PLUGIN_CONNECTION=$BASE_DIR/facts_cache
 fi
 
-VAULT_CMD=""
-DEBUG_CMD=""
-STDOUT_CALLBACK=""
-
-if [ ${UID} == 0 ];then
-    readonly PYTHON_PREFIX=/usr/local/python3.7.5
-else
-    readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
-fi
-readonly app_name_list=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
-
 function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    echo "[INFO] $*"
     echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/install.log
 }
 
-function ansible_playbook()
+function log_warning()
 {
-    if [ -z "$output_file" ]; then
-        ansible-playbook $*
-    else
-        ansible-playbook $* > "$output_file"
-    fi
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    echo "[WARNING] $*"
+    echo "${DATE_N} ${USER_N} [WARNING] $*" >> ${BASE_DIR}/install.log
+}
+
+function log_error()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    echo "[ERROR] $*"
+    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/install.log
 }
 
 function get_os_version()
@@ -148,96 +157,35 @@ function get_os_ver_arch()
 
 readonly g_os_ver_arch=$(get_os_ver_arch)
 
-# check if resource of specific os is exists
-function check_resources()
-{
-    if [ -d ${BASE_DIR}/resources/${g_os_ver_arch} ];then
-        return
-    fi
-    echo "WARNING: no resources found for os ${g_os_ver_arch}, start downloading"
-    bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
-}
-
-function encrypt_inventory() {
-    local pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass3=$(grep ansible_become_pass ${BASE_DIR}/inventory_file | wc -l)
-    local pass_cnt=$((pass1 + pass2 + pass3))
-    if [ ${pass_cnt} == 0 ];then
-        return
-    fi
-    echo "The inventory_file need encrypt !"
-    ansible-vault encrypt ${BASE_DIR}/inventory_file
-    if [[ $? != 0 ]];then
-        exit 1
-    fi
-}
-
-function init_ansible_vault()
-{
-    local vault_count=$(grep "ANSIBLE_VAULT.*AES" ${BASE_DIR}/inventory_file | wc -l)
-    if [ ${vault_count} != 0 ] && [ -z ${ANSIBLE_VAULT_PASSWORD_FILE} ];then
-         VAULT_CMD="--ask-vault-pass"
-    fi
-}
-
-function have_no_python_module
-{
-    ret=`python3.7 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
-    return ${ret}
-}
-
-function check_python375()
-{
-    if [ ! -d ${PYTHON_PREFIX} ];then
-        echo "Warning: no python3.7.5 installed"
-        return ${FALSE}
-    fi
-    module_list="ctypes sqlite3 lzma"
-    for module in ${module_list}
-    do
-        have_no_python_module ${module}
-        ret=$?
-        if [ ${ret} == ${TRUE} ];then
-            echo "Warning: python3.7 have no moudle ${module}"
-            return ${FALSE}
-        fi
-    done
-    return ${TRUE}
-}
-
-function check_cmd_isok()
-{
-    if [[ $? != 0 ]];then
-        exit 1
-    fi
-}
-
 function install_kernel_header_devel_euler()
 {
     local os_name=$(get_os_name)
     if [ "${os_name}" != "EulerOS" ];then
         return
     fi
-
     local euler=""
     if [[ "${g_os_ver_arch}" =~ 2.8 ]];then
         euler="eulerosv2r8.${arch}"
     else
         euler="eulerosv2r9.${arch}"
     fi
-
     local kh=$(rpm -qa kernel-headers | wc -l)
     local kd=$(rpm -qa kernel-devel | wc -l)
     local kh_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
     local kd_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
-        check_cmd_isok
+        if [[ $? != 0 ]];then
+            log_error "install kernel_header for euler fail"
+            exit 1
+        fi
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
-        check_cmd_isok
+        if [[ $? != 0 ]];then
+            log_error "install kernel_devel for euler fail"
+            exit 1
+        fi
     fi
 }
 
@@ -247,24 +195,43 @@ function install_kernel_header_devel()
     if [ ${have_rpm} -eq 0 ]; then
         return
     fi
-    local kh_rpm=${BASE_DIR}/resources/kernel/kernel-headers-${kernel_version}.rpm
-    local kd_rpm=${BASE_DIR}/resources/kernel/kernel-devel-${kernel_version}.rpm
     local kh=$(rpm -q kernel-headers | grep ${kernel_version} | wc -l)
     local kd=$(rpm -q kernel-devel | grep ${kernel_version} | wc -l)
+    local kh_rpm=${BASE_DIR}/resources/kernel/kernel-headers-${kernel_version}.rpm
+    local kd_rpm=${BASE_DIR}/resources/kernel/kernel-devel-${kernel_version}.rpm
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
-        check_cmd_isok
+        if [[ $? != 0 ]];then
+            log_error "install kernel_header fail"
+            exit 1
+        fi
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
-        check_cmd_isok
+        if [[ $? != 0 ]];then
+            log_error "install kernel_devel fail"
+            exit 1
+        fi
+    fi
+}
+
+# check if resource of specific os is exists
+function check_resources()
+{
+    if [ -d ${BASE_DIR}/resources/${g_os_ver_arch} ];then
+        return
+    fi
+    log_warning "no resources founded for os ${g_os_ver_arch}, start downloading"
+    bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
+    if [[ $? != 0 ]];then
+        log_error "download ${g_os_ver_arch} fail"
+        exit 1
     fi
 }
 
 function install_sys_packages()
 {
     check_resources
-    echo "install system packages"
     log_info "install system packages"
 
     install_kernel_header_devel
@@ -278,26 +245,56 @@ function install_sys_packages()
         local have_rpm=0
         ;;
     *)
-        echo "ERROR: check OS ${g_os_name} fail"
+        log_error "check OS ${g_os_name} fail"
         exit 1
         ;;
     esac
+    if [[ "${g_os_ver_arch}" == "Kylin_v10juniper_aarch64" ]];then
+        local have_rpm=0
+    fi
 
     if [ ${have_rpm} -eq 1 ]; then
         rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     else
         export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i ${BASE_DIR}/resources/${g_os_ver_arch}/*.deb
     fi
-    check_cmd_isok
+    if [[ $? != 0 ]];then
+        log_error "install system packages fail"
+        exit 1
+    fi
+}
+
+function have_no_python_module
+{
+    ret=`python3.7 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
+    return ${ret}
+}
+
+function check_python375()
+{
+    if [ ! -d ${PYTHON_PREFIX} ];then
+        log_warning "no python3.7.5 installed"
+        return ${FALSE}
+    fi
+    module_list="ctypes sqlite3 lzma"
+    for module in ${module_list}
+    do
+        have_no_python_module ${module}
+        ret=$?
+        if [ ${ret} == ${TRUE} ];then
+            log_warning "python3.7 have no moudle ${module}"
+            return ${FALSE}
+        fi
+    done
+    return ${TRUE}
 }
 
 function install_python375()
 {
     if [ ! -f ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz ];then
-        echo "can't find Python-3.7.5.tar.xz"
+        log_error "can't find Python-3.7.5.tar.xz"
         return
     fi
-    echo "install Python 3.7.5"
     log_info "install Python 3.7.5"
 
     mkdir -p -m 750 ~/build
@@ -337,29 +334,17 @@ function install_ansible()
             # kylin should use python3. if selinux enalbed, the default python have no selinux
             sed -i "1530 i\    kylin:"                      ${ansible_path}/config/base.yml
             sed -i "1531 i\      '10': /usr/bin/python3"    ${ansible_path}/config/base.yml
+            sed -i "1532 i\      'V10': /usr/bin/python3"    ${ansible_path}/config/base.yml
             # debian 10.0
             sed -i "1520 i\      '10.0': /usr/bin/python3" ${ansible_path}/config/base.yml
             # ubuntu 20.04 is recoginized as debian bullseye/sid due to /etc/debian_version
             sed -i "1522 i\      'bullseye/sid': /usr/bin/python3" ${ansible_path}/config/base.yml
             # openeuler os use python3 as default python interpreter
-            sed -i "1534 i\    openeuler:"                    ${ansible_path}/config/base.yml
-            sed -i "1535 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1535 i\    openeuler:"                    ${ansible_path}/config/base.yml
+            sed -i "1536 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1537 i\    uos:"                    ${ansible_path}/config/base.yml
+            sed -i "1538 i\      '20': /usr/bin/python3"     ${ansible_path}/config/base.yml
         fi
-    fi
-}
-
-function verify_zip_redirect()
-{
-    echo "The system is busy with checking compressed files, Please wait for a moment..."
-    log_info "verify zip"
-    rm -rf ${BASE_DIR}/resources/run_from_*_zip
-    check_extracted_size
-    verify_zip > ${BASE_DIR}/tmp.log 2>&1
-    local verify_result=$?
-    cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install.log
-    cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
-    if [ ${verify_result} -ne 0 ];then
-        exit 1
     fi
 }
 
@@ -371,14 +356,12 @@ function check_extracted_size()
     do
         unzip -l ${zip_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
-            echo "Error: ${zip_package} does not look like a zip archive"
-            echo "Error: ${zip_package} does not look like a zip archive" >> ${BASE_DIR}/install.log
+            log_error "${zip_package} does not look like a zip compressed file"
             exit 1
         fi
-        local check_zip=$(unzip -l ${zip_package} | awk -v size_threshold="$SIZE_THRESHOLD" 'END {print ($1 < size_threshold)}')
+        local check_zip=$(unzip -l ${zip_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${ZIP_COUNT_THRESHOLD}" 'END {print ($1 <= size_threshold && $2 <= count_threshold)}')
         if [[ ${check_zip} == 0 ]];then
-            echo "Error: ${zip_package} extracted size over 5G"
-            echo "Error: ${zip_package} extracted size over 5G" >> ${BASE_DIR}/install.log
+            log_error "${zip_package} extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
             exit 1
         fi
     done
@@ -386,14 +369,12 @@ function check_extracted_size()
     do
         tar tvf ${tar_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
-            echo "Error: ${tar_package} does not look like a tar archive"
-            echo "Error: ${tar_package} does not look like a tar archive" >> ${BASE_DIR}/install.log
+            log_error "${tar_package} does not look like a tar compressed file"
             exit 1
         fi
-        local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="$SIZE_THRESHOLD" '{sum += $3} END {print (sum < size_threshold)}')
+        local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${TAR_COUNT_THRESHOLD}" '{sum += $3} END {print (sum <= size_threshold && NR <= count_threshold)}')
         if [[ ${check_tar} == 0 ]];then
-            echo "Error: ${tar_package} extracted size over 5G"
-            echo "Error: ${tar_package} extracted size over 5G" >> ${BASE_DIR}/install.log
+            log_error "${tar_package} extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
             exit 1
         fi
     done
@@ -440,7 +421,6 @@ function verify_zip()
                 elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
                     local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
                 else
-                    echo "Error: ${zip_file} not in PRODUCT_LIST"
                     return 1
                 fi
                 mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
@@ -461,11 +441,25 @@ function verify_zip()
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp
         if [[ ${verify_success} -ne 0 ]];then
-            echo "Error: check validation fail"
             return 1
         fi
     done
     IFS=${IFS_OLD}
+}
+
+function verify_zip_redirect()
+{
+    log_info "The system is busy with checking compressed files, Please wait for a moment..."
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
+    check_extracted_size
+    verify_zip > ${BASE_DIR}/tmp.log 2>&1
+    local verify_result=$?
+    cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install.log
+    cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
+    if [ ${verify_result} -ne 0 ];then
+        log_error "check validation fail"
+        exit 1
+    fi
 }
 
 function process_install()
@@ -569,7 +563,17 @@ function process_display()
 {
     echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
     ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
+}
 
+function process_check()
+{
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+}
+
+function process_chean()
+{
+    ansible ${VAULT_CMD} -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
 }
 
 function print_usage()
@@ -627,7 +631,7 @@ function print_usage()
         echo "                               ${tmp%.*}"
     done
     echo "--display=<target>             display app install info:"
-    for target in ${app_name_list[*]}
+    for target in ${APP_NAME_LIST[*]}
     do
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
@@ -648,7 +652,7 @@ function parse_script_args() {
         --install=*)
             install_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${install_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--install parameter is invalid"
+                log_error "--install parameter is invalid"
                 print_usage
             fi
             shift
@@ -656,7 +660,7 @@ function parse_script_args() {
         --install-scene=*)
             install_scene=$(echo $1 | cut -d"=" -f2)
             if $(echo "${install_scene}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--install-scene parameter is invalid"
+                log_error "--install-scene parameter is invalid"
                 print_usage
             fi
             shift
@@ -664,7 +668,7 @@ function parse_script_args() {
         --uninstall=*)
             uninstall_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${uninstall_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--uninstall parameter is invalid"
+                log_error "--uninstall parameter is invalid"
                 print_usage
             fi
             shift
@@ -672,7 +676,7 @@ function parse_script_args() {
         --uninstall-version=*)
             uninstall_version=$(echo $1 | cut -d"=" -f2)
             if $(echo "${uninstall_version}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--uninstall-version parameter is invalid"
+                log_error "--uninstall-version parameter is invalid"
                 print_usage
             fi
             shift
@@ -680,7 +684,7 @@ function parse_script_args() {
         --upgrade=*)
             upgrade_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${upgrade_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--upgrade parameter is invalid"
+                log_error "--upgrade parameter is invalid"
                 print_usage
             fi
             shift
@@ -688,7 +692,7 @@ function parse_script_args() {
         --test=*)
             test_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--test parameter is invalid"
+                log_error "--test parameter is invalid"
                 print_usage
             fi
             shift
@@ -696,7 +700,7 @@ function parse_script_args() {
         --display=*)
             display_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${display_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--display parameter is invalid"
+                log_error "--display parameter is invalid"
                 print_usage
             fi
             shift
@@ -704,7 +708,7 @@ function parse_script_args() {
         --output-file=*)
             output_file=$(echo $1 | cut -d"=" -f2)
             if $(echo "${output_file}" | grep -Evq '^[a-zA-Z0-9._,/]*$');then
-                echo "ERROR" "--output-file parameter is invalid"
+                log_error "--output-file parameter is invalid"
                 print_usage
             fi
             shift
@@ -712,7 +716,7 @@ function parse_script_args() {
         --stdout_callback=*)
             STDOUT_CALLBACK=$(echo $1 | cut -d"=" -f2)
             if $(echo "${STDOUT_CALLBACK}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                echo "ERROR" "--stdout_callback parameter is invalid"
+                log_error "--stdout_callback parameter is invalid"
                 print_usage
             fi
             shift
@@ -735,7 +739,7 @@ function parse_script_args() {
             ;;
         *)
             if [ "x$1" != "x" ]; then
-                echo "ERROR" "Unsupported parameters: $1"
+                log_error "Unsupported parameters: $1"
                 print_usage
             fi
             break
@@ -747,7 +751,7 @@ function parse_script_args() {
 function check_script_args()
 {
     if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${uninstall_target} ] && [ -z ${upgrade_target} ] && [ -z ${test_target} ] && [ -z ${display_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
-        echo "ERROR" "expected one valid argument at least"
+        log_error "expected one valid argument at least"
         print_usage
     fi
 
@@ -757,7 +761,7 @@ function check_script_args()
     for target in ${install_target}
     do
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
-            echo "Error: not support install for ${target}"
+            log_error "not support install for ${target}"
             unsupport=${TRUE}
         fi
     done
@@ -769,7 +773,7 @@ function check_script_args()
     # --install-scene
     local unsupport=${FALSE}
     if [ ! -z ${install_scene} ] && [ ! -f ${BASE_DIR}/playbooks/scene/scene_${install_scene}.yml ];then
-        echo "Error: not support install scene for ${install_scene}"
+        log_error "not support install scene for ${install_scene}"
         unsupport=${TRUE}
     fi
     if [ ${unsupport} == ${TRUE} ];then
@@ -782,7 +786,7 @@ function check_script_args()
     for target in ${uninstall_target}
     do
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
-            echo "Error: not supported uninstall for ${target}"
+            log_error "not supported uninstall for ${target}"
             not_supported=${TRUE}
         fi
     done
@@ -797,7 +801,7 @@ function check_script_args()
     for target in ${upgrade_target}
     do
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
-            echo "Error: not supported upgrade for ${target}"
+            log_error "not supported upgrade for ${target}"
             not_supported=${TRUE}
         fi
     done
@@ -812,7 +816,7 @@ function check_script_args()
     for target in ${test_target}
     do
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/test/test_${target}.yml ];then
-            echo "Error: not support test for ${target}"
+            log_error "not support test for ${target}"
             unsupport=${TRUE}
         fi
     done
@@ -825,7 +829,7 @@ function check_script_args()
     if [ ! -z ${display_target} ];then
         IFS=' '
         local unsupported=${TRUE}
-        for target in ${app_name_list[*]}
+        for target in ${APP_NAME_LIST[*]}
         do
             if [ "${target}" == "${display_target}" ];then
                 unsupported=${FALSE}
@@ -833,7 +837,7 @@ function check_script_args()
             fi
         done
         if [ ${unsupported} == ${TRUE} ];then
-            echo "Error: not support display for ${display_target}"
+            log_error "not support display for ${display_target}"
             print_usage
         fi
         unset IFS
@@ -841,29 +845,41 @@ function check_script_args()
 
     # --custom
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
-        echo "ERROR" "Unsupported --install and --install-scene at same time"
+        log_error "Unsupported --install and --install-scene at same time"
         print_usage
     fi
 }
 
-function ping_all()
+function ansible_playbook()
 {
-    ansible -i ${BASE_DIR}/inventory_file -m ping all
-    if [ $? -ne 0 ]; then
-        echo "ERROR" "some hosts is unreachable"
+    if [ -z "$output_file" ]; then
+        ansible-playbook $*
+    else
+        ansible-playbook $* > "$output_file"
+    fi
+}
+
+function encrypt_inventory() {
+    local pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass3=$(grep ansible_become_pass ${BASE_DIR}/inventory_file | wc -l)
+    local pass_cnt=$((pass1 + pass2 + pass3))
+    if [ ${pass_cnt} == 0 ];then
+        return
+    fi
+    log_info "The inventory_file need encrypt"
+    ansible-vault encrypt ${BASE_DIR}/inventory_file
+    if [[ $? != 0 ]];then
         exit 1
     fi
 }
 
-function process_check()
+function init_ansible_vault()
 {
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
-}
-
-function process_chean()
-{
-    ansible ${VAULT_CMD} -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
+    local vault_count=$(grep "ANSIBLE_VAULT.*AES" ${BASE_DIR}/inventory_file | wc -l)
+    if [ ${vault_count} != 0 ] && [ -z ${ANSIBLE_VAULT_PASSWORD_FILE} ];then
+         VAULT_CMD="--ask-vault-pass"
+    fi
 }
 
 function bootstrap()
@@ -879,12 +895,12 @@ function bootstrap()
     fi
 
     if [ ${have_ansible} -eq 0 ];then
-        echo "no ansible"
+        log_warning "no ansible"
         install_ansible
     fi
 }
 
-rotate_log()
+function rotate_log()
 {
     local log_list=$(ls $BASE_DIR/install.log* | sort -r)
     for item in $log_list; do
@@ -942,7 +958,7 @@ main()
     parse_script_args $*
     check_script_args
     if [ -d ${BASE_DIR}/facts_cache ];then
-        rm -rf ${BASE_DIR}/facts_cache
+        rm -rf ${BASE_DIR}/facts_cache && mkdir -p -m 750 ${BASE_DIR}/facts_cache
     fi
     if [ ${UID} == 0 ];then
         export PATH=/usr/local/python3.7.5/bin:$PATH

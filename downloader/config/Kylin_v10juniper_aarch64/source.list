@@ -1,0 +1,3 @@
+deb http://archive.kylinos.cn/kylin/KYLIN-ALL/ 10.0 main multiverse restricted universe
+deb http://archive.kylinos.cn/kylin/partner/ juniper main
+deb https://mirrors.huaweicloud.com/docker-ce/linux/ubuntu/ xenial stable

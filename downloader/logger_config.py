@@ -31,21 +31,18 @@ class BasicLogConfig(object):
     """basic logger configuration"""
     DEBUG = False
 
-    LOG_DIR = os.path.dirname(os.path.realpath(__file__))
-    LOG_DIR = os.path.dirname(LOG_DIR)
-    if platform.system() == 'Linux':
-        if 'site-packages' in LOG_DIR or 'dist-packages' in LOG_DIR:
-            ad_home = os.getenv('ASCEND_DEPLOYER_HOME')
-            if ad_home is None:
-                ad_home = os.getenv('HOME')
-            LOG_DIR = os.path.join(ad_home, 'ascend-deployer')
-
-        if not os.path.exists(LOG_DIR):
-            LOG_DIR = os.getcwd()
+    CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+    if 'site-packages' not in CUR_DIR and 'dist-packages' not in CUR_DIR:
+        deployer_home = os.path.dirname(os.path.dirname(CUR_DIR))
     else:
-        LOG_DIR = os.getcwd()
-
-    LOG_FILE = os.path.join(LOG_DIR, 'downloader.log')
+        deployer_home = ''
+        if platform.system() == 'Linux':
+            deployer_home = os.getenv('HOME')
+            if os.getenv('ASCEND_DEPLOYER_HOME') is not None:
+                deployer_home = os.getenv('ASCEND_DEPLOYER_HOME')
+        else:
+            deployer_home = os.getcwd()
+    LOG_FILE = os.path.join(deployer_home, 'ascend-deployer', 'downloader.log')
     if not os.path.exists(LOG_FILE):
         os.close(
             os.open(

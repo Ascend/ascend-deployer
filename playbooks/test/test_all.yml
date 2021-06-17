@@ -12,8 +12,8 @@
 - name: test tensorflow
   import_playbook: test_tensorflow.yml
 
-- name: test torch
-  import_playbook: test_torch.yml
+- name: test pytorch
+  import_playbook: test_pytorch.yml
 
 - name: test mindspore
   import_playbook: test_mindspore.yml

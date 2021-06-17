@@ -1,6 +1,6 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: try import torch
+    - name: try import pytorch
       shell: python3.7 -c "import torch; print(torch.__version__)"
       environment:
         PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
@@ -21,6 +21,6 @@
         - "os_version == '7.6' or 'Tlinux' in os_and_arch"
         - import_torch.rc != 0
 
-    - name: install torch if not import
-      import_tasks: task_torch.yml
+    - name: install pytorch if not import
+      import_tasks: task_pytorch.yml
       when: import_torch.rc != 0

@@ -24,8 +24,8 @@
 - name: install toolbox
   import_playbook: ../install/install_toolbox.yml
 
-- name: install torch
-  import_playbook: ../install/install_torch.yml
+- name: install pytorch
+  import_playbook: ../install/install_pytorch.yml
 
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml

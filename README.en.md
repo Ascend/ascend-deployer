@@ -150,7 +150,7 @@ group=HwHiAiUser
 |Software name  | description|
 |:------------- |:------------------------------------- |
 |Python375, gcc | python3.7.5 and gcc7.3.0 is installed in the $HOME/.local/ directory|
-|Python framework | tensorflow, torch, mindpore|
+|Python framework | tensorflow, pytorch, mindpore|
 |CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
 |MindStudio | installed in the $HOME/ directory|
 
@@ -428,8 +428,8 @@ The offline installation tool provides several basic installation scenarios.
 | mindspore   | sys_pkg、python375、npu、toolkit、mindspore                       | mindspore scene                                      |
 | tensorflow_dev | sys_pkg、python375、npu、toolkit、tfplugin、tensorflow         | tensorflow development scene                         |
 | tensorflow_run | sys_pkg、python375、npu、nnae、tfplugin、tensorflow            | tensorflow run scene                                 | 
-| torch_dev | sys_pkg、python375、npu、toolkit、torch                             | torch development scene                              |
-| torch_run | sys_pkg、python375、npu、nnae、torch                                | torch run scene                                      |
+| pytorch_dev | sys_pkg、python375、npu、toolkit、pytorch                         | pytorch development scene                            |
+| pytorch_run | sys_pkg、python375、npu、nnae、pytorch                            | pytorch run scene                                    |
 
 
 The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_auto.yml** of the auto scene:
@@ -461,8 +461,8 @@ The configuration files for the preceding installation scenarios are stored in t
 - name: install toolbox
   import_playbook: ../install/install_toolbox.yml
 
-- name: install torch
-  import_playbook: ../install/install_torch.yml
+- name: install pytorch
+  import_playbook: ../install/install_pytorch.yml
 
 - name: install tensorflow
   import_playbook: ../install/install_tensorflow.yml
