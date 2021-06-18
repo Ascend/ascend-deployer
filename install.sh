@@ -202,7 +202,7 @@ function install_kernel_header_devel_euler()
     fi
 
     local euler=""
-    if [ -z "${g_os_ver_arch##*SP8*}" ];then
+    if [[ "${g_os_ver_arch}" =~ 2.8 ]];then
         euler="eulerosv2r8.${arch}"
     else
         euler="eulerosv2r9.${arch}"

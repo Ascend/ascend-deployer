@@ -1,7 +1,7 @@
 [
     {
         "name": "kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
-        "url": "https://mirrors.tuna.tsinghua.edu.cn/centos-vault/altarch/7.6.1810/os/aarch64/Packages/kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
+        "url": "https://mirrors.bfsu.edu.cn/centos-vault/altarch/7.6.1810/os/aarch64/Packages/kernel-headers-4.14.0-115.el7a.0.1.aarch64.rpm",
         "sha256": "1be6190e29f5f55dced9aae529a29ad3f80fe8df408cd053dca92d9091e56575"
     },
     {
