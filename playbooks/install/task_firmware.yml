@@ -1,7 +1,10 @@
 - name: include vars
   include_vars: ../os_map.yml
 
+- set_fact: run_dir={{ resources_dir }}
+
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+  when: ansible_local.npu_info.scene != ""
 
 - name: find firmware package only zip
   find:
