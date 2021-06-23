@@ -105,8 +105,8 @@
     { "name": "libpcre32-3" },
     { "name": "libpcrecpp0v5" },
     { "name": "dkms" },
-    { "name": "libbz2-dev" },
-    { "name": "libbz2-1.0" },
+    { "name": "libbz2-dev",  "version": "1.0.6-8.1"},
+    { "name": "libbz2-1.0" , "version": "1.0.6-8.1"},
     { "name": "liblzma-dev" },
     { "name": "libstdc++6" },
     { "name": "libseccomp2" }
