@@ -1,6 +1,61 @@
+- name: get group name gid 1000
+  shell: getent group 1000
+  register: group_info
+  failed_when: false
+
+- name: modify exist group
+  block:
+  - name: get max group id
+    shell: "getent group|awk -F: '{print $3}'|grep -v 655|sort -n -r |head -n1"
+    register: max_gid
+    failed_when: false
+
+  - set_fact: next_gid={{ (max_gid.stdout | int) + 1}}
+  - set_fact: oldgroup={{group_info.stdout.split(':')[0]}}
+
+  - name: modify group id
+    shell: groupmod -g {{ next_gid }} {{ oldgroup }}
+    when: oldgroup != group
+  when: group_info.rc == 0
+
+- name: get user name gid 1000
+  shell: getent passwd 1000
+  register: user_info
+  failed_when: false
+
+- name: modify exist user
+  block:
+  - name: get max user id
+    shell: "getent passwd|awk -F: '{print $3}'|grep -v 655|sort -n -r |head -n1"
+    register: max_uid
+    failed_when: false
+
+  - set_fact: olduser={{user_info.stdout.split(':')[0]}}
+  - set_fact: next_uid={{ (max_uid.stdout | int) + 1}}
+
+  - name: modify user id
+    shell: usermod -u {{next_uid}} {{ olduser }}
+    when: olduser != user
+  when: user_info.rc == 0
+
+- name: ensure group {{ group }}
+  ansible.builtin.group:
+    name: "{{ group }}"
+    state: present
+    gid: 1000
+
+- name: ensure user {{ user }}
+  ansible.builtin.user:
+    name: "{{ user }}"
+    comment: "{{ user }}"
+    uid: 1000
+    group: "{{ group }}"
+    state: present
+
 - name: check user exist
   shell: getent passwd "{{user}}" | wc -l
   register: user_info
+  changed_when: false
 
 - name: message
   debug:

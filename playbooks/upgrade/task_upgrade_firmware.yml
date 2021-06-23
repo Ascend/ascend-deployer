@@ -1,44 +1,69 @@
-- name: find firmware package
+- name: include vars
+  include_vars: ../os_map.yml
+
+- set_fact: run_dir={{ resources_dir }}
+
+- set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+  when: ansible_local.npu_info.scene != ""
+
+- set_fact: firmware_run=""
+
+- name: find firmware package for specific model
   find:
-    path: "{{ resources_dir }}"
+    paths: "{{ run_dir }}"
     recurse: no
     file_type: file
     use_regex: yes
     patterns: "{{ ansible_local.npu_info.product }}-.*{{ ansible_local.npu_info.model_number }}.*firmware.*.run"
   register: firmware_pkg
 
-- debug:
-    var: firmware_pkg
-    verbosity: 1
+- set_fact: firmware_run={{ firmware_pkg.files[0].path }}
+  when: firmware_pkg.matched > 0
 
-- name: query current firmware version
+- name: find firmware package
+  find:
+    paths: "{{ run_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "npu-firmware.*.run"
+  register: firmware_pkg
+  when: firmware_run | length == 0
+
+- set_fact: firmware_run={{ firmware_pkg.files[0].path }}
+  when:
+    - firmware_pkg is not skipped
+    - firmware_pkg.matched > 0
+
+- name: get current firmware version
   shell: cat /usr/local/Ascend/firmware/version.info | grep Version | cut -d"=" -f2
   register: cur_firmware_version
 
-- debug: var=cur_firmware_version
+- set_fact: current_firmware_version={{ cur_firmware_version.stdout }}
 
-- name: set fact for target_firmware_version
+- name: get target firmware version
   set_fact:
-    target_firmware_version: "{{ firmware_pkg.files[0].path.split('/') | last | regex_replace('.*npu-firmware_(.*)\\.run', '\\1') }}"
-  when: firmware_pkg.matched != 0
+    target_firmware_version: "{{ firmware_run.split('/') | last | regex_replace('.*npu-firmware_(.*)\\.run', '\\1') }}"
+  when: firmware_run | length > 0
 
-- debug: var=target_firmware_version
-
-- name: add run permission for firmware
-  file:
-    path: "{{ firmware_pkg.files[0].path }}"
-    mode: a+x
-  when: 
-    - firmware_pkg.matched > 0
-    - cur_firmware_version.stdout != target_firmware_version
+- name: message
+  debug:
+    msg:
+      - "current firmware = {{ current_firmware_version }}"
+      - "current firmware = {{ target_firmware_version }}"
+  when: firmware_run | length > 0
 
 - name: upgrade firmware
-  shell: "{{ firmware_pkg.files[0].path }} --upgrade --quiet"
+  shell: "bash {{ firmware_run }} --upgrade --quiet"
   register: firmware_result
-  when: 
-    - firmware_pkg.matched > 0
-    - cur_firmware_version.stdout != target_firmware_version
+  when:
+    - firmware_run | length > 0
+    - current_firmware_version != target_firmware_version
+
+- debug: var=firmware_result
+  when: firmware_result is not skipped
 
 - debug:
-    var: firmware_result
-    verbosity: 1
+    msg:
+      -: "can not find firmware package"
+  when: firmware_run | length == 0
