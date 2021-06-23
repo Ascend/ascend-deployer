@@ -201,12 +201,15 @@ class Apt(object):
         :param pkg:  package information
         :return:
         """
+        download_dir = dst_dir
         if 'dst_dir' in pkg:
-            dst_dir = pkg['dst_dir']
+            download_dir = os.path.join(os.path.dirname(dst_dir), pkg['dst_dir'])
+            if not os.path.exists(download_dir):
+                os.makedirs(download_dir, mode=0o750, exist_ok=True)
 
         url = pkg['url']
         file_name = os.path.basename(url)
-        dst_file = os.path.join(self.resources_dir, dst_dir, file_name)
+        dst_file = os.path.join(download_dir, file_name)
 
         checksum = pkg['sha256'] if 'sha256' in pkg else None
         if checksum and not self.need_download_again(checksum, dst_file):

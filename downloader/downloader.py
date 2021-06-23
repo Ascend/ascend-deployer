@@ -34,7 +34,7 @@ import software_mgr
 
 LOG = logger_config.get_logger(__file__)
 
-dir_list = ['downloader', 'playbooks', 'scene', 'test', 'docs']
+dir_list = ['downloader', 'playbooks', 'docs']
 file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg',
              'README.md', 'README.en.md', 'start_download_ui.bat', 'start_download.bat']
 
@@ -134,9 +134,9 @@ def parse_argument():
         pkg_name, version = pkg.split('_')
         download_help += '{}=={}\n'.format(pkg_name, version[:-5])
 
-    parser = argparse.ArgumentParser(allow_abbrev=False,
-                epilog="  notes: When <Version> is missing, <PK> is the latest.\r\n",
-                formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        epilog="  notes: When <Version> is missing, <PK> is the latest.\r\n",
+        formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--os-list', action='store', dest='os_list',
             help=os_list_help)
     parser.add_argument('--download', action='store', dest='packages',

@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test pytorch
+    include_tasks: case_pytorch.yml

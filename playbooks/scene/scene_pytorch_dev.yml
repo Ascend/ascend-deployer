@@ -9,8 +9,8 @@
 - name: install driver and firmware
   import_playbook: ../install/install_npu.yml
 
-- name: install nnae
-  import_playbook: ../install/install_nnae.yml
+- name: install toolkit
+  import_playbook: ../install/install_toolkit.yml
 
-- name: install torch
-  import_playbook: ../install/install_torch.yml
+- name: install pytorch
+  import_playbook: ../install/install_pytorch.yml

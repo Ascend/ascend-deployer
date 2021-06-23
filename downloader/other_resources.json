@@ -66,6 +66,24 @@
         "dest":"resources/pylibs"
     },
     {
+        "filename":"tensorflow-2.4.1-cp37-cp37m-manylinux2014_aarch64.whl",
+        "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/tensorflow-2.4.1-cp37-cp37m-manylinux2014_aarch64.whl",
+        "sha256":"eb58602ec06b14b71bc8532d40ea84719ac19deb9a8ff665892a867727939ea7",
+        "dest":"resources/pylibs"
+    },
+    {
+        "filename":"h5py-2.10.0-cp37-cp37m-manylinux2014_aarch64.whl",
+        "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/h5py-2.10.0-cp37-cp37m-manylinux2014_aarch64.whl",
+        "sha256":"478fef3b9a198280cb1def7c9182299518e686cda25a165c0934c7abbd70fae6",
+        "dest":"resources/pylibs"
+    },
+    {
+        "filename":"h5py-2.10.0-cp37-cp37m-manylinux1_x86_64.whl",
+        "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/h5py-2.10.0-cp37-cp37m-manylinux1_x86_64.whl",
+        "sha256":"f0e25bb91e7a02efccb50aba6591d3fe2c725479e34769802fcdd4076abfa917",
+        "dest":"resources/pylibs"
+    },
+    {
         "filename":"apex-0.1+ascend-cp37-cp37m-linux_x86_64.whl",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_x86_64.whl",
         "sha256":"874747211e92891abcb359151d735d527a1e7f8ac5165dae7d44213c192d80c0",

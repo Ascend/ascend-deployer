@@ -22,5 +22,5 @@
         - import_tensorflow.rc != 0
 
     - name: install tensorflow if not import
-      include_tasks: task_tensorflow.yml
-      when: import_tensorflow.rc != 0 or (import_tensorflow.rc == 0 and import_tensorflow.stdout != "1.15.0")
+      include_tasks: task_tensorflow_2.4.1.yml
+      when: import_tensorflow.rc != 0 or (import_tensorflow.rc == 0 and import_tensorflow.stdout != "2.4.1")

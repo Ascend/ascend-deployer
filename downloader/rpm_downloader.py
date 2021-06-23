@@ -493,7 +493,7 @@ class Yum(object):
         rel = pkg['release'] if 'release' in pkg else None
         download_dir = dst_dir
         if 'dst_dir' in pkg:
-            download_dir = os.path.join(self.resources_dir, pkg['dst_dir'])
+            download_dir = os.path.join(os.path.dirname(dst_dir), pkg['dst_dir'])
             if not os.path.exists(download_dir):
                 os.makedirs(download_dir, mode=0o750, exist_ok=True)
 

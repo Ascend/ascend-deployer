@@ -22,6 +22,7 @@ os_version_dict:
     "10": "10.0"
   kylin:
     "V10": "V10"
+    "v10": "v10"
   Linx:
     "9": "6"
 code_name_dict:
@@ -31,6 +32,7 @@ code_name_dict:
     "SP9x86": ".9"
   kylin:
     "Tercel": "Tercel"
+    "juniper": "juniper"
   openEuler:
     "LTS-SP1": "LTS-SP1"
     "LTS": "LTS"
