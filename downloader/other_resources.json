@@ -62,7 +62,7 @@
     {
         "filename":"tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
         "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
-        "sha256":"d06da6e548e85eaeaa520bc15c288511d8cc903a10ffd06c50ec5084d8d459c6",
+        "sha256":"c2d6df0930f6558ec9bb741c219cb84f90f906cc9e2c28c6561960a1404dec39",
         "dest":"resources/pylibs"
     },
     {
