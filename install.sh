@@ -131,6 +131,11 @@ function get_os_version()
         version=${ver}${codename}
     fi
 
+    # UOS SP1
+    if [ "${id}" == "UOS" ] && [[ "$(grep -oP "^VERSION=\"?\K[\w\ ]+" /etc/os-release | awk '{print $2}')" == "SP1" ]];then
+        version="${ver}SP1"
+    fi
+
     echo ${version}
     return 0
 }

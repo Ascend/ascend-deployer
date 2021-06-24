@@ -330,21 +330,6 @@
         "name": "linux-compiler-gcc-8-x86","used_by": [  "cann", "framework" ]
     },
     {
-        "name": "linux-headers-4.19.0-16-amd64","used_by": [  "cann", "framework" ]
-    },
-    {
-        "name": "linux-headers-4.19.0-16-common","used_by": [  "cann", "framework" ]
-    },
-    {
-        "name": "linux-headers-amd64","used_by": [  "cann", "framework" ]
-    },
-    {
-        "name": "linux-kbuild-4.19","used_by": [  "cann", "framework" ]
-    },
-    {
-        "name": "linux-image-4.19.0-16-amd64","used_by": [  "cann", "framework" ]
-    },
-    {
         "name": "build-essential","used_by": [  "driver", "cann", "framework" ]
     },
     {

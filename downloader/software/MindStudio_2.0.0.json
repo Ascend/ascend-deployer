@@ -296,7 +296,6 @@
         {"name": "libdrm-amdgpu1","dst_dir":"desktop", "version":"2.4.101" },
         {"name": "libdrm-nouveau2","dst_dir":"desktop"},
         {"name": "libdrm-radeon1","dst_dir":"desktop"},
-        {"name": "libdrm-intel1","dst_dir":"desktop"},
         {"name": "libpciaccess0","dst_dir":"desktop"},
         {"name": "libwrap0","dst_dir":"desktop"},
         {"name": "libepoxy0","dst_dir":"desktop"},
