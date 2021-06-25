@@ -47,6 +47,22 @@
     cacheable: yes
   when: os_id.stdout in code_name_dict
 
+- name: get UOS_20SP1 code name
+  shell: grep -oP "^VERSION=\"?\K[\w\ ]+" /etc/os-release | awk '{print $2}'
+  changed_when: false
+  register: UOS_20
+  failed_when: false
+  ignore_errors: yes
+  when: os_id.stdout == "uos"
+
+- name: set os code name for UOS_20SP1
+  set_fact:
+    code_name: "SP1"
+    cacheable: yes
+  when:
+    - os_id.stdout == "uos"
+    - UOS_20.stdout == "SP1"
+
 - name: set os_and_arch
   set_fact:
     os_and_arch: "{{os_name}}_{{os_version}}{{code_name}}_{{ansible_architecture}}"
