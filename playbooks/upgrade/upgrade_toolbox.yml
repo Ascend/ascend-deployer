@@ -6,7 +6,7 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*[Tt]oolbox.*{{ ansible_architecture }}.run"
+        patterns: ".*toolbox.*{{ ansible_architecture }}.run"
       register: toolbox
 
     - name: query current toolbox version
