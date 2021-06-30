@@ -74,7 +74,7 @@
 | ---------   | ---------------------------------------------------------------- | --------------------|
 | EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | 联系OS厂商，或在对应版本OS附带的"devel_tools.tar.gz"工具组件内查找 |
 | SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | 联系OS厂商，或在对应版本OS的镜像内查找 |
-| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common          | 联系OS厂商，或在对应版本OS的镜像内查找 |
+| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common、linux-kbuild-`<version>`| 联系OS厂商，或在对应版本OS的镜像内查找 |
 
 ## 安装
 
