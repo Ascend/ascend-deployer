@@ -421,8 +421,5 @@
     },
     {
         "name": "gpgv","used_by": [  "driver", "cann", "framework" ]
-    },
-    {
-        "name": "linux-kbuild-4.19","used_by": [  "driver", "cann", "framework" ]
     }
 ]
