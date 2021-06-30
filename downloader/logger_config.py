@@ -42,6 +42,9 @@ class BasicLogConfig(object):
                 deployer_home = os.getenv('ASCEND_DEPLOYER_HOME')
         else:
             deployer_home = os.getcwd()
+        parent_dir = os.path.join(deployer_home, 'ascend-deployer')
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir, mode=0o750, exist_ok=True)
     LOG_FILE = os.path.join(deployer_home, 'ascend-deployer', 'downloader.log')
     if not os.path.exists(LOG_FILE):
         os.close(
