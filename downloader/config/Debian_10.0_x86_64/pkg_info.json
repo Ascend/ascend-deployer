@@ -18,6 +18,9 @@
         "name": "gcc-7-base","used_by": [  "driver", "cann", "framework" ]
     },
     {
+        "name": "bzip2"
+    },
+    {
         "name": "bzip2-doc"
     },
     {
@@ -51,7 +54,16 @@
         "name": "cmake-data","used_by": [  "driver", "cann", "framework" ]
     },
     {
+        "name": "curl","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
         "name": "libcurl4","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpsl5","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libssh2-1","used_by": [  "driver", "cann", "framework" ]
     },
     {
         "name": "libldap-2.4-2","used_by": [  "driver", "cann", "framework" ]
@@ -222,6 +234,12 @@
         "name": "libperl5.28","used_by": [  "driver", "cann", "framework" ]
     },
     {
+        "name": "libgdbm-compat4","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libgdbm6","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
         "name": "libgomp1","used_by": [  "driver", "cann", "framework" ]
     },
     {
@@ -312,6 +330,9 @@
         "name": "libbz2-dev","used_by": [  "driver", "cann", "framework" ]
     },
     {
+        "name": "libbz2-1.0","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
         "name": "liblzma-dev","used_by": [  "driver", "cann", "framework" ]
     },
     {
@@ -400,5 +421,8 @@
     },
     {
         "name": "gpgv","used_by": [  "driver", "cann", "framework" ]
+    },
+    {
+        "name": "linux-kbuild-4.19","used_by": [  "driver", "cann", "framework" ]
     }
 ]

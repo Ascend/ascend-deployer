@@ -13,7 +13,7 @@ readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
 readonly A300I_PRODUCT_LIST="A300i-pro"
 readonly INFER_PRODUCT_LIST="A300-3000,A300-3010"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
-readonly CANN_PRODUCT_LIST="Ascend-cann,MindX"
+readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
 readonly APP_NAME_LIST=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
 
 if [ ${UID} == 0 ];then
@@ -179,6 +179,7 @@ function install_kernel_header_devel_euler()
     local kh_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-headers*" | sort -r | grep -m1 ${euler})
     local kd_rpm=$(find ${BASE_DIR}/resources/kernel/ -name "kernel-devel*" | sort -r | grep -m1 ${euler})
     if [ ${kh} -eq 0 ] && [ -f "${kh_rpm}" ];then
+        echo "install ${kh_rpm} when installing system packages" >> ${BASE_DIR}/install.log
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_header for euler fail"
@@ -186,6 +187,7 @@ function install_kernel_header_devel_euler()
         fi
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
+        echo "install ${kd_rpm} when installing system packages" >> ${BASE_DIR}/install.log
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_devel for euler fail"
@@ -205,6 +207,7 @@ function install_kernel_header_devel()
     local kh_rpm=${BASE_DIR}/resources/kernel/kernel-headers-${kernel_version}.rpm
     local kd_rpm=${BASE_DIR}/resources/kernel/kernel-devel-${kernel_version}.rpm
     if [ ${kh} -eq 0 ] && [ -f ${kh_rpm} ];then
+        echo "install ${kh_rpm} when installing system packages" >> ${BASE_DIR}/install.log
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_header fail"
@@ -212,6 +215,7 @@ function install_kernel_header_devel()
         fi
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
+        echo "install ${kd_rpm} when installing system packages" >> ${BASE_DIR}/install.log
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_devel fail"
@@ -258,6 +262,8 @@ function install_sys_packages()
         local have_rpm=0
     fi
 
+    echo "install system packages are listed as follows:" >> ${BASE_DIR}/install.log
+    echo "$(ls ${BASE_DIR}/resources/${g_os_ver_arch} | grep -E "\.(rpm|deb)$")" >> ${BASE_DIR}/install.log
     if [ ${have_rpm} -eq 1 ]; then
         rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     else
@@ -314,6 +320,7 @@ function install_python375()
     # install wheel, if not pip will use legacy setup.py install for installation
     python3.7 -m pip install wheel --no-index --find-links ${PYLIB_PATH}
     if [[ "${g_os_name}" == "EulerOS" ]] || [[ "${g_os_name}" == "OpenEuler" ]];then
+        echo "EulerOS or OpenEuler will install selinux when installing Python 3.7.5" >> ${BASE_DIR}/install.log
         python3.7 -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
     echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
@@ -324,6 +331,8 @@ function install_ansible()
 {
     log_info "install ansible"
     local ansible_path=${PYTHON_PREFIX}/lib/python3.7/site-packages/ansible
+    python3.7 -m ensurepip
+    python3.7 -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
     python3.7 -m pip install ansible --no-index --find-links ${PYLIB_PATH}
     # patch the INTERPRETER_PYTHON_DISTRO_MAP, make it support EulerOS
     if [ -f ${ansible_path}/config/base.yml ];then

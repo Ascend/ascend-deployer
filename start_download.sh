@@ -129,14 +129,14 @@ function print_usage()
     echo " optional arguments:"
     echo "--help  -h               show this help message and exit"
     echo "--os-list=<OS1>,<OS2>    Specific OS list to download, supported os are:"
-    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d  | sort)
+    for os in $(find ${BASE_DIR}/downloader/config -mindepth 1 -type d  | sort -V)
     do
         os_name=$(basename ${os})
         echo "                         ${os_name}"
     done
     echo "--download=<PK1>,<PK2>==<Version>"
     echo "                         Specific package list to download, supported packages are:"
-    for package_json in $(find ${BASE_DIR}/downloader/software -mindepth 1 -type f -name "*.json" | sort)
+    for package_json in $(find ${BASE_DIR}/downloader/software -mindepth 1 -type f -name "*.json" | sort -V)
     do
         package=$(basename ${package_json} .json | sed "s/_/==/g")
         echo "                         ${package}"

@@ -15,6 +15,7 @@
     { "name": "libuv1"              },
     { "name": "cmake"               },
     { "name": "cmake-data"          },
+    { "name": "curl"                },
     { "name": "libcurl4"            },
     { "name": "libldap-2.4-2"       },
     { "name": "libgssapi3-heimdal"  },

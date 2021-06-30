@@ -8,32 +8,41 @@
 
 ### 支持的操作系统说明
 
-| 操作系统    | 版本        | CPU架构   | 安装类型                              |
-|:-------:|:---------:|:-------:|:---------------------------------:|
+| 操作系统    | 版本        | CPU架构   | 安装类型                         |
+|:-------:|:---------:|:-------:|:--------------------------------------:|
+| BCLinux | 7.6       | aarch64 | 镜像默认Minimal模式                     |
+| BCLinux | 7.6       | x86_64  | 镜像默认Minimal模式                     |
+| BCLinux | 7.7       | aarch64 | 镜像默认Minimal模式                     |
 | CentOS  | 7.6       | aarch64 | 镜像默认Minimal模式                     |
 | CentOS  | 7.6       | x86_64  | 镜像默认Minimal模式                     |
 | CentOS  | 8.2       | aarch64 | 镜像默认Minimal模式                     |
 | CentOS  | 8.2       | x86_64  | 镜像默认Minimal模式                     |
-| EulerOS | 2.0SP8    | aarch64 | 镜像默认Minimal模式                     |
-| EulerOS | 2.0SP9    | aarch64 | 镜像默认Minimal模式                     |
-| EulerOS | 2.0SP9    | x86_64  | 镜像默认Minimal模式                     |
-| Ubuntu  | 18.04     | aarch64 | 镜像默认Server模式、SmartKit默认Standard模式 |
-| Ubuntu  | 18.04     | x86_64  | 镜像默认Server模式、SmartKit默认Standard模式 |
-| Debian  | 9.9       | aarch64 | 镜像默认Server模式、SmartKit默认Standard模式 |
-| Debian  | 9.9       | x86_64  | 镜像默认Server模式、SmartKit默认Standard模式 |
-| Debian  | 10.0      | x86_64  | 镜像默认Server模式、SmartKit默认Standard模式 |
-| BCLinux | 7.6       | aarch64 | 镜像默认Minimal模式                     |
-| BCLinux | 7.6       | x86_64  | 镜像默认Minimal模式                     |
-| BCLinux | 7.7       | aarch64 | 镜像默认Minimal模式                     |
-| SLES    | 12.4      | x86_64  | 镜像默认Minimal模式                     |
-| SLES    | 12.5      | x86_64  | 镜像默认Minimal模式                     |
-| Linx    | 6         | aarch64 | 镜像默认Minimal模式                     |
+| Debian  | 9.9       | aarch64 | 镜像默认Minimal模式                     |
+| Debian  | 9.9       | x86_64  | 镜像默认Minimal模式                     |
+| Debian  | 10.0      | x86_64  | 镜像默认Minimal模式                     |
+| EulerOS | 2.8       | aarch64 | 镜像默认Minimal模式                     |
+| EulerOS | 2.9       | aarch64 | 镜像默认Minimal模式                     |
+| EulerOS | 2.9       | x86_64  | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | aarch64 | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | x86_64  | 镜像默认Minimal模式                     |
-| UOS     | 20        | aarch64 | 镜像默认Minimal模式                     |
-| UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
+| Kylin   | v10juniper| aarch64 | 镜像默认Minimal模式                     |
+| Linx    | 6         | aarch64 | 镜像默认Minimal模式                     |
+|OpenEuler|20.03LTS-SP1| aarch64| 镜像默认Minimal模式                     |
+|OpenEuler|20.03LTS-SP1| x86_64 | 镜像默认Minimal模式                     |
+|OpenEuler|  20.03LTS  | aarch64| 镜像默认Minimal模式                     |
+|OpenEuler|  20.03LTS  | x86_64 | 镜像默认Minimal模式                     |
+| SLES    | 12.4      | x86_64  | 镜像默认Minimal模式                     |
+| SLES    | 12.5      | x86_64  | 镜像默认Minimal模式                     |
 | Tlinux  | 2.4       | aarch64 | 镜像默认Server模式                      |
 | Tlinux  | 2.4       | x86_64  | 镜像默认Server模式                      |
+| UOS     | 20SP1     | aarch64 | 镜像默认Minimal模式                     |
+| UOS     | 20SP1     | x86_64  | 镜像默认Minimal模式                     |
+| UOS     | 20        | aarch64 | 镜像默认Minimal模式                     |
+| UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
+| Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
+| Ubuntu  | 18.04.1/5 | x86_64  | 镜像默认Minimal模式                     |
+| Ubuntu  | 20.04     | aarch64 | 镜像默认Minimal模式                     |
+| Ubuntu  | 20.04     | x86_64  | 镜像默认Minimal模式                     |
 
 ### 支持的硬件形态说明
 
@@ -48,17 +57,24 @@
 
 ## 注意事项
 
-- 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装。
+- 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip、ssh等基本命令。建议在Ubuntu/Debian系统的安装过程中，到【Software selection】这一步时勾选上【OpenSSH server】/【SSH server】这一选项，避免缺失ssh命令。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
-- EulerOS、SLES、Debian等系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel等内核头软件包，若不存在，需自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
-- EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
+- EulerOS等很多操作系统默认禁止root用户远程连接，所以需提前配置/etc/ssh/sshd_config中PermitRootLogin为yes（个别OS配置方法或许不同，请参考OS官方说明）；用完本工具后，及时关闭root用户远程连接
 - 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 - Atlas 300T 训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
+- EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
+
+### 内核头软件包说明
+| 操作系统     | 跟系统内核版本一致的内核头软件包                                    | 获取来源            |
+| ---------   | ---------------------------------------------------------------- | --------------------|
+| EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | 联系OS厂商，或在对应版本OS附带的"devel_tools.tar.gz"工具组件内查找 |
+| SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | 联系OS厂商，或在对应版本OS的镜像内查找 |
+| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common          | 联系OS厂商，或在对应版本OS的镜像内查找 |
 
 ## 安装
 
