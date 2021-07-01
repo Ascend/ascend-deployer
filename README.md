@@ -51,7 +51,6 @@
 - 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip等基本命令。OpenSSH Server用于ansible通过SSH连接登录，Ubuntu系统安装时需要选择安装。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
-- EulerOS、SLES、Debian等系统需要确保源存在与系统内核版本（可通过 `uname -r` 命令查看）一致的kernel-headers和kernel-devel等内核头软件包，若不存在，需自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等操作系统默认禁止root用户远程连接。因此，对于这类操作系统，远程安装时需提前配置sshd_config中PermitRootLogin为yes，安装完成后再配置为no。
 - 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
@@ -59,6 +58,14 @@
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
+- EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
+
+### 内核头软件包说明
+| 操作系统     | 跟系统内核版本一致的内核头软件包                                    | 获取来源            |
+| ---------   | ---------------------------------------------------------------- | --------------------|
+| EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | 联系OS厂商，或在对应版本OS附带的"devel_tools.tar.gz"工具组件内查找 |
+| SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | 联系OS厂商，或在对应版本OS的镜像内查找 |
+| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common、linux-kbuild-`<version>`| 联系OS厂商，或在对应版本OS的镜像内查找 |
 
 ## 安装
 
