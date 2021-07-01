@@ -48,7 +48,6 @@ The offline installation tool provides automatic download and one-click installa
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip** must be installed in the OS. The OpenSSH server is used by Ansible for connections over SSH. When installing the Ubuntu OS, you need to install it.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
-- Euleros, SLES, Debian and other systems need to ensure that there are kernel-headers and kernel-devel packages that are consistent with the kernel version of the system (which can be viewed through 'uname -r' command). If not, you need to prepare your own kernel headers.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
 - Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
@@ -56,6 +55,14 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
+- Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
+
+### Description of the kernel header package
+| OS          | kernel header package that matches the kernel version of the system  | How to get            |
+| ---------   | ---------------------------------------------------------------------| ----------------------|
+| EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | Contact the OS vendor, or find it in the "devel_tools.tar.gz" tool component that comes with the corresponding OS |
+| SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | Contact the OS vendor, or look it up in the image of the corresponding OS |
+| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common、linux-kbuild-`<version>`| Contact the OS vendor, or look it up in the image of the corresponding OS |
 
 # Operation Instructions
 

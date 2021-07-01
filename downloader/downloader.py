@@ -121,7 +121,7 @@ def parse_argument():
     """
     解析参数
     """
-    parser = argparse.ArgumentParser(description='download resources.', allow_abbrev=False)
+    parser = argparse.ArgumentParser(description='download resources.')
     parser.add_argument('--os-list', action='store', dest='os_list',
             help='Specific OS list to download, supported os are:')
     parser.add_argument('--download', action='store', dest='download',
