@@ -111,5 +111,17 @@
     { "name": "libstdc++6"          },
     { "name": "docker-ce"           },
     { "name": "docker-ce-cli"       },
-    { "name": "containerd.io"       }
+    { "name": "containerd.io"       },
+    { "name": "libnet1"             },
+    { "name": "arping"              },
+    { "name": "libpcap0.8"          },
+    { "name": "libinotifytools0"    },
+    { "name": "inotify-tools"       },
+    { "name": "libtcl8.6"           },
+    { "name": "tcl-expect"          },
+    { "name": "tcl8.6"              },
+    { "name": "expect"              },
+    { "name": "ethtool"             },
+    { "name": "iptables"            },
+    { "name": "gzip"                }
 ]

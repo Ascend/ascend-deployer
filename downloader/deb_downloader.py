@@ -117,6 +117,11 @@ class Apt(object):
                 packages = self.fetch_package_index(index_url)
                 self.make_cache_from_packages(source.GetUrl(), repo, packages)
         self.primary_connection.commit()
+        self.primary_cur.close()
+
+    def clean_cache(self):
+        """clean sqlite Connection"""
+        self.primary_connection.close()
 
     def fetch_package_index(self, packages_url):
         """
@@ -247,6 +252,7 @@ class Apt(object):
         param = {'name': name}
         cur.execute(sql, param)
         results = cur.fetchall()
+        cur.close()
 
         if len(results) == 0:
             print("can't find package {0}".format(name))

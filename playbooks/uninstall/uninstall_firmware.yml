@@ -1,39 +1,11 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: target uninstall version
-      debug: var=uninstall_version
-
-    - name: find uninstall.sh in firmware without version params
-      shell: find /usr/local/Ascend/firmware/ -type f | grep -E "/firmware/script/uninstall.sh" | head -n 1
-      register: uninstall_firmware
-      when: uninstall_version is not defined
-
     - name: uninstall firmware
-      shell: "{{ uninstall_firmware.stdout }}"
-      register: result
-      when:
-        - uninstall_version is not defined
-        - uninstall_firmware.rc == 0
-        - uninstall_firmware.stdout != ''
+      import_tasks: task_firmware.yml
+      when: ansible_user_uid == 0
 
-    - name: show uninstall result without uninstall_version
-      debug: var=result
-
-    - name: show info
-      debug: var={{ item }}
-      with_items:
-        - "{{ ansible_local.app_info.result }}"
-
-    - name: uninstall firmware with version params
-      shell: "{{ item.install_path }}/firmware/script/uninstall.sh"
-      register: uninstall_result
-      when:
-        - uninstall_version is defined
-        - item.install_path and item.name and item.version
-        - item.name == 'firmware'
-        - item.version == uninstall_version
-      with_items:
-        - "{{ ansible_local.app_info.result }}"
-
-    - name: show uninstall result with uninstall_version
-      debug: var=uninstall_result
+    - name: message
+      debug:
+        msg:
+        - "not support uninstalling firmware by non-root user, please switch to root user"
+      when: ansible_user_uid != 0

@@ -1,0 +1,35 @@
+- name: message
+  debug:
+    msg:
+      - "not support uninstall firmware with uninstall_version"
+  failed_when: true
+  when:
+    - uninstall_version != ""
+
+- name: find uninstall.sh in firmware
+  shell: find /usr/local/Ascend/firmware/ -type f | grep -E "/script/uninstall.sh" | head -n 1
+  register: uninstall_firmware
+  when: uninstall_version == ""
+
+- name: message
+  debug:
+    msg:
+      - "firmware is not installed, firmware uninstall skipped"
+  when:
+    - uninstall_version == ""
+    - uninstall_firmware.stdout == ''
+
+- name: uninstall firmware
+  shell: "{{ uninstall_firmware.stdout }}"
+  register: result
+  when:
+    - uninstall_version == ""
+    - uninstall_firmware.rc == 0
+    - uninstall_firmware.stdout != ''
+  failed_when: result.rc != 0
+
+- name: show uninstall result
+  debug: var=result
+  when:
+    - uninstall_version == ""
+    - result.changed

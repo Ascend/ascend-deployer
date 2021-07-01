@@ -1,19 +1,11 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: find atlasedge uninstall file path
-      find:
-        paths: "/usr/local/AtlasEdge/"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: "run.sh$"
-      register: uninstall_atlasedge
-
     - name: uninstall atlasedge
-      shell: "{{ uninstall_atlasedge.files[0].path }} uninstall"
-      register: uninstall_atlasedge_result
-      when: uninstall_atlasedge.matched > 0
-      failed_when: "uninstall_atlasedge_result.rc != 0"
+      import_tasks: task_atlasedge.yml
+      when: ansible_user_uid == 0
 
-    - name: show uninstall atlasedge result
-      debug: var=uninstall_atlasedge_result
+    - name: message
+      debug:
+        msg:
+        - "not support uninstalling atlasedge by non-root user, please switch to root user"
+      when: ansible_user_uid != 0

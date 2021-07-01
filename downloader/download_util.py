@@ -292,13 +292,3 @@ def calc_sha256(file_path):
         sha256_obj.update(hash_file.read())
         hash_val = sha256_obj.hexdigest()
     return hash_val
-
-def calc_md5(file_path):
-    hash_val = None
-    if file_path is None or not os.path.exists(file_path):
-        return hash_val
-    with open(file_path, 'rb') as hash_file:
-        md5_obj = hashlib.md5()
-        md5_obj.update(hash_file.read())
-        hash_val = md5_obj.hexdigest()
-    return hash_val

@@ -17,10 +17,15 @@
     { "name": "hdf5",           "autodependency":"true", "info": "tensorflow use" },
     { "name": "hdf5-devel",     "autodependency":"true", "info": "tensorflow use" },
     { "name": "libaec",         "autodependency":"true", "info": "hdf5 need" },
+    { "name": "expect",         "autodependency":"true", "info": "used for edge ha" },
     {
         "name": "sshpass",
         "url": "http://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/base/aarch64/Packages/sshpass-1.06-8.ky10.aarch64.rpm",
         "sha256": "3bd96c2effb4c285697bda13093aa5a025c0bc608f2dcadd823b4c00d5cfbfd5"
+    },
+    { "name": "inotify-tools",
+        "url":"https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/Packages/i/inotify-tools-3.14-19.el8.aarch64.rpm",
+        "sha256": "eb4df7f1af81cde3f559800543a052e98f61fec87500742612c689c0329355c6"
     },
     {
         "name": "docker-ce-cli",

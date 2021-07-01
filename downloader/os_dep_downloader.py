@@ -98,7 +98,10 @@ class OsDepDownloader:
                     continue
                 print('download failed', pkg['name'])
                 res['failed'].append(pkg['name'])
+        if downloader is not None:
+            downloader.clean_cache()
         return res
+
 
     def prepare_download_dir(self):
         for os_item in self.os_list:

@@ -9,30 +9,39 @@ The offline installation tool provides automatic download and one-click installa
 ### Description of the supported operating system
 |    OS    | Version | CPU Architecture |            Installation Type             |
 | :------: | :-----: | :--------------: | :--------------------------------------: |
-|  CentOS  |   7.6   |     AArch64      | A minimal image is installed by default. |
+|  BCLinux |   7.6   |     aarch64      | A minimal image is installed by default. |
+|  BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
+|  BCLinux |   7.7   |     aarch64      | A minimal image is installed by default. |
+|  CentOS  |   7.6   |     aarch64      | A minimal image is installed by default. |
 |  CentOS  |   7.6   |      x86_64      | A minimal image is installed by default. |
-|  CentOS  |   8.2   |     AArch64      | A minimal image is installed by default. |
+|  CentOS  |   8.2   |     aarch64      | A minimal image is installed by default. |
 |  CentOS  |   8.2   |      x86_64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP8  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |     AArch64      | A minimal image is installed by default. |
-| EulerOS  | 2.0SP9  |      x86_64      | A minimal image is installed by default. |
-|  Ubuntu  |  18.04  |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-|  Ubuntu  |  18.04  |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-|  Debian  |   9.9   |     AArch64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-|  Debian  |   9.9   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-|  Debian  |   10.0   |      x86_64      | A server image is installed by default. A standard system is installed by SmartKit by default. |
-| BCLinux |   7.6   |     AArch64      | A minimal image is installed by default. |
-| BCLinux |   7.6   |      x86_64      | A minimal image is installed by default. |
-| BCLinux |   7.7   |     AArch64      | A minimal image is installed by default. |
+|  Debian  |   9.9   |     aarch64      | A minimal image is installed by default. |
+|  Debian  |   9.9   |      x86_64      | A minimal image is installed by default. |
+|  Debian  |   10.0  |      x86_64      | A minimal image is installed by default. |
+| EulerOS  |   2.8   |     aarch64      | A minimal image is installed by default. |
+| EulerOS  |   2.9   |     aarch64      | A minimal image is installed by default. |
+| EulerOS  |   2.9   |      x86_64      | A minimal image is installed by default. |
+|  Kylin   |V10Tercel|     aarch64      | A minimal image is installed by default. |
+|  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
+|  Kylin   |v10juniper|    aarch64      | A minimal image is installed by default. |
+|   Linx   |   6     |     aarch64      | A minimal image is installed by default. |
+|OpenEuler |20.03LTS-SP1|  aarch64      | A minimal image is installed by default. |
+|OpenEuler |20.03LTS-SP1|   x86_64      | A minimal image is installed by default. |
+|OpenEuler |20.03LTS |     aarch64      | A minimal image is installed by default. |
+|OpenEuler |20.03LTS |      x86_64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
 |   SLES   |  12.5   |      x86_64      | A minimal image is installed by default. |
-|   Linx   |   6     |     AArch64      | A minimal image is installed by default. |
-|  Kylin   |V10Tercel|     AArch64      | A minimal image is installed by default. |
-|  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
-|   UOS    |   20    |     AArch64      | A minimal image is installed by default. |
+|  Tlinux  |  2.4    |     aarch64      | A server image is installed by default.  |
+|  Tlinux  |  2.4    |      x86_64      | A server image is installed by default.  |
+|   UOS    | 20SP1   |     aarch64      | A minimal image is installed by default. |
+|   UOS    | 20SP1   |      x86_64      | A minimal image is installed by default. |
+|   UOS    |   20    |     aarch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
-|  Tlinux  |  2.4    |     AArch64      | A server image is installed by default.  |
-|  Tlinux  |  2.4    |     x86_64       | A server image is installed by default.  |
+|  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
+|  Ubuntu  |18.04.1/5|      x86_64      | A minimal image is installed by default. |
+|  Ubuntu  |  20.04  |     aarch64      | A minimal image is installed by default. |
+|  Ubuntu  |  20.04  |      x86_64      | A minimal image is installed by default. |
 
 ### Description of supported hardware configuration
 |  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
@@ -45,17 +54,24 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Precautions
 
-- Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip** must be installed in the OS. The OpenSSH server is used by Ansible for connections over SSH. When installing the Ubuntu OS, you need to install it.
+- Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
-- Euleros, SLES, Debian and other systems need to ensure that there are kernel-headers and kernel-devel packages that are consistent with the kernel version of the system (which can be viewed through 'uname -r' command). If not, you need to prepare your own kernel headers.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
-- By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before remote installation and set it to **no** after the installation.
-- Support for Ubuntu 18.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
+- By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before using this tool(Individual OS configuration methods may be different, please refer to the OS official description), and close the remote connection of root user after using this tool.
+- Support for Ubuntu 18.04.1/5、Ubuntu 20.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
+- Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
+
+### Description of the kernel header package
+| OS          | kernel header package that matches the kernel version of the system  | How to get            |
+| ---------   | ---------------------------------------------------------------------| ----------------------|
+| EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | Contact the OS vendor, or find it in the "devel_tools.tar.gz" tool component that comes with the corresponding OS |
+| SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | Contact the OS vendor, or look it up in the image of the corresponding OS |
+| Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common、linux-kbuild-`<version>`| Contact the OS vendor, or look it up in the image of the corresponding OS |
 
 ## Tool installation
 
@@ -123,7 +139,7 @@ install_path=/usr/local/Ascend
 
 ### Notice
 
-- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package. The driver package can only be installed to the default path /usr/local/Ascend
+- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package  and edge components (AtlasEdge and HA)can only be installed to the default path /usr/local/Ascend.
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
 
 ```bash
@@ -370,7 +386,9 @@ Run the following command to uninstall the specified software:
 You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
 `./install.sh --uninstall=npu     // Uninstall the driver and firmware`
 Note:
-Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
+- Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
+- Root unloads the npu package (driver and firmware) and edge components (AtlasEdge and HA) with the default /usr/local/Ascend path. Root unloads the CANN package with the directory install_path specified in inventory_file.Non-root users uninstall the CANN package with the default path ~/Ascend.
+- Non-root users are not supported to uninstall NPU (driver and firmware) and edge components (AtlasEdge and HA), and --uninstall-version is not supported when uninstalling NPU (driver and firmware).
 
 # Offline Installation Tool Upgrade
 
@@ -399,6 +417,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
+| --uninstall-version=<version>     | Uninstall the specified version of software, using it with the --uninstall parameter.                       |
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
 | --uninstall=<package_name>        | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled.                                                           |
 | --upgrade=<package_name>          | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded.                                                                  |

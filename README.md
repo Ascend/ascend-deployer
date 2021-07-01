@@ -8,7 +8,7 @@
 
 ### 支持的操作系统说明
 
-| 操作系统    | 版本        | CPU架构   | 安装类型                         |
+| 操作系统 | 版本      | CPU架构 | 安装类型                                |
 |:-------:|:---------:|:-------:|:--------------------------------------:|
 | BCLinux | 7.6       | aarch64 | 镜像默认Minimal模式                     |
 | BCLinux | 7.6       | x86_64  | 镜像默认Minimal模式                     |
@@ -62,7 +62,7 @@
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等很多操作系统默认禁止root用户远程连接，所以需提前配置/etc/ssh/sshd_config中PermitRootLogin为yes（个别OS配置方法或许不同，请参考OS官方说明）；用完本工具后，及时关闭root用户远程连接
-- 支持Ubuntu 18.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
+- 支持Ubuntu 18.04.1/5、Ubuntu 20.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 - Atlas 300T 训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
@@ -149,7 +149,7 @@ install_path=/usr/local/Ascend
 
 ### 安装须知
 
-- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效，非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包的安装路径，驱动包只能安装到默认路径/usr/local/Ascend
+- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效，非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包的安装路径和边缘组件(atlasedge和ha)，驱动包和边缘组件(atlasedge和ha)只能安装到默认路径/usr/local/Ascend
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
 
 ```bash
@@ -392,7 +392,9 @@ source ~/.local/ascendrc       # non-root
   <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
   `./install.sh --uninstall=npu     //卸载driver和firmware`
   注意事项：
-  请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
+- 请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
+- root用户卸载默认路径/usr/local/Ascend的npu包(driver和firmware)和边缘组件(atlasedge和ha)，root用户卸载inventory_file内install_path参数指定路径的CANN软件包，非root用户卸载默认路径~/Ascend的CANN软件包。
+- 不支持非root用户卸载npu(driver和firmware)和边缘组件(atlasedge和ha)，不支持卸载npu(driver和firmware)和边缘组件(atlasedge和ha)时带有--uninstall-version参数。
 
 # 更新离线部署工具
 
@@ -417,12 +419,13 @@ source ~/.local/ascendrc       # non-root
 | --check                           | 检查环境，确保控制机安装好python3.7.5、ansible等组件，并检查与待安装设备的连通性。   |
 | --clean                           | 清理待安装设备用户家目录下的resources目录。                           |
 | --nocopy                          | 在批量安装时不进行资源拷贝。                                       |
-| --debug                           | 开发调测使用。                                              |
+| --debug                           | 开发调测使用。                                                    |
 | --output-file=<output_file>       | 重定向命令执行的输出结果到指定文件。                                   |
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
 | --uninstall=<package_name>        | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。     |
+| --uninstall-version=<version>     | 卸载指定版本的软件，与--uninstall参数一起使用。                       |
 | --upgrade=<package_name>          | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。       |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 | --display=<target>                | 显示已安装软件包。                                                   |
