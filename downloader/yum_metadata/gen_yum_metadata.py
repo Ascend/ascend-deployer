@@ -317,7 +317,7 @@ class YumMetadataSqlite(object):
 
     def create_primary_db(self):
         """create primary db scheme"""
-        cur_path = os.path.abspath(os.path.dirname(__file__))
+        cur_path = os.path.realpath(os.path.dirname(__file__))
 
         with open(os.path.join(cur_path, "create_yum_metadata_primary_db.sql")) as fid:
             sql_as_str = fid.read()
@@ -330,7 +330,7 @@ def main():
     main function
     """
     primary_xml_file = "test_primary.xml"
-    primary_file_path = os.path.abspath(os.path.dirname(primary_xml_file))
+    primary_file_path = os.path.realpath(os.path.dirname(primary_xml_file))
     meta_sqlite = YumMetadataSqlite(primary_file_path, 'oss_primary.sqlite')
     meta_sqlite.create_primary_db()
 
