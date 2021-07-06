@@ -1,5 +1,5 @@
 - name: get npu info for Atlas 800 and Atlas 900
-  shell: dmidecode -t 1 |egrep "Atlas 800 \(Model 90|Atlas 900" | awk -d" " '{print $4"-"$6}' | head -c -2
+  shell: dmidecode -t 1 |egrep "Atlas 800 \(Model 90|Atlas 900" | awk -F" " '{print $4"-"$6}' | head -c -2
   register: npu_info
   become: yes
 
