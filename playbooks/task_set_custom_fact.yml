@@ -107,7 +107,6 @@
   set_fact:
      cann_dirs:
        - "{{ resources_dir }}/run_from_cann_zip"
-       - "{{ resources_dir }}"
      cacheable: yes
 
 - name: set pip install option
@@ -124,7 +123,7 @@
 
 - name: set Ascend install path
   set_fact:
-     ascend_install_path: "/usr/local/Ascend"
+     ascend_install_path: "{{ install_path }}"
      cacheable: yes
   when: ansible_user_uid == 0
 

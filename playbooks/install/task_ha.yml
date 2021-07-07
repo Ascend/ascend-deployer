@@ -1,5 +1,5 @@
 - name: get A500pro_exist
-  shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -d" " '{print $3,$4,$5}'
+  shell: dmidecode -t 1 |grep "Atlas 500 Pro" | awk -F" " '{print $3,$4,$5}'
   register: a500pro_exist
 
 - name: find ha path

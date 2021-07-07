@@ -20,6 +20,7 @@ import configparser
 import os
 import gzip
 import bz2
+import shutil
 import sqlite3
 import lzma
 import xml.sax
@@ -81,17 +82,18 @@ class Yum(object):
         config.read(self.repo_file)
 
 
-        self.cache_dir = os.path.join(self.base_dir,
+        self.config_dir = os.path.join(self.base_dir,
                                       os.path.dirname(source_file))
-        self.installed_file = os.path.join(self.cache_dir, 'installed.txt')
-        print('repofile={} cache={}'.format(self.repo_file, self.cache_dir))
-        LOG.info('repofile={} cache={}'.format(self.repo_file, self.cache_dir))
+        self.db_tmps = os.path.join(self.config_dir, "db_tmps")
+        self.installed_file = os.path.join(self.config_dir, 'installed.txt')
+        print('repofile={} cache={}'.format(self.repo_file, self.db_tmps))
+        LOG.info('repofile={} cache={}'.format(self.repo_file, self.db_tmps))
+        self.clean_cache()
         self.sources = {}
         for item in config.keys():
             if 'DEFAULT' == item:
                 continue
             self.sources[item] = config.get(item, 'baseurl')
-            print(config.get(item, 'baseurl'))
             LOG.info(config.get(item, 'baseurl'))
 
         if os.path.exists(self.installed_file):
@@ -134,11 +136,9 @@ class Yum(object):
         """
         for name, url in self.sources.items():
             repomd_url = urljoin(url if url.endswith('/') else url + '/', 'repodata/repomd.xml')
-            print('{0}:{1}'.format(name, repomd_url))
             LOG.info('{0}:{1}'.format(name, repomd_url))
-            repomd_xml = name + '_repomd.xml'
-            repomd_file = os.path.join(self.cache_dir, repomd_xml)
-            db_file = os.path.join(self.cache_dir, name + '_primary.sqlite')
+            repomd_file = os.path.join(self.db_tmps, name + '_repomd.xml')
+            db_file = os.path.join(self.db_tmps, name + '_primary.sqlite')
 
             if os.path.exists(repomd_file):
                 os.remove(repomd_file)
@@ -155,16 +155,15 @@ class Yum(object):
                                                               'primary')
                 primary_xml_url = urljoin(url, primary_xml_location_href)
                 primary_xml_file_name = os.path.basename(primary_xml_url).split('-')[-1]
-                primary_xml_file = os.path.join(self.cache_dir, name + '_' + primary_xml_file_name)
+                primary_xml_file = os.path.join(self.db_tmps, name + '_' + primary_xml_file_name)
                 self.download_file(primary_xml_url, primary_xml_file)
-                self.build_primary_cache(primary_xml_file, self.cache_dir, name)
+                self.build_primary_cache(primary_xml_file, self.db_tmps, name)
                 continue
 
             db_url = url + '/' + db_location_href
             url_file_name = os.path.basename(db_url).split('-')[1]
-            compressed_file = os.path.join(self.cache_dir,
+            compressed_file = os.path.join(self.db_tmps,
                                            name + '_' + url_file_name)
-            print('dburl=[{0}]'.format(db_url))
             LOG.info('dburl=[{0}]'.format(db_url))
 
             if os.path.exists(compressed_file):
@@ -176,6 +175,13 @@ class Yum(object):
                 os.remove(db_file)
             # 解压数据库文件
             self.uncompress_file(compressed_file, db_file)
+
+    def clean_cache(self):
+        """
+        删除数据库文件
+        """
+        if os.path.exists(self.db_tmps):
+            shutil.rmtree(self.db_tmps)
 
     def uncompress_file(self, compress_file, dst_file):
         """
@@ -254,6 +260,7 @@ class Yum(object):
                 AND (packages.arch = :arch or packages.arch = 'noarch')",
                 sql_param)
         result = cur.fetchall()
+        cur.close()
         for item in result:
             require_name = item[0]
             require_flags = item[1]
@@ -284,7 +291,7 @@ class Yum(object):
         repo_list += [repo for repo in self.sources.keys() if repo not in repo_list]
         for cur_repo in repo_list:
             repo_url = self.sources[cur_repo]
-            db = os.path.join(self.cache_dir, cur_repo + '_primary.sqlite')
+            db = os.path.join(self.db_tmps, cur_repo + '_primary.sqlite')
             conn = sqlite3.connect(db)
             cur = conn.cursor()
             sql_param = None
@@ -306,6 +313,8 @@ class Yum(object):
                     WHERE provides.name = :name"
             cur.execute(sql, sql_param)
             result = cur.fetchall()
+            cur.close()
+            conn.close()
             if len(result) > 0 and len(result[0]) > 0:
                 name = result[0][0]
                 ver = result[0][1]
@@ -366,6 +375,7 @@ class Yum(object):
         cur = conn.cursor()
         cur.execute(sql_str, sql_param)
         result = cur.fetchall()
+        cur.close()
         LOG.info(result)
         if len(result) > 0 and len(result[0]) > 0:
             pkg = Package(name)
@@ -391,13 +401,14 @@ class Yum(object):
         dep_list = None
         pkg = None
         for repo_name, repo_url in self.sources.items():
-            db = os.path.join(self.cache_dir, repo_name + '_primary.sqlite')
+            db = os.path.join(self.db_tmps, repo_name + '_primary.sqlite')
             conn = sqlite3.connect(db)
             pkg = self.search_package(conn, name, ver, rel)
             if pkg is not None:
                 pkg.repo_url = repo_url
                 dep_list = self.get_dependencies(conn, name, repo_name) if dep else None
                 return pkg, dep_list
+            conn.close()
 
         return pkg, dep_list
 

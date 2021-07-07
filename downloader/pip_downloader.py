@@ -22,7 +22,7 @@ import http.client
 import time
 from html.parser import HTMLParser
 from download_util import DOWNLOAD_INST
-from download_util import calc_sha256, calc_md5
+from download_util import calc_sha256
 from logger_config import get_logger
 
 LOG = get_logger(__file__)
@@ -258,9 +258,6 @@ class MyPip(object):
         if 'sha256=' in url_with_hash:
             key_word = 'sha256='
             file_hash = calc_sha256(dst_file)
-        elif 'md5=' in url_with_hash:
-            key_word = 'md5='
-            file_hash = calc_md5(dst_file)
         else:
             return True
 

@@ -16,6 +16,41 @@ readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
 readonly APP_NAME_LIST=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
 
+readonly ROOT_CA=$(cat << EOF
+-----BEGIN CERTIFICATE-----
+MIIFTzCCAzegAwIBAgIIRbYUczgwtHkwDQYJKoZIhvcNAQELBQAwNzELMAkGA1UE
+BhMCQ04xDzANBgNVBAoTBkh1YXdlaTEXMBUGA1UEAxMOSHVhd2VpIFJvb3QgQ0Ew
+IBcNMTUxMDE1MDgwODUwWhgPMjA1MDEwMTUwODA4NTBaMDcxCzAJBgNVBAYTAkNO
+MQ8wDQYDVQQKEwZIdWF3ZWkxFzAVBgNVBAMTDkh1YXdlaSBSb290IENBMIICIjAN
+BgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA7kxjA5g73QH7nvrTI/ZEJP2Da3Q0
+Mg00q8/mM5DAmFkS5/9ru1ZQnKXN5zoq53e4f1r9eUhwjoakWIPjoTdC27hhBoKb
+ZbZODbS/uPFu8aXrcDnAnCe+02Dsh5ClHm+Dp37mIe56Nhw/fMVOqZf00cY4GyfJ
+KyBRC1cdecg1i2mCApLBe9WZh4/xlmmhCurkl6RyWrXqz6Xmi9glZhlR67g0Y0CU
+qtTvyv+GoJyTuH0zq1DUh6VRamKkmoHAMKpDgDfmFkH33UFwgU2X/ef6mJGpYsHu
+jlcvon5NZKAYBHmOof2e9mxDyIZH0mZnDsneMF5EDK4jO+qBdFn5KdXy8lOGiVVJ
+aeGtux3zG/LgGfil6881mylj3jHszyT0CyIRoQn9HwD5Pn6Punkp5BcyWdzdZ1TF
+cBKuIWOGUhbzcFoXnkyz6iDe4gxtH4D3ZQ3x0lpxIHeWUxKl1H0FeoEJx6PL0Koc
+/iJ+eMSzoxHx4J5CyTYgF99zpfS7nYXsRhr8y1asXcp7ubLoI8yLkMbBYrg+XFL0
+3gOHmkttdX67xKnCxcpYFVWs+nPwyvOCm81SH1YYnJnGP5csjH8hH2xbZpMpwrCZ
+n6lZf7tzafmezFgJ6f/A8NZPmzhXe+LXgfWaiE3dBTPFy6ubzBKlWT53BQpP4u11
+YvdVxNxSwrKhE4UCAwEAAaNdMFswHwYDVR0jBBgwFoAUcnaWww+QnNRVuK6bSe73
+31zJArQwDAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFHJ2lsMP
+kJzUVbium0nu999cyQK0MA0GCSqGSIb3DQEBCwUAA4ICAQBwV1EEsMrEarDE0hEq
+EyA/N0YpBcUjNWO8UmLYWSzBpv4ePXNtV6PQ8RrGNthcisa56nbb+OfwclPpii01
+j89QVI4SlU8BFJUyU/FIRIudlSXWJzAVJcjHatU6Sqi7OdGDoZOIkx0jmyJ5rKoY
+oCj4hOjYHeYJIF/CEIF+OnZmj5P6e/MxxC0FvExgJrJyqgIGmRRRkoVEOxjpIHIt
+nIFaEa7y8cX9wnvjhYICR6CRmm0jzNsfd0lwdtOedlh3F7nIk8Ot1p3wUMKg1HcM
+cxzygWv4CjVTZy6E1/+s6KTEGwX0p/2ISJhfjtlREzvQ6mfwBPbI6NZmD0ymRsy7
+mlEEPnkweoEFN9y8P8GITupl20n5C/RD8J+I3ABysW4J57FY6moJawjYvpqGQi+R
+4viJ3QWyW+AyMO8hQim924uGNuxij8Avna2K5Mc4Tb/HjSBMJ9glsfTLNqN0xDT7
+b7/4o2Fkk5Szt/rKTiSVVbH22US2ri5SV8A+gbH/41NjFNZlAxsxLSN0gHeStDih
+kFs9liaQICKYpJToZKHS6hP0paYU61wSqy4lUEyka5KzQZIr7h/BZ8elVI6xGKHg
+v2VSpgYKuxC59I+syXRsN6AslVRq8/2Zo1IPcU3k01VsZAlvARrxS+lYfztdiss0
+gdNojAmDZwk73Vwty4KrPanEhw==
+-----END CERTIFICATE-----
+EOF
+)
+
 if [ ${UID} == 0 ];then
     readonly PYTHON_PREFIX=/usr/local/python3.7.5
 else
@@ -25,6 +60,7 @@ fi
 VAULT_CMD=""
 DEBUG_CMD=""
 STDOUT_CALLBACK=""
+uninstall_version=""
 
 declare -A OS_MAP=(["ubuntu"]="Ubuntu")
 OS_MAP["ubuntu"]="Ubuntu"
@@ -362,6 +398,15 @@ function install_ansible()
     fi
 }
 
+function check_run_pkg()
+{
+    run_pkg=$(find ${BASE_DIR}/resources/*.run 2>/dev/null | wc -l)
+    if [[ ${run_pkg} != 0 ]];then
+        log_error "not support run package, please use zip package instead"
+        exit 1
+    fi
+}
+
 function check_extracted_size()
 {
     local IFS_OLD=$IFS
@@ -421,9 +466,11 @@ function verify_zip()
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
+        echo -e "${ROOT_CA}" > ${BASE_DIR}/playbooks/rootca.pem
         openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null \
         && openssl crl -verify -in ${crl_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -noout
         local verify_success=$?
+        rm -rf ${BASE_DIR}/playbooks/rootca.pem
         if [[ ${verify_success} -eq 0 ]];then
             if [[ "$(basename ${zip_file})" =~ zip ]];then
                 if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -465,6 +512,7 @@ function verify_zip_redirect()
 {
     log_info "The system is busy with checking compressed files, Please wait for a moment..."
     rm -rf ${BASE_DIR}/resources/run_from_*_zip
+    check_run_pkg
     check_extracted_size
     verify_zip > ${BASE_DIR}/tmp.log 2>&1
     local verify_result=$?
@@ -525,9 +573,9 @@ function process_uninstall()
         echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend -e uninstall_version=${uninstall_version} ${DEBUG_CMD}"
     cat ${tmp_uninstall_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" -e uninstall_version=${uninstall_version} ${DEBUG_CMD}
     if [ -f ${tmp_uninstall_play} ];then
         rm -f ${tmp_uninstall_play}
     fi
@@ -721,7 +769,7 @@ function parse_script_args() {
             ;;
         --output-file=*)
             output_file=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${output_file}" | grep -Evq '^[a-zA-Z0-9._,/]*$');then
+            if $(echo "${output_file}" | grep -Evq '^[a-zA-Z0-9._,/-]*$');then
                 log_error "--output-file parameter is invalid"
                 print_usage
             fi
@@ -866,10 +914,12 @@ function check_script_args()
 
 function ansible_playbook()
 {
-    if [ -z "$output_file" ]; then
+    if [ -z "${output_file}" ]; then
         ansible-playbook $*
+    elif [ -f "${output_file}" ];then
+        log_error "${output_file} already exists, please specify another output file name"
     else
-        ansible-playbook $* > "$output_file"
+        ansible-playbook $* > "${output_file}"
     fi
 }
 
@@ -955,7 +1005,7 @@ function set_permission()
         fi
     done
     chmod 750 $BASE_DIR/ $BASE_DIR/playbooks/install
-    chmod 600 $BASE_DIR/install.log* $BASE_DIR/downloader.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini ${BASE_DIR}/playbooks/rootca.pem 2>/dev/null
+    chmod 600 $BASE_DIR/install.log* $BASE_DIR/downloader.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini 2>/dev/null
 }
 
 function prepare_environment()
@@ -995,7 +1045,7 @@ main()
         process_scene ${install_scene}
     fi
     if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall ${uninstall_target} ${uninstall_version}
+        process_uninstall ${uninstall_target}
     fi
     if [ "x${upgrade_target}" != "x" ];then
         process_upgrade ${upgrade_target}

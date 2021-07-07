@@ -1,19 +1,11 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: find ha uninstall file path
-      find:
-        paths: "/usr/local/ha/"
-        recurse: no
-        file_type: file
-        use_regex: yes
-        patterns: "uninstall.sh$"
-      register: uninstall_ha
-
     - name: uninstall ha
-      shell: "{{ uninstall_ha.files[0].path }} -q"
-      register: uninstall_ha_result
-      when: uninstall_ha.matched > 0
-      failed_when: "uninstall_ha_result.rc != 0"
+      import_tasks: task_ha.yml
+      when: ansible_user_uid == 0
 
-    - name: show uninstall ha result
-      debug: var=uninstall_ha_result
+    - name: message
+      debug:
+        msg:
+        - "not support uninstalling ha by non-root user, please switch to root user"
+      when: ansible_user_uid != 0
