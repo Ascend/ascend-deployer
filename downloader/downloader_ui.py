@@ -19,6 +19,7 @@ import configparser
 import os
 import sys
 import tkinter as tk
+import tkinter.messagebox
 
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
