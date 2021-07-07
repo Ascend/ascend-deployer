@@ -235,7 +235,7 @@
 
     - name: unarchive jdk for aarch64
       unarchive:
-        src: "{{ mindstudio_dir }}/jbr-11_0_7-linux-aarch64-b765.65.tar.gz"
+        src: "{{ mindstudio_dir }}/jbr-11_0_9-linux-aarch64-b944.49.tar.gz"
         dest: ~/MindStudio
         copy: no
         mode: 0750
@@ -245,7 +245,7 @@
 
     - name: unarchive jdk for x86_64
       unarchive:
-        src: "{{ mindstudio_dir }}/jbr-11_0_7-linux-x64-b765.65.tar.gz"
+        src: "{{ mindstudio_dir }}/jbr-11_0_9-linux-x64-b944.49.tar.gz"
         dest: ~/MindStudio
         copy: no
       when:
