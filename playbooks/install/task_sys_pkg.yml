@@ -20,7 +20,7 @@
     patterns: "libprotobuf.so.*"
   register: libprotobuf
 
-- name: install protobuf 3.11.3
+- name: install protobuf 3.13.0
   import_tasks: task_protobuf.yml
   when: libprotobuf.matched == 0
 

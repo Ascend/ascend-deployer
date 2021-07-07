@@ -3,7 +3,7 @@
 - name: install system dependencies
   import_playbook: ../install/install_sys_pkg.yml
 
-- name: install python3.7.5
+- name: install {{ python_version }}
   import_playbook: ../install/install_python375.yml
 
 - name: install driver and firmware

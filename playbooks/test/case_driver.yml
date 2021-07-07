@@ -16,8 +16,8 @@
 - name: execute npu-smi info
   shell: npu-smi info
   environment:
-    PATH: /usr/local/python3.7.5/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
-    LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64
+    PATH: /usr/local/{{ python_version }}/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}
+    LD_LIBRARY_PATH: /usr/local/{{ python_version }}/lib:/usr/local/Ascend/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:/usr/local/Ascend/nnae/latest/fwkacllib/lib64:/usr/local/Ascend/nnrt/latest/acllib/lib64
   when: driver.matched > 0
   register: smi_info
 

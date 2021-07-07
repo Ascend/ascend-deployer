@@ -51,12 +51,6 @@ gdNojAmDZwk73Vwty4KrPanEhw==
 EOF
 )
 
-if [ ${UID} == 0 ];then
-    readonly PYTHON_PREFIX=/usr/local/python3.7.5
-else
-    readonly PYTHON_PREFIX=${HOME}/.local/python3.7.5
-fi
-
 VAULT_CMD=""
 DEBUG_CMD=""
 STDOUT_CALLBACK=""
@@ -112,6 +106,39 @@ function log_error()
     echo "[ERROR] $*"
     echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/install.log
 }
+
+function get_specified_python()
+{
+    if [ ! -z ${ASCEND_PYTHON_VERSION} ];then
+        echo ${ASCEND_PYTHON_VERSION}
+    else
+        echo $(grep -oP "^ascend_python_version=\K.*" ${BASE_DIR}/downloader/config.ini)
+    fi
+}
+
+readonly specified_python=$(get_specified_python)
+
+function check_python_version()
+{
+    if $(echo "${specified_python}" | grep -Evq '^Python-3.(7|8).([0-9]|1[0-1])$');then
+        log_error "ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11"
+        exit 1
+    fi
+}
+
+check_python_version
+
+readonly PYTHON_TAR=${specified_python}
+
+readonly PYTHON_VERSION=$( echo ${specified_python} | sed 's/P/p/;s/-//')
+
+readonly PYTHON_MINOR=$( echo ${PYTHON_VERSION%.*} )
+
+if [ ${UID} == 0 ];then
+    readonly PYTHON_PREFIX=/usr/local/${PYTHON_VERSION}
+else
+    readonly PYTHON_PREFIX=${HOME}/.local/${PYTHON_VERSION}
+fi
 
 function get_os_version()
 {
@@ -313,14 +340,14 @@ function install_sys_packages()
 
 function have_no_python_module
 {
-    ret=`python3.7 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
+    ret=`python3 -c "import ${1}" 2>&1 | grep "No module" | wc -l`
     return ${ret}
 }
 
 function check_python375()
 {
     if [ ! -d ${PYTHON_PREFIX} ];then
-        log_warning "no python3.7.5 installed"
+        log_warning "no ${PYTHON_VERSION} installed"
         return ${FALSE}
     fi
     module_list="ctypes sqlite3 lzma"
@@ -329,35 +356,46 @@ function check_python375()
         have_no_python_module ${module}
         ret=$?
         if [ ${ret} == ${TRUE} ];then
-            log_warning "python3.7 have no moudle ${module}"
+            log_warning "${PYTHON_VERSION} have no moudle ${module}"
             return ${FALSE}
         fi
     done
     return ${TRUE}
 }
 
-function install_python375()
+# check if resource of specific os is exists
+function check_python_resource()
 {
-    if [ ! -f ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz ];then
-        log_error "can't find Python-3.7.5.tar.xz"
+    if [ -f ${BASE_DIR}/resources/sources/${PYTHON_TAR}.tar.xz ];then
         return
     fi
-    log_info "install Python 3.7.5"
+    log_warning "can't find ${PYTHON_TAR}.tar.xz, start downloading"
+    bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
+    if [[ $? != 0 ]];then
+        log_error "download ${PYTHON_TAR}.tar.xz fail"
+        exit 1
+    fi
+}
+
+function install_python375()
+{
+    check_python_resource
+    log_info "install ${PYTHON_VERSION}"
 
     mkdir -p -m 750 ~/build
-    tar --no-same-owner -xf ${BASE_DIR}/resources/sources/Python-3.7.5.tar.xz -C ~/build
-    cd ~/build/Python-3.7.5
+    tar --no-same-owner -xf ${BASE_DIR}/resources/sources/${PYTHON_TAR}.tar.xz -C ~/build
+    cd ~/build/${PYTHON_TAR}
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j20
     make install
     cd -
-    python3.7 -m ensurepip
-    python3.7 -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
+    ${PYTHON_MINOR} -m ensurepip
+    ${PYTHON_MINOR} -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
     # install wheel, if not pip will use legacy setup.py install for installation
-    python3.7 -m pip install wheel --no-index --find-links ${PYLIB_PATH}
+    ${PYTHON_MINOR} -m pip install wheel --no-index --find-links ${PYLIB_PATH}
     if [[ "${g_os_name}" == "EulerOS" ]] || [[ "${g_os_name}" == "OpenEuler" ]];then
         echo "EulerOS or OpenEuler will install selinux when installing Python 3.7.5" >> ${BASE_DIR}/install.log
-        python3.7 -m pip install selinux --no-index --find-links ${PYLIB_PATH}
+        ${PYTHON_MINOR} -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
     echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
     echo "export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:\$LD_LIBRARY_PATH" >> ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
@@ -366,10 +404,10 @@ function install_python375()
 function install_ansible()
 {
     log_info "install ansible"
-    local ansible_path=${PYTHON_PREFIX}/lib/python3.7/site-packages/ansible
-    python3.7 -m ensurepip
-    python3.7 -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
-    python3.7 -m pip install ansible --no-index --find-links ${PYLIB_PATH}
+    local ansible_path=${PYTHON_PREFIX}/lib/${PYTHON_MINOR}/site-packages/ansible
+    ${PYTHON_MINOR} -m ensurepip
+    ${PYTHON_MINOR} -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
+    ${PYTHON_MINOR} -m pip install ansible --no-index --find-links ${PYLIB_PATH}
     # patch the INTERPRETER_PYTHON_DISTRO_MAP, make it support EulerOS
     if [ -f ${ansible_path}/config/base.yml ];then
         eulercnt=$(grep euleros ${ansible_path}/config/base.yml | wc -l)
@@ -538,9 +576,9 @@ function process_install()
         echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
     fi
@@ -555,9 +593,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
     fi
@@ -573,9 +611,9 @@ function process_uninstall()
         echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend -e uninstall_version=${uninstall_version} ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend -e uninstall_version=${uninstall_version} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_uninstall_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" -e uninstall_version=${uninstall_version} ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" -e uninstall_version=${uninstall_version} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_uninstall_play} ];then
         rm -f ${tmp_uninstall_play}
     fi
@@ -595,9 +633,9 @@ function process_upgrade()
         echo "- import_playbook: upgrade/upgrade_${target}.yml" >> ${tmp_upgrade_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_upgrade_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_upgrade_play} ];then
         rm -f ${tmp_upgrade_play}
     fi
@@ -613,9 +651,9 @@ function process_test()
         echo "- import_playbook: test/test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend ${DEBUG_CMD}"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_test_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" ${DEBUG_CMD}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
     fi
@@ -623,14 +661,14 @@ function process_test()
 
 function process_display()
 {
-    echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend app_name=${display_target}"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}"
+    echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend -e app_name=${display_target} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} 
 }
 
 function process_check()
 {
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend"
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}
 }
 
 function process_chean()
@@ -948,6 +986,9 @@ function init_ansible_vault()
 
 function bootstrap()
 {
+    export PATH=${PYTHON_PREFIX}/bin:$PATH
+    export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:$LD_LIBRARY_PATH
+    unset PYTHONPATH
     local have_ansible=`command -v ansible | wc -l`
     check_python375
     local py37_status=$?
@@ -1023,15 +1064,6 @@ main()
     check_script_args
     if [ -d ${BASE_DIR}/facts_cache ];then
         rm -rf ${BASE_DIR}/facts_cache && mkdir -p -m 750 ${BASE_DIR}/facts_cache
-    fi
-    if [ ${UID} == 0 ];then
-        export PATH=/usr/local/python3.7.5/bin:$PATH
-        export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
-        unset PYTHONPATH
-    else
-        export PATH=${HOME}/.local/python3.7.5/bin:$PATH
-        export LD_LIBRARY_PATH=${HOME}/.local/python3.7.5/lib:$LD_LIBRARY_PATH
-        unset PYTHONPATH
     fi
     bootstrap
     encrypt_inventory

@@ -15,8 +15,10 @@
 # limitations under the License.
 # ===========================================================================
 
-import os
+import configparser
 import json
+import os
+import sys
 from download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
 from logger_config import get_logger
 import software_mgr
@@ -108,13 +110,11 @@ def download_other_packages(dst=None):
 
     :return:
     """
-    script = os.path.realpath(__file__)
-    script_dir = os.path.dirname(script)
     if dst is None:
-        base_dir = os.path.dirname(script_dir)
+        base_dir = PROJECT_DIR
     else:
         base_dir = dst
-    resources_json = os.path.join(script_dir, 'other_resources.json')
+    resources_json = os.path.join(CUR_DIR, 'other_resources.json')
     results = {'ok': [], 'failed': []}
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
@@ -133,6 +133,52 @@ def download_other_packages(dst=None):
                 continue
             results['failed'].append(item['filename'])
     return results
+
+
+def download_specified_python(dst=None):
+    """
+    download ascend_python_version=Python-3.7.5
+
+    :return:
+    """
+    if dst is None:
+        base_dir = PROJECT_DIR
+    else:
+        base_dir = dst
+    if os.environ.get("ASCEND_PYTHON_VERSION"):
+        specified_python = os.environ.get("ASCEND_PYTHON_VERSION")
+    else:
+        config_file = os.path.join(CUR_DIR, 'config.ini')
+        config = configparser.ConfigParser()
+        config.read(config_file)
+        specified_python = config['python']['ascend_python_version']
+    resources_json = os.path.join(CUR_DIR, 'python_version.json')
+    with open(resources_json, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+        available_python_list = [item['filename'].rstrip('.tar.xz') for item in data]
+        if specified_python not in available_python_list:
+            tips = "[ERROR] ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11"
+            print(tips)
+            LOG.error(tips)
+            sys.exit(1)
+        results = {'ok': [], 'failed': []}
+        for item in data:
+            if specified_python == item['filename'].rstrip('.tar.xz'):
+                dest_file = os.path.join(base_dir, item['dest'], item['filename'])
+                if os.path.exists(dest_file) and 'sha256' in item:
+                    file_hash = calc_sha256(dest_file)
+                    url_hash = item['sha256']
+                    if file_hash == url_hash:
+                        print(item['filename'].ljust(60), 'exists')
+                        break
+                LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
+                if DOWNLOAD_INST.download(item['url'], dest_file):
+                    results['ok'].append(item['filename'])
+                    print(item['filename'].ljust(60), 'download success')
+                    break
+                results['failed'].append(item['filename'])
+                break
+        return results
 
 
 if __name__ == '__main__':

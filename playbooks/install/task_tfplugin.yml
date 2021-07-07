@@ -25,8 +25,8 @@
 - name: install tfplugin
   shell: "bash {{ tfplugin.files[0].path }} {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib"
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: tfplugin_result
   when: tfplugin.matched > 0
   failed_when: "tfplugin_result.rc !=0 and 'already installed' not in tfplugin_result.stdout"

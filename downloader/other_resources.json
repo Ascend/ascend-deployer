@@ -1,11 +1,5 @@
 [
     {
-        "filename":"Python-3.7.5.tar.xz",
-        "url":"https://mirrors.huaweicloud.com/python/3.7.5/Python-3.7.5.tar.xz",
-        "sha256":"e85a76ea9f3d6c485ec1780fca4e500725a4a7bbc63c78ebc44170de9b619d94",
-        "dest":"resources/sources"
-    },
-    {
         "filename":"protobuf-python-3.13.0.tar.gz",
         "url":"https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protobuf-python-3.13.0.tar.gz",
         "sha256":"9c4d2ad449d27da5ac1db1ad5ecc4a642dedd6bbe59219d61d7b655b6b12be89",
