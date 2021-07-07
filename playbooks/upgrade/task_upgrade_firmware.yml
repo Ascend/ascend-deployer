@@ -50,7 +50,7 @@
   debug:
     msg:
       - "current firmware = {{ current_firmware_version }}"
-      - "current firmware = {{ target_firmware_version }}"
+      - "target firmware = {{ target_firmware_version }}"
   when: firmware_run | length > 0
 
 - name: upgrade firmware
