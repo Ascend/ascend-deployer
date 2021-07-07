@@ -26,13 +26,13 @@ CUR_DIR = os.path.dirname(__file__)
 
 sys.path.append(CUR_DIR)
 
-from .logger_config import get_logger
-from .pip_downloader import MyPip
-from .os_dep_downloader import OsDepDownloader
+import logger_config
+import pip_downloader
+import os_dep_downloader
 import other_downloader
-from .software_mgr import is_software_support
+import software_mgr
 
-LOG = get_logger(__file__)
+LOG = logger_config.get_logger(__file__)
 
 dir_list = ['downloader', 'playbooks', 'docs']
 file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg',
@@ -64,7 +64,7 @@ def download_python_packages(dst=None):
     else:
         repo_path = os.path.join(dst, 'pylibs')
 
-    pip = MyPip()
+    pip = pip_downloader.MyPip()
     results = {'ok': [], 'failed': []}
     with open(require_file) as file_content:
         for line in file_content.readlines():
@@ -78,7 +78,7 @@ def download_python_packages(dst=None):
 
 def download_os_packages(os_list=None, software_list=None, dst=None):
     """download_os_packages"""
-    os_dep = OsDepDownloader()
+    os_dep = os_dep_downloader.OsDepDownloader()
     if os_list is None and dst is None:
         return os_dep.download_pkg_from_json()
     else:
@@ -155,7 +155,7 @@ def parse_argument():
                 sys.exit(1)
     if args.packages is not None:
         for soft in args.packages.split(','):
-            if not is_software_support(soft):
+            if not software_mgr.is_software_support(soft):
                 print('software {} is not supported'.format(soft))
                 parser.print_help()
                 sys.exit(1)
