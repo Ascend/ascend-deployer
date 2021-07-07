@@ -121,10 +121,13 @@ def copy_scripts():
             shutil.copy(src, dst)
 
 
-def parse_argument():
+def parse_argument(download_path=''):
     """
     解析参数
     """
+    if download_path.endswith('ascend-deployer'):
+        support_os_list = os.listdir(os.path.join(download_path, 'downloader', 'config'))
+        support_pkg_list = os.listdir(os.path.join(download_path, 'downloader', 'software'))
     os_list_help = 'for example: --os-list=<OS1>,<OS2>\nSpecific OS list to download, supported os are:\n'
     for osname in sorted(support_os_list):
         os_list_help += '{}\n'.format(osname)
@@ -187,9 +190,9 @@ def main():
     """
     entry for console
     """
-    args = parse_argument()
-
     download_path = get_download_path()
+    args = parse_argument(download_path)
+
     if args is None:
         sys.exit(0)
 
