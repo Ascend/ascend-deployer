@@ -22,18 +22,39 @@ import time
 import sys
 import hashlib
 import ssl
-import json
+import platform
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
 from logger_config import get_logger
 
 
+def get_ascend_path():
+    """
+    get download path
+    """
+    cur_dir = os.path.dirname(__file__)
+    if 'site-packages' not in cur_dir and 'dist-packages' not in cur_dir:
+        cur = os.path.dirname(cur_dir)
+        return cur
+
+    deployer_home = ''
+    if platform.system() == 'Linux':
+        deployer_home = os.getenv('HOME')
+        if os.getenv('ASCEND_DEPLOYER_HOME') is not None:
+            deployer_home = os.getenv('ASCEND_DEPLOYER_HOME')
+    else:
+        deployer_home = os.getcwd()
+
+    return os.path.join(deployer_home, 'ascend-deployer')
+
+
 LOG = get_logger(__file__)
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+CUR_DIR = get_ascend_path()
+
 
 class ConfigUtil:
-    config_file = os.path.join(CUR_DIR, 'config.ini')
+    config_file = os.path.join(CUR_DIR, 'downloader/config.ini')
 
     def __init__(self) -> None:
         self.config = configparser.RawConfigParser()
