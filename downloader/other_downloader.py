@@ -17,9 +17,9 @@
 
 import os
 import json
-from .download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
-from .logger_config import get_logger
-from  .software_mgr import get_software_name_version, get_software_other
+from download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
+from logger_config import get_logger
+from  software_mgr import get_software_name_version, get_software_other
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))

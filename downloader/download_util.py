@@ -26,15 +26,14 @@ import json
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
-from .logger_config import get_logger
-from .downloader import get_download_path
+from logger_config import get_logger
 
 
 LOG = get_logger(__file__)
-
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class ConfigUtil:
-    config_file = os.path.join(get_download_path(), 'downloader/config.ini')
+    config_file = os.path.join(CUR_DIR, 'config.ini')
 
     def __init__(self) -> None:
         self.config = configparser.RawConfigParser()

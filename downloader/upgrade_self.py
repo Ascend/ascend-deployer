@@ -16,7 +16,7 @@
 # ===========================================================================
 
 import os
-from .download_util import DOWNLOAD_INST
+from download_util import DOWNLOAD_INST
 
 BASE_URL = "https://gitee.com/ascend/ascend-deployer/raw/master"
 
