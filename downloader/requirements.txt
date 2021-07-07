@@ -3,8 +3,23 @@ wrapt==1.12.1
 h5py==3.1.0
 opt-einsum==3.3.0
 gast==0.2.2
+<<<<<<< HEAD
 astor==0.8.1
 google-pasta==0.1.8
+=======
+gast==0.3.3
+gnureadline==8.0.0
+google-auth-oauthlib==0.4.4
+google-auth==1.30.0
+google-pasta==0.2
+grpcio-tools==1.32.0
+grpcio==1.32.0
+h5py==2.10.0
+idna==2.10
+importlib-metadata==2.0.0
+isort==5.8.0
+jinja2==2.11.2
+>>>>>>> a66d545 (更新jbr下载网址、更换或去掉obs下载网址)
 keras-applications==1.0.8
 Keras-Preprocessing==1.1.2
 grpcio==1.32.0

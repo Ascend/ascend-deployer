@@ -6,10 +6,10 @@
         "dest":"resources"
     },
     {
-        "filename":"protobuf-python-3.11.3.tar.gz",
-        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/protobuf-python-3.11.3.tar.gz",
-        "sha256":"a9c6c3821ece08f8db55392edbbec4d4a5392fa5df148188309ed6c5a842e3b7",
-        "dest":"resources"
+        "filename":"protobuf-python-3.13.0.tar.gz",
+        "url":"https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protobuf-python-3.13.0.tar.gz",
+        "sha256":"9c4d2ad449d27da5ac1db1ad5ecc4a642dedd6bbe59219d61d7b655b6b12be89",
+        "dest":"resources/sources"
     },
     {
         "filename":"gcc-7.3.0.tar.gz",
@@ -37,45 +37,15 @@
     },
     {
         "filename":"isl-0.16.1.tar.bz2",
-        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/isl-0.16.1.tar.bz2",
+        "url":"https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.16.1.tar.bz2",
         "sha256":"412538bb65c799ac98e17e8cfcdacbb257a57362acfaaff254b0fcae970126d2",
         "dest":"resources/"
     },
     {
         "filename":"cmake-3.18.6.tar.gz",
-        "url":"https://repository.obs.cn-east-2.myhuaweicloud.com/resources/cmake-3.18.6.tar.gz",
+        "url":"https://github.com/Kitware/CMake/releases/download/v3.18.6/cmake-3.18.6.tar.gz",
         "sha256":"124f571ab70332da97a173cb794dfa09a5b20ccbb80a08e56570a500f47b6600",
         "dest":"resources/"
-    },
-    {
-        "filename":"torch-1.5.0+ascend-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/torch-1.5.0%2Bascend-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"d3af1c7456de86746749ce3356c914d73a19f5a2fa27cf175b0d614932f11573",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"torch-1.5.0+ascend-cp37-cp37m-linux_x86_64.whl",
-        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/torch-1.5.0%2Bascend-cp37-cp37m-linux_x86_64.whl",
-        "sha256":"ef918bd7c211c012f9f20ad9b71a0f59453a4170fb43de0a5c54441eaa58e1d6",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
-        "url":"https://pypi.obs.cn-east-2.myhuaweicloud.com/packages/tensorflow-1.15.0-cp37-cp37m-manylinux2014_aarch64.whl",
-        "sha256":"c2d6df0930f6558ec9bb741c219cb84f90f906cc9e2c28c6561960a1404dec39",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"apex-0.1+ascend-cp37-cp37m-linux_x86_64.whl",
-        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_x86_64.whl",
-        "sha256":"874747211e92891abcb359151d735d527a1e7f8ac5165dae7d44213c192d80c0",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"apex-0.1+ascend-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/PTAdapter/V100R020C10/apex-0.1%2Bascend-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"e62ccf3884aea0d54e6e5f1af6b16868402df2c0f4ec143455939e99948f887d",
-        "dest":"resources/pylibs"
     },
     {
         "filename":"PyQt5-5.14.0-5.14.0-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl",
