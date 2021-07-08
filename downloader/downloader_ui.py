@@ -20,12 +20,34 @@ import os
 import sys
 import tkinter as tk
 import tkinter.messagebox
+import tarfile
+import shutil
+import threading
+from downloader import download_all
 
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 OS_LIST = os.listdir(os.path.join(CUR_DIR, 'config'))
 PKG_LIST = [pkg.split(".json")[0] for pkg in os.listdir(os.path.join(CUR_DIR, 'software'))]
 
+LOCK = threading.Lock()
+
+def make_tarfile():
+    if os.path.exists('./ascend-deployer.tar'):
+        os.unlink('./ascend-deployer.tar')
+
+    with tarfile.open('../ascend-deployer.tar', "w:tar") as tar:
+        tar.add("./", arcname='ascend-deployer')
+    shutil.move('../ascend-deployer.tar', './ascend-deployer.tar')
+
+def downloadThread():
+    download_all(OS_LIST, "", "./")
+    make_tarfile()
+
+thread = threading.Thread(target=downloadThread)
+
+def start_download_thread():
+    thread.start()
 
 class Win(object):
     """
@@ -36,13 +58,13 @@ class Win(object):
     def __init__(self):
         self.config_file = os.path.join(CUR_DIR, 'config.ini')
         self.root = tk.Tk()
-        self.root.title('离线安装下载器')
-        self.root.geometry('600x{}'.format(30 * len(OS_LIST)))
+        self.root.title('AI质检平台离线安装包下载器')
+        self.root.geometry('400x200')
         self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
-        self.frame_left = tk.LabelFrame(self.root, text="OS_LIST")
-        self.frame_left.pack(fill="both", side="left", expand="yes")
-        self.frame_right = tk.LabelFrame(self.root, text="PKG_LIST")
-        self.frame_right.pack(fill="both", side="right", expand="yes")
+        self.frame_os = tk.LabelFrame(self.root, text="操作系统选择")
+        self.frame_os.pack(fill="both", side="top")
+        self.label_info = tk.Label(self.root, text="请将驱动、固件软件放在resources目录中")
+        self.label_info.pack()
         self.frame_bottom = tk.LabelFrame(self.root)
         self.frame_bottom.pack(side="bottom")
         self.all_opt = tk.IntVar()
@@ -51,14 +73,6 @@ class Win(object):
         self.all_not_opt.set(0)
         self.os_dict = {}
         self.pkg_dict = {}
-        tk.Button(self.frame_left, text="全选",
-                  command=lambda: self.select_os_all(self.all_opt)).grid(row=0, column=0, sticky='w')
-        tk.Button(self.frame_left, text="全不选",
-                  command=lambda: self.select_os_all(self.all_not_opt)).grid(row=0, column=0)
-        tk.Button(self.frame_right, text="全选",
-                  command=lambda: self.select_pkg_all(self.all_opt)).grid(row=0, column=0, sticky='w')
-        tk.Button(self.frame_right, text="全不选",
-                  command=lambda: self.select_pkg_all(self.all_not_opt)).grid(row=0, column=0)
         tk.Button(self.frame_bottom, text='开始下载',
                   command=self.start_download).pack()
         self.read_config()
@@ -72,14 +86,8 @@ class Win(object):
         os_idx, pkg_idx = 0, 0
         for os_name, var in sorted(self.os_dict.items()):
             os_idx += 1
-            tk.Checkbutton(self.frame_left, width=30, text=os_name,
-                           variable=var, anchor='w').grid(row=os_idx,
-                                                          column=0)
-        for pkg_name, var in sorted(self.pkg_dict.items()):
-            pkg_idx += 1
-            tk.Checkbutton(self.frame_right, width=30, text=pkg_name,
-                           variable=var, anchor='w').grid(row=pkg_idx,
-                                                          column=0)
+            tk.Checkbutton(self.frame_os, width=30, text=os_name,
+                           variable=var, anchor='w').grid(row=os_idx, column=0)
 
     def run(self):
         """
@@ -88,20 +96,21 @@ class Win(object):
         """
         self.root.mainloop()
 
+    def check_status(self):
+        print(f"download thread is alive: {thread.isAlive()}")
+        if thread.isAlive():
+            self.root.after(1000, self.check_status)
+        else:
+            tk.messagebox.showinfo(title="Success", message="下载成功")
+
     def start_download(self):
         """
         Note:
             start downading, the window will exit
         """
         self.write_config()
-        config = configparser.ConfigParser()
-        config.read(self.config_file)
-
-        if config['download']['os_list'] or config['software']['pkg_list']:
-            self.root.destroy()
-            sys.exit(0)
-        else:
-            tk.messagebox.showwarning(title="Warning", message="至少勾选一项")
+        start_download_thread()
+        self.root.after(1000, self.check_status)
 
     def read_config(self):
         """
@@ -144,6 +153,8 @@ class Win(object):
             if var.get() == 1:
                 oslist.append(os_name)
         config['download']['os_list'] = ','.join(oslist)
+        print(oslist)
+        OS_LIST = oslist
 
         pkg_list = []
         for pkg_name, var in sorted(self.pkg_dict.items()):
@@ -153,34 +164,6 @@ class Win(object):
 
         with open(self.config_file, 'w+') as cfg:
             config.write(cfg, space_around_delimiters=False)
-
-    def select_os_all(self, opt):
-        """
-        Note:
-            select os all
-        """
-        if opt.get() == 1:
-            for os_name in OS_LIST:
-                self.os_dict[os_name].set(1)
-        else:
-            for os_name in OS_LIST:
-                self.os_dict[os_name].set(0)
-
-        self.display()
-
-    def select_pkg_all(self, opt):
-        """
-        Note:
-            select pkg all
-        """
-        if opt.get() == 1:
-            for pkg_name in PKG_LIST:
-                self.pkg_dict[pkg_name].set(1)
-        else:
-            for pkg_name in PKG_LIST:
-                self.pkg_dict[pkg_name].set(0)
-
-        self.display()
 
     def on_closing(self):
         """

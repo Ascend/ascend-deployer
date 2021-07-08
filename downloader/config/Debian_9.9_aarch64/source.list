@@ -1,2 +1,0 @@
-deb https://repo.huaweicloud.com/debian/ stretch main
-deb https://mirrors.huaweicloud.com/docker-ce/linux/debian/ stretch stable

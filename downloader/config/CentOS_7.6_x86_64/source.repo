@@ -1,8 +1,0 @@
-[base]
-baseurl=https://mirrors.huaweicloud.com/centos/7/os/x86_64/
-
-[epel]
-baseurl=https://mirrors.huaweicloud.com/epel/7/x86_64/
-
-[docker-ce]
-baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/x86_64/stable/
