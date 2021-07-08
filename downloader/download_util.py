@@ -51,7 +51,6 @@ def get_ascend_path():
 
 LOG = get_logger(__file__)
 CUR_DIR = get_ascend_path()
-print(CUR_DIR)
 
 
 class ConfigUtil:
