@@ -19,7 +19,7 @@ import os
 import sys
 import subprocess
 import shutil
-import ascend_deployer.downloader.downloader as d
+import ascend_deployer.downloader as d
 
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.dirname(d.__file__))
