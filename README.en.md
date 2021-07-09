@@ -540,6 +540,22 @@ The offline installation tool provides the source configuration file. Replace it
 
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
+## <a name="url">Public web site URL</a>
+```
+https://github.com
+https://gcc.gnu.org
+http://mirrors.bclinux.org
+https://archive.kylinos.cn
+https://mirrors.tencent.com
+https://mirrors.bfsu.edu.cn
+https://repo.huaweicloud.com
+https://mirrors.huaweicloud.com
+https://cache-redirector.jetbrains.com
+https://obs-9be7.obs.myhuaweicloud.com
+https://ms-release.obs.cn-north-4.myhuaweicloud.com
+https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
+```
+
 ## <a name="faq">FAQ</a>
 1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
 - A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
