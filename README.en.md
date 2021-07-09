@@ -83,6 +83,7 @@ The offline installation tool provides automatic download and one-click installa
 pip3 install ascend-deployer
 ```
 - Version requirement: python >= 3.6
+- It is recommended that you install it as root and use the Python 3 and Pip3 tools on your system
 - Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
@@ -244,7 +245,8 @@ ascend-deployer
      - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
-     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
+     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions.
+     - '--install=tensorflow1.15.0' will install tensorflow1.15.0, '--install=tensorflow2.4.1' will install tensorflow2.4.1. By default, TensorFlow refers to TensorFlow version 1.15.0. TensorFlow 2.4.1 requires the Cann package to be installed for normal use.
    - Scenario-specific installation
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
@@ -295,11 +297,7 @@ When the tool is installed with pip, two entrances will be provided for easy ope
 - ascend-download
 - ascend-deployer
 
-If the non root user cannot find these two commands after installation, it is necessary to configure the PATH environment variable. The configuration command is as follows:
-
-```bash
-export PATH=~/.local/bin:$PATH
-```
+Both entrances are available to both root and non-root users
 
 ## Download
 
@@ -313,7 +311,7 @@ Both win10 and Linux can execute
 
 - In windows, the ascend deployer directory is generated in the current directory where the command is executed. When the download is complete, copy the whole directory to the Linux server to be deployed.
 
-- In Linux, the ascend-deployer directory will be generated under the HOME directory. it can be modified by setting the environment variable ASCEND_DEPLOYER_HOME.
+- In Linux, the ascend-deployer directory will be generated under the HOME directory. You can replace the user's HOME directory by setting the environment variable ASCEND_Deployer_HOME. Non-root users must ensure that the directory exists and can read and write properly.
 
 ## Installation
 
@@ -321,11 +319,7 @@ Both win10 and Linux can execute
 ascend-deployer --install=<pkg1,pkg2>
 ```
 
-The ascend-deployer command is essentially a wrapper of install.sh.
-The use method is exactly the same as directly executing install.sh in the ascend deployer directory.
-The ascend-deployer command will automatically find the file of "${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh" to execute.
-The default value of ASCEND_DEPLOYER_HOME is the same as user home, non-root users must ensure that the directory exists and can read and write normally.
-Non-root users do not need sudo permission to install.
+The ascend-deployer command is essentially a wrapper of install.sh.The use method is exactly the same as directly executing install.sh in the ascend deployer directory. The ASCEND_Deployer command automatically looks for the file ASCEND_Deployer /install.sh in the user's HOME directory and replaces the user's HOME directory by setting the environment variable ASCEND_Deployer_HOME. Non-root users must ensure that the directory exists and can read and write properly.
 
 # <a name="set_env_var">Environment Variable Configuration</a>
 The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:

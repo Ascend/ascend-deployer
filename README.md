@@ -86,6 +86,7 @@
 pip3 install ascend-deployer
 ```
 - 版本要求：python >= 3.6
+- 建议以root用户身份，使用系统自带python3及pip3工具安装
 - 使用方法参考<a href="#pip_manual">操作指导:pip方式</a>
 
 ### git安装
@@ -253,6 +254,7 @@ ascend-deployer
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
+     - `--install=tensorflow`会安装tensorflow 1.15.0版本，`--install=tensorflow_2.4.1`会安装tensorflow 2.4.1版本，本工具涉及tensorflow之处默认指 1.15.0版本，tensorflow 2.4.1需要安装配套版本的CANN软件包才可正常使用。
    - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
@@ -298,11 +300,7 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
 - ascend-download     下载器
 - ascend-deployer     部署器
 
-非root用户安装后如果找不到这两个命令，需要配置PATH环境变量，配置命令如下：
-
-```bash
-export PATH=~/.local/bin:$PATH
-```
+2个入口对root和非root用户均可用
 
 ## 下载
 
@@ -317,7 +315,7 @@ Win 10和Linux均可执行
 - windows下在执行命令的当前目录生成ascend-deployer目录。下载完成后将
   整个目录拷贝至待部署linux服务器即可使用。
 
-- linux下将在HOME目录下生成ascend-deployer目录。可通过设置环境变量ASCEND_DEPLOYER_HOME修改该目录。
+- linux下将在用户HOME目录下生成ascend-deployer目录，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
 
 ## 安装
 
@@ -325,11 +323,7 @@ Win 10和Linux均可执行
 ascend-deployer --install=<pkg1,pkg2>
 ```
 
-ascend-deployer本质上是install.sh的一个wrapper。
-使用方法与直接执行ascend-deployer目录中的install.sh完全相同。
-ascend-deployer命令将自动寻找${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh文件执行。
-ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同，非root用户须保证该目录存在且能正常读写。
-非root用户不需要sudo权限也可执行安装。
+ascend-deployer本质上是install.sh的一个wrapper，使用方法与直接执行ascend-deployer目录中的install.sh完全相同。ascend-deployer命令将自动寻找用户HOME目录下的ascend-deployer/install.sh文件执行，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
 
 # <a name="set_env_var">配置环境变量</a>
 
