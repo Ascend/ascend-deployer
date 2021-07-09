@@ -540,7 +540,7 @@ The offline installation tool provides the source configuration file. Replace it
 
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
-## <a name="url">Public web site URL</a>
+## <a name="url">Public Web Site URL</a>
 ```
 https://github.com
 https://gcc.gnu.org
