@@ -551,6 +551,12 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 
 表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
 
+
+### <a name="faq">FAQ</a>
+1. Q: 首次执行`./install.sh --check`或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
+A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（参考配置环境变量），重新使用工具安装。
+
+
 # 其他安装指导
 
 ## <a name="Device_IP">Device IP配置说明</a>

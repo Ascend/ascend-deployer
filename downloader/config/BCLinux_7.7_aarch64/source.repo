@@ -8,7 +8,7 @@ baseurl=http://mirrors.bclinux.org/bclinux/el7.7/updates/aarch64/
 baseurl=http://mirrors.bclinux.org/bclinux/el7.7/extras/aarch64/
 
 [epel]
-baseurl=http://mirrors.huaweicloud.com/epel/7/aarch64/
+baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64/
 
 [docker-ce]
 baseurl=https://mirrors.huaweicloud.com/docker-ce/linux/centos/7/aarch64/stable/
