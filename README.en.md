@@ -94,7 +94,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
