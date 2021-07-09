@@ -106,7 +106,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### 须知
 
-- 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
+- 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 离线安装工具已提供源配置文件，默认使用华为源，用户可根据需要进行替换。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
 - 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++等第三方组件。
@@ -124,7 +124,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 - linux
 
-  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">linux下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
   2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用.
 ## 安装操作
 
@@ -434,7 +434,7 @@ source ~/.local/ascendrc       # non-root
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 | --display=<target>                | 显示已安装软件包。                                                   |
 
-## <a name="download_parameter">下载参数说明</a>
+## <a name="download_parameter">linux下载参数说明</a>
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
@@ -534,7 +534,7 @@ source ~/.local/ascendrc       # non-root
    需将enable参数改为true，并配置可用的hostname、port、username、userpassword。
    安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
-### 下载行为配置
+### windows下载行为配置
 
 在downloader/config.ini文件中可进行windows下载行为配置，将其调整为下载所需组件（不建议直接修改配置文件，建议运行start_download_ui.bat使用UI界面勾选所需组件）。
 
