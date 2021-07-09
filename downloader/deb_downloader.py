@@ -23,6 +23,7 @@ import sqlite3 as sqlite
 import urllib.request
 import configparser
 from urllib.error import HTTPError
+from downloader import get_download_path
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
 from logger_config import get_logger
@@ -90,8 +91,7 @@ class Apt(object):
         self.binary_path = 'binary-amd64' if 'x86' in self.arch else 'binary-arm64'
         """读取源配置"""
         self.source_list = []
-        script = os.path.realpath(__file__)
-        self.base_dir = os.path.dirname(os.path.dirname(script))
+        self.base_dir = get_download_path()
         self.repo_file = os.path.join(self.base_dir, source_file)
         self.resources_dir = os.path.join(self.base_dir, 'resources')
         with open(self.repo_file) as file:
