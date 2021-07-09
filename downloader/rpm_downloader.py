@@ -28,6 +28,7 @@ import xml.sax
 import logger_config
 from xml.dom import minidom
 from urllib.error import HTTPError
+from downloader import get_download_path
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
 from yum_metadata.gen_yum_metadata import YumMetadataSqlite
@@ -74,8 +75,7 @@ class Yum(object):
         self.downloaded = []
         self.to_be_download = {}
         # 读取源配置
-        script = os.path.realpath(__file__)
-        self.base_dir = os.path.dirname(os.path.dirname(script))
+        self.base_dir = get_download_path()
         self.repo_file = os.path.join(self.base_dir, source_file)
         self.resources_dir = os.path.join(self.base_dir, 'resources')
         config = configparser.ConfigParser()
