@@ -254,7 +254,7 @@ ascend-deployer
    You can run the `./install.sh --help` command to view the options of <target>. Example command:
    `./install.sh --test=driver // Test whether the driver is normal.`
 
-   ### Batch Installation
+### Batch Installation
 
 1. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
     Edit the **inventory_file** file. The format is shown as follows:
