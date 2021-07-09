@@ -275,7 +275,7 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username' ansible_ssh_pass='password3'  # 非root用户
    ```
 
-   #### 注意事项：
+注意事项:
 
 - inventory_file_文件中会配置远程设备的用户名和密码。本工具会使用ansible-vault对配置有密码的inventory_file_文件进行加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
 - 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-valut命令。后续需要在inventory_file中配置密码时，建议先使用ansible-valut encrypt加密文件，再使用ansible-vault edit编辑文件。
