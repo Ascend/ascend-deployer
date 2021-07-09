@@ -117,7 +117,7 @@ The download function can be used in the Windows or Linux OSs.
   2. Start download.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to<a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
   2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
@@ -193,7 +193,7 @@ usermod -a -G HwHiAiUser non-root-user
    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
-4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
+4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation. please create this directory by yourself.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
 ascend-deployer
@@ -238,10 +238,10 @@ ascend-deployer
    - Software-specific installation
      `./install.sh --install=<package_name>`
      You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-     `./install.sh --install=npu //Install the driver and firmware.`
+     `./install.sh --install=sys_pkg,python375,npu //Install system packages and python3.7.5 and driver and firmware.`
      Notes:
-     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
+     - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
+     - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
      - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
@@ -286,25 +286,7 @@ ascend-deployer
 2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-3. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
-
-   - Software-specific installation
-     `./install.sh --install=<package_name>`
-     You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-     `./install.sh --install=npu //Install the driver and firmware.`
-     Notes:
-     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
-     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, and TensorFlow and npubridge require TFPlugin to provide runtime dependencies.
-   - Scenario-specific installation
-     `./install.sh --install-scene=<scene_name>`
-     The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
-      `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
-
-4. After the installation, run the following command to check whether the specified component works properly:
-   `./install.sh --test=<target>`
-   You can run the `./install.sh --help` command to view the options of <target>. Example command:
-   `./install.sh --test=driver // Test whether the driver is normal.`
+3. The following operation is the same as the above Single-Device Installation steps 2 and 3.
 
 # <a name="pip_manual">Operation instruction: pip install</a>
 
@@ -381,7 +363,7 @@ You can run the `./install.sh --help` command to view the options of <package_na
 Notes:
 
 - Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-- After the driver or firmware is upgraded, run the `reboot` command to restart the device for the driver and firmware to take effect.
+- After the driver or firmware is upgraded, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
 
 # Uninstallation
 

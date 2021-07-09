@@ -203,7 +203,7 @@ usermod -a -G HwHiAiUser 非root用户名
    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装，也不支持非root安装；Atlas 500Pro支持本地和远程安装
    - 依赖边缘节点atlasedge中间件正常工作，Atlas 500自带atlasedge中间件，Atlas 500Pro需要先安装atlasedge中间件
    - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，边缘节点是否成功纳管需到IEF的web前端观察，其他限制请参考usermanual-ief文档
-4. docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下，方可进行docker镜像的安装；docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
+4. docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下（需自行创建该目录），方可进行docker镜像的安装；docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
 
 ```
 ascend-deployer
@@ -244,12 +244,12 @@ ascend-deployer
 2. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
 
    - 指定软件安装
-     `./install.sh --install=<package_name>`
+     `./install.sh --install=<package_name_1>,<package_name_2>`
      <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-     `./install.sh --install=npu     //安装driver和firmware`
+     `./install.sh --install=sys_pkg,python375,npu     //安装系统依赖、python3.7.5、driver和firmware`
      注意事项：
-     - 请按照“driver>firmware>CANN软件包（toolkit、nnrt等）”或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行安装。
-     - 安装driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
+     - 请按照“sys_pkg>python3.7.5>npu（driver、firmware）>CANN软件包（toolkit、nnrt等）>AI框架（pytorch、tensorflow、mindspore）”顺序进行安装。
+     - 安装driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
@@ -289,23 +289,7 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
 
 2. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
-3. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
-   - 指定软件安装
-     `./install.sh --install=<package_name>`
-     <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-     `./install.sh --install=npu     //安装driver和firmware`
-     注意事项：
-     - 请按照“driver>firmware>CANN软件包（toolkit、nnrt等）”或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行安装。
-     - 安装driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
-     - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行依赖，tensorflow + npubridge需要tfplugin提供运行依赖。
-   - 指定场景安装
-     `./install.sh --install-scene=<scene_name>`
-     离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
-     `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`
-4. 安装后检查，可通过以下命令检查指定组件能否正常工作。
-   `./install.sh --test=<target>`
-   <target>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-   `./install.sh --test=driver     //测试driver是否正常`
+3. 后续操作同上述的单机安装第2、3步骤。
 
 # <a name="pip_manual">操作指导:pip方式</a>
 
@@ -373,8 +357,10 @@ source ~/.local/ascendrc       # non-root
 开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
 
 - 训练场景
+
   若需进行网络模型移植和训练，请参考《[TensorFlow网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》或《[PyTorch网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》。
 - 删除工具
+
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
 # 升级
@@ -382,12 +368,12 @@ source ~/.local/ascendrc       # non-root
 可执行以下命令，升级指定软件：
 `./install.sh --upgrade=<package_name>`
 <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --upgrade=npu     //升级driver和firmware`
+`./install.sh --upgrade=npu     //升级driver和firmware`。
 注意事项：
 
 - 请按照“firmware>driver>CANN软件包（toolkit、nnrt等）“或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行升级。
 
-- 升级driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
+- 升级driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
   
   # 卸载
   
