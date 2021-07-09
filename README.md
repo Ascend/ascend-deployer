@@ -277,7 +277,7 @@ ascend-deployer
    #### 注意事项：
 
 - inventory_file_文件中会配置远程设备的用户名和密码。本工具会使用ansible-vault对配置有密码的inventory_file_文件进行加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
-- 需要在inventory_file中配置密码时，建议先使用ansible-valut加密文件，再使用ansible-vault edit编辑文件。
+- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-valut命令。后续需要在inventory_file中配置密码时，建议先使用ansible-valut加密文件，再使用ansible-vault edit编辑文件。
 
 ```bash
 ansible-vault encrypt inventory_file        // 加密文件
@@ -345,7 +345,7 @@ ascend-deployer命令将自动寻找${ASCEND_DEPLOYER_HOME}/ascend-deployer/inst
 ASCEND_DEPLOYER_HOME目录默认值与用户HOME相同，非root用户须保证该目录存在且能正常读写。
 非root用户不需要sudo权限也可执行安装。
 
-# 配置环境变量
+# <a name="set_env_var">配置环境变量</a>
 
 离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
 

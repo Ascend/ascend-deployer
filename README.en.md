@@ -270,7 +270,7 @@ ascend-deployer
 
    - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
 
-   - For safety, strongly suggest to use ansible-vaule encrypt the inventory_file and then edit it with ansible-edit. for example
+   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansibled-valut command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vaule encrypt the inventory_file and then edit it with ansible-edit. for example
 
      ```bash
      ansible-vault encrypt inventory_file
@@ -342,8 +342,7 @@ The ascend-deployer command will automatically find the file of "${ASCEND_DEPLOY
 The default value of ASCEND_DEPLOYER_HOME is the same as user home, non-root users must ensure that the directory exists and can read and write normally.
 Non-root users do not need sudo permission to install.
 
-# Environment Variable Configuration
-
+# <a name="set_env_var">Environment Variable Configuration</a>
 The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
 
 ```
