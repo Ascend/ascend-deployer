@@ -21,7 +21,7 @@ import os
 import sys
 from download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
 from logger_config import get_logger
-import software_mgr
+from  software_mgr import get_software_name_version, get_software_other
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -45,8 +45,8 @@ def download_software(software, dst):
     """
     下载软件的其他资源
     """
-    formal_name, version = software_mgr.get_software_name_version(software)
-    others = software_mgr.get_software_other(formal_name, version)
+    formal_name, version = get_software_name_version(software)
+    others = get_software_other(formal_name, version)
     download_dir = os.path.join(dst, "resources", "{0}_{1}".format(formal_name, version))
     sha256_map = get_sha256_map()
 

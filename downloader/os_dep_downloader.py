@@ -23,16 +23,16 @@ from rpm_downloader import Yum
 from download_util import CONFIG_INST
 from logger_config import get_logger
 import software_mgr
+from downloader import get_download_path
 
 LOG = get_logger(__file__)
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class OsDepDownloader:
     def __init__(self):
         self.os_list = CONFIG_INST.get_download_os_list()
         self.pkg_list = CONFIG_INST.get_download_pkg_list()
-        self.project_dir = os.path.dirname(CUR_DIR)
+        self.project_dir = get_download_path()
         self.resources_dir = os.path.join(self.project_dir, 'resources')
 
     def download(self, os_list, software_list, dst):
@@ -60,8 +60,8 @@ class OsDepDownloader:
             os.makedirs(dst_dir, mode=0o750, exist_ok=True)
         LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
 
-        config_file = os.path.join(CUR_DIR, 'config/{0}/pkg_info.json'.format(os_item))
-        source_list_file = os.path.join(CUR_DIR, 'config/{0}/source.list'.format(os_item))
+        config_file = os.path.join(self.project_dir, 'downloader/config/{0}/pkg_info.json'.format(os_item))
+        source_list_file = os.path.join(self.project_dir, 'downloader/config/{0}/source.list'.format(os_item))
         downloader = None
 
         if os.path.exists(source_list_file):
@@ -70,7 +70,7 @@ class OsDepDownloader:
             else:
                 downloader = Apt(source_list_file, 'x86_64')
         else:
-            source_repo_file = os.path.join(CUR_DIR, 'config/{0}/source.repo'.format(os_item))
+            source_repo_file = os.path.join(self.project_dir, 'downloader/config/{0}/source.repo'.format(os_item))
             if 'aarch64' in os_item:
                 downloader = Yum(source_repo_file, 'aarch64')
             else:
