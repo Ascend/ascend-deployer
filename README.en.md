@@ -103,7 +103,7 @@ The download function can be used in the Windows or Linux OSs.
 
 ### Notice
 
-- To configure a proxy or modify the configuration file to download required OS components, edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
+- To configure a proxy or modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - The offline installation tool provides the source configuration file. The Huawei source is used by default. Replace it as required. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
 - After the installation, it is recommended to uninstall the third-party components such as GCC and G + + that may have security risks in the system.
@@ -115,9 +115,9 @@ The download function can be used in the Windows or Linux OSs.
      Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
      Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
   2. Start download.
-     Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI) or **start_download.bat**.
+     Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to<a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
   2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
@@ -428,7 +428,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
 | --display=<target>                | Displays installed packages                                                                 |
 
-## <a name="parameter">Download Parameter Description</a>
+## <a name="download_parameter">Linux Download Parameter Description</a>
 
 | Parameter           | Description                                    |
 |:------------------- | ---------------------------------------------- |
@@ -528,13 +528,15 @@ If you want to use an HTTP proxy, either configure the proxy in an environment v
    You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
    For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
-### Download Configuration
+### Windows Download Configuration
 
-You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
+You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components on windows. It is not recommended to modify the configuration file directly. It is recommended to run start_download_ui.bat and use the UI interface to check the required components
 
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
+[software]
+pkg_list=CANN_5.0.1,MindStudio_3.0.1  # CANN或MindStudio to be deployed.
 ```
 
 ### <a name="sourceconfig">Source Configuration</a>

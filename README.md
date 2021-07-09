@@ -534,7 +534,7 @@ source ~/.local/ascendrc       # non-root
    需将enable参数改为true，并配置可用的hostname、port、username、userpassword。
    安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
-### windows下载行为配置
+### windows下载参数说明
 
 在downloader/config.ini文件中可进行windows下载行为配置，将其调整为下载所需组件（不建议直接修改配置文件，建议运行start_download_ui.bat使用UI界面勾选所需组件）。
 
