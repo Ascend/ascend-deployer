@@ -553,8 +553,9 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 
 
 ### <a name="faq">FAQ</a>
+
 1. Q: 首次执行`./install.sh --check`或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
-A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（参考配置环境变量），重新使用工具安装。
+- A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考<a href="#set_env_var">配置环境变量</a>），重新使用工具安装。
 
 
 # 其他安装指导
