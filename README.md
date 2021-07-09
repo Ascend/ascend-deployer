@@ -83,9 +83,10 @@
 ### pip安装
 
 ```bash
-pip3 install ascend-deployer -i https://pypi.mirrors.ustc.edu.cn/simple/
+pip3 install ascend-deployer
 ```
-版本要求：python >= 3.6
+- 版本要求：python >= 3.6
+- 使用方法参考<a href="#pip_manual">操作指导:pip方式</a>
 
 ### git安装
 
@@ -306,7 +307,7 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
    <target>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
    `./install.sh --test=driver     //测试driver是否正常`
 
-# 操作指导:pip方式
+# <a name="pip_manual">操作指导:pip方式</a>
 
 当本工具使用pip安装时，将提供2个入口方便操作
 

@@ -80,9 +80,10 @@ The offline installation tool provides automatic download and one-click installa
 ### pip install
 
 ```bash
-pip3 install ascend-deployer -i https://pypi.mirrors.ustc.edu.cn/simple/
+pip3 install ascend-deployer
 ```
-Version requirement: python >= 3.6
+- Version requirement: python >= 3.6
+- Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
 
@@ -305,7 +306,7 @@ ascend-deployer
    You can run the `./install.sh --help` command to view the options of <target>. Example command:
    `./install.sh --test=driver // Test whether the driver is normal.`
 
-# Operation instruction: pip install
+# <a name="pip_manual">Operation instruction: pip install</a>
 
 When the tool is installed with pip, two entrances will be provided for easy operation.
 
