@@ -128,6 +128,8 @@ The download function can be used in the Windows or Linux OSs.
 - install options are in the inventory_file. default options is below:
 
 ```bash
+[ascend]
+localhost ansible_connection='local'
 
 [ascend:vars]
 user=HwHiAiUser
@@ -231,8 +233,6 @@ ascend-deployer
    [ascend]
    localhost ansible_connection='local' # root user
    ```
-
-    Note: only support root user due to safety reason.
 
 2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
 
@@ -533,12 +533,11 @@ The offline installation tool provides the source configuration file. Replace it
   ```
   [base]
   baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+  [epel]
+  baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
   ```
 
-[epel]
-baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 
-```
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
 # Other Install Guide
