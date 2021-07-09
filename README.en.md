@@ -256,7 +256,7 @@ ascend-deployer
 
    ### Batch Installation
 
-4. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
+1. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
     Edit the **inventory_file** file. The format is shown as follows:
 
    ```
@@ -270,20 +270,22 @@ ascend-deployer
 
    - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
 
-   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansibled-valut command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vaule encrypt the inventory_file and then edit it with ansible-edit. for example
+   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansibled-valut command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vault encrypt the inventory_file and then edit it with ansible-vault edit. for example
 
      ```bash
      ansible-vault encrypt inventory_file
-     ansible_vault edit inventory_file
+     ansible-vault edit inventory_file
      ```
 
    - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the Ansibled-Valut password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the Ansible_Valut password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
+   - ansible-vault is an open source encryption and decryption tool that complies with the encryption and decryption specification of Ansible open source community. The tool itself does not limit the password complexity, and ignores the space before and after valid input by default. Please pay attention to the risks in the use and storage of Ansidia-Valut password.
 
-5. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+
+2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-6. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
+3. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
 
    - Software-specific installation
      `./install.sh --install=<package_name>`
@@ -298,7 +300,7 @@ ascend-deployer
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
       `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
 
-7. After the installation, run the following command to check whether the specified component works properly:
+4. After the installation, run the following command to check whether the specified component works properly:
    `./install.sh --test=<target>`
    You can run the `./install.sh --help` command to view the options of <target>. Example command:
    `./install.sh --test=driver // Test whether the driver is normal.`

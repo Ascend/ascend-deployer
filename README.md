@@ -277,13 +277,14 @@ ascend-deployer
    #### 注意事项：
 
 - inventory_file_文件中会配置远程设备的用户名和密码。本工具会使用ansible-vault对配置有密码的inventory_file_文件进行加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
-- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-valut命令。后续需要在inventory_file中配置密码时，建议先使用ansible-valut加密文件，再使用ansible-vault edit编辑文件。
+- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-valut命令。后续需要在inventory_file中配置密码时，建议先使用ansible-valut encrypt加密文件，再使用ansible-vault edit编辑文件。
 
 ```bash
 ansible-vault encrypt inventory_file        // 加密文件
 ansible-vault edit inventory_file           // 编辑加密后的文件
 ```
 - 设置环境变量ANSIBLE_VAULT_PASSWORD_FILE可以指定ansible-valut密码的文件；例如，如果用户设置ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt，Ansible将自动在该文件中搜索密码，避免用户交互式输入ansible-valut密码；该功能由ansible提供，详情请参见[ansible官方文档](https://docs.ansible.com/ansible/latest/user_guide/vault.html)。
+- ansible-valut是一款开源的加解密工具，遵守ansible开源社区的加解密规范。该工具本身未对密码复杂度进行限制，也默认忽略有效输入前后的空格，请用户注意ansible-valut密码使用和保管过程中的风险。
 
 2. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
