@@ -83,7 +83,7 @@ The offline installation tool provides automatic download and one-click installa
 pip3 install ascend-deployer
 ```
 - Version requirement: python >= 3.6
-- It is recommended that you install it as root and use the Python 3 and Pip3 tools on your system
+- It is recommended that you install it as root and use the python3 and pip3 tools on your system. If pip3 is not available, please install it by yourself
 - Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
@@ -94,7 +94,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory. The above two installation methods please pay attention to the tool directory permissions risk.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
