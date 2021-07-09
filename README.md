@@ -124,7 +124,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 - linux
 
-  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
   2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用.
 ## 安装操作
 
@@ -434,7 +434,7 @@ source ~/.local/ascendrc       # non-root
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 | --display=<target>                | 显示已安装软件包。                                                   |
 
-## <a name="parameter">下载参数说明</a>
+## <a name="download_parameter">下载参数说明</a>
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
