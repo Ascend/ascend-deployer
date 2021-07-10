@@ -17,11 +17,10 @@
     { "name": "hdf5",           "autodependency":"true", "info": "tensorflow use" },
     { "name": "hdf5-devel",     "autodependency":"true", "info": "tensorflow use" },
     { "name": "libaec",         "autodependency":"true", "info": "hdf5 need" },
-    {
-        "name": "sshpass",
-        "url": "http://update.cs2c.com.cn:8080/NS/V10/V10SP1/os/adv/lic/base/x86_64/Packages/sshpass-1.06-8.ky10.x86_64.rpm",
-        "sha256": "f842d1e33b1300358877d7e1dfe77c27fbd5d0584b2607c19a59a44a6af4878d"
-    },
+    { "name": "sshpass",
+        "url":"https://mirrors.huaweicloud.com/epel/8/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm",
+        "sha256": "d30541c4470226e2e6708198692f6e62e9435d5b48d0240f089dce7230fc5a49"
+      },
     {
         "name": "docker-ce-cli",
         "version": "20.10.3",

@@ -19,19 +19,19 @@
   register: mindspore_whl_910
 
 - name: install mindspore_ascend 310
-  shell: python3.7 -m pip install {{ mindspore_whl_310.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
+  shell: python3 -m pip install {{ mindspore_whl_310.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
   when:
     - mindspore_whl_310.matched is defined and mindspore_whl_310.matched > 0
     - "'CentOS_' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
 
 - name: install mindspore_ascend 910
-  shell: python3.7 -m pip install {{ mindspore_whl_910.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
+  shell: python3 -m pip install {{ mindspore_whl_910.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
   when:
     - mindspore_whl_910.matched is defined and mindspore_whl_910.matched > 0
     - "'CentOS_' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
@@ -46,10 +46,10 @@
   register: mindspore_whl_cpu
 
 - name: install mindspore_cpu
-  shell: python3.7 -m pip install {{ mindspore_whl_cpu.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
+  shell: python3 -m pip install {{ mindspore_whl_cpu.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ local_path }}/gcc7.3.0/lib64"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64"
   when:
     - mindspore_whl_cpu.matched is defined and mindspore_whl_cpu.matched > 0
     - "'Ubuntu_18.04' in os_and_arch"

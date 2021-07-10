@@ -25,8 +25,8 @@
 - name: install toolkit
   shell: "bash {{ toolkit.files[0].path }} {{ cann_install_params }} {{ins_path_cmd}}"
   environment:
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib"
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result
   when: toolkit.matched > 0
   failed_when: "toolkit_result.rc != 0 and 'already installed' not in toolkit_result.stdout"
@@ -44,8 +44,8 @@
 - name: install toolkit aarch64 for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
   shell: "bash {{ toolkit_aarch64.files[0].path }} {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib"
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result_ubuntu
   when:
     - os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'

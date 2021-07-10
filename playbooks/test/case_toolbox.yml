@@ -17,8 +17,8 @@
 - name: execute ascend-dmi -i
   shell: ascend-dmi -i
   environment:
-    PATH: "{{ local_path }}/python3.7.5/bin:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/python3.7.5/lib:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:{{ ascend_install_path }}/nnae/latest/opp/fwkacllib/lib64:{{ ascend_install_path }}/nnrt/latest/acllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:{{ ascend_install_path }}/nnae/latest/opp/fwkacllib/lib64:{{ ascend_install_path }}/nnrt/latest/acllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
     ASCEND_OPP_PATH: "{{ ascend_install_path }}/nnae/latest/opp:{{ ascend_install_path }}/nnrt/latest/opp"
   when: ascend_dmi.matched > 0
   register: ascend_dmi_info

@@ -54,6 +54,7 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Precautions
 
+- By default, the offline installation tool downloads and installs Python-3.7.5 as a Python version of the Cann package. This is explained in Python-3.7.5.Users can select the Python version by setting the ASCEND_PYTHON_VERSION environment variable, or the ASCEND_PYTHON_VERSION configuration item in the downloader/config.ini file (environment variable is preferred when setting at the same time).The optional Python versions are 3.7.0 to 3.7.11 and 3.8.0 to 3.8.11.Users are advised not to change the default Python-3.7.5 configuration, without which availability for installation, deployment and subsequent business is not guaranteed.
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
@@ -64,6 +65,7 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
+- tensorflow-1.15.0/2.4.1 aarch64 and torch-1.5.0 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
 ### Description of the kernel header package
@@ -78,9 +80,11 @@ The offline installation tool provides automatic download and one-click installa
 ### pip install
 
 ```bash
-pip3 install ascend-deployer -i https://pypi.mirrors.ustc.edu.cn/simple/
+pip3 install ascend-deployer
 ```
-Version requirement: python >= 3.6
+- Version requirement: python >= 3.6
+- It is recommended that you install it as root and use the python3 and pip3 tools on your system. If pip3 is not available, please install it by yourself
+- Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
 
@@ -90,7 +94,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
@@ -100,7 +104,7 @@ The download function can be used in the Windows or Linux OSs.
 
 ### Notice
 
-- To configure a proxy or modify the configuration file to download required OS components, edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
+- To configure a proxy or modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - The offline installation tool provides the source configuration file. The Huawei source is used by default. Replace it as required. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
 - After the installation, it is recommended to uninstall the third-party components such as GCC and G + + that may have security risks in the system.
@@ -112,9 +116,9 @@ The download function can be used in the Windows or Linux OSs.
      Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
      Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
   2. Start download.
-     Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI) or **start_download.bat**.
+     Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
   2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
 
 ## Installation
@@ -124,6 +128,8 @@ The download function can be used in the Windows or Linux OSs.
 - install options are in the inventory_file. default options is below:
 
 ```bash
+[ascend]
+localhost ansible_connection='local'
 
 [ascend:vars]
 user=HwHiAiUser
@@ -140,7 +146,7 @@ install_path=/usr/local/Ascend
 ### Notice
 
 - The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package  and edge components (AtlasEdge and HA)can only be installed to the default path /usr/local/Ascend.
-- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
+- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
 
 ```bash
 #add HwHiAiUser group
@@ -190,7 +196,7 @@ usermod -a -G HwHiAiUser non-root-user
    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first
    - Depends that the IEF server is working properly and that the network between the edge device and the IEF is working properly. Whether the edge node is successfully managed needs to be observed at the IEF Web front end. Refer to the usermanual-IEF documentation for other restrictions
-4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
+4. The files of docker image require the user to log in to ascendhub, pull the image, and then transfer it to resources/docker_images directory before docker-images' installation. please create this directory by yourself.The file name of docker image is like to ubuntu_18.04_{x86_ 64 | aarch64}.tar, the system architecture is in the brackets, and only the two architectures in the brackets are supported.
 
 ```
 ascend-deployer
@@ -228,20 +234,19 @@ ascend-deployer
    localhost ansible_connection='local' # root user
    ```
 
-    Note: only support root user due to safety reason.
-
 2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
 
    - Software-specific installation
      `./install.sh --install=<package_name>`
      You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-     `./install.sh --install=npu //Install the driver and firmware.`
+     `./install.sh --install=sys_pkg,python375,npu //Install system packages and python3.7.5 and driver and firmware.`
      Notes:
-     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
+     - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
+     - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
-     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions。
+     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions.
+     - '--install=tensorflow1.15.0' will install tensorflow1.15.0, '--install=tensorflow2.4.1' will install tensorflow2.4.1. By default, TensorFlow refers to TensorFlow version 1.15.0. TensorFlow 2.4.1 requires the Cann package to be installed for normal use.
    - Scenario-specific installation
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
@@ -252,9 +257,9 @@ ascend-deployer
    You can run the `./install.sh --help` command to view the options of <target>. Example command:
    `./install.sh --test=driver // Test whether the driver is normal.`
 
-   ### Batch Installation
+### Batch Installation
 
-4. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
+1. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
     Edit the **inventory_file** file. The format is shown as follows:
 
    ```
@@ -268,51 +273,31 @@ ascend-deployer
 
    - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
 
-   - For safety, strongly suggest to use ansible-vaule encrypt the inventory_file and then edit it with ansible-edit. for example
+   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansibled-valut command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vault encrypt the inventory_file and then edit it with ansible-vault edit. for example
 
      ```bash
      ansible-vault encrypt inventory_file
-     ansible_vault edit inventory_file
+     ansible-vault edit inventory_file
      ```
 
    - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the Ansibled-Valut password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the Ansible_Valut password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
+   - ansible-vault is an open source encryption and decryption tool that complies with the encryption and decryption specification of Ansible open source community. The tool itself does not limit the password complexity, and ignores the space before and after valid input by default. Please pay attention to the risks in the use and storage of Ansidia-Valut password.
 
-5. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+
+2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-6. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
+3. The following operation is the same as the above Single-Device Installation steps 2 and 3.
 
-   - Software-specific installation
-     `./install.sh --install=<package_name>`
-     You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-     `./install.sh --install=npu //Install the driver and firmware.`
-     Notes:
-     - Installation sequence: driver > firmware > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-     - After the driver or firmware is installed, run the `reboot` command to restart the device for the driver and firmware to take effect.
-     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, and TensorFlow and npubridge require TFPlugin to provide runtime dependencies.
-   - Scenario-specific installation
-     `./install.sh --install-scene=<scene_name>`
-     The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
-      `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
-
-7. After the installation, run the following command to check whether the specified component works properly:
-   `./install.sh --test=<target>`
-   You can run the `./install.sh --help` command to view the options of <target>. Example command:
-   `./install.sh --test=driver // Test whether the driver is normal.`
-
-# Operation instruction: pip install
+# <a name="pip_manual">Operation instruction: pip install</a>
 
 When the tool is installed with pip, two entrances will be provided for easy operation.
 
 - ascend-download
 - ascend-deployer
 
-If the non root user cannot find these two commands after installation, it is necessary to configure the PATH environment variable. The configuration command is as follows:
-
-```bash
-export PATH=~/.local/bin:$PATH
-```
+Both entrances are available to both root and non-root users
 
 ## Download
 
@@ -326,7 +311,7 @@ Both win10 and Linux can execute
 
 - In windows, the ascend deployer directory is generated in the current directory where the command is executed. When the download is complete, copy the whole directory to the Linux server to be deployed.
 
-- In Linux, the ascend-deployer directory will be generated under the HOME directory. it can be modified by setting the environment variable ASCEND_DEPLOYER_HOME.
+- In Linux, the ascend-deployer directory will be generated under the HOME directory. You can replace the user's HOME directory by setting the environment variable ASCEND_Deployer_HOME. Non-root users must ensure that the directory exists and can read and write properly.
 
 ## Installation
 
@@ -334,14 +319,9 @@ Both win10 and Linux can execute
 ascend-deployer --install=<pkg1,pkg2>
 ```
 
-The ascend-deployer command is essentially a wrapper of install.sh.
-The use method is exactly the same as directly executing install.sh in the ascend deployer directory.
-The ascend-deployer command will automatically find the file of "${ASCEND_DEPLOYER_HOME}/ascend-deployer/install.sh" to execute.
-The default value of ASCEND_DEPLOYER_HOME is the same as user home, non-root users must ensure that the directory exists and can read and write normally.
-Non-root users do not need sudo permission to install.
+The ascend-deployer command is essentially a wrapper of install.sh.The use method is exactly the same as directly executing install.sh in the ascend deployer directory. The ASCEND_Deployer command automatically looks for the file ASCEND_Deployer /install.sh in the user's HOME directory and replaces the user's HOME directory by setting the environment variable ASCEND_Deployer_HOME. Non-root users must ensure that the directory exists and can read and write properly.
 
-# Environment Variable Configuration
-
+# <a name="set_env_var">Environment Variable Configuration</a>
 The offline deployment tool can install Python 3.7.5, To ensure that the built-in Python (Python 2.x or Python 3.x) is not affected, you need to configure the following environment variables before using Python 3.7.5:
 
 ```
@@ -377,7 +357,7 @@ You can run the `./install.sh --help` command to view the options of <package_na
 Notes:
 
 - Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-- After the driver or firmware is upgraded, run the `reboot` command to restart the device for the driver and firmware to take effect.
+- After the driver or firmware is upgraded, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
 
 # Uninstallation
 
@@ -424,7 +404,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
 | --display=<target>                | Displays installed packages                                                                 |
 
-## <a name="parameter">Download Parameter Description</a>
+## <a name="download_parameter">Linux Download Parameter Description</a>
 
 | Parameter           | Description                                    |
 |:------------------- | ---------------------------------------------- |
@@ -524,13 +504,15 @@ If you want to use an HTTP proxy, either configure the proxy in an environment v
    You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
    For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
-### Download Configuration
+### Windows Download Configuration
 
-You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components.
+You can configure and modify the download parameters in the **downloader/config.ini** file to download the required OS components on windows. It is not recommended to modify the configuration file directly. It is recommended to run start_download_ui.bat and use the UI interface to check the required components
 
 ```
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
+[software]
+pkg_list=CANN_5.0.1,MindStudio_3.0.1  # CANN或MindStudio to be deployed.
 ```
 
 ### <a name="sourceconfig">Source Configuration</a>
@@ -551,14 +533,32 @@ The offline installation tool provides the source configuration file. Replace it
   ```
   [base]
   baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
+  [epel]
+  baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
   ```
 
-[epel]
-baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 
-```
 Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
+## <a name="url">Public Web Site URL</a>
+```
+https://github.com
+https://gcc.gnu.org
+http://mirrors.bclinux.org
+https://archive.kylinos.cn
+https://mirrors.tencent.com
+https://mirrors.bfsu.edu.cn
+https://repo.huaweicloud.com
+https://mirrors.huaweicloud.com
+https://cache-redirector.jetbrains.com
+https://obs-9be7.obs.myhuaweicloud.com
+https://ms-release.obs.cn-north-4.myhuaweicloud.com
+https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
+```
+
+## <a name="faq">FAQ</a>
+1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
+- A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
 # Other Install Guide
 
 ## <a name="Device_IP">Device IP configuration specification</a>

@@ -43,6 +43,9 @@ def download_other_packages(dst=None):
     """download other resources, such as source code tar ball"""
     return other_downloader.download_other_packages(dst)
 
+def download_specified_python(dst=None):
+    """download ascend_python_version=Python-3.7.5"""
+    return other_downloader.download_specified_python(dst)
 
 def download_other_software(sofware_list=None, dst=None):
     """download other resources, such as source code tar ball"""
@@ -85,6 +88,7 @@ def download_os_packages(os_list=None, software_list=None, dst=None):
 def download_all(os_list, software_list, dst):
     """ download all resources for specific os list """
     res_dir = os.path.join(dst, "resources")
+    download_specified_python(dst)
     download_python_packages(res_dir)
     download_os_packages(os_list, software_list, res_dir)
     download_other_software(software_list, dst)
@@ -175,6 +179,7 @@ def main():
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
+        download_specified_python()
         download_python_packages()
         download_os_packages()
         download_other_software()

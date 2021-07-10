@@ -491,10 +491,10 @@
      "url":"https://obs-9be7.obs.myhuaweicloud.com/turing/resource/mindstudio/2.0.0-release/MindStudio_2.0.0_linux.tar.gz",
      "sha256": "dc14ee956458b8023bdfb4fadffff6339d39058b05f60d470c6afa899665a9d9"},
     {"filename":"jbr-11_0_9-linux-aarch64-b944.49.tar.gz",
-     "url":"http://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-aarch64-b944.49.tar.gz",
+     "url":"https://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-aarch64-b944.49.tar.gz",
      "sha256": "631e735813b4fe1fef1b066433dc7921f63cfcce5cc6064eaa598797c4407483"},
     {"filename":"jbr-11_0_9-linux-x64-b944.49.tar.gz",
-     "url":"http://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-x64-b944.49.tar.gz",
+     "url":"https://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-x64-b944.49.tar.gz",
      "sha256": "3091b54c5d8772406bdc0f9c6ac6e44784441e538dad8f185c694fce7ea521f6"}
 ]
 }
