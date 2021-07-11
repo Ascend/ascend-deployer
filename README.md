@@ -57,7 +57,7 @@
 
 ## 注意事项
 
-- 离线安装工具默认下载和安装Python-3.7.5作为CANN软件包的配套Python版本，以下全文相关处均以Python-3.7.5进行解释说明。用户可以通过设置ASCEND_PYTHON_VERSION环境变量，或downloader/config.ini文件中的ascend_python_version配置项（同时设置时环境变量优先），自行选择Python版本，可选的Python版本为3.7.0~3.7.11和3.8.0~3.8.11。建议用户不要更改默认的Python-3.7.5版本配置，否则不保证安装部署和后续业务的可用性。
+- 离线安装工具默认下载和安装Python-3.7.5作为CANN软件包的配套Python版本，以下全文相关处均以Python-3.7.5进行解释说明。用户可以通过设置ASCEND_PYTHON_VERSION环境变量，或downloader/config.ini文件中的ascend_python_version配置项（同时设置时环境变量优先），自行选择Python版本，可选的Python版本为`3.7.0~3.7.11`和`3.8.0~3.8.11`。本工具仅在Python-3.7.5版本上经过全面适配和测试，强烈建议不要更改默认配置。
 - 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip、ssh等基本命令。建议在Ubuntu/Debian系统的安装过程中，到【Software selection】这一步时勾选上【OpenSSH server】/【SSH server】这一选项，避免缺失ssh命令。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
@@ -68,7 +68,7 @@
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
-- 本工具不下载tensorflow-1.15.0/2.4.1 aarch64和torch-1.5.0 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则安装时会报错。
+- 本工具不下载tensorflow-1.15.0/2.4.1 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则安装时会报错。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 ### 内核头软件包说明
@@ -108,9 +108,9 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 ### 须知
 
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
-- 离线安装工具已提供源配置文件，默认使用华为源，用户可根据需要进行替换。具体可参考<a href="#sourceconfig">源配置</a>。
+- 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
-- 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++等第三方组件。
+- 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
 
 ### 下载操作
 
@@ -126,7 +126,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - linux
 
   1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">linux下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
-  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用.
+  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用。执行`./upgrade_self.sh`也会这样检查环境上的python3。
 ## 安装操作
 
 ### 安装参数
@@ -153,7 +153,7 @@ install_path=/usr/local/Ascend
 
 ### 安装须知
 
-- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效，非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包的安装路径和边缘组件(atlasedge和ha)，驱动包和边缘组件(atlasedge和ha)只能安装到默认路径/usr/local/Ascend
+- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效，非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包和边缘组件(atlasedge和ha)的安装路径，驱动包只能安装到默认路径/usr/local/Ascend，边缘组件(atlasedge和ha)只能安装到默认路径/usr/local。
 - 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建，并保证该创建用户的密码、密码有效期以及后续使用中的安全问题。创建用户组和用户的命令如下：
 
 ```bash
@@ -174,7 +174,6 @@ user=HwHiAiUser
 group=HwHiAiUser
 ```
 
-- 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。
 - 非root用户支持安装的软件列表
 
 | 软件名                 | 说明                                  |
@@ -235,7 +234,7 @@ ascend-deployer
 ### 单机安装
 
 1. 配置单机的inventory_file文件。
-    编辑inventory_file文件，格式如下：
+   编辑inventory_file文件，格式如下：
 
    ```
    [ascend]
@@ -251,9 +250,9 @@ ascend-deployer
      注意事项：
      - 请按照“sys_pkg>python3.7.5>npu（driver、firmware）>CANN软件包（toolkit、nnrt等）>AI框架（pytorch、tensorflow、mindspore）”顺序进行安装。
      - 安装driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
-     - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore_ascend需要driver和toolkit提供运行时的依赖。
+     - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
-     - mindspore_ascend需要安装其版本配套的driver和toolkit才能正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
+     - `--install=mindspore`会安装mindspore 1.2.1版本，需要安装python3.7.5和配套版本的CANN软件包才可正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
      - `--install=tensorflow`会安装tensorflow 1.15.0版本，`--install=tensorflow_2.4.1`会安装tensorflow 2.4.1版本，本工具涉及tensorflow之处默认指 1.15.0版本，tensorflow 2.4.1需要安装配套版本的CANN软件包才可正常使用。
    - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
@@ -267,8 +266,8 @@ ascend-deployer
 
 ### 批量安装
 
-1. 配置待安装的其他设备的ip地址、用户名和密码。
-    编辑inventory_file文件，格式如下：
+1. 基于密码认证的ssh连接。
+   配置待安装的其他设备的ip地址、用户名和密码，编辑inventory_file文件，格式如下：
 
    ```
    [ascend]
@@ -280,18 +279,38 @@ ascend-deployer
 注意事项:
 
 - inventory_file_文件中会配置远程设备的用户名和密码。本工具会使用ansible-vault对配置有密码的inventory_file_文件进行加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
-- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-valut命令。后续需要在inventory_file中配置密码时，建议先使用ansible-valut encrypt加密文件，再使用ansible-vault edit编辑文件。
+- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-vault命令。后续需要在inventory_file中配置密码时，建议先使用ansible-vault encrypt加密文件，再使用ansible-vault edit编辑文件。
 
 ```bash
 ansible-vault encrypt inventory_file        // 加密文件
 ansible-vault edit inventory_file           // 编辑加密后的文件
 ```
-- 设置环境变量ANSIBLE_VAULT_PASSWORD_FILE可以指定ansible-valut密码的文件；例如，如果用户设置ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt，Ansible将自动在该文件中搜索密码，避免用户交互式输入ansible-valut密码；该功能由ansible提供，详情请参见[ansible官方文档](https://docs.ansible.com/ansible/latest/user_guide/vault.html)。
-- ansible-valut是一款开源的加解密工具，遵守ansible开源社区的加解密规范。该工具本身未对密码复杂度进行限制，也默认忽略有效输入前后的空格，请用户注意ansible-valut密码使用和保管过程中的风险。
+- 设置环境变量ANSIBLE_VAULT_PASSWORD_FILE可以指定ansible-vault密码的文件；例如，如果用户设置ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt，Ansible将自动在该文件中搜索密码，避免用户交互式输入ansible-vault密码；该功能由ansible提供，详情请参见[ansible官方文档](https://docs.ansible.com/ansible/latest/user_guide/vault.html)。
+- ansible-vault是一款开源的加解密工具，遵守ansible开源社区的加解密规范。该工具本身未对密码复杂度进行限制，也默认忽略有效输入前后的空格，请用户注意ansible-vault密码使用和保管过程中的风险。
+- 随着密码分析技术的发展和计算机处理能力的提高，当前ansible-vault采用的AES256算法可能今后不再安全，推荐用户使用基于密钥认证的方式连接设备，如下第2条。
 
-2. 执行`./install.sh --check`测试待安装设备连通性。
+2. 基于密钥认证的ssh连接（推荐）。
+   配置待安装的其他设备的ip地址，编辑inventory_file文件，格式如下：
+
+   ```
+   [ascend]
+   ip_address_1 ansible_ssh_user='root'      # root用户
+   ip_address_2 ansible_ssh_user='root'
+   ip_address_3 ansible_ssh_user='username'  # 非root用户
+   ```
+
+配置密钥认证的参考操作
+   ```bash
+   ssh-keygen -t rsa -b 2048 -N ''   # 登录管理节点并生成SSH Key
+   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip
+   ```
+
+注意事项:
+- 请用户注意ssh密钥使用和保管过程中的风险
+
+3. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
-3. 后续操作同上述的单机安装第2、3步骤。
+4. 后续操作同上述的单机安装第2、3步骤。
 
 # <a name="pip_manual">操作指导:pip方式</a>
 
@@ -377,7 +396,7 @@ source ~/.local/ascendrc       # non-root
   `./install.sh --uninstall=npu     //卸载driver和firmware`
   注意事项：
 - 请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
-- root用户卸载默认路径/usr/local/Ascend的npu包(driver和firmware)和边缘组件(atlasedge和ha)，root用户卸载inventory_file内install_path参数指定路径的CANN软件包，非root用户卸载默认路径~/Ascend的CANN软件包。
+- root用户卸载默认路径/usr/local/Ascend的npu包(driver和firmware)和/usr/local的边缘组件(atlasedge和ha)，root用户卸载inventory_file内install_path参数指定路径的CANN软件包，非root用户卸载默认路径~/Ascend的CANN软件包。
 - 不支持非root用户卸载npu(driver和firmware)和边缘组件(atlasedge和ha)，不支持卸载npu(driver和firmware)和边缘组件(atlasedge和ha)时带有--uninstall-version参数。
 
 # 更新离线部署工具
@@ -573,6 +592,8 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 1. Q: 首次执行`./install.sh --check`或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
 - A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考<a href="#set_env_var">配置环境变量</a>），重新使用工具安装。
 
+2. Q: 工具会用到华为软件完整性保护根证书，但具备验证证书是否被吊销的能力吗？是否有安装包内的CRL文件跟系统本地的CRL文件比较更新的机制？
+- A: 本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。
 
 # 其他安装指导
 

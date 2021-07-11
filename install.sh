@@ -494,21 +494,61 @@ function check_npu_scene()
     return 0
 }
 
+function compare_crl()
+{
+    openssl crl -verify -in $1 -inform DER -CAfile $3 -noout
+    if [[ $? != 0 ]];then
+        return 2
+    fi
+    if [[ -f $2 ]];then
+        openssl crl -verify -in $2 -inform DER -CAfile $3 -noout
+        if [[ $? != 0 ]];then
+            return 3
+        fi
+        local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
+        local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
+        if [[ ${zip_crl_lastupdate_time} -ge ${sys_crl_lastupdate_time} ]];then
+            return 0
+        else
+            log_info "$2 is newer than $1"
+            return 1
+        fi
+    fi
+    return 0
+}
+
 function verify_zip()
 {
     local IFS_OLD=$IFS
     unset IFS
+    if [[ ${UID} == 0 ]];then
+        local sys_crl=/etc/hwsipcrl/ascendsip.crl
+    else
+        local sys_crl=~/.local/hwsipcrl/ascendsip.crl
+    fi
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        echo -e "${ROOT_CA}" > ${BASE_DIR}/playbooks/rootca.pem
-        openssl cms -verify -in ${cms_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -binary -content ${zip_file} -purpose any -out /dev/null \
-        && openssl crl -verify -in ${crl_file} -inform DER -CAfile ${BASE_DIR}/playbooks/rootca.pem -noout
+        local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
+        echo -e "${ROOT_CA}" > ${root_ca_file}
+        compare_crl ${crl_file} ${sys_crl} ${root_ca_file}
+        local verify_crl=$?
+        if [[ ${verify_crl} == 0 ]];then
+            local updated_crl=${crl_file}
+        elif [[ ${verify_crl} == 1 ]];then
+            local updated_crl=${sys_crl}
+        else
+            rm -rf ${root_ca_file}
+            echo "[ERROR] ${crl_file} or ${sys_crl} check validation fail"
+            return 1
+        fi
+        [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${root_ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
+        && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${root_ca_file} -binary -content ${zip_file} -purpose any -out /dev/null
         local verify_success=$?
-        rm -rf ${BASE_DIR}/playbooks/rootca.pem
+        rm -rf ${root_ca_file}
         if [[ ${verify_success} -eq 0 ]];then
             if [[ "$(basename ${zip_file})" =~ zip ]];then
                 if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -549,7 +589,7 @@ function verify_zip()
 function verify_zip_redirect()
 {
     log_info "The system is busy with checking compressed files, Please wait for a moment..."
-    rm -rf ${BASE_DIR}/resources/run_from_*_zip
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip ${BASE_DIR}/resources/zip_tmp
     check_run_pkg
     check_extracted_size
     verify_zip > ${BASE_DIR}/tmp.log 2>&1
