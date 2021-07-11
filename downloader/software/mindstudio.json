@@ -491,11 +491,11 @@
     {"filename":"minstudio.tar.gz",
      "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/mindstudio/2.0.0-beta3/MindStudio_2.0.0-beta3_linux.tar.gz",
      "sha256": "e9bcf0b9ccfae80de75e1f308670448083922e4169cbdd0a10306932c4e1bdce"},
-    {"filename":"jbr-11_0_7-linux-aarch64-b765.65.tar.gz",
-     "url":"http://jetbrains.bintray.com/intellij-jbr/jbr-11_0_7-linux-aarch64-b765.65.tar.gz",
-     "sha256": "3b872e145f8bf4fb3c0400df25012823ea3acd11979dec9caac56d715c9b3636"},
-    {"filename":"jbr-11_0_7-linux-x64-b765.65.tar.gz",
-     "url":"http://jetbrains.bintray.com/intellij-jbr/jbr-11_0_7-linux-x64-b765.65.tar.gz",
-     "sha256": "e76397dc0cdb58fc90276265aaa9ea3c0d13172248518315e6d801e440b8025f"}
+    {"filename":"jbr-11_0_9-linux-aarch64-b944.49.tar.gz",
+     "url":"https://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-aarch64-b944.49.tar.gz",
+     "sha256": "631e735813b4fe1fef1b066433dc7921f63cfcce5cc6064eaa598797c4407483"},
+    {"filename":"jbr-11_0_9-linux-x64-b944.49.tar.gz",
+     "url":"https://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_9-linux-x64-b944.49.tar.gz",
+     "sha256": "3091b54c5d8772406bdc0f9c6ac6e44784441e538dad8f185c694fce7ea521f6"}
 ]
 }
