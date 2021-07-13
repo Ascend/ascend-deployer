@@ -82,15 +82,11 @@ class ConfigUtil:
         return self.config.get('proxy', 'userpassword')
 
     def get_download_os_list(self):
-        os_list = os.getenv('DOWNLOAD_OS_LIST')
-        if os_list is None:
-            os_list = self.config.get('download', 'os_list')
+        os_list = self.config.get('download', 'os_list')
         return [x.strip() for x in os_list.split(',') if len(x.strip()) != 0]
 
     def get_download_pkg_list(self):
-        pkg_list = os.getenv('DOWNLOAD_PKG_LIST')
-        if pkg_list is None:
-            pkg_list = self.config.get('software', 'pkg_list')
+        pkg_list = self.config.get('software', 'pkg_list')
         return [x.strip() for x in pkg_list.split(',') if len(x.strip()) != 0]
 
 CONFIG_INST = ConfigUtil()

@@ -2,6 +2,6 @@
   tasks:
     - name: set facts_cache dir permission
       file:
-        path: ../facts_cache/*
-        mode: 0640
+        path: ../facts_cache
+        mode: u=rwX,g=rX,o=-
         recurse: yes

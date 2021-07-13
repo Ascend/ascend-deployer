@@ -54,7 +54,7 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Precautions
 
-- By default, the offline installation tool downloads and installs Python-3.7.5 as a Python version of the Cann package. This is explained in Python-3.7.5.Users can select the Python version by setting the ASCEND_PYTHON_VERSION environment variable, or the ASCEND_PYTHON_VERSION configuration item in the downloader/config.ini file (environment variable is preferred when setting at the same time).The optional Python versions are 3.7.0 to 3.7.11 and 3.8.0 to 3.8.11.Users are advised not to change the default Python-3.7.5 configuration, without which availability for installation, deployment and subsequent business is not guaranteed.
+- By default, the offline installation tool downloads and installs Python-3.7.5 as a Python version of the Cann package. This is explained in Python-3.7.5.Users can select the Python version by setting the ASCEND_PYTHON_VERSION environment variable, or the ASCEND_PYTHON_VERSION configuration item in the downloader/config.ini file (environment variable is preferred when setting at the same time).The optional Python versions are 3.7.0 to 3.7.11 and 3.8.0 to 3.8.11. This tool has only been fully adapted and tested on Python-3.7.5, and it is strongly recommended not to change the default configuration.
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
@@ -65,7 +65,7 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
-- tensorflow-1.15.0/2.4.1 aarch64 and torch-1.5.0 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
+- tensorflow-1.15.0/2.4.1 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
 ### Description of the kernel header package
@@ -105,9 +105,9 @@ The download function can be used in the Windows or Linux OSs.
 ### Notice
 
 - To configure a proxy or modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
-- The offline installation tool provides the source configuration file. The Huawei source is used by default. Replace it as required. For details, see <a href="#sourceconfig">Source Configuration</a>.
+- A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
-- After the installation, it is recommended to uninstall the third-party components such as GCC and G + + that may have security risks in the system.
+- After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
 
 ### Download
 
@@ -119,7 +119,7 @@ The download function can be used in the Windows or Linux OSs.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
   1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
-  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available;
+  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available. Executing `./upgrade_self.sh` also checks Python 3 on the environment.
 
 ## Installation
 
@@ -145,7 +145,7 @@ install_path=/usr/local/Ascend
 
 ### Notice
 
-- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package  and edge components (AtlasEdge and HA)can only be installed to the default path /usr/local/Ascend.
+- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package can only be installed to the default path /usr/local/Ascend and edge components (AtlasEdge and HA) can only be installed to the default path /usr/local.
 - The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
 
 ```bash
@@ -166,7 +166,6 @@ user=HwHiAiUser
 group=HwHiAiUser
 ```
 
-- A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly.
 - List of software supported by non-root users
 
 |Software name  | description|
@@ -227,7 +226,7 @@ ascend-deployer
 ### Single-Device Installation
 
 1. Configure a stand-alone inventory_file file.
-    Edit the **inventory_file** file. The format is shown as follows:
+  Edit the **inventory_file** file. The format is shown as follows:
 
    ```
    [ascend]
@@ -243,10 +242,10 @@ ascend-deployer
      Notes:
      - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
      - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
-     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore_ascend require driver and toolkit to provide runtime dependencies.
+     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
-     - Mindspore-ascend needs to install the driver and toolkit of its version for normal use. Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions.
-     - '--install=tensorflow1.15.0' will install tensorflow1.15.0, '--install=tensorflow2.4.1' will install tensorflow2.4.1. By default, TensorFlow refers to TensorFlow version 1.15.0. TensorFlow 2.4.1 requires the Cann package to be installed for normal use.
+     - `--install=mindspore` will install version 1.2.1 of MindSpore and requires python3.7.5 and the accompanying version of the Cann package to work properly.  . Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions.
+     - `--install=tensorflow` will install tensorflow1.15.0, `--install=tensorflow2.4.1` will install tensorflow2.4.1. By default, TensorFlow refers to TensorFlow version 1.15.0. TensorFlow 2.4.1 requires the Cann package to be installed for normal use.
    - Scenario-specific installation
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
@@ -259,8 +258,8 @@ ascend-deployer
 
 ### Batch Installation
 
-1. Configure the IP addresses, user names, and passwords of other devices where the packages to be installed.
-    Edit the **inventory_file** file. The format is shown as follows:
+1. SSH connection based on password authentication.
+   Configure the IP addresses, user names, and passwords of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
 
    ```
    [ascend]
@@ -273,22 +272,41 @@ ascend-deployer
 
    - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
 
-   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansibled-valut command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vault encrypt the inventory_file and then edit it with ansible-vault edit. for example
+   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansible-vault command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vault encrypt the inventory_file and then edit it with ansible-vault edit. for example
 
      ```bash
      ansible-vault encrypt inventory_file
      ansible-vault edit inventory_file
      ```
 
-   - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the Ansibled-Valut password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the Ansible_Valut password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
+   - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the ansible-vault password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the ansible-vault password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 
-   - ansible-vault is an open source encryption and decryption tool that complies with the encryption and decryption specification of Ansible open source community. The tool itself does not limit the password complexity, and ignores the space before and after valid input by default. Please pay attention to the risks in the use and storage of Ansidia-Valut password.
+   - ansible-vault is an open source encryption and decryption tool that complies with the encryption and decryption specification of Ansible open source community. The tool itself does not limit the password complexity, and ignores the space before and after valid input by default. Please pay attention to the risks in the use and storage of ansible-vault password.
 
+   - With the development of cryptanalysis technology and the improvement of computer processing power, the current AES256 algorithm adopted by ansible-vault may not be secure in the future. It is recommended that users connect devices by means of key authentication, as shown in Article 2.
 
-2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+2. SSH connection based on key authentication (recommended).
+   Configure the IP addresses of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
+   ```
+   [ascend]
+   ip_address_1 ansible_ssh_user='root'      # root user
+   ip_address_2 ansible_ssh_user='root'
+   ip_address_3 ansible_ssh_user='username'  # non-root user
+   ```
+
+Configure the reference operation for key authentication
+   ```bash
+   ssh-keygen -t rsa -b 2048 -N ''   # Log in to the management node and generate the SSH Key
+   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to
+   ```
+
+Note:
+- Please be aware of the risks involved in the use and storage of SSH keys
+
+3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-3. The following operation is the same as the above Single-Device Installation steps 2 and 3.
+4. The following operation is the same as the above Single-Device Installation steps 2 and 3.
 
 # <a name="pip_manual">Operation instruction: pip install</a>
 
@@ -559,6 +577,10 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 ## <a name="faq">FAQ</a>
 1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
 - A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
+
+2. Q: The tool will use the Huawei Software Integrity Protection Root Certificate, but does it have the ability to verify that the certificate has been revoked?  Is there a mechanism for the CRL files in the installation package to be up to date with the local CRL files on the system?
+- A: This tool compares the effective time of the CRL file in the installation package with the CRL file locally on the system, and verifies whether the certificate has been revoked using the latest CRL file.  For the root user, the system of local CRL files to the `/etc/hwsipcrl/ascendsip.crl`, for non-root users, for the file `~/.local/hwsipcrl/ascendsip.crl`.
+
 # Other Install Guide
 
 ## <a name="Device_IP">Device IP configuration specification</a>
