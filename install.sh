@@ -385,6 +385,7 @@ function install_python375()
     mkdir -p -m 750 ~/build
     tar --no-same-owner -xf ${BASE_DIR}/resources/sources/${PYTHON_TAR}.tar.xz -C ~/build
     cd ~/build/${PYTHON_TAR}
+    chmod 750 .
     ./configure --enable-shared --prefix=${PYTHON_PREFIX}
     make -j20
     make install
@@ -579,6 +580,8 @@ function verify_zip()
             fi
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp
+        chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d) 2>/dev/null
+        chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f) 2>/dev/null
         if [[ ${verify_success} -ne 0 ]];then
             return 1
         fi
