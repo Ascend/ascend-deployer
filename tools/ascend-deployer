@@ -18,7 +18,6 @@
 import os
 import sys
 import subprocess
-import shutil
 import ascend_deployer.downloader as d
 
 if __name__ == '__main__':

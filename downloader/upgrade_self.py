@@ -20,8 +20,9 @@ from download_util import DOWNLOAD_INST
 
 BASE_URL = "https://gitee.com/ascend/ascend-deployer/raw/master"
 
-EXCLUDE_FILES=['downloader.log', 'config.ini']
-EXCLUDE_PATHS=['.git', 'resources', '__pycache__']
+EXCLUDE_FILES = ['downloader.log', 'config.ini']
+EXCLUDE_PATHS = ['.git', 'resources', '__pycache__']
+
 
 def not_upgrade(full_path):
     for p in EXCLUDE_PATHS:
@@ -33,6 +34,7 @@ def not_upgrade(full_path):
         return True
 
     return False
+
 
 def upgrade_self():
     script = os.path.realpath(__file__)
@@ -52,6 +54,7 @@ def upgrade_self():
     for local, url in cache.items():
         if DOWNLOAD_INST.download_no_retry(url, local):
             print(local[(len(deployer_dir) + 1):].ljust(60), 'upgrade success')
+
 
 if __name__ == '__main__':
     upgrade_self()

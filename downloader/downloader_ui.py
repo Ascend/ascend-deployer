@@ -28,8 +28,7 @@ PKG_LIST = [pkg.split(".json")[0] for pkg in os.listdir(os.path.join(CUR_DIR, 's
 
 class Win(object):
     """
-    Note:
-        the basic window
+    the basic window
     """
 
     def __init__(self):
@@ -65,8 +64,7 @@ class Win(object):
 
     def display(self):
         """
-        Note:
-            display the Checkbutton
+        display the Checkbutton
         """
         os_idx, pkg_idx = 0, 0
         for os_name, var in sorted(self.os_dict.items()):
@@ -82,15 +80,13 @@ class Win(object):
 
     def run(self):
         """
-        Note:
-            the main loop of the window
+        the main loop of the window
         """
         self.root.mainloop()
 
     def start_download(self):
         """
-        Note:
-            start downading, the window will exit
+        start downading, the window will exit
         """
         self.write_config()
         config = configparser.ConfigParser()
@@ -104,8 +100,7 @@ class Win(object):
 
     def read_config(self):
         """
-        Note:
-            read the configuration file
+        read the configuration file
         """
         config = configparser.ConfigParser()
         config.read(self.config_file)
@@ -132,8 +127,7 @@ class Win(object):
 
     def write_config(self):
         """
-        Note:
-            write the configuration file
+        write the configuration file
         """
         config = configparser.ConfigParser()
         config.read(self.config_file)
@@ -149,14 +143,15 @@ class Win(object):
             if var.get() == 1:
                 pkg_list.append(pkg_name)
         config['software']['pkg_list'] = ','.join(pkg_list)
-
-        with open(self.config_file, 'w+') as cfg:
-            config.write(cfg, space_around_delimiters=False)
+        fd = os.open(self.config_file, os.O_WRONLY, 0o640)
+        cfg = os.fdopen(fd, 'w+')
+        cfg.truncate()
+        config.write(cfg, space_around_delimiters=False)
+        cfg.close()
 
     def select_os_all(self, opt):
         """
-        Note:
-            select os all
+        select os all
         """
         if opt.get() == 1:
             for os_name in OS_LIST:
@@ -169,8 +164,7 @@ class Win(object):
 
     def select_pkg_all(self, opt):
         """
-        Note:
-            select pkg all
+        select pkg all
         """
         if opt.get() == 1:
             for pkg_name in PKG_LIST:
@@ -183,15 +177,16 @@ class Win(object):
 
     def on_closing(self):
         """
-        Note:
-            closing the window and exit
+        closing the window and exit
         """
         self.root.destroy()
         sys.exit(1)
 
 
 def win_main():
-    """start gui application"""
+    """
+    start gui application
+    """
     app = Win()
     app.run()
 
