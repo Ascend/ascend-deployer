@@ -1,0 +1,64 @@
+- name: find nnrt package
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*nnrt.*{{ansible_architecture}}.run"
+  register: nnrt
+
+- name: query current nnrt install info
+  shell: "find {{ ascend_install_path }}/nnrt/latest/ -type f | grep -E '/*-linux/ascend_nnrt_install.info' | head -n 1"
+  register: cur_nnrt_version_file
+  when: nnrt.matched > 0
+
+- name: query current nnrt version
+  shell: "cat {{ cur_nnrt_version_file.stdout }} | grep ^version | cut -d'=' -f2"
+  register: cur_nnrt_version
+  when: nnrt.matched > 0
+
+- set_fact: current_nnrt_version={{ cur_nnrt_version.stdout }}
+  when: nnrt.matched > 0
+
+- name: get target nnrt version
+  set_fact:
+    target_nnrt_version: "{{ nnrt.files[0].path.split('/') | last | regex_replace('.*nnrt_(.*)_linux.*', '\\1') }}"
+  when: nnrt.matched > 0
+
+- name: message
+  debug:
+    msg:
+      - "current nnrt version = {{ current_nnrt_version }}"
+      - "target nnrt version = {{ target_nnrt_version }}"
+  when: nnrt.matched > 0
+
+- name: upgrade nnrt
+  shell: "bash {{ nnrt.files[0].path }} --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: nnrt_result
+  when: 
+    - nnrt.matched > 0
+    - current_nnrt_version != target_nnrt_version
+  failed_when: nnrt_result.rc !=0
+
+- name: message
+  debug:
+    msg:
+      - "can not find nnrt package, nnrt upgrade skipped"
+  when: nnrt.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "current nnrt version is same as target nnrt version, nnrt upgrade skipped"
+  when:
+    - nnrt.matched > 0
+    - current_nnrt_version == target_nnrt_version
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnrt_result | default('NOT DEFINED') }}"
+  when: nnrt_result.changed

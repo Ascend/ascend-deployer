@@ -1,0 +1,59 @@
+- name: find nnae package
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*nnae.*{{ansible_architecture}}.run"
+  register: nnae
+
+- name: query current nnae version
+  shell: "cat {{ ascend_install_path }}/nnae/latest/ascend_nnae_install.info | grep ^version | cut -d'=' -f2"
+  register: cur_nnae_version
+  when: nnae.matched > 0
+
+- set_fact: current_nnae_version={{ cur_nnae_version.stdout }}
+  when: nnae.matched > 0
+
+- name: get target nnae version
+  set_fact:
+    target_nnae_version: "{{ nnae.files[0].path.split('/') | last | regex_replace('.*nnae_(.*)_linux.*', '\\1') }}"
+  when: nnae.matched > 0
+
+- name: message
+  debug:
+    msg:
+      - "current nnae version = {{ current_nnae_version }}"
+      - "target nnae version = {{ target_nnae_version }}"
+  when: nnae.matched > 0
+
+- name: upgrade nnae
+  shell: "bash {{ nnae.files[0].path }} --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: nnae_result
+  when: 
+    - nnae.matched > 0
+    - current_nnae_version != target_nnae_version
+  failed_when: nnae_result.rc !=0
+
+- name: message
+  debug:
+    msg:
+      - "can not find nnae package, nnae upgrade skipped"
+  when: nnae.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "current nnae version is same as target nnae version, nnae upgrade skipped"
+  when:
+    - nnae.matched > 0
+    - current_nnae_version == target_nnae_version
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnae_result | default('NOT DEFINED') }}"
+  when: nnae_result.changed

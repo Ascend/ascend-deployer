@@ -1,0 +1,64 @@
+- name: find toolkit package
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*toolkit.*{{ansible_architecture}}.run"
+  register: toolkit
+
+- name: query current toolkit install info
+  shell: "find {{ ascend_install_path }}/ascend-toolkit/latest/ -type f | grep -E '/*-linux/ascend_toolkit_install.info' | head -n 1"
+  register: cur_toolkit_version_file
+  when: toolkit.matched > 0
+
+- name: query current toolkit version
+  shell: "cat {{ cur_toolkit_version_file.stdout }} | grep ^version | cut -d'=' -f2"
+  register: cur_toolkit_version
+  when: toolkit.matched > 0
+
+- set_fact: current_toolkit_version={{ cur_toolkit_version.stdout }}
+  when: toolkit.matched > 0
+
+- name: get target toolkit version
+  set_fact:
+    target_toolkit_version: "{{ toolkit.files[0].path.split('/') | last | regex_replace('.*toolkit_(.*)_linux.*', '\\1') }}"
+  when: toolkit.matched > 0
+
+- name: message
+  debug:
+    msg:
+      - "current toolkit version = {{ current_toolkit_version }}"
+      - "target toolkit version = {{ target_toolkit_version }}"
+  when: toolkit.matched > 0
+
+- name: upgrade toolkit
+  shell: "bash {{ toolkit.files[0].path }} --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: toolkit_result
+  when: 
+    - toolkit.matched > 0
+    - current_toolkit_version != target_toolkit_version
+  failed_when: toolkit_result.rc !=0
+
+- name: message
+  debug:
+    msg:
+      - "can not find toolkit package, toolkit upgrade skipped"
+  when: toolkit.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "current toolkit version is same as target toolkit version, toolkit upgrade skipped"
+  when:
+    - toolkit.matched > 0
+    - current_toolkit_version == target_toolkit_version
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolkit_result | default('NOT DEFINED') }}"
+  when: toolkit_result.changed

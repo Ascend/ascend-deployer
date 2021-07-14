@@ -10,6 +10,8 @@
 
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
 
+- set_fact: driver_run=""
+
 - name: find driver package linux only zip
   find:
     paths: "{{ run_dir }}"
@@ -58,6 +60,26 @@
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: driver_pkg.matched > 0
 
+- name: get current driver version
+  shell: cat /usr/local/Ascend/driver/version.info | grep Version | cut -d"=" -f2
+  register: cur_driver_version
+  when: driver_run | length > 0
+
+- set_fact: current_driver_version={{ cur_driver_version.stdout }}
+  when: driver_run | length > 0
+
+- name: get target driver version
+  set_fact:
+    target_driver_version: "{{ driver_run | regex_replace('.*npu-driver_(.*)_[A-Za-z].*\\.run', '\\1') }}"
+  when: driver_run | length > 0
+
+- name: message
+  debug:
+    msg:
+      - "current driver version={{ current_driver_version}}"
+      - "target driver version={{ target_driver_version}}"
+  when: driver_run | length > 0
+
 - name: set /etc/modprobe.d/10-unsupported-modules.conf allow_unsupported_modules 1
   lineinfile:
     dest: /etc/modprobe.d/10-unsupported-modules.conf
@@ -65,22 +87,31 @@
     line: "allow_unsupported_modules 1"
     state: present
   when:
-    - (driver_run is defined) and (driver_run|length > 0)
+    - driver_run | length > 0
+    - current_driver_version != target_driver_version
     - "'SLES' in os_and_arch"
 
-- name: install driver
-  shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
-  environment:
-    PATH: /opt/rh/devtoolset-8/root/usr/bin/:/usr/sbin/:/sbin:{{ ansible_env.PATH }}
+- name: upgrade driver
+  shell: "bash {{ driver_run }} --upgrade --quiet"
   register: driver_result
-  failed_when: driver_result.rc == 1
-  when: (driver_run is defined) and (driver_run|length > 0)
+  failed_when: driver_result.rc != 0
+  when:
+    - driver_run | length > 0
+    - current_driver_version != target_driver_version
 
 - name: message
   debug:
     msg:
-      - "can not find driver package, driver install skipped"
-  when: (driver_run is not defined) or (driver_run|length == 0)
+      - "can not find driver package, driver upgrade skipped"
+  when: driver_run | length == 0
+
+- name: message
+  debug:
+    msg:
+      - "current driver version is same as target driver version, driver upgrade skipped"
+  when:
+    - driver_run | length > 0
+    - current_driver_version == target_driver_version
 
 - name: message
   debug:

@@ -68,7 +68,7 @@
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
-- 本工具不下载tensorflow-1.15.0/2.4.1 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则安装时会报错。
+- 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则安装时会报错。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 ### 内核头软件包说明
@@ -253,7 +253,6 @@ ascend-deployer
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
      - `--install=mindspore`会安装mindspore 1.2.1版本，需要安装python3.7.5和配套版本的CANN软件包才可正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
-     - `--install=tensorflow`会安装tensorflow 1.15.0版本，`--install=tensorflow_2.4.1`会安装tensorflow 2.4.1版本，本工具涉及tensorflow之处默认指 1.15.0版本，tensorflow 2.4.1需要安装配套版本的CANN软件包才可正常使用。
    - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：

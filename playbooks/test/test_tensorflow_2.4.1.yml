@@ -1,4 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-  - name: test tensorflow
-    import_tasks: case_tensorflow_2.4.1.yml
