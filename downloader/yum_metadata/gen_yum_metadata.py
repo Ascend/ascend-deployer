@@ -18,6 +18,7 @@ import os
 import sqlite3 as sqlite
 import xml.sax
 
+
 class Require(object):
     def __init__(self, name):
         self.name = name
@@ -37,6 +38,7 @@ class Provide(object):
         self.version = None
         self.release = None
         self.pkgKey = None
+
 
 class YumPackageHandler(xml.sax.handler.ContentHandler):
     """
@@ -190,25 +192,28 @@ class YumPackage(object):
             self.package.get('location_href'),
         )
 
-    def _get_sqlite_null(self, value):
+    @staticmethod
+    def _get_sqlite_null(value):
         return None if not value else value
 
-    def dump_to_primary_sqlite(self, pkgKey, cur):
+    def dump_to_primary_sqlite(self, pkg_key, cur):
         """
         dump_to_primary_sqlite
 
-        :param pkgKey database key
+        :param pkg_key database key
         :param cur    database cursor
         :return:
         """
-        self.dump_to_packages(pkgKey, cur)
+        self.dump_to_packages(pkg_key, cur)
         if 'requires' in self.package:
-            self.dump_to_requires(pkgKey, cur)
+            self.dump_to_requires(pkg_key, cur)
         if 'provides' in self.package:
-            self.dump_to_provides(pkgKey, cur)
+            self.dump_to_provides(pkg_key, cur)
 
-    def dump_to_packages(self, pkgKey, cur):
-        """insert primary data"""
+    def dump_to_packages(self, pkg_key, cur):
+        """
+        insert primary data
+        """
         fields = [
             'pkgKey',
             'pkgId',
@@ -245,14 +250,14 @@ class YumPackage(object):
             key: self._get_sqlite_null(self.package.get(key))
             for key in fields
         }
-        sql_param['pkgKey'] = pkgKey
+        sql_param['pkgKey'] = pkg_key
         cur.execute(sql, sql_param)
 
-    def dump_to_provides(self, pkgKey, cur):
+    def dump_to_provides(self, pkg_key, cur):
         """
         dump_to_provides
 
-        :param pkgKey database key
+        :param pkg_key database key
         :param cur    database cursor
         :return:
         """
@@ -268,15 +273,15 @@ class YumPackage(object):
                 'epoch':   provide.epoch,
                 'version': provide.version,
                 'release': provide.release,
-                'pkgKey':  pkgKey
+                'pkgKey':  pkg_key
             }
             cur.execute(sql, sql_param)
 
-    def dump_to_requires(self, pkgKey, cur):
+    def dump_to_requires(self, pkg_key, cur):
         """
         dump_to_requires
 
-        :param pkgKey database key
+        :param pkg_key database key
         :param cur    database cursor
         :return:
         """
@@ -292,7 +297,7 @@ class YumPackage(object):
                 'epoch':   require.epoch,
                 'version': require.version,
                 'release': require.release,
-                'pkgKey':  pkgKey,
+                'pkgKey':  pkg_key,
                 'pre': False
             }
             cur.execute(sql, sql_param)
@@ -316,7 +321,9 @@ class YumMetadataSqlite(object):
         self.primary_cur = self.primary_connection.cursor()
 
     def create_primary_db(self):
-        """create primary db scheme"""
+        """
+        create primary db scheme
+        """
         cur_path = os.path.realpath(os.path.dirname(__file__))
 
         with open(os.path.join(cur_path, "create_yum_metadata_primary_db.sql")) as fid:

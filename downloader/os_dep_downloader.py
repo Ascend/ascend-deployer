@@ -116,6 +116,7 @@ class OsDepDownloader:
         print('clean resources directory successfully')
         LOG.info('clean resources directory successfully')
 
+
 def main():
     os_dep = OsDepDownloader()
     if len(sys.argv) == 2 and sys.argv[1] == 'clean':

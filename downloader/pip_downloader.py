@@ -25,13 +25,17 @@ from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
 from logger_config import get_logger
 
+
 LOG = get_logger(__file__)
 
+
 class SimpleIndexParser(HTMLParser):
-    """解析simple index"""
+    """
+    解析simple index
+    """
     def __init__(self):
         super().__init__()
-        self.index={}
+        self.index = {}
         self.tmp_attrs = None
 
     def get_index(self):
@@ -58,11 +62,13 @@ class SimpleIndexParser(HTMLParser):
 
 
 class MyPip(object):
-    """downloader for pip"""
+    """
+    downloader for pip
+    """
     def __init__(self):
         self.cache = {}
         self.downloaded = []
-        """读取配置"""
+        # 读取配置
         script = os.path.realpath(__file__)
         config_file = os.path.join(os.path.dirname(script), 'config.ini')
         config = configparser.ConfigParser()
@@ -113,6 +119,8 @@ class MyPip(object):
             print(err)
             LOG.error(err)
             return False
+        finally:
+            pass
 
         return True
 
@@ -139,6 +147,8 @@ class MyPip(object):
                     print(e)
                     LOG.error(e)
                     time.sleep(2 * retry)
+                finally:
+                    pass
                 if success:
                     break
             self.cache[distribution] = index
@@ -226,7 +236,6 @@ class MyPip(object):
         if file_name in self.downloaded:
             return
         download_url = '{0}/{1}/{2}'.format(self.pypi_url, distribution, url)
-        #print("Download {0} from [{1}]".format(file_name, download_url))
         LOG.info("Download {0} from [{1}]".format(file_name, download_url))
         file_path = os.path.join(dest_path, file_name)
         if not self.need_download_again(file_path, url):
@@ -239,7 +248,8 @@ class MyPip(object):
         self.downloaded.append(file_name)
         return True
 
-    def need_download_again(self, dst_file, url_with_hash):
+    @staticmethod
+    def need_download_again(dst_file, url_with_hash):
         """
         need_download_again
         校验目的文件的hash值与url中的hash值是否相等，来决定是否重新下载
@@ -315,13 +325,17 @@ class MyPip(object):
             if not self.download_arm(name, dest_path):
                 self.download_source(name, dest_path)
             return True
-        except Exception as e:
+        except Exception:
             print(name.ljust(60), "download failed")
             return False
+        finally:
+            pass
 
 
 def main():
-    """main"""
+    """
+    main
+    """
     my_pip = MyPip()
     my_pip.download('six==1.15.0', './')
 

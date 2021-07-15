@@ -40,7 +40,7 @@ def copy_scripts():
     else:
         deployer_home = os.getcwd()
 
-    ad_path= os.path.join(deployer_home, 'ascend-deployer')
+    ad_path = os.path.join(deployer_home, 'ascend-deployer')
     for dirname in dir_list:
         src = os.path.join(root_path, dirname)
         dst = os.path.join(ad_path, dirname)
@@ -52,5 +52,6 @@ def copy_scripts():
         dst = os.path.join(ad_path, filename)
         if not os.path.exists(dst) and os.path.exists(src):
             shutil.copy(src, dst)
+
 
 copy_scripts()

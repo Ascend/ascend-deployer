@@ -24,10 +24,10 @@ import shutil
 import sqlite3
 import lzma
 import xml.sax
-
-import logger_config
 from xml.dom import minidom
 from urllib.error import HTTPError
+
+import logger_config
 from downloader import get_download_path
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
@@ -39,9 +39,12 @@ try:
     from urlparse import urljoin
 except ImportError:
     from urllib.parse import urljoin
+finally:
+    pass
 
 
 LOG = logger_config.get_logger(__file__)
+
 
 class Package(object):
     """
@@ -61,7 +64,7 @@ class Package(object):
 
         :return: url of the package
         """
-        return self.repo_url + '/' + self.href
+        return urljoin(self.repo_url, self.href)
 
 
 class Yum(object):
@@ -100,7 +103,7 @@ class Yum(object):
             self.load_installed(self.installed_file)
 
     def load_installed(self, file_name):
-        with open(file_name) as f:
+        with os.fdopen(os.open(file_name, os.O_RDONLY, 0o640), 'r') as f:
             for item in f.readlines():
                 info = [tmp for tmp in item.split(' ') if len(tmp) > 1]
                 [name_and_arch, version, repo] = info
@@ -124,8 +127,8 @@ class Yum(object):
         parser.setContentHandler(handler)
         parser.parse(xml_file)
 
-        for pkgKey, pkg in enumerate(handler.packages):
-            pkg.dump_to_primary_sqlite(pkgKey + 1, yum_meta_sqlite.primary_cur)
+        for pkg_key, pkg in enumerate(handler.packages):
+            pkg.dump_to_primary_sqlite(pkg_key + 1, yum_meta_sqlite.primary_cur)
         yum_meta_sqlite.primary_connection.commit()
 
     def make_cache(self):
@@ -135,7 +138,7 @@ class Yum(object):
         :return:
         """
         for name, url in self.sources.items():
-            repomd_url = urljoin(url if url.endswith('/') else url + '/', 'repodata/repomd.xml')
+            repomd_url = urljoin(url if url.endswith('/') else ''.join([url, '/']), 'repodata/repomd.xml')
             LOG.info('{0}:{1}'.format(name, repomd_url))
             repomd_file = os.path.join(self.db_tmps, name + '_repomd.xml')
             db_file = os.path.join(self.db_tmps, name + '_primary.sqlite')
@@ -160,7 +163,7 @@ class Yum(object):
                 self.build_primary_cache(primary_xml_file, self.db_tmps, name)
                 continue
 
-            db_url = url + '/' + db_location_href
+            db_url = urljoin(url, db_location_href)
             url_file_name = os.path.basename(db_url).split('-')[1]
             compressed_file = os.path.join(self.db_tmps,
                                            name + '_' + url_file_name)
@@ -183,33 +186,37 @@ class Yum(object):
         if os.path.exists(self.db_tmps):
             shutil.rmtree(self.db_tmps)
 
-    def uncompress_file(self, compress_file, dst_file):
+    @staticmethod
+    def uncompress_file(compress_file, dst_file):
         """
         解压文件
         """
         if os.path.exists(dst_file):
             return
 
+        fd = os.open(dst_file, os.O_WRONLY | os.O_CREAT, 0o640)
         if compress_file.endswith('.gz'):
             with gzip.GzipFile(compress_file) as gzip_file:
                 buf = gzip_file.read()
-                with open(dst_file, 'wb') as uncompress_file:
+                with os.fdopen(fd, 'wb') as uncompress_file:
                     uncompress_file.write(buf)
             return
         if compress_file.endswith('.bz2'):
             with bz2.BZ2File(compress_file, 'rb') as bz_file:
                 buf = bz_file.read()
-                with open(dst_file, 'wb+') as uncompress_file:
+                with os.fdopen(fd, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
             return
         if compress_file.endswith('.xz'):
             with lzma.open(compress_file, 'rb') as xz_file:
                 buf = xz_file.read()
-                with open(dst_file, 'wb+') as uncompress_file:
+                with os.fdopen(fd, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
             return
+        os.close(fd)
 
-    def parse_repomd(self, file_name, data_type):
+    @staticmethod
+    def parse_repomd(file_name, data_type):
         """
         解析repomd.xml文件，得到data_type, 如primary_db url
         """
@@ -223,7 +230,8 @@ class Yum(object):
             LOG.info(location.getAttribute('href'))
             return location.getAttribute('href')
 
-    def download_file(self, url, dst_file):
+    @staticmethod
+    def download_file(url, dst_file):
         """
         download_file
 
@@ -240,6 +248,8 @@ class Yum(object):
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[{0}]->{1}'.format(url, http_error))
             return False
+        finally:
+            pass
 
     def get_requires(self, conn, pkg_name):
         """
@@ -355,7 +365,7 @@ class Yum(object):
         result = cur.fetchall()
         LOG.info(result)
         if len(result) > 0 and len(result[0]) > 0:
-            return repo_url + '/' + result[0][0]
+            return urljoin(repo_url, result[0][0])
         return None
 
     def search_package(self, conn, name, ver, rel):

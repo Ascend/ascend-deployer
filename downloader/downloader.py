@@ -21,7 +21,7 @@ import shutil
 import argparse
 import platform
 
-FILE_PATH=os.path.realpath(__file__)
+FILE_PATH = os.path.realpath(__file__)
 CUR_DIR = os.path.dirname(__file__)
 
 sys.path.append(CUR_DIR)
@@ -35,20 +35,24 @@ import software_mgr
 LOG = logger_config.get_logger(__file__)
 
 
-support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
-support_pkg_list = os.listdir(os.path.join(CUR_DIR, 'software'))
-
-
 def download_other_packages(dst=None):
-    """download other resources, such as source code tar ball"""
+    """
+    download other resources, such as source code tar ball
+    """
     return other_downloader.download_other_packages(dst)
 
+
 def download_specified_python(dst=None):
-    """download ascend_python_version=Python-3.7.5"""
+    """
+    download ascend_python_version=Python-3.7.5
+    """
     return other_downloader.download_specified_python(dst)
 
+
 def download_other_software(sofware_list=None, dst=None):
-    """download other resources, such as source code tar ball"""
+    """
+    download other resources, such as source code tar ball
+    """
     if sofware_list is None and dst is None:
         return other_downloader.download_pkg_from_json()
     else:
@@ -56,7 +60,9 @@ def download_other_software(sofware_list=None, dst=None):
 
 
 def download_python_packages(dst=None):
-    """download_python_packages"""
+    """
+    download_python_packages
+    """
     script = os.path.realpath(__file__)
     require_file = os.path.join(os.path.dirname(script), 'requirements.txt')
     if dst is None:
@@ -77,7 +83,9 @@ def download_python_packages(dst=None):
 
 
 def download_os_packages(os_list=None, software_list=None, dst=None):
-    """download_os_packages"""
+    """
+    download_os_packages
+    """
     os_dep = os_dep_downloader.OsDepDownloader()
     if os_list is None and dst is None:
         return os_dep.download_pkg_from_json()
@@ -86,7 +94,9 @@ def download_os_packages(os_list=None, software_list=None, dst=None):
 
 
 def download_all(os_list, software_list, dst):
-    """ download all resources for specific os list """
+    """
+    download all resources for specific os list
+    """
     res_dir = os.path.join(dst, "resources")
     download_specified_python(dst)
     download_python_packages(res_dir)
@@ -99,6 +109,8 @@ def parse_argument(download_path=''):
     """
     解析参数
     """
+    support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
+    support_pkg_list = os.listdir(os.path.join(CUR_DIR, 'software'))
     if download_path.endswith('ascend-deployer'):
         support_os_list = os.listdir(os.path.join(download_path, 'downloader', 'config'))
         support_pkg_list = os.listdir(os.path.join(download_path, 'downloader', 'software'))

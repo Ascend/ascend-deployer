@@ -21,6 +21,7 @@ import os
 CUR_DIR = os.path.dirname(__file__)
 g_software_list = []
 
+
 class Software(object):
     """
     软件类，用于存储软件信息
@@ -36,42 +37,60 @@ class Software(object):
         return self.version < other.version
 
     def get_name(self):
-        """get name"""
+        """
+        get name
+        """
         return self.name
 
     def get_default(self):
-        """get default"""
+        """
+        get default
+        """
         return self.default
 
     def get_version(self):
-        """get version"""
+        """
+        get version
+        """
         return self.version
 
     def set_version(self, version):
-        """set version"""
+        """
+        set version
+        """
         self.version = version
 
     def get_sys_pkgs(self, sys_name):
-        """get sys dependencies"""
+        """
+        get sys dependencies
+        """
         if sys_name not in self.sys_pkgs:
             return []
         return self.sys_pkgs[sys_name]
 
     def set_sys_pkgs(self, sys_name, pkg_list):
-        """set sys dependencies"""
+        """
+        set sys dependencies
+        """
         self.sys_pkgs[sys_name] = pkg_list
 
     def get_other_pkgs(self):
-        """get other dependencies"""
+        """
+        get other dependencies
+        """
         return self.other_pkgs
 
     def set_other_pkgs(self, pkg_list):
-        """set other dependencies"""
+        """
+        set other dependencies
+        """
         self.other_pkgs = pkg_list
 
 
 def load_software(json_file):
-    """从文件读取软件信息"""
+    """
+    从文件读取软件信息
+    """
     with open(json_file) as file_obj:
         json_obj = json.load(file_obj)
         soft = Software(json_obj['name'], json_obj['default'])
@@ -85,7 +104,9 @@ def load_software(json_file):
 
 
 def software_init():
-    """初始化"""
+    """
+    初始化
+    """
     soft_dir = os.path.join(CUR_DIR, 'software')
     for _, _, files in os.walk(soft_dir):
         for file_name in files:

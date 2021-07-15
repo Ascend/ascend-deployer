@@ -149,7 +149,7 @@ class ProxyUtil:
         return context
 
 
-def Schedule(blocknum, blocksize, totalsize):
+def schedule(blocknum, blocksize, totalsize):
     speed = (blocknum * blocksize) / (time.time() - DownloadUtil.start_time)
     speed = float(speed) / 1024
     speed_str = r" {:.2f} KB/s".format(speed)
@@ -199,7 +199,7 @@ class DownloadUtil:
                 cls.proxy_inst.build_proxy_handler()
                 DownloadUtil.start_time = time.time()
                 print("downloading {}".format(dst_file_name.split('/')[-1]))
-                local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
+                local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
                 sys.stdout.write('\n')
                 if os.path.exists(local_file):
                     LOG.info('%s download successfully', url)
@@ -216,6 +216,8 @@ class DownloadUtil:
                 LOG.error(timeout)
             except ConnectionResetError as rest:
                 print('connection reset by peer, retry...')
+            finally:
+                pass
 
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
@@ -229,7 +231,7 @@ class DownloadUtil:
             cls.proxy_inst.build_proxy_handler()
             DownloadUtil.start_time = time.time()
             print("downloading {}".format(dst_file_name.split('/')[-1]))
-            local_file, _ = request.urlretrieve(url, dst_file_name, Schedule)
+            local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
             sys.stdout.write('\n')
             return True
         except ContentTooShortError as ex:
@@ -238,6 +240,8 @@ class DownloadUtil:
             LOG.error(err)
         except socket.timeout as timeout:
             LOG.error(timeout)
+        finally:
+            pass
         return False
 
     @classmethod
@@ -257,6 +261,8 @@ class DownloadUtil:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
                 LOG.error(timeout)
+            finally:
+                pass
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
@@ -279,6 +285,8 @@ class DownloadUtil:
                 socket.setdefaulttimeout(retry * 60)
                 print(timeout)
                 LOG.error(timeout)
+            finally:
+                pass
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)

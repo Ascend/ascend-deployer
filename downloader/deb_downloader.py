@@ -37,7 +37,7 @@ universe:ubuntu官方不提供支持与补丁，全靠社区支持。
 muitiverse：非自由软件，完全不提供支持和补丁。
 """
 
-LOG=get_logger(__file__)
+LOG = get_logger(__file__)
 
 
 class DebianSource(object):
@@ -48,14 +48,18 @@ class DebianSource(object):
         tmp = line.split(' ')
         self.url = tmp[1].strip()
         self.distro = tmp[2].strip()
-        self.repoList= [i.strip() for i in tmp[3:]]
+        self.repoList = [i.strip() for i in tmp[3:]]
 
-    def GetUrl(self):
-        """get source url"""
+    def get_url(self):
+        """
+        get source url
+        """
         return self.url
 
-    def Repos(self):
-        """get source repos"""
+    def repos(self):
+        """
+        get source repos
+        """
         repos = {}
         for repo in self.repoList:
             repo_url = "{0}dists/{1}/{2}".format(self.url, self.distro, repo)
@@ -72,24 +76,32 @@ class Package(object):
         self.sha256 = sha256
 
     def get_packagename(self):
-        """get_packagename"""
+        """
+        get_packagename
+        """
         return self.package
 
     def get_filename(self):
-        """get_filename"""
+        """
+        get_filename
+        """
         return self.filename
 
     def get_sha256(self):
-        """get_sha256"""
+        """
+        get_sha256
+        """
         return self.sha256
 
 
 class Apt(object):
-    """downloader for apt"""
+    """
+    downloader for apt
+    """
     def __init__(self, source_file, arch):
         self.arch = arch
         self.binary_path = 'binary-amd64' if 'x86' in self.arch else 'binary-arm64'
-        """读取源配置"""
+        # 读取源配置
         self.source_list = []
         self.base_dir = get_download_path()
         self.repo_file = os.path.join(self.base_dir, source_file)
@@ -100,7 +112,9 @@ class Apt(object):
                 self.source_list.append(source)
 
     def make_cache(self):
-        """make_cache"""
+        """
+        make_cache
+        """
         self.primary_connection = sqlite.Connection(':memory:')
         self.primary_cur = self.primary_connection.cursor()
         try:
@@ -109,21 +123,26 @@ class Apt(object):
                     url TEXT, sha256 TEXT);")
         except sqlite.OperationalError as e:
             pass
+        finally:
+            pass
 
         for source in self.source_list:
-            for repo, url in source.Repos():
+            for repo, url in source.repos():
                 index_url = '{0}/{1}/Packages.gz'.format(url, self.binary_path)
                 LOG.info('packages_url=[%s]', index_url)
                 packages = self.fetch_package_index(index_url)
-                self.make_cache_from_packages(source.GetUrl(), repo, packages)
+                self.make_cache_from_packages(source.get_url(), repo, packages)
         self.primary_connection.commit()
         self.primary_cur.close()
 
     def clean_cache(self):
-        """clean sqlite Connection"""
+        """
+        clean sqlite Connection
+        """
         self.primary_connection.close()
 
-    def fetch_package_index(self, packages_url):
+    @staticmethod
+    def fetch_package_index(packages_url):
         """
         fetch_package_index
 
@@ -145,21 +164,23 @@ class Apt(object):
         :param ver_b:
         :return:
         """
-        list1 = str(ver_a).split(".")
-        list2 = str(ver_b).split(".")
-        for i in range(len(list1)) if len(list1) < len(list2) else range(len(list2)):
-            list1[i] = re.sub(r'\D', '', list1[i])
-            list2[i] = re.sub(r'\D', '', list2[i])
+        ver_a_list = str(ver_a).split(".")
+        ver_b_list = str(ver_b).split(".")
+        for i in range(len(ver_a_list)) if len(ver_a_list) < len(ver_b_list) else range(len(ver_b_list)):
+            ver_a_list[i] = re.sub(r'\D', '', ver_a_list[i])
+            ver_b_list[i] = re.sub(r'\D', '', ver_b_list[i])
             try:
-                list1[i] = int(list1[i])
-                list2[i] = int(list2[i])
-            except:
-                list1[i] = str(list1[i])
-                list2[i] = str(list2[i])
-            if list1[i] == list2[i]:
+                ver_a_list[i] = int(ver_a_list[i])
+                ver_b_list[i] = int(ver_b_list[i])
+            except ValueError:
+                ver_a_list[i] = str(ver_a_list[i])
+                ver_b_list[i] = str(ver_b_list[i])
+            finally:
+                pass
+            if ver_a_list[i] == ver_b_list[i]:
                 continue
             else:
-                return list1[i] > list2[i]
+                return ver_a_list[i] > ver_b_list[i]
         return len(ver_a) > len(ver_b)
 
     def make_cache_from_packages(self, source_url, repo, packages_content):
@@ -228,6 +249,8 @@ class Apt(object):
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[%s]->[%s]', url, http_error)
             return False
+        finally:
+            pass
 
     def download_by_name(self, pkg, dst_dir):
         """
@@ -291,6 +314,8 @@ class Apt(object):
             print('[{0}]->{1}'.format(url, http_error))
             LOG.error('[%s]->[%s]', url, http_error)
             return False
+        finally:
+            pass
 
     def download(self, pkg, dst_dir):
         """
@@ -301,7 +326,8 @@ class Apt(object):
         else:
             return self.download_by_name(pkg, dst_dir)
 
-    def need_download_again(self, target_sha256, dst_file):
+    @staticmethod
+    def need_download_again(target_sha256, dst_file):
         """
         need_download_again
 
@@ -322,16 +348,3 @@ class Apt(object):
             return True
         else:
             return False
-
-
-def main():
-    """main"""
-    apt_inst = Apt('downloader/config/Ubuntu_18.04_aarch64/source.list', 'aarch64')
-    apt_inst.make_cache()
-    pkg = {}
-    pkg['name'] = sys.argv[1]
-    apt_inst.download(pkg, "./")
-
-
-if __name__ == '__main__':
-    main()
