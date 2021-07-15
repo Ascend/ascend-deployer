@@ -58,8 +58,17 @@
       - "can not find firmware package, firmware install skipped"
   when: (firmware_run is not defined) or (firmware_run|length == 0)
 
-- name: message
+- name: print install result
   debug:
     msg:
       - "{{ firmware_result | default('NOT DEFINED') }}"
   when: firmware_result.changed
+
+- name: message
+  debug:
+    msg:
+      - "Firmware package install success! Reboot needed from installation"
+  when:
+    - firmware_result.changed
+    - firmware_result.rc == 0
+    - "'Reboot needed' in firmware_result.stdout"

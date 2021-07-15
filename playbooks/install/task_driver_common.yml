@@ -84,6 +84,15 @@
       - "{{ driver_result | default('NOT DEFINED') }}"
   when: driver_result.changed
 
+- name: message
+  debug:
+    msg:
+      - "Driver package install success! Reboot needed from installation"
+  when:
+    - driver_result.changed
+    - driver_result.rc == 0
+    - "'Reboot needed' in driver_result.stdout"
+
 - name: service host_sys_init start
   shell: service host_sys_init start
   failed_when: false

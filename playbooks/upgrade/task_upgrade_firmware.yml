@@ -67,3 +67,11 @@
     msg:
       -: "can not find firmware package"
   when: firmware_run | length == 0
+
+- name: message
+  debug:
+    msg:
+      - "Firmware package upgrade success! Reboot needed from installation"
+  when:
+    - firmware_result is not skipped
+    - "'Reboot needed' in firmware_result.stdout"

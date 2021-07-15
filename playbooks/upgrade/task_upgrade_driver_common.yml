@@ -79,6 +79,14 @@
 
 - debug: var=driver_result
 
+- name: message
+  debug:
+    msg:
+      - "Driver package upgrade success! Reboot needed from installation"
+  when:
+    - driver_result is not skipped
+    - "'Reboot needed' in driver_result.stdout"
+
 - name: service host_sys_init start
   shell: service host_sys_init start
   when:
