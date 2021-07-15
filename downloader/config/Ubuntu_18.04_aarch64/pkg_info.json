@@ -64,6 +64,7 @@
     { "name": "liblzo2-2" },
     { "name": "sshpass" },
     { "name": "libsz2" },
+    { "name": "libaec0" },
     { "name": "libjpeg-dev" },
     { "name": "libjpeg8-dev" },
     { "name": "libjpeg8" },
