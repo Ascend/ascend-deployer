@@ -21,7 +21,6 @@ easydict==1.9
 flatbuffers==1.12
 future==0.18.2
 gast==0.2.2
-gast==0.3.3
 gnureadline==8.0.0
 google-auth-oauthlib==0.4.4
 google-auth==1.30.0
@@ -76,11 +75,8 @@ six==1.15.0
 sympy==1.4
 tensorboard-plugin-wit==1.8.0
 tensorboard==1.15.0
-tensorboard==2.4.1
 tensorflow-cpu==1.15.0
-tensorflow-cpu==2.4.1
 tensorflow-estimator==1.15.1
-tensorflow-estimator==2.4.0
 termcolor==1.1.0
 toml==0.10.2
 typed-ast==1.4.2

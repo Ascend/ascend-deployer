@@ -52,7 +52,7 @@
     - name: message
       debug:
         msg:
-          - "uninstall_version is not matching"
+          - "tfplugin is not installed or uninstall_version is not matching"
       failed_when: true
       when:
         - uninstall_version != ""
