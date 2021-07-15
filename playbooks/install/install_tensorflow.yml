@@ -22,11 +22,6 @@
         - not gcc_stat.stat.exists
         - "os_version == '7.6'"
 
-<<<<<<< HEAD
-    - name: install tensorflow if import failed
-      include_tasks: task_tensorflow.yml
-      when: import_tensorflow.rc != 0
-=======
     - name: find tensorflow whl package
       find:
         paths: "{{ resources_dir }}/pylibs"
@@ -35,15 +30,12 @@
         use_regex: yes
         patterns: ".*tensorflow-1.15.0.*{{ ansible_architecture }}.whl"
       register: tensorflow_whl
-      when:
-        - import_tensorflow.rc != 0
-        - "ansible_architecture == 'aarch64'"
 
     - name: install tensorflow-1.15.0 if not import
       include_tasks: task_tensorflow.yml
       when:
-        - import_tensorflow.rc != 0
-        - tensorflow_whl.matched is not defined or (tensorflow_whl.matched is defined and tensorflow_whl.matched > 0)
+        - import_tensorflow.rc != 0 or (import_tensorflow.rc == 0 and import_tensorflow.stdout != "1.15.0")
+        - tensorflow_whl.matched > 0
 
     - name: message
       debug:
@@ -53,4 +45,3 @@
       when:
         - import_tensorflow.rc != 0
         - tensorflow_whl.matched is defined and tensorflow_whl.matched == 0
->>>>>>> 72968b4 (修复bclinux bug)
