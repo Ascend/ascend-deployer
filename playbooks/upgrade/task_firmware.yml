@@ -26,6 +26,8 @@
   failed_when: true
   when: up_tool.matched == 0
 
+- set_fact: firmware_run=""
+
 - name: find firmware package only zip
   find:
     paths: "{{ run_dir }}"
@@ -35,7 +37,7 @@
     patterns: "npu-firmware.*.run"
   register: firmware_pkg
 
-- set_fact: firmware_run={{firmware_pkg.files[0].path}}
+- set_fact: firmware_run={{ firmware_pkg.files[0].path }}
   when: firmware_pkg.matched > 0
 
 - name: find firmware package
@@ -50,17 +52,47 @@
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
   when: firmware_pkg.matched > 0
 
-- name: install firmware
-  shell: "bash {{ firmware_run }} --full --quiet"
-  register: firmware_result
-  when: (firmware_run is defined) and (firmware_run|length > 0)
-  failed_when: firmware_result.rc != 0
+- name: get current firmware version
+  shell: cat /usr/local/Ascend/firmware/version.info | grep Version | cut -d"=" -f2
+  register: cur_firmware_version
+  when: firmware_run | length > 0
+
+- set_fact: current_firmware_version={{ cur_firmware_version.stdout }}
+  when: firmware_run | length > 0
+
+- name: get target firmware version
+  set_fact:
+    target_firmware_version: "{{ firmware_run.split('/') | last | regex_replace('.*npu-firmware_(.*)\\.run', '\\1') }}"
+  when: firmware_run | length > 0
 
 - name: message
   debug:
     msg:
-      - "can not find firmware package, firmware install skipped"
-  when: (firmware_run is not defined) or (firmware_run|length == 0)
+      - "current firmware version = {{ current_firmware_version }}"
+      - "target firmware version = {{ target_firmware_version }}"
+  when: firmware_run | length > 0
+
+- name: upgrade firmware
+  shell: "bash {{ firmware_run }} --upgrade --quiet"
+  register: firmware_result
+  failed_when: firmware_result.rc != 0
+  when:
+    - firmware_run | length > 0
+    - current_firmware_version != target_firmware_version
+
+- name: message
+  debug:
+    msg:
+      - "can not find firmware package, firmware upgrade skipped"
+  when: firmware_run | length == 0
+
+- name: message
+  debug:
+    msg:
+      - "current firmware version is same as target firmware version, firmware upgrade skipped"
+  when:
+    - firmware_run | length > 0
+    - current_firmware_version == target_firmware_version
 
 - name: message
   debug:

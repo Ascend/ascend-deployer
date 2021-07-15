@@ -65,7 +65,7 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
-- tensorflow-1.15.0/2.4.1 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
+- tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
 ### Description of the kernel header package
@@ -245,7 +245,6 @@ ascend-deployer
      - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
      - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
      - `--install=mindspore` will install version 1.2.1 of MindSpore and requires python3.7.5 and the accompanying version of the Cann package to work properly.  . Please refer to the official website of [mindspore](https://mindspore.cn/install) for software supporting instructions.
-     - `--install=tensorflow` will install tensorflow1.15.0, `--install=tensorflow2.4.1` will install tensorflow2.4.1. By default, TensorFlow refers to TensorFlow version 1.15.0. TensorFlow 2.4.1 requires the Cann package to be installed for normal use.
    - Scenario-specific installation
      `./install.sh --install-scene=<scene_name>`
      The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:

@@ -1,6 +1,13 @@
 - name: include vars
   include_vars: ../os_map.yml
 
+- name: message
+  debug:
+    msg:
+      - "can not find npu card, please check!"
+  failed_when: true
+  when: ansible_local.npu_info.scene == ""
+
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
 
 - name: find driver package linux only zip

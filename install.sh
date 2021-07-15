@@ -508,12 +508,17 @@ function compare_crl()
         fi
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
-        if [[ ${zip_crl_lastupdate_time} -ge ${sys_crl_lastupdate_time} ]];then
+        if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
+            rm -rf $2 && mkdir -p -m 750 $(dirname $2) && cp $1 $2
+            return 0
+        elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             return 0
         else
             log_info "$2 is newer than $1"
             return 1
         fi
+    else
+        mkdir -p -m 750 $(dirname $2) && cp $1 $2
     fi
     return 0
 }
@@ -580,8 +585,8 @@ function verify_zip()
             fi
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp
-        chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d) 2>/dev/null
-        chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f) 2>/dev/null
+        chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d 2>/dev/null) 2>/dev/null
+        chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f 2>/dev/null) 2>/dev/null
         if [[ ${verify_success} -ne 0 ]];then
             return 1
         fi
