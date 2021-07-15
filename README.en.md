@@ -65,6 +65,7 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
+- UOS and other systems come with gnome-terminal graphical terminal, it is recommended to turn off the X11 Forwarding function of SSH connection to avoid installation failure.
 - tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, or you will receive an error when installing.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
@@ -578,7 +579,10 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 - A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
 
 2. Q: The tool will use the Huawei Software Integrity Protection Root Certificate, but does it have the ability to verify that the certificate has been revoked?  Is there a mechanism for the CRL files in the installation package to be up to date with the local CRL files on the system?
-- A: This tool compares the effective time of the CRL file in the installation package with the CRL file locally on the system, and verifies whether the certificate has been revoked using the latest CRL file.  For the root user, the system of local CRL files to the `/etc/hwsipcrl/ascendsip.crl`, for non-root users, for the file `~/.local/hwsipcrl/ascendsip.crl`.
+- A: This tool compares the effective time of the CRL file in the installation package with the CRL file locally on the system, and verifies whether the certificate has been revoked using the latest CRL file.  For the root user, the system of local CRL files to the `/etc/hwsipcrl/ascendsip.crl`, for non-root users, for the file `~/.local/hwsipcrl/ascendsip.crl`. If the system-local CRL file does not exist or takes effect earlier than the CRL file in the installation package, the system-local CRL file will be replaced by the CRL file in the installation package.
+
+3. Q: Non-root users are prompted for the sudo password when installing the pre-5.0.1 Toolkit.
+- A: For security reasons, this tool does not require non-root users to have sudo privileges, so it does not support non-root users to install the toolkit prior to 5.0.1.
 
 # Other Install Guide
 
