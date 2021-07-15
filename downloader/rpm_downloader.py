@@ -212,6 +212,8 @@ class Yum(object):
                 buf = xz_file.read()
                 with os.fdopen(fd, 'wb+') as uncompress_file:
                     uncompress_file.write(buf)
+            return
+        os.close(fd)
 
     @staticmethod
     def parse_repomd(file_name, data_type):

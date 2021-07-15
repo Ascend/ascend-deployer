@@ -19,6 +19,7 @@ import configparser
 import os
 import sys
 import tkinter as tk
+import tkinter.messagebox
 
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -35,14 +36,14 @@ class Win(object):
         self.config_file = os.path.join(CUR_DIR, 'config.ini')
         self.root = tk.Tk()
         self.root.title('离线安装下载器')
-        self.root.geometry('600x{}'.format(30 * len(OS_LIST)))
+        self.root.geometry('620x500')
         self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
-        self.frame_left = tk.LabelFrame(self.root, text="OS_LIST")
-        self.frame_left.pack(fill="both", side="left", expand="yes")
-        self.frame_right = tk.LabelFrame(self.root, text="PKG_LIST")
-        self.frame_right.pack(fill="both", side="right", expand="yes")
-        self.frame_bottom = tk.LabelFrame(self.root)
-        self.frame_bottom.pack(side="bottom")
+        self.frame_left = self._create_frame("OS_LIST", 0, 0, 250, 480, "left")
+        self.frame_right = self._create_frame("PKG_LIST", 0, 2, 250, 480, "left")
+        self.frame_bottom = tk.LabelFrame(
+            tk.Button(self.root, text="开始下载").grid(row=0, column=1)
+        )
+        self.frame_bottom.grid(row=0, column=1)
         self.all_opt = tk.IntVar()
         self.all_opt.set(1)
         self.all_not_opt = tk.IntVar()
@@ -61,6 +62,28 @@ class Win(object):
                   command=self.start_download).pack()
         self.read_config()
         self.display()
+
+    def _create_frame(self, text, row, column, width, heigh, pack_side):
+        box = tk.LabelFrame(self.root, text=text)
+        box.grid(row=row, column=column)
+        canvas = tk.Canvas(box)
+        canvas.pack(side=pack_side, fill="both", expand=True)
+        frame = tk.Frame(canvas)
+        scrollbar = tk.Scrollbar(box, orient="vertical", command=canvas.yview)
+        canvas.configure(
+            yscrollcommand=scrollbar.set, width=width, height=heigh
+        )
+        scrollbar.pack(side=pack_side, fill="y")
+        frame.bind(
+            "<Configure>",
+            lambda event, canvas=canvas: self._on_frame_configure(canvas)
+        )
+        canvas.create_window((4, 4), window=frame, anchor="nw", tags="frame")
+        return frame
+
+    @staticmethod
+    def _on_frame_configure(canvas):
+        canvas.configure(scrollregion=canvas.bbox("all"))
 
     def display(self):
         """
@@ -96,7 +119,7 @@ class Win(object):
             self.root.destroy()
             sys.exit(0)
         else:
-            tk.messagebox.showwarning(title="Warning", message="至少勾选一项")
+            tkinter.messagebox.showwarning(title="Warning", message="至少勾选一项")
 
     def read_config(self):
         """
