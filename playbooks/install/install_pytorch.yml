@@ -1,0 +1,59 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: try import pytorch
+      shell: python3 -c "import torch; print(torch.__version__)"
+      environment:
+        PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
+      failed_when: false
+      changed_when: false
+      register: import_torch
+
+    - name: stat gcc-7.3.0
+      stat:
+        path: "{{ local_path }}/gcc7.3.0"
+      register: gcc_stat
+      when: import_torch.rc != 0
+
+    - name: install gcc 7.3 for centos 7.6 and Tlinux if not exist
+      import_tasks: task_gcc.yml
+      when:
+        - import_torch.rc != 0
+        - not gcc_stat.stat.exists
+        - "os_version == '7.6' or 'Tlinux' in os_and_arch"
+
+    - name: find pytorch whl package
+      find:
+        paths: "{{ resources_dir }}/pylibs"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*torch.*{{ ansible_architecture }}.whl"
+      register: pytorch_whl
+      when: import_torch.rc != 0
+
+    - name: find apex whl package
+      find:
+        paths: "{{ resources_dir }}/pylibs"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*apex.*{{ ansible_architecture }}.whl"
+      register: apex_whl
+      when: import_torch.rc != 0
+
+    - name: install pytorch if not import
+      import_tasks: task_pytorch.yml
+      when:
+        - import_torch.rc != 0
+        - pytorch_whl.matched > 0
+        - apex_whl.matched > 0
+
+    - name: message
+      debug:
+        msg:
+          - "can not find torch or apex whl package"
+          - "please put the files in the directory: {{ resources_dir }}/pylibs/"
+      when:
+        - import_torch.rc != 0
+        - pytorch_whl.matched == 0 or apex_whl.matched == 0
