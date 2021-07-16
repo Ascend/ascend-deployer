@@ -251,7 +251,7 @@ function install_sys_packages()
     install_kernel_header_devel_euler
     local have_rpm=0
     case ${g_os_name} in
-    CentOS|EulerOS|SLES|Kylin|BCLinuxL|Tlinux)
+    CentOS|EulerOS|SLES|Kylin|BCLinux|Tlinux)
         local have_rpm=1
         ;;
     Ubuntu|Debian|Linx|UOS)
