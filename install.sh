@@ -310,7 +310,7 @@ function install_sys_packages()
     install_kernel_header_devel_euler
     local have_rpm=0
     case ${g_os_name} in
-    CentOS|EulerOS|SLES|Kylin|BCLinuxL|Tlinux|OpenEuler)
+    CentOS|EulerOS|SLES|Kylin|BCLinux|Tlinux|OpenEuler)
         local have_rpm=1
         ;;
     Ubuntu|Debian|Linx|UOS)
@@ -1037,7 +1037,7 @@ function bootstrap()
     export PATH=${PYTHON_PREFIX}/bin:$PATH
     export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:$LD_LIBRARY_PATH
     unset PYTHONPATH
-    local have_ansible=`command -v ansible | wc -l`
+
     check_python375
     local py37_status=$?
     if [ ${py37_status} == ${FALSE} ] && [ $UID -eq 0 ];then
@@ -1047,7 +1047,9 @@ function bootstrap()
         install_python375
     fi
 
-    if [ ${have_ansible} -eq 0 ];then
+    local have_ansible_cmd=$(command -v ansible | wc -l)
+    have_no_python_module "ansible"
+    if [[ $? == ${TRUE} ]] || [[ ${have_ansible_cmd} == 0 ]];then
         log_warning "no ansible"
         install_ansible
     fi

@@ -13,13 +13,14 @@
       stat:
         path: "{{ local_path }}/gcc7.3.0"
       register: gcc_stat
+      when: import_torch.rc != 0
 
     - name: install gcc 7.3 for centos 7.6 and Tlinux if not exist
       import_tasks: task_gcc.yml
       when:
+        - import_torch.rc != 0
         - not gcc_stat.stat.exists
         - "os_version == '7.6' or 'Tlinux' in os_and_arch"
-        - import_torch.rc != 0
 
     - name: find pytorch whl package
       find:
@@ -29,6 +30,7 @@
         use_regex: yes
         patterns: ".*torch.*{{ ansible_architecture }}.whl"
       register: pytorch_whl
+      when: import_torch.rc != 0
 
     - name: find apex whl package
       find:
@@ -38,10 +40,14 @@
         use_regex: yes
         patterns: ".*apex.*{{ ansible_architecture }}.whl"
       register: apex_whl
+      when: import_torch.rc != 0
 
     - name: install pytorch if not import
       import_tasks: task_pytorch.yml
-      when: import_torch.rc != 0 and pytorch_whl.matched > 0 and apex_whl.matched > 0
+      when:
+        - import_torch.rc != 0
+        - pytorch_whl.matched > 0
+        - apex_whl.matched > 0
 
     - name: message
       debug:
