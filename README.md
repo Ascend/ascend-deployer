@@ -27,8 +27,6 @@
 | Kylin   | V10Tercel | x86_64  | 镜像默认Minimal模式                     |
 | Kylin   | v10juniper| aarch64 | 镜像默认Minimal模式                     |
 | Linx    | 6         | aarch64 | 镜像默认Minimal模式                     |
-|OpenEuler|20.03LTS-SP1| aarch64| 镜像默认Minimal模式                     |
-|OpenEuler|20.03LTS-SP1| x86_64 | 镜像默认Minimal模式                     |
 |OpenEuler|  20.03LTS  | aarch64| 镜像默认Minimal模式                     |
 |OpenEuler|  20.03LTS  | x86_64 | 镜像默认Minimal模式                     |
 | SLES    | 12.4      | x86_64  | 镜像默认Minimal模式                     |
@@ -41,8 +39,6 @@
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | x86_64  | 镜像默认Minimal模式                     |
-| Ubuntu  | 20.04     | aarch64 | 镜像默认Minimal模式                     |
-| Ubuntu  | 20.04     | x86_64  | 镜像默认Minimal模式                     |
 
 ### 支持的硬件形态说明
 
@@ -63,7 +59,7 @@
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等很多操作系统默认禁止root用户远程连接，所以需提前配置/etc/ssh/sshd_config中PermitRootLogin为yes（个别OS配置方法或许不同，请参考OS官方说明）；用完本工具后，及时关闭root用户远程连接
-- 支持Ubuntu 18.04.1/5、Ubuntu 20.04 x86_64安装交叉编译的相关组件和aarch64架构的toolkit软件包。
+- 支持Ubuntu 18.04.1/5安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 - Atlas 300T 训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
@@ -127,7 +123,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - linux
 
   1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">linux下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
-  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3；2种情况下均请用户保证环境网络和源可用。执行`./upgrade_self.sh`也会这样检查环境上的python3。
+  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
 ## 安装操作
 
 ### 安装参数
@@ -376,43 +372,11 @@ source ~/.local/ascendrc       # non-root
 
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
-# 升级
-
-可执行以下命令，升级指定软件：
-`./install.sh --upgrade=<package_name>`
-<package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --upgrade=npu     //升级driver和firmware`。
-注意事项：
-
-- 请按照“firmware>driver>CANN软件包（toolkit、nnrt等）“或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行升级。
-
-- 升级driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
-  
-  # 卸载
-  
-  可执行以下命令，卸载指定软件：
-  `./install.sh --uninstall=<package_name>`
-  <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-  `./install.sh --uninstall=npu     //卸载driver和firmware`
-  注意事项：
-- 请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
-- root用户卸载默认路径/usr/local/Ascend的npu包(driver和firmware)和/usr/local的边缘组件(atlasedge和ha)，root用户卸载inventory_file内install_path参数指定路径的CANN软件包，非root用户卸载默认路径~/Ascend的CANN软件包。
-- 不支持非root用户卸载npu(driver和firmware)和边缘组件(atlasedge和ha)，不支持卸载npu(driver和firmware)和边缘组件(atlasedge和ha)时带有--uninstall-version参数。
-
-# 更新离线部署工具
-
-能够通过以下操作实现离线安装工具自我更新。
-
-- windows
-  运行upgrade_self.bat启动更新。
-- linux
-  执行命令`./upgrade_self.sh`启动更新。
-
 # 参考信息
 
 ## <a name="parameter">安装参数说明</a>
 
-用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
+用户根据实际需要选择对应参数完成安装，命令格式如下：
 `./install.sh [options]`
 参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
 
@@ -427,11 +391,7 @@ source ~/.local/ascendrc       # non-root
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
-| --uninstall=<package_name>        | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。     |
-| --uninstall-version=<version>     | 卸载指定版本的软件，与--uninstall参数一起使用。                       |
-| --upgrade=<package_name>          | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。       |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
-| --display=<target>                | 显示已安装软件包。                                                   |
 
 ## <a name="download_parameter">linux下载参数说明</a>
 

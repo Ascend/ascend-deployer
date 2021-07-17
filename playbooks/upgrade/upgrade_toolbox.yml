@@ -1,4 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-    - name: upgrade toolbox
-      import_tasks: task_toolbox.yml

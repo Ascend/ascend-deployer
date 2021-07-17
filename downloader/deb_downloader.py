@@ -100,7 +100,8 @@ class Apt(object):
     """
     def __init__(self, source_file, arch):
         self.arch = arch
-        self.binary_path = 'binary-amd64' if 'x86' in self.arch else 'binary-arm64'
+        self.binary_path = 'binary-amd64' \
+            if 'x86' in self.arch else 'binary-arm64'
         # 读取源配置
         self.source_list = []
         self.base_dir = get_download_path()

@@ -1,4 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-    - name: upgrade tfplugin
-      import_tasks: task_tfplugin.yml

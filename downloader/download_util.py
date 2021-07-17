@@ -246,7 +246,7 @@ class DownloadUtil:
 
     @classmethod
     def urlopen(cls, url: str, retry_times=5):
-        for retry in [ x + 1 for x in range(retry_times)]:
+        for retry in [x + 1 for x in range(retry_times)]:
             try:
                 cls.proxy_inst.build_proxy_handler()
                 resp = request.urlopen(url)
@@ -266,11 +266,10 @@ class DownloadUtil:
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
-        return None
 
     @classmethod
     def download_to_tmp(cls, url: str, retry_times=5):
-        for retry in [ x + 1 for x in range(retry_times)]:
+        for retry in [x + 1 for x in range(retry_times)]:
             try:
                 cls.proxy_inst.build_proxy_handler()
                 tmp_file, _ = request.urlretrieve(url)
@@ -290,7 +289,6 @@ class DownloadUtil:
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
-        return None
 
     @classmethod
     def check_download_necessary(cls, dst_file_name):

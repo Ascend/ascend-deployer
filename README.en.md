@@ -26,8 +26,6 @@ The offline installation tool provides automatic download and one-click installa
 |  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
 |  Kylin   |v10juniper|    aarch64      | A minimal image is installed by default. |
 |   Linx   |   6     |     aarch64      | A minimal image is installed by default. |
-|OpenEuler |20.03LTS-SP1|  aarch64      | A minimal image is installed by default. |
-|OpenEuler |20.03LTS-SP1|   x86_64      | A minimal image is installed by default. |
 |OpenEuler |20.03LTS |     aarch64      | A minimal image is installed by default. |
 |OpenEuler |20.03LTS |      x86_64      | A minimal image is installed by default. |
 |   SLES   |  12.4   |      x86_64      | A minimal image is installed by default. |
@@ -40,8 +38,6 @@ The offline installation tool provides automatic download and one-click installa
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|      x86_64      | A minimal image is installed by default. |
-|  Ubuntu  |  20.04  |     aarch64      | A minimal image is installed by default. |
-|  Ubuntu  |  20.04  |      x86_64      | A minimal image is installed by default. |
 
 ### Description of supported hardware configuration
 |  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
@@ -60,7 +56,7 @@ The offline installation tool provides automatic download and one-click installa
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before using this tool(Individual OS configuration methods may be different, please refer to the OS official description), and close the remote connection of root user after using this tool.
-- Support for Ubuntu 18.04.1/5、Ubuntu 20.04 x86_64 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
+- Support for Ubuntu 18.04.1/5 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
@@ -120,7 +116,7 @@ The download function can be used in the Windows or Linux OSs.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
   1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
-  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.In both cases, the user is required to ensure that the environment network and source are available. Executing `./upgrade_self.sh` also checks Python 3 on the environment.
+  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
 
 ## Installation
 
@@ -366,42 +362,11 @@ Similarly, other software packages or tools installed by offline deployment tool
 - Delete this tool
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
-# Upgrade
-
-Run the following command to upgrade the specified software:
-`./install.sh --upgrade=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --upgrade=npu // Upgrade the driver and firmware.`
-Notes:
-
-- Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-- After the driver or firmware is upgraded, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
-
-# Uninstallation
-
-Run the following command to uninstall the specified software:
-`./install.sh --uninstall=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --uninstall=npu     // Uninstall the driver and firmware`
-Note:
-- Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
-- Root unloads the npu package (driver and firmware) and edge components (AtlasEdge and HA) with the default /usr/local/Ascend path. Root unloads the CANN package with the directory install_path specified in inventory_file.Non-root users uninstall the CANN package with the default path ~/Ascend.
-- Non-root users are not supported to uninstall NPU (driver and firmware) and edge components (AtlasEdge and HA), and --uninstall-version is not supported when uninstalling NPU (driver and firmware).
-
-# Offline Installation Tool Upgrade
-
-You can perform the following operation to upgrade the offline installation tool:
-
-- Windows
-  Run **upgrade_self.bat** to start the upgrade.
-- Linux
-  Run the `./upgrade_self.sh` command to start the upgrade.
-
 # Reference Information
 
 ## <a name="parameter">Install Parameter Description</a>
 
-Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
+Select corresponding parameters to install the software. The command format is as follows:
 `./install.sh [options]`
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
 
@@ -415,12 +380,8 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
-| --uninstall-version=<version>     | Uninstall the specified version of software, using it with the --uninstall parameter.                       |
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
-| --uninstall=<package_name>        | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled.                                                           |
-| --upgrade=<package_name>          | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded.                                                                  |
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
-| --display=<target>                | Displays installed packages                                                                 |
 
 ## <a name="download_parameter">Linux Download Parameter Description</a>
 

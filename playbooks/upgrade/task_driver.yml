@@ -1,7 +1,0 @@
-- name: process upgrade driver for bcinux
-  include_tasks: task_driver_bcinux.yml
-  when: "'BCLinux' in os_and_arch"
-
-- name: process upgrade driver for common
-  include_tasks: task_driver_common.yml
-  when: "'BCLinux' not in os_and_arch"
