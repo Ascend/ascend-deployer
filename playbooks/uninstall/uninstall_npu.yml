@@ -1,5 +1,0 @@
-- name: uninstall driver if installed
-  import_playbook: uninstall_driver.yml
-
-- name: uninstall firmware if installed
-  import_playbook: uninstall_firmware.yml

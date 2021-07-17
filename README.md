@@ -373,7 +373,7 @@ source /usr/local/ascendrc
 
 ## <a name="parameter">安装参数说明</a>
 
-用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
+用户根据实际需要选择对应参数完成安装，命令格式如下：
 `./install.sh [options]`
 参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
 
@@ -388,10 +388,7 @@ source /usr/local/ascendrc
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
-| --uninstall=<package_name>        | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。     |
-| --upgrade=<package_name>          | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。       |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
-| --display=<target>                | 显示已安装软件包。                                                   |
 
 ## <a name="parameter">下载参数说明</a>
 

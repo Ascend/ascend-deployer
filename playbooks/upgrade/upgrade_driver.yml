@@ -1,7 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-    - name: create user if not exist
-      import_tasks: ../create_user.yml
-
-    - name: upgrade driver
-      import_tasks: task_upgrade_driver.yml
