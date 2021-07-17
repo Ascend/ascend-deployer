@@ -1,4 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-    - name: upgrade nnae
-      import_tasks: task_nnae.yml

@@ -54,7 +54,6 @@ EOF
 VAULT_CMD=""
 DEBUG_CMD=""
 STDOUT_CALLBACK=""
-uninstall_version=""
 
 declare -A OS_MAP=(["ubuntu"]="Ubuntu")
 OS_MAP["ubuntu"]="Ubuntu"
@@ -649,46 +648,6 @@ function process_scene()
     fi
 }
 
-function process_uninstall()
-{
-    local tmp_uninstall_play=${BASE_DIR}/playbooks/tmp_uninstall.yml
-    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_uninstall_play}
-    IFS=','
-    for target in ${uninstall_target}
-    do
-        echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
-    done
-    unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend -e uninstall_version=${uninstall_version} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
-    cat ${tmp_uninstall_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" -e uninstall_version=${uninstall_version} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
-    if [ -f ${tmp_uninstall_play} ];then
-        rm -f ${tmp_uninstall_play}
-    fi
-}
-
-function process_upgrade()
-{
-    verify_zip_redirect
-    local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
-    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
-    if [ "x${nocopy_flag}" != "xy" ];then
-        echo "- import_playbook: distribution.yml" >> ${tmp_upgrade_play}
-    fi
-    IFS=','
-    for target in ${upgrade_target}
-    do
-        echo "- import_playbook: upgrade/upgrade_${target}.yml" >> ${tmp_upgrade_play}
-    done
-    unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
-    cat ${tmp_upgrade_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
-    if [ -f ${tmp_upgrade_play} ];then
-        rm -f ${tmp_upgrade_play}
-    fi
-}
-
 function process_test()
 {
     local tmp_test_play=${BASE_DIR}/playbooks/tmp_test.yml
@@ -705,12 +664,6 @@ function process_test()
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
     fi
-}
-
-function process_display()
-{
-    echo "ansible-playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e hosts_name=ascend -e app_name=${display_target} -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_app_info.yml -e "hosts_name=ascend" -e "app_name=${display_target}" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} 
 }
 
 function process_check()
@@ -752,25 +705,6 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--uninstall=<package_name>     Uninstall specific package:"
-    for target in `find ${BASE_DIR}/playbooks/uninstall/uninstall_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will uninstall driver and firmware together"
-    echo "--uninstall-version=<version>  Uninstall specific version package"
-    echo "                               using with --uninstall=<package_name> together"
-    echo "                               support single package_name except auto,npu"
-    echo "--upgrade=<package_name>       Upgrade specific package:"
-    for target in `find ${BASE_DIR}/playbooks/upgrade/upgrade_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find ${BASE_DIR}/playbooks/test/test_*.yml`
     do
@@ -778,13 +712,6 @@ function print_usage()
         tmp=${test#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--display=<target>             display app install info:"
-    for target in ${APP_NAME_LIST[*]}
-    do
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will display driver and firmware together"
     exit 0
 }
 
@@ -813,42 +740,10 @@ function parse_script_args() {
             fi
             shift
             ;;
-        --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${uninstall_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                log_error "--uninstall parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
-        --uninstall-version=*)
-            uninstall_version=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${uninstall_version}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                log_error "--uninstall-version parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
-        --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${upgrade_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                log_error "--upgrade parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
         --test=*)
             test_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--test parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
-        --display=*)
-            display_target=$(echo $1 | cut -d"=" -f2)
-            if $(echo "${display_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                log_error "--display parameter is invalid"
                 print_usage
             fi
             shift
@@ -898,7 +793,7 @@ function parse_script_args() {
 
 function check_script_args()
 {
-    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${uninstall_target} ] && [ -z ${upgrade_target} ] && [ -z ${test_target} ] && [ -z ${display_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
+    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
         log_error "expected one valid argument at least"
         print_usage
     fi
@@ -928,36 +823,6 @@ function check_script_args()
         print_usage
     fi
 
-    # --uninstall
-    IFS=','
-    local not_supported=${FALSE}
-    for target in ${uninstall_target}
-    do
-        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
-            log_error "not supported uninstall for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
-    unset IFS
-
-    # --upgrade
-    IFS=','
-    local not_supported=${FALSE}
-    for target in ${upgrade_target}
-    do
-        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
-            log_error "not supported upgrade for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
-    unset IFS
-
     # --test
     IFS=','
     local unsupport=${FALSE}
@@ -972,24 +837,6 @@ function check_script_args()
         print_usage
     fi
     unset IFS
-
-    # --display
-    if [ ! -z ${display_target} ];then
-        IFS=' '
-        local unsupported=${TRUE}
-        for target in ${APP_NAME_LIST[*]}
-        do
-            if [ "${target}" == "${display_target}" ];then
-                unsupported=${FALSE}
-                break
-            fi
-        done
-        if [ ${unsupported} == ${TRUE} ];then
-            log_error "not support display for ${display_target}"
-            print_usage
-        fi
-        unset IFS
-    fi
 
     # --custom
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
@@ -1125,15 +972,6 @@ main()
     fi
     if [ "x${install_scene}" != "x" ];then
         process_scene ${install_scene}
-    fi
-    if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall ${uninstall_target}
-    fi
-    if [ "x${upgrade_target}" != "x" ];then
-        process_upgrade ${upgrade_target}
-    fi
-    if [ "x${display_target}" != "x" ]; then
-        process_display
     fi
     if [ "x${test_target}" != "x" ];then
         process_test ${test_target}

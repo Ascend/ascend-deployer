@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# coding: utf-8
 # Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +24,10 @@ import platform
 
 
 dir_list = ['downloader', 'playbooks', 'docs']
-file_list = ['install.sh', 'start_download.sh', 'inventory_file', 'ansible.cfg',
-             'README.md', 'README.en.md', 'start_download_ui.bat', 'start_download.bat']
+file_list = ['install.sh', 'start_download.sh',
+             'inventory_file', 'ansible.cfg',
+             'README.md', 'README.en.md',
+             'start_download_ui.bat', 'start_download.bat']
 CUR_DIR = os.path.dirname(__file__)
 
 

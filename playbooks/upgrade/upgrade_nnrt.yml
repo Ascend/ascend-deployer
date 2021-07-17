@@ -1,4 +1,0 @@
-- hosts: '{{ hosts_name }}'
-  tasks:
-    - name: upgrade nnrt
-      import_tasks: task_nnrt.yml
