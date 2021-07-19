@@ -262,30 +262,7 @@ ascend-deployer
 
 ### 批量安装
 
-1. 基于密码认证的ssh连接。
-   配置待安装的其他设备的ip地址、用户名和密码，编辑inventory_file文件，格式如下：
-
-   ```
-   [ascend]
-   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'      # root用户
-   ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-   ip_address_3 ansible_ssh_user='username' ansible_ssh_pass='password3'  # 非root用户
-   ```
-
-注意事项:
-
-- inventory_file_文件中会配置远程设备的用户名和密码。本工具会使用ansible-vault对配置有密码的inventory_file_文件进行加密，配置完成后须执行./install.sh --check或者install、test等命令才能完成对该文件的加密，否则可能导致账户密码的泄露。
-- 执行./install.sh --check，并设置python3.7.5的环境变量后（可参考<a href="#set_env_var">配置环境变量</a>），即可使用ansible-vault命令。后续需要在inventory_file中配置密码时，建议先使用ansible-vault encrypt加密文件，再使用ansible-vault edit编辑文件。
-
-```bash
-ansible-vault encrypt inventory_file        // 加密文件
-ansible-vault edit inventory_file           // 编辑加密后的文件
-```
-- 设置环境变量ANSIBLE_VAULT_PASSWORD_FILE可以指定ansible-vault密码的文件；例如，如果用户设置ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt，Ansible将自动在该文件中搜索密码，避免用户交互式输入ansible-vault密码；该功能由ansible提供，详情请参见[ansible官方文档](https://docs.ansible.com/ansible/latest/user_guide/vault.html)。
-- ansible-vault是一款开源的加解密工具，遵守ansible开源社区的加解密规范。该工具本身未对密码复杂度进行限制，也默认忽略有效输入前后的空格，请用户注意ansible-vault密码使用和保管过程中的风险。
-- 随着密码分析技术的发展和计算机处理能力的提高，当前ansible-vault采用的AES256算法可能今后不再安全，推荐用户使用基于密钥认证的方式连接设备，如下第2条。
-
-2. 基于密钥认证的ssh连接（推荐）。
+1. 基于密钥认证的ssh连接。
    配置待安装的其他设备的ip地址，编辑inventory_file文件，格式如下：
 
    ```
@@ -297,16 +274,16 @@ ansible-vault edit inventory_file           // 编辑加密后的文件
 
 配置密钥认证的参考操作
    ```bash
-   ssh-keygen -t rsa -b 2048 -N ''   # 登录管理节点并生成SSH Key
+   ssh-keygen -t rsa -b 2048   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且保证有一定的密码复杂度
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip
    ```
 
 注意事项:
-- 请用户注意ssh密钥使用和保管过程中的风险
+- 每次进行批量操作时都需要输入密钥密码，请用户注意ssh密钥和密钥密码在使用和保管过程中的风险。
 
-3. 执行`./install.sh --check`测试待安装设备连通性。
+2. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
-4. 后续操作同上述的单机安装第2、3步骤。
+3. 后续操作同上述的单机安装第2、3步骤。
 
 # <a name="pip_manual">操作指导:pip方式</a>
 
