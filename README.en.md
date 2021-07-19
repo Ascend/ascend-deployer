@@ -101,7 +101,7 @@ The download function can be used in the Windows or Linux OSs.
 
 ### Notice
 
-- To configure a proxy or modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
+- Modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
 - After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
@@ -455,7 +455,7 @@ To customize an installation scenario, refer to the preceding configuration file
 
 ### Proxy Configuration
 
-If you want to use an HTTP proxy, either configure the proxy in an environment variable (recommended) or configure the proxy in the downloader/config.ini file. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
+If you want to use an HTTP proxy, configure the proxy in an environment variable. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 
 1. Configure the agent in the environment variable as follows
 
@@ -471,17 +471,8 @@ If you want to use an HTTP proxy, either configure the proxy in an environment v
 
    ```
    [proxy]
-   enable=false        # Whether to enable or disable the proxy.
    verify=true         # Whether to verify the HTTPS certificate.
-   protocol=https      # The HTTP protocol
-   hostname=           # proxy server
-   port=               # proxy port
-   username=none       # Proxy account
-   userpassword=none   # Proxy password
    ```
-
-   You need to change the enable parameter to true, and configure the available hostname, port, username, userpassword.
-   For security purposes, if the proxy account and password have been configured in the downloader/config.ini file, you should clear the config.ini after downloading
 
 ### Windows Download Configuration
 

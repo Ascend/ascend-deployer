@@ -464,8 +464,7 @@ source ~/.local/ascendrc       # non-root
 
 ### 代理配置
 
-如需使用http代理，其一是在环境变量中配置代理（推荐），其二是在downloader/config.ini文件中配置代理。
-如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
+如需使用http代理，需在环境变量中配置代理。如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
 
 1. 环境变量中配置代理，参考如下
    
@@ -477,21 +476,12 @@ source ~/.local/ascendrc       # non-root
    
    其中user为用户在内部网络中的用户名，password为用户密码（特殊字符需转义），proxyserverip为代理服务器的ip地址，port为端口。
 
-2. 在downloader/config.ini文件中配置代理，内容如下：
+2. 在downloader/config.ini文件中配置是否进行证书校验，内容如下：
    
    ```
    [proxy]
-   enable=false        # 是否开启代理配置参数
    verify=true         # 是否校验https证书
-   protocol=https      # HTTP协议
-   hostname=           # 代理服务器
-   port=               # 端口
-   username=none       # 代理账号
-   userpassword=none   # 代理密码
    ```
-   
-   需将enable参数改为true，并配置可用的hostname、port、username、userpassword。
-   安全起见，如果在downloader/config.ini文件中配置过代理账号及密码,下载完成后应清理掉config.ini
 
 ### windows下载参数说明
 

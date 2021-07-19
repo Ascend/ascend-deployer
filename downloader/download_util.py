@@ -60,26 +60,8 @@ class ConfigUtil:
         self.config = configparser.RawConfigParser()
         self.config.read(self.config_file)
 
-    def get_proxy_enable_status(self):
-        return self.config.getboolean('proxy', 'enable')
-
     def get_proxy_verify(self):
         return self.config.getboolean('proxy', 'verify')
-
-    def get_proxy_hostname(self):
-        return self.config.get('proxy', 'hostname')
-
-    def get_proxy_protocol(self):
-        return self.config.get('proxy', 'protocol')
-
-    def get_proxy_port(self):
-        return self.config.get('proxy', 'port')
-
-    def get_proxy_username(self):
-        return self.config.get('proxy', 'username')
-
-    def get_proxy_user_password(self):
-        return self.config.get('proxy', 'userpassword')
 
     def get_download_os_list(self):
         os_list = self.config.get('download', 'os_list')
@@ -94,40 +76,13 @@ CONFIG_INST = ConfigUtil()
 
 class ProxyUtil:
     def __init__(self) -> None:
-        self.enable = CONFIG_INST.get_proxy_enable_status()
         self.verify = CONFIG_INST.get_proxy_verify()
-        self.protocol = CONFIG_INST.get_proxy_protocol()
-        self.hostname = CONFIG_INST.get_proxy_hostname()
-        self.port = CONFIG_INST.get_proxy_port()
-        self.username = CONFIG_INST.get_proxy_username()
-        self.user_password = parse.quote(
-            CONFIG_INST.get_proxy_user_password().encode('utf-8'))
         self.proxy_handler = self._init_proxy_handler()
         self.https_handler = self._init_https_handler()
 
     def _init_proxy_handler(self):
-        if not self.enable:
-            LOG.info('use system proxy settings')
-            return request.ProxyHandler()
-        if 'http' in self.protocol:
-            if os.environ.get("http_proxy") and os.environ.get("https_proxy"):
-                proxy_option = {
-                    'http': os.environ.get("http_proxy"),
-                    'https': os.environ.get("https_proxy")
-                }
-            else:
-                proxy_suffix = '{}:{}@{}:{}'.format(
-                    self.username, self.user_password,
-                    self.hostname, self.port
-                    )
-                proxy_option = {
-                    'http': 'http://{}'.format(proxy_suffix),
-                    'https': 'https://{}'.format(proxy_suffix)
-                }
-            return request.ProxyHandler(proxy_option)
-        else:
-            print('protocol[{}] is invalid!'.format(self.protocol))
-            LOG.error('protocol[%s] is invalid!', self.protocol)
+        return request.ProxyHandler()
+
 
     def _init_https_handler(self):
         if not self.verify:
