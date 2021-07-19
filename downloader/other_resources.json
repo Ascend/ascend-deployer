@@ -37,7 +37,7 @@
     },
     {
         "filename":"cmake-3.18.6.tar.gz",
-        "url":"https://github.com/Kitware/CMake/releases/download/v3.18.6/cmake-3.18.6.tar.gz",
+        "url":"https://cmake.org/files/v3.18/cmake-3.18.6.tar.gz",
         "sha256":"124f571ab70332da97a173cb794dfa09a5b20ccbb80a08e56570a500f47b6600",
         "dest":"resources/sources"
     },
