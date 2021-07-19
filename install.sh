@@ -864,7 +864,7 @@ function check_inventory() {
     if [ ${pass_cnt} == 0 ];then
         return
     fi
-    log_error "The inventory_file contain password, please use the SSH key instead"
+    log_error "The inventory_file contains password, please use the SSH key instead"
     exit 1
 }
 

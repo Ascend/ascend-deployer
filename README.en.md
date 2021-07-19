@@ -254,34 +254,7 @@ ascend-deployer
 
 ### Batch Installation
 
-1. SSH connection based on password authentication.
-   Configure the IP addresses, user names, and passwords of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
-
-   ```
-   [ascend]
-   ip_address_1 ansible_ssh_user='root' ansible_ssh_pass='password1'      # root user
-   ip_address_2 ansible_ssh_user='root' ansible_ssh_pass='password2'
-   ip_address_3 ansible_ssh_user='username' ansible_ssh_pass='password3'  # non-root user
-   ```
-
-    Note:
-
-   - The Inventory file configures the user name and password for the remote device, supporting only root user;  After the configuration is completed, it is necessary to execute commands such as./install.sh --check or install, test to complete the encryption of the file, otherwise the account password may be leaked.
-
-   - After executing `./install.sh --check` and setting the environment variable of Python3.7.5 (see <a href="#set_env_var"> to configure the environment variable </a>), you can use the ansible-vault command. When you subsequently need to configure the password in inventory_file, strongly suggest to use ansible-vault encrypt the inventory_file and then edit it with ansible-vault edit. for example
-
-     ```bash
-     ansible-vault encrypt inventory_file
-     ansible-vault edit inventory_file
-     ```
-
-   - Set the environment variable ANSIBLE_VAULT_PASSWORD_FILE to specify the ansible-vault password file.For example, if the user sets ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt, Ansible will automatically search for passwords in the file to avoid the user interactively entering the ansible-vault password;This functionality is provided by ansible and details, please refer to [ansible official document] (https://docs.ansible.com/ansible/latest/user_guide/vault.html).
-
-   - ansible-vault is an open source encryption and decryption tool that complies with the encryption and decryption specification of Ansible open source community. The tool itself does not limit the password complexity, and ignores the space before and after valid input by default. Please pay attention to the risks in the use and storage of ansible-vault password.
-
-   - With the development of cryptanalysis technology and the improvement of computer processing power, the current AES256 algorithm adopted by ansible-vault may not be secure in the future. It is recommended that users connect devices by means of key authentication, as shown in Article 2.
-
-2. SSH connection based on key authentication (recommended).
+1. SSH connection based on key authentication.
    Configure the IP addresses of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
    ```
    [ascend]
@@ -292,17 +265,18 @@ ascend-deployer
 
 Configure the reference operation for key authentication
    ```bash
-   ssh-keygen -t rsa -b 2048 -N ''   # Log in to the management node and generate the SSH Key
-   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to
+   ssh-keygen -t rsa -b 2048   # Log in to the management node and generate the SSH Key. For security reasons, it is recommended that the user Enter the key password at the "Enter passphrase" step, and ensure that the password complexity is reasonable.
+   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to.
+   ssh <user>@<ip>   # Verify that it is possible to log on to the remote node, and replace <user>@<ip> with the account and IP of the corresponding node to be logged in.
    ```
 
 Note:
-- Please be aware of the risks involved in the use and storage of SSH keys
+- Each time you perform a remote operation, you need to enter the key password. Please be aware of the risks involved in the use and storage of SSH keys.
 
-3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-4. The following operation is the same as the above Single-Device Installation steps 2 and 3.
+3. The following operation is the same as the above Single-Device Installation steps 2 and 3.
 
 # <a name="pip_manual">Operation instruction: pip install</a>
 
