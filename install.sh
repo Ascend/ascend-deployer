@@ -856,7 +856,7 @@ function ansible_playbook()
     fi
 }
 
-function encrypt_inventory() {
+function check_inventory() {
     local pass1=$(grep ansible_ssh_pass ${BASE_DIR}/inventory_file | wc -l)
     local pass2=$(grep ansible_sudo_pass ${BASE_DIR}/inventory_file | wc -l)
     local pass3=$(grep ansible_become_pass ${BASE_DIR}/inventory_file | wc -l)
@@ -864,11 +864,8 @@ function encrypt_inventory() {
     if [ ${pass_cnt} == 0 ];then
         return
     fi
-    log_info "The inventory_file need encrypt"
-    ansible-vault encrypt ${BASE_DIR}/inventory_file
-    if [[ $? != 0 ]];then
-        exit 1
-    fi
+    log_error "The inventory_file contains password, please use the SSH key instead"
+    exit 1
 }
 
 function init_ansible_vault()
@@ -963,7 +960,7 @@ main()
         rm -rf ${BASE_DIR}/facts_cache && mkdir -p -m 750 ${BASE_DIR}/facts_cache
     fi
     bootstrap
-    encrypt_inventory
+    check_inventory
     init_ansible_vault
     prepare_environment
 
