@@ -153,7 +153,7 @@ main()
 {
     check_log
     set_permission
-    if [[ $# != 1 ]];then
+    if [[ $# != 1 ]] || [[ ! -f $1 ]];then
         log_error "expected one valid argument"
         exit 1
     fi
