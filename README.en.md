@@ -429,7 +429,7 @@ To customize an installation scenario, refer to the preceding configuration file
 
 ### Proxy Configuration
 
-If you want to use an HTTP proxy, configure the proxy in an environment variable. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
+If you want to use an HTTP proxy, configure the proxy in an environment variable. This tool validates HTTPS certificates by default, if a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 
 1. Configure the agent in the environment variable as follows
 
@@ -445,7 +445,7 @@ If you want to use an HTTP proxy, configure the proxy in an environment variable
 
    ```
    [proxy]
-   verify=true         # Whether to verify the HTTPS certificate.
+   verify=true         # Whether to verify the HTTPS certificate. If it is closed, it may encounter a man-in-the-middle attack. Please be aware of the security risks
    ```
 
 ### Windows Download Configuration
