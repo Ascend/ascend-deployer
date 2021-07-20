@@ -493,7 +493,7 @@ function process_scene()
     if [ "x${nocopy_flag}" != "xy" ];then
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
-    echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
+    echo "- import_playbook: ../scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
     echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
     ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
@@ -631,7 +631,7 @@ function parse_script_args() {
         --test=*)
             test_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
-                log_error "--test parameter is invalid"
+                echo "ERROR" "--test parameter is invalid"
                 print_usage
             fi
             shift
@@ -682,7 +682,7 @@ function parse_script_args() {
 function check_script_args()
 {
     if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
-        log_error "expected one valid argument at least"
+        echo "ERROR" "expected one valid argument at least"
         print_usage
     fi
 
@@ -692,7 +692,7 @@ function check_script_args()
     for target in ${install_target}
     do
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
-            log_error "not support install for ${target}"
+            echo "ERROR" "not support install for ${target}"
             unsupport=${TRUE}
         fi
     done
@@ -703,8 +703,8 @@ function check_script_args()
 
     # --install-scene
     local unsupport=${FALSE}
-    if [ ! -z ${install_scene} ] && [ ! -f ${BASE_DIR}/playbooks/scene/scene_${install_scene}.yml ];then
-        log_error "not support install scene for ${install_scene}"
+    if [ ! -z ${install_scene} ] && [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
+        echo "ERROR" "not support install scene for ${install_scene}"
         unsupport=${TRUE}
     fi
     if [ ${unsupport} == ${TRUE} ];then
@@ -716,8 +716,8 @@ function check_script_args()
     local unsupport=${FALSE}
     for target in ${test_target}
     do
-        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/test/test_${target}.yml ];then
-            log_error "not support test for ${target}"
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
+            echo "ERROR" "not support test for ${target}"
             unsupport=${TRUE}
         fi
     done
@@ -769,7 +769,7 @@ function bootstrap()
     local have_ansible_cmd=$(command -v ansible | wc -l)
     have_no_python_module "ansible"
     if [[ $? == ${TRUE} ]] || [[ ${have_ansible_cmd} == 0 ]];then
-        log_warning "no ansible"
+        echo "WARNING" "no ansible"
         install_ansible
     fi
 }

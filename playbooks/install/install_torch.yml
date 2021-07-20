@@ -28,6 +28,38 @@
         - "'Tlinux' in os_and_arch"
         - import_torch.rc != 0
 
-    - name: install torch if import failed
-      import_tasks: task_torch.yml
+    - name: find torch whl package
+      find:
+        paths: "{{ resources_dir }}/pylibs"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*torch.*{{ ansible_architecture }}.whl"
+      register: torch_whl
       when: import_torch.rc != 0
+
+    - name: find apex whl package
+      find:
+        paths: "{{ resources_dir }}/pylibs"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*apex.*{{ ansible_architecture }}.whl"
+      register: apex_whl
+      when: import_torch.rc != 0
+
+    - name: install torch if not import
+      import_tasks: task_torch.yml
+      when:
+        - import_torch.rc != 0
+        - torch_whl.matched > 0
+        - apex_whl.matched > 0
+
+    - name: message
+      debug:
+        msg:
+          - "can not find torch or apex whl package"
+          - "please put the files in the directory: {{ resources_dir }}/pylibs/"
+      when:
+        - import_torch.rc != 0
+        - torch_whl.matched == 0 or apex_whl.matched == 0

@@ -66,6 +66,8 @@ class Apt(object):
             if 'x86' in self.arch else 'binary-arm64'
         # 读取源配置
         self.source_list = []
+        self.source = {}
+        self.cache = {}
         self.mirror_url = None
         self.docker_url = None
         script = os.path.realpath(__file__)

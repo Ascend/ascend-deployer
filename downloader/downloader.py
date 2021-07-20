@@ -172,6 +172,9 @@ def main():
     """
     args = parse_argument()
 
+    if args is None:
+        return
+
     download_path = get_download_path()
 
     os_list = args.os_list.split(',')
