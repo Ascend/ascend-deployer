@@ -508,7 +508,8 @@ function compare_crl()
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
-            rm -rf $2 && mkdir -p -m 750 $(dirname $2) && cp $1 $2
+            log_info "update system crl"
+            rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
             return 0
         elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             return 0
@@ -517,7 +518,8 @@ function compare_crl()
             return 1
         fi
     else
-        mkdir -p -m 750 $(dirname $2) && cp $1 $2
+        log_info "update system crl"
+        rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
     fi
     return 0
 }

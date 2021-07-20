@@ -520,11 +520,12 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 1. Q: 首次执行`./install.sh --check`或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
 - A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考<a href="#set_env_var">配置环境变量</a>），重新使用工具安装。
 
-2. Q: 工具会用到华为软件完整性保护根证书，但具备验证证书是否被吊销的能力吗？是否有安装包内的CRL文件跟系统本地的CRL文件比较更新的机制？
-- A: 本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。如果系统本地的CRL文件不存在或生效时间早于安装包内的CRL文件，则系统本地的CRL文件会被安装包内的CRL文件替换。
-
-3. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
+2. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
 - A: 安全原因，本工具不要求非root用户拥有sudo权限，所以不支持非root用户安装5.0.1版本以前的toolkit。
+
+3. Q: 工具会用到华为软件完整性保护根证书，但具备验证证书是否被吊销的能力吗？是否有安装包内的CRL文件跟系统本地的CRL文件比较更新的机制？工具是否具备独立的CRL文件比较更新的能力？
+- A: 本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。如果系统本地的CRL文件不存在或生效时间早于安装包内的CRL文件，则系统本地的CRL文件会被安装包内的CRL文件替换。tools目录放置了update_crl.sh脚本，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
+
 
 # 其他安装指导
 
