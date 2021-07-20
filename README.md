@@ -342,36 +342,6 @@ source /usr/local/ascendrc
 - 删除工具
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
-# 升级
-
-可执行以下命令，升级指定软件：
-`./install.sh --upgrade=<package_name>`
-<package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --upgrade=npu     //升级driver和firmware`
-注意事项：
-
-- 请按照“firmware>driver>CANN软件包（toolkit、nnrt等）“或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行升级。
-
-- 升级driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
-  
-  # 卸载
-  
-  可执行以下命令，卸载指定软件：
-  `./install.sh --uninstall=<package_name>`
-  <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-  `./install.sh --uninstall=npu     //卸载driver和firmware`
-  注意事项：
-  请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
-
-# 更新离线部署工具
-
-能够通过以下操作实现离线安装工具自我更新。
-
-- windows
-  运行upgrade_self.bat启动更新。
-- linux
-  执行命令`./upgrade_self.sh`启动更新。
-
 # 参考信息
 
 ## <a name="parameter">安装参数说明</a>

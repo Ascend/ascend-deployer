@@ -251,7 +251,7 @@ function install_sys_packages()
     install_kernel_header_devel_euler
     local have_rpm=0
     case ${g_os_name} in
-    CentOS|EulerOS|SLES|Kylin|BCLinux|Tlinux|OpenEuler)
+    CentOS|EulerOS|SLES|Kylin|BCLinux|Tlinux)
         local have_rpm=1
         ;;
     Ubuntu|Debian|Linx|UOS)
@@ -833,15 +833,6 @@ main()
     fi
     if [ "x${clean_flag}" == "xy" ]; then
         process_chean
-    fi
-    if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall ${uninstall_target} ${uninstall_version}
-    fi
-    if [ "x${upgrade_target}" != "x" ];then
-        process_upgrade ${upgrade_target}
-    fi
-    if [ "x${display_target}" != "x" ]; then
-        process_display
     fi
 }
 
