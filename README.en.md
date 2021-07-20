@@ -504,11 +504,12 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
 - A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
 
-2. Q: The tool will use the Huawei Software Integrity Protection Root Certificate, but does it have the ability to verify that the certificate has been revoked?  Is there a mechanism for the CRL files in the installation package to be up to date with the local CRL files on the system?
-- A: This tool compares the effective time of the CRL file in the installation package with the CRL file locally on the system, and verifies whether the certificate has been revoked using the latest CRL file.  For the root user, the system of local CRL files to the `/etc/hwsipcrl/ascendsip.crl`, for non-root users, for the file `~/.local/hwsipcrl/ascendsip.crl`. If the system-local CRL file does not exist or takes effect earlier than the CRL file in the installation package, the system-local CRL file will be replaced by the CRL file in the installation package.
-
-3. Q: Non-root users are prompted for the sudo password when installing the pre-5.0.1 Toolkit.
+2. Q: Non-root users are prompted for the sudo password when installing the pre-5.0.1 Toolkit.
 - A: For security reasons, this tool does not require non-root users to have sudo privileges, so it does not support non-root users to install the toolkit prior to 5.0.1.
+
+3. Q: The tool will use the Huawei Software Integrity Protection Root Certificate, but does it have the ability to verify that the certificate has been revoked?  Is there a mechanism for the CRL files in the installation package to be up to date with the local CRL files on the system? Does the tool have the ability to compare and update CRL files independently?
+- A: This tool compares the effective time of the CRL file in the installation package with the CRL file locally on the system, and verifies whether the certificate has been revoked using the latest CRL file.  For the root user, the system of local CRL files to the `/etc/hwsipcrl/ascendsip.crl`, for non-root users, for the file `~/.local/hwsipcrl/ascendsip.crl`. If the system-local CRL file does not exist or takes effect earlier than the CRL file in the installation package, the system-local CRL file will be replaced by the CRL file in the installation package. The update_crl.sh script is placed in the tools directory, execute `bash update_crl.sh <crl_file>` command, `<crl_file>` is the path of the CRL file uploaded by the user.
+
 
 # Other Install Guide
 
