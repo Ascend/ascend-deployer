@@ -271,12 +271,23 @@ Configure the reference operation for key authentication
    ```
 
 Note:
-- Each time you perform a remote operation, you need to enter the key password. Please be aware of the risks involved in the use and storage of SSH keys.
+- Please be aware of the risks involved in the use and storage of SSH keys.
 
-2. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
+2. Set up the SSH agent to manage the SSH key to avoid entering the key password during the bulk installation of the tool. The following are the guidelines for setting up an SSH agent:
+   ```bash
+   ssh-agent bash   # Start the ssh-agent bash process
+   ssh-add          # Add a private key to the ssh-agent
+   ```
+
+3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
     Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
-3. The following operation is the same as the above Single-Device Installation steps 2 and 3.
+4. The following operation is the same as the above Single-Device Installation steps 2 and 3.
+
+5. When the bulk installation of the tool is completed, exit the SSH agent process in time to avoid security risks.
+   ```bash
+   exit   # Exit the ssh-agent bash process
+   ```
 
 # <a name="pip_manual">Operation instruction: pip install</a>
 
@@ -429,7 +440,7 @@ To customize an installation scenario, refer to the preceding configuration file
 
 ### Proxy Configuration
 
-If you want to use an HTTP proxy, configure the proxy in an environment variable. If a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
+If you want to use an HTTP proxy, configure the proxy in an environment variable. This tool validates HTTPS certificates by default, if a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 
 1. Configure the agent in the environment variable as follows
 
@@ -445,7 +456,7 @@ If you want to use an HTTP proxy, configure the proxy in an environment variable
 
    ```
    [proxy]
-   verify=true         # Whether to verify the HTTPS certificate.
+   verify=true         # Whether to verify the HTTPS certificate. If it is closed, it may encounter a man-in-the-middle attack. Please be aware of the security risks
    ```
 
 ### Windows Download Configuration
