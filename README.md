@@ -272,7 +272,7 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # 非root用户
    ```
 
-配置密钥认证的参考操作
+设置密钥认证的参考操作如下：
    ```bash
    ssh-keygen -t rsa -b 2048   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且保证有一定的密码复杂度
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip
@@ -280,11 +280,21 @@ ascend-deployer
    ```
 
 注意事项:
-- 每次进行远程操作时都需要输入密钥密码，请用户注意ssh密钥和密钥密码在使用和保管过程中的风险。
+- 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险。
 
-2. 执行`./install.sh --check`测试待安装设备连通性。
+2. 设置ssh代理管理ssh密钥，避免工具批量安装操作过程中输入密钥密码。设置ssh代理的参考操作如下：
+   ```bash
+   ssh-agent bash   # 开启ssh-agent的bash进程
+   ssh-add          # 向ssh-agent添加私钥
+   ```
+
+3. 执行`./install.sh --check`测试待安装设备连通性。
     确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
-3. 后续操作同上述的单机安装第2、3步骤。
+4. 后续操作同上述的单机安装第2、3步骤。
+5. 工具的批量安装操作完成后，及时退出ssh代理进程，避免安全风险。
+   ```bash
+   exit   # 退出ssh-agent的bash进程
+   ```
 
 # <a name="pip_manual">操作指导:pip方式</a>
 
