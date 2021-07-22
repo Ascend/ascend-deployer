@@ -51,7 +51,6 @@ gdNojAmDZwk73Vwty4KrPanEhw==
 EOF
 )
 
-VAULT_CMD=""
 DEBUG_CMD=""
 STDOUT_CALLBACK=""
 
@@ -625,9 +624,9 @@ function process_install()
         echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
     fi
@@ -642,9 +641,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
     fi
@@ -660,9 +659,9 @@ function process_test()
         echo "- import_playbook: test/test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_test_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
     fi
@@ -670,13 +669,13 @@ function process_test()
 
 function process_check()
 {
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}
+    echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}
 }
 
 function process_chean()
 {
-    ansible ${VAULT_CMD} -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
+    ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
 }
 
 function print_usage()
@@ -870,14 +869,6 @@ function check_inventory() {
     exit 1
 }
 
-function init_ansible_vault()
-{
-    local vault_count=$(grep "ANSIBLE_VAULT.*AES" ${BASE_DIR}/inventory_file | wc -l)
-    if [ ${vault_count} != 0 ] && [ -z ${ANSIBLE_VAULT_PASSWORD_FILE} ];then
-         VAULT_CMD="--ask-vault-pass"
-    fi
-}
-
 function bootstrap()
 {
     export PATH=${PYTHON_PREFIX}/bin:$PATH
@@ -963,7 +954,6 @@ main()
     fi
     bootstrap
     check_inventory
-    init_ansible_vault
     prepare_environment
 
     if [ "x${install_target}" != "x" ];then
