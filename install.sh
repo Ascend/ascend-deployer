@@ -485,66 +485,20 @@ function process_install()
     fi
 }
 
-function process_uninstall()
+function process_scene()
 {
-    IFS=','
-    not_supported=${FALSE}
-    for target in ${uninstall_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/uninstall/uninstall_${target}.yml ]; then
-            echo "Error: not supported uninstall for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
-
-    local tmp_uninstall_play=${BASE_DIR}/playbooks/.tmp_uninstall.yml
-    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
-    for target in ${uninstall_target}
-    do
-        echo "- import_playbook: uninstall/uninstall_${target}.yml" >> ${tmp_uninstall_play}
-    done
-    unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_uninstall_play} -e hosts_name=ascend ${DEBUG_CMD}"
-    cat ${tmp_uninstall_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_uninstall_play} -e "hosts_name=ascend" ${DEBUG_CMD}
-    if [ -f ${tmp_uninstall_play} ];then
-        rm -f ${tmp_uninstall_play}
-    fi
-}
-
-function process_upgrade()
-{
-    IFS=','
-    local not_supported=${FALSE}
-    for target in ${upgrade_target}
-    do
-        if [ ! -f ${BASE_DIR}/playbooks/upgrade/upgrade_${target}.yml ]; then
-            echo "Error: not supported upgrade for ${target}"
-            not_supported=${TRUE}
-        fi
-    done
-    if [ "${not_supported}" == "${TRUE}" ]; then
-        print_usage
-    fi
     verify_zip_redirect
-    local tmp_upgrade_play=${BASE_DIR}/playbooks/tmp_upgrade.yml
-    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_upgrade_play}
+    local tmp_scene_play=${BASE_DIR}/playbooks/tmp_scene.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then
-        echo "- import_playbook: distribution.yml" >> ${tmp_upgrade_play}
+        echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
-    for target in ${upgrade_target}
-    do
-        echo "- import_playbook: upgrade/upgrade_${target}.yml" >> ${tmp_upgrade_play}
-    done
-    unset IFS
-    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_upgrade_play} -e hosts_name=ascend ${DEBUG_CMD}"
-    cat ${tmp_upgrade_play}
-    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_upgrade_play} -e "hosts_name=ascend" ${DEBUG_CMD}
-    if [ -f ${tmp_upgrade_play} ];then
-        rm -f ${tmp_upgrade_play}
+    echo "- import_playbook: ../scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
+    echo "ansible-playbook ${VAULT_CMD} -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    cat ${tmp_scene_play}
+    ansible_playbook ${VAULT_CMD} -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    if [ -f ${tmp_scene_play} ];then
+        rm -f ${tmp_scene_play}
     fi
 }
 
@@ -577,7 +531,7 @@ function process_test()
     fi
 }
 
-function process_scene()
+function process_check()
 {
     local unsupport=${FALSE}
     if [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
@@ -631,25 +585,6 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--uninstall=<package_name>     Uninstall specific package:"
-    for target in `find ${BASE_DIR}/playbooks/uninstall/uninstall_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will uninstall driver and firmware together"
-    echo "--uninstall-version=<version>  Uninstall specific version package"
-    echo "                               using with --uninstall=<package_name> together"
-    echo "                               support single package_name except auto,npu"
-    echo "--upgrade=<package_name>       Upgrade specific package:"
-    for target in `find ${BASE_DIR}/playbooks/upgrade/upgrade_*.yml`
-    do
-        target=$(basename ${target})
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will upgrade driver and firmware together"
     echo "--test=<target>                test the functions:"
     for test in `find ${BASE_DIR}/test/test_*.yml`
     do
@@ -657,13 +592,6 @@ function print_usage()
         tmp=${test#*_}
         echo "                               ${tmp%.*}"
     done
-    echo "--display=<target>             display app install info:"
-    for target in ${app_name_list[*]}
-    do
-        tmp=${target#*_}
-        echo "                               ${tmp%.*}"
-    done
-    echo "The \"npu\" will display driver and firmware together"
     exit 0
 }
 
@@ -700,33 +628,9 @@ function parse_script_args() {
             fi
             shift
             ;;
-        --uninstall=*)
-            uninstall_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${uninstall_target} ];then
-                echo "ERROR" "--uninstall parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
-        --uninstall-version=*)
-            uninstall_version=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${uninstall_version} ];then
-                echo "ERROR" "--uninstall-version parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
-        --upgrade=*)
-            upgrade_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${upgrade_target} ];then
-                echo "ERROR" "--upgrade parameter is invalid"
-                print_usage
-            fi
-            shift
-            ;;
         --test=*)
-            test_target=$(echo $1 | cut -d"=" -f2 | sed "s/\(\*\|?\|{\|}\|\[\|\]\|\/\)//g")
-            if [ -z ${test_target} ];then
+            test_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 echo "ERROR" "--test parameter is invalid"
                 print_usage
             fi
@@ -777,6 +681,52 @@ function parse_script_args() {
 
 function check_script_args()
 {
+    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
+        echo "ERROR" "expected one valid argument at least"
+        print_usage
+    fi
+
+    # --install
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${install_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
+            echo "ERROR" "not support install for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+    unset IFS
+
+    # --install-scene
+    local unsupport=${FALSE}
+    if [ ! -z ${install_scene} ] && [ ! -f ${BASE_DIR}/scene/scene_${install_scene}.yml ];then
+        echo "ERROR" "not support install scene for ${install_scene}"
+        unsupport=${TRUE}
+    fi
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+
+    # --test
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${test_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/test/test_${target}.yml ];then
+            echo "ERROR" "not support test for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+    fi
+    unset IFS
+
+    # --custom
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
         echo "ERROR" "Unsupported --install and --install-scene at same time"
         print_usage
@@ -805,7 +755,10 @@ function process_chean()
 
 function bootstrap()
 {
-    local have_ansible=`command -v ansible | wc -l`
+    export PATH=${PYTHON_PREFIX}/bin:$PATH
+    export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:$LD_LIBRARY_PATH
+    unset PYTHONPATH
+
     check_python375
     local py37_status=$?
     if [ ${py37_status} == ${FALSE} ];then
@@ -813,8 +766,10 @@ function bootstrap()
         install_python375
     fi
 
-    if [ ${have_ansible} -eq 0 ];then
-        echo "no ansible"
+    local have_ansible_cmd=$(command -v ansible | wc -l)
+    have_no_python_module "ansible"
+    if [[ $? == ${TRUE} ]] || [[ ${have_ansible_cmd} == 0 ]];then
+        echo "WARNING" "no ansible"
         install_ansible
     fi
 }
@@ -878,15 +833,6 @@ main()
     fi
     if [ "x${clean_flag}" == "xy" ]; then
         process_chean
-    fi
-    if [ "x${uninstall_target}" != "x" ];then
-        process_uninstall ${uninstall_target} ${uninstall_version}
-    fi
-    if [ "x${upgrade_target}" != "x" ];then
-        process_upgrade ${upgrade_target}
-    fi
-    if [ "x${display_target}" != "x" ]; then
-        process_display
     fi
 }
 

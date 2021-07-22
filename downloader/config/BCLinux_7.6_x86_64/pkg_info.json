@@ -197,21 +197,6 @@
         "release": "3.el7"
     },
     {
-        "name": "iputils", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "inotify-tools", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "gzip", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "expect", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "iptables", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "ethtool", "used_by": ["edge", "ha"]
+        "name": "gzip", "used_by": ["check tar.gz"]
     }
 ]

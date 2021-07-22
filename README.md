@@ -58,6 +58,8 @@
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx 系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
+- UOS等系统自带gnome-terminal图形终端，建议关闭SSH连接的X11 Forwarding功能，避免安装失败。
+- 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 ### 内核头软件包说明
@@ -139,7 +141,8 @@ install_path=/usr/local/Ascend
 
 ### 安装须知
 
-- 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建。 创建用户组和用户的命令如下：
+- install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效（且环境上未安装CANN软件包，即没有`/etc/Ascend/ascend_cann_install.info`文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包和边缘组件(atlasedge和ha)的安装路径，驱动包只能安装到默认路径/usr/local/Ascend，边缘组件(atlasedge和ha)只能安装到默认路径/usr/local。
+- 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建，并保证该创建用户的密码、密码有效期以及后续使用中的安全问题。创建用户组和用户的命令如下：
 
 ```bash
 #添加HwHiAiUser用户组
@@ -339,41 +342,11 @@ source /usr/local/ascendrc
 - 删除工具
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
-# 升级
-
-可执行以下命令，升级指定软件：
-`./install.sh --upgrade=<package_name>`
-<package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-`./install.sh --upgrade=npu     //升级driver和firmware`
-注意事项：
-
-- 请按照“firmware>driver>CANN软件包（toolkit、nnrt等）“或“npu>CANN软件包（toolkit、nnrt等）”的顺序进行升级。
-
-- 升级driver或firmware后，需执行`reboot`重启设备使驱动和固件生效。
-  
-  # 卸载
-  
-  可执行以下命令，卸载指定软件：
-  `./install.sh --uninstall=<package_name>`
-  <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-  `./install.sh --uninstall=npu     //卸载driver和firmware`
-  注意事项：
-  请按照“CANN软件包（toolkit、nnrt等）>driver和firmware（driver和firmware无卸载顺序要求）“的顺序进行卸载。
-
-# 更新离线部署工具
-
-能够通过以下操作实现离线安装工具自我更新。
-
-- windows
-  运行upgrade_self.bat启动更新。
-- linux
-  执行命令`./upgrade_self.sh`启动更新。
-
 # 参考信息
 
 ## <a name="parameter">安装参数说明</a>
 
-用户根据实际需要选择对应参数完成安装、升级或卸载，命令格式如下：
+用户根据实际需要选择对应参数完成安装，命令格式如下：
 `./install.sh [options]`
 参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
 
@@ -388,10 +361,7 @@ source /usr/local/ascendrc
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
-| --uninstall=<package_name>        | 卸载指定软件。若指定“--uninstall=npu”，将会卸载driver和firmware。     |
-| --upgrade=<package_name>          | 升级指定软件。若指定“--upgrade=npu”，将会升级driver和firmware。       |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
-| --display=<target>                | 显示已安装软件包。                                                   |
 
 ## <a name="parameter">下载参数说明</a>
 

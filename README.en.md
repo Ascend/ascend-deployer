@@ -55,6 +55,8 @@ The offline installation tool provides automatic download and one-click installa
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
+- UOS and other systems come with gnome-terminal graphical terminal, it is recommended to turn off the X11 Forwarding function of SSH connection to avoid installation failure.
+- tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
 ### Description of the kernel header package
@@ -113,7 +115,8 @@ install_path=/usr/local/Ascend
 
 ### Notice
 
-- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first. The commands to create user and group is below:
+- The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root (The CANN package is not installed on the environment, i.e., there is no `/etc/scend/cann_install.info` file, otherwise it will be installed to the path specified by the contents of the file) and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package can only be installed to the default path /usr/local/Ascend and edge components (AtlasEdge and HA) can only be installed to the default path /usr/local.
+- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
 
 ```bash
 #add HwHiAiUser group
@@ -140,8 +143,8 @@ group=HwHiAiUser
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
    - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
    - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package。
-3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory;
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package.
+3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory.
    - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
@@ -282,40 +285,11 @@ Similarly, other software packages or tools installed by offline deployment tool
 - Delete this tool
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
-# Upgrade
-
-Run the following command to upgrade the specified software:
-`./install.sh --upgrade=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --upgrade=npu // Upgrade the driver and firmware.`
-Notes:
-
-- Upgrade sequence: firmware > driver > CANN software package (such as the Toolkit and nnrt), or npu > CANN software package.
-- After the driver or firmware is upgraded, run the `reboot` command to restart the device for the driver and firmware to take effect.
-
-# Uninstallation
-
-Run the following command to uninstall the specified software:
-`./install.sh --uninstall=<package_name>`
-You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-`./install.sh --uninstall=npu     // Uninstall the driver and firmware`
-Note:
-Uninstallation sequence: CANN software package (such as the Toolkit and nnrt) > driver and firmware (no requirement on the uninstallation sequence of the driver and firmware).
-
-# Offline Installation Tool Upgrade
-
-You can perform the following operation to upgrade the offline installation tool:
-
-- Windows
-  Run **upgrade_self.bat** to start the upgrade.
-- Linux
-  Run the `./upgrade_self.sh` command to start the upgrade.
-
 # Reference Information
 
 ## <a name="parameter">Install Parameter Description</a>
 
-Select corresponding parameters to install, upgrade, or uninstall the software. The command format is as follows:
+Select corresponding parameters to install the software. The command format is as follows:
 `./install.sh [options]`
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
 
@@ -330,10 +304,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
-| --uninstall=<package_name>        | Uninstalls the specified software. If **--uninstall=npu** is specified, the driver and firmware will be uninstalled.                                                           |
-| --upgrade=<package_name>          | Upgrades the specified software. If **--upgrade=npu** is specified, the driver and firmware will be upgraded.                                                                  |
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
-| --display=<target>                | Displays installed packages                                                                 |
 
 ## <a name="parameter">Download Parameter Description</a>
 

@@ -204,5 +204,26 @@
         "name": "docker-ce",
         "version": "20.10.3",
         "release": "3.el7"
+    },
+    {
+        "name": "iputils", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "inotify-tools", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "gzip", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "tcl", "used_by": ["expect"]
+    },
+    {
+        "name": "expect", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "iptables", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "ethtool", "used_by": ["edge", "ha"]
     }
 ]

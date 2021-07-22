@@ -62,10 +62,12 @@ class Apt(object):
     """downloader for apt"""
     def __init__(self, source_file, arch):
         self.arch = arch
-        self.cache = {}
-        """读取源配置"""
-        self.source = {}
+        self.binary_path = 'binary-amd64' \
+            if 'x86' in self.arch else 'binary-arm64'
+        # 读取源配置
         self.source_list = []
+        self.source = {}
+        self.cache = {}
         self.mirror_url = None
         self.docker_url = None
         script = os.path.realpath(__file__)
