@@ -90,12 +90,6 @@
         "name": "pcre-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "openssl-libs", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "openssl-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "sqlite", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -198,5 +192,20 @@
     },
     {
         "name": "gzip", "used_by": ["check tar.gz"]
+    },
+    {
+        "name": "openssl",
+        "url":"https://mirrors.huaweicloud.com/centos/7/os/x86_64/Packages/openssl-1.0.2k-19.el7.x86_64.rpm",
+        "sha256": "55c478a259b0a27ccb485dce91e190c0040df26b800a1f7a74557a47bef106d4"
+    },
+    {
+        "name": "openssl-libs",
+        "url":"https://mirrors.huaweicloud.com/centos/7/os/x86_64/Packages/openssl-libs-1.0.2k-19.el7.x86_64.rpm",
+        "sha256": "8a907020f9b1697cb8971158b3a5279e5b54e5637f55dcce751f1610a2ed6452"
+    },
+    {
+        "name": "openssl-devel",
+        "url":"https://mirrors.huaweicloud.com/centos/7/os/x86_64/Packages/openssl-devel-1.0.2k-19.el7.x86_64.rpm",
+        "sha256": "00a702e913cb10d7ee36dc1602ec30353df6efdf229ffc23a8d7c8a614e46bb6"
     }
 ]
