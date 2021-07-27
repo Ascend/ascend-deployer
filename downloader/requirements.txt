@@ -2,6 +2,7 @@ pip==20.3.3
 wrapt==1.12.1
 h5py==3.1.0
 opt-einsum==3.3.0
+astor==0.8.1
 gast==0.2.2
 gast==0.3.3
 gnureadline==8.0.0

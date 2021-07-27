@@ -56,6 +56,7 @@ The offline installation tool provides automatic download and one-click installa
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
 - UOS and other systems come with gnome-terminal graphical terminal, it is recommended to turn off the X11 Forwarding function of SSH connection to avoid installation failure.
+- BCLinux 7.6 does not have python3 by default. The `yum install python3` command is run before the download operation. Because the BCLinux 7.6 system source does not contain python3, modify the source configuration file by referring to the BCLinux official configuration file, or change "el7.6" to "el7.7" in "/etc/yum.repos.d/BCLinux-Base.repo"(Run the `sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo` command). After the installation, restore the original configuration.
 - tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
@@ -143,7 +144,7 @@ group=HwHiAiUser
 1. Prepare the software packages to be installed as required (The driver, firmware, and CANN software packages can be installed). Save the software packages to be installed in the **resources** directory. The following is an example.
    - Driver and firmware: [Link](https://www.huaweicloud.com/intl/en-us/ascend/resource/Software)
    - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
-2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. The driver and firmware of the training scenario do not support the installation of ZIP software package, only support the installation of Run package.
+2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. BCLinux should use CentOS7.6 npu package.
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory.
    - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
