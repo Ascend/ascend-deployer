@@ -9,7 +9,7 @@
         "filename":"protobuf-python-3.13.0.tar.gz",
         "url":"https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protobuf-python-3.13.0.tar.gz",
         "sha256":"9c4d2ad449d27da5ac1db1ad5ecc4a642dedd6bbe59219d61d7b655b6b12be89",
-        "dest":"resources/sources"
+        "dest":"resources"
     },
     {
         "filename":"gcc-7.3.0.tar.gz",
