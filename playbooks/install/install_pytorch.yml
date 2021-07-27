@@ -15,12 +15,12 @@
       register: gcc_stat
       when: import_torch.rc != 0
 
-    - name: install gcc 7.3 for centos 7.6 and Tlinux if not exist
+    - name: install gcc 7.3 for BCLinux Tlinux and CentOS 7.6
       import_tasks: task_gcc.yml
       when:
         - import_torch.rc != 0
         - not gcc_stat.stat.exists
-        - "os_version == '7.6' or 'Tlinux' in os_and_arch"
+        - "'BCLinux' in os_and_arch or 'CentOS_7.6' in os_and_arch or 'Tlinux' in os_and_arch"
 
     - name: find pytorch whl package
       find:
