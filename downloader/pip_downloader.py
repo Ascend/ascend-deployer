@@ -22,7 +22,7 @@ import http.client
 import time
 from html.parser import HTMLParser
 from download_util import DOWNLOAD_INST
-from download_util import calc_sha256
+from download_util import calc_sha256, get_specified_python
 from logger_config import get_logger
 
 
@@ -278,31 +278,33 @@ class MyPip(object):
                 target_hash, file_hash))
         return target_hash != file_hash
 
-    def download_x86(self, name, dest_path):
+    def download_x86(self, name, implement_flag, dest_path):
         """
         download_x86
 
         :param name:
+        :param implement_flag:
         :param dest_path:
         :return:
         """
         platform_list = ('manylinux1_x86_64', 'manylinux2010_x86_64',
                          'manylinux2014_x86_64')
         for platform in platform_list:
-            if self.download_wheel(name, platform, 'cp37', dest_path):
+            if self.download_wheel(name, platform, implement_flag, dest_path):
                 return True
         return False
 
-    def download_arm(self, name, dest_path):
+    def download_arm(self, name, implement_flag, dest_path):
         """
         download_arm
 
         :param name:
+        :param implement_flag:
         :param dest_path:
         :return:
         """
         platform = 'manylinux2014_aarch64'
-        return self.download_wheel(name, platform, 'cp37', dest_path)
+        return self.download_wheel(name, platform, implement_flag, dest_path)
 
     def download(self, name, dest_path):
         """
@@ -313,16 +315,22 @@ class MyPip(object):
         :return:
         """
         try:
+            specified_python = get_specified_python()
+            if "Python-3.7" in specified_python:
+                implement_flag = "cp37"
+            else:
+                implement_flag = "cp38"
+
             if not os.path.exists(dest_path):
                 os.makedirs(dest_path, mode=0o750, exist_ok=True)
 
-            if self.download_wheel(name, "none", 'cp37', dest_path):
+            if self.download_wheel(name, "none", implement_flag, dest_path):
                 return True
 
-            if not self.download_x86(name, dest_path):
+            if not self.download_x86(name, implement_flag, dest_path):
                 self.download_source(name, dest_path)
 
-            if not self.download_arm(name, dest_path):
+            if not self.download_arm(name, implement_flag, dest_path):
                 self.download_source(name, dest_path)
             return True
         except Exception:

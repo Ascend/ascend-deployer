@@ -19,9 +19,9 @@ import configparser
 import json
 import os
 import sys
-from download_util import DOWNLOAD_INST, calc_sha256, CONFIG_INST
+from download_util import calc_sha256, get_specified_python, CONFIG_INST, DOWNLOAD_INST
 from logger_config import get_logger
-from  software_mgr import get_software_name_version, get_software_other
+from software_mgr import get_software_name_version, get_software_other
 
 LOG = get_logger(__file__)
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -145,22 +145,10 @@ def download_specified_python(dst=None):
         base_dir = PROJECT_DIR
     else:
         base_dir = dst
-    if os.environ.get("ASCEND_PYTHON_VERSION"):
-        specified_python = os.environ.get("ASCEND_PYTHON_VERSION")
-    else:
-        config_file = os.path.join(CUR_DIR, 'config.ini')
-        config = configparser.ConfigParser()
-        config.read(config_file)
-        specified_python = config['python']['ascend_python_version']
+    specified_python = get_specified_python()
     resources_json = os.path.join(CUR_DIR, 'python_version.json')
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
-        available_python_list = [item['filename'].rstrip('.tar.xz') for item in data]
-        if specified_python not in available_python_list:
-            tips = "[ERROR] ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11"
-            print(tips)
-            LOG.error(tips)
-            sys.exit(1)
         results = {'ok': [], 'failed': []}
         for item in data:
             if specified_python == item['filename'].rstrip('.tar.xz'):
