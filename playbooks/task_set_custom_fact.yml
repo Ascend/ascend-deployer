@@ -47,6 +47,12 @@
     cacheable: yes
   when: os_id.stdout in code_name_dict
 
+- name: set euleros kernel flag
+  set_fact:
+    euleros_kernel_flag: "eulerosv2r{{code_name[1]}}.{{ansible_architecture}}"
+    cacheable: yes
+  when: os_name == "EulerOS"
+
 - name: get UOS_20SP1 code name
   shell: grep -oP "^VERSION=\"?\K[\w\ ]+" /etc/os-release | awk '{print $2}'
   changed_when: false

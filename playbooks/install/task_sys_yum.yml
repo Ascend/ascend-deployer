@@ -1,5 +1,10 @@
 - name: install kernel headers devel
   include_tasks: task_kernel.yml
+  when: "'EulerOS' in os_and_arch"
+
+- name: install kernel headers devel force for euler
+  include_tasks: task_kernel_euleros.yml
+  when: "'EulerOS' in os_and_arch"
 
 - name: yum install system packages
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm

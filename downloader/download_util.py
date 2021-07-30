@@ -17,6 +17,7 @@
 
 import os
 import configparser
+import json
 import socket
 import time
 import sys
@@ -271,3 +272,22 @@ def calc_sha256(file_path):
         sha256_obj.update(hash_file.read())
         hash_val = sha256_obj.hexdigest()
     return hash_val
+
+def get_specified_python():
+    if os.environ.get("ASCEND_PYTHON_VERSION"):
+        specified_python = os.environ.get("ASCEND_PYTHON_VERSION")
+    else:
+        config_file = os.path.join(CUR_DIR, 'downloader', 'config.ini')
+        config = configparser.ConfigParser()
+        config.read(config_file)
+        specified_python = config['python']['ascend_python_version']
+    resources_json = os.path.join(CUR_DIR, 'downloader', 'python_version.json')
+    with open(resources_json, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+        available_python_list = [item['filename'].rstrip('.tar.xz') for item in data]
+        if specified_python not in available_python_list:
+            tips = "[ERROR] ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11"
+            print(tips)
+            LOG.error(tips)
+            sys.exit(1)
+    return specified_python
