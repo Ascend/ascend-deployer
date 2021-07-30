@@ -4,23 +4,23 @@
     state: directory
     recurse: yes
 
-- name: install protobuf-python-3.11.3 unarchive
+- name: install protobuf-python-3.13.0 unarchive
   unarchive:
-    src: "{{ resources_dir }}/protobuf-python-3.11.3.tar.gz"
+    src: "{{ resources_dir }}/protobuf-python-3.13.0.tar.gz"
     dest: "{{ build_dir }}"
     copy: no
     extra_opts:
     - --no-same-owner
 
-- name: install protobuf-python-3.11.3 configure
+- name: install protobuf-python-3.13.0 configure
   shell: ./configure --prefix=/usr/local
   args:
-    chdir: "{{ build_dir }}/protobuf-3.11.3"
+    chdir: "{{ build_dir }}/protobuf-3.13.0"
 
-- name: install protobuf-python-3.11.3 make
-  shell: "make -C {{ build_dir }}/protobuf-3.11.3 -j 10"
+- name: install protobuf-python-3.13.0 make
+  shell: "make -C {{ build_dir }}/protobuf-3.13.0 -j 10"
   ignore_errors: yes
 
-- name: install protobuf-python-3.11.3 make install
-  shell: "make -C {{ build_dir }}/protobuf-3.11.3 install"
+- name: install protobuf-python-3.13.0 make install
+  shell: "make -C {{ build_dir }}/protobuf-3.13.0 install"
   become: yes
