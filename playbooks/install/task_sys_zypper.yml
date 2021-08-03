@@ -9,3 +9,10 @@
 - name: zypper install system packages rpm
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm
   when: zypper_st.stat.exists
+  register: sys_result
+
+- name: message
+  debug:
+    msg:
+      - "{{ sys_result | default('NOT DEFINED') }}"
+  when: sys_result.changed
