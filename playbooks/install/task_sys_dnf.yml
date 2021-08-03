@@ -9,3 +9,8 @@
 # currently dnf also use rpm to install
 - name: dnf install system packages
   shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/{{ os_and_arch }}/*.rpm
+  register: sys_result
+
+- name: message
+  debug: var=sys_result
+  when: sys_result.changed

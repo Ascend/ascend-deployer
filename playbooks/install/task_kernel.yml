@@ -17,6 +17,7 @@
   shell: rpm -ivh --force --nodeps --replacepkgs {{ kh_rpm.files[0].path }}
   when: kh_cnt.stdout == "0" and kh_rpm.matched > 0
   failed_when: false
+  register: kernel_headers_result
 
 - name: check kernel devel
   shell: rpm -q kernel-devel | grep {{ ansible_kernel }} | wc -l
@@ -37,3 +38,11 @@
   shell: rpm -ivh --force --nodeps --replacepkgs {{ kd_rpm.files[0].path }}
   when: kd_cnt.stdout == "0" and kd_rpm.matched > 0
   failed_when: false
+  register: kernel_devel_result
+
+- name: message
+  debug:
+    msg:
+      - "{{ kernel_headers_result | default('NOT DEFINED') }}"
+      - "{{ kernel_devel_result | default('NOT DEFINED') }}"
+  when: kernel_headers_result.changed or kernel_devel_result.changed
