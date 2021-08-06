@@ -105,15 +105,12 @@ def download_all(os_list, software_list, dst):
     download_other_packages(dst)
 
 
-def parse_argument(download_path=''):
+def parse_argument(download_path):
     """
     解析参数
     """
-    support_os_list = os.listdir(os.path.join(CUR_DIR, 'config'))
-    support_pkg_list = os.listdir(os.path.join(CUR_DIR, 'software'))
-    if download_path.endswith('ascend-deployer'):
-        support_os_list = os.listdir(os.path.join(download_path, 'downloader', 'config'))
-        support_pkg_list = os.listdir(os.path.join(download_path, 'downloader', 'software'))
+    support_os_list = os.listdir(os.path.join(download_path, 'downloader', 'config'))
+    support_pkg_list = os.listdir(os.path.join(download_path, 'downloader', 'software'))
     os_list_help = 'for example: --os-list=<OS1>,<OS2>\nSpecific OS list to download, supported os are:\n'
     for osname in sorted(support_os_list):
         os_list_help += '{}\n'.format(osname)
