@@ -35,7 +35,8 @@ class BasicLogConfig(object):
 
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
     if 'site-packages' not in CUR_DIR and 'dist-packages' not in CUR_DIR:
-        deployer_home = os.path.dirname(os.path.dirname(CUR_DIR))
+        deployer_home = os.path.dirname(CUR_DIR)
+        LOG_FILE = os.path.join(deployer_home, 'downloader.log')
     else:
         deployer_home = ''
         if platform.system() == 'Linux':
@@ -47,7 +48,7 @@ class BasicLogConfig(object):
         parent_dir = os.path.join(deployer_home, 'ascend-deployer')
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir, mode=0o750, exist_ok=True)
-    LOG_FILE = os.path.join(deployer_home, 'ascend-deployer', 'downloader.log')
+        LOG_FILE = os.path.join(deployer_home, 'ascend-deployer', 'downloader.log')
     if not os.path.exists(LOG_FILE):
         os.close(
             os.open(

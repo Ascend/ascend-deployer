@@ -82,3 +82,8 @@
 - name: set python environment LD_LIBRARY_PATH
   shell: echo "export LD_LIBRARY_PATH={{ local_path }}/{{ python_version }}/lib:\$LD_LIBRARY_PATH" >> {{ local_path }}/ascendrc 2>/dev/null
   failed_when: false
+
+- name: set ascendrc permission
+  file:
+    path: "{{ local_path }}/ascendrc"
+    mode: 0640
