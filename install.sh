@@ -398,6 +398,7 @@ function install_python375()
     fi
     echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
     echo "export LD_LIBRARY_PATH=${PYTHON_PREFIX}/lib:\$LD_LIBRARY_PATH" >> ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
+    chmod 640 ${PYTHON_PREFIX}/../ascendrc
 }
 
 function install_ansible()
