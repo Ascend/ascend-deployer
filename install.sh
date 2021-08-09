@@ -85,24 +85,35 @@ function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[INFO] $*"
-    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/install.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/install.log
 }
 
 function log_warning()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[WARNING] $*"
-    echo "${DATE_N} ${USER_N} [WARNING] $*" >> ${BASE_DIR}/install.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [WARNING] $*" >> ${BASE_DIR}/install.log
 }
 
 function log_error()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[ERROR] $*"
-    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/install.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [ERROR] $*" >> ${BASE_DIR}/install.log
+}
+
+function operation_log_info()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/install_operation.log
 }
 
 function get_specified_python()
@@ -120,11 +131,9 @@ function check_python_version()
 {
     if $(echo "${specified_python}" | grep -Evq '^Python-3.(7|8).([0-9]|1[0-1])$');then
         log_error "ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11"
-        exit 1
+        return 1
     fi
 }
-
-check_python_version
 
 readonly PYTHON_TAR=${specified_python}
 
@@ -244,7 +253,7 @@ function install_kernel_header_devel_euler()
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_header for euler fail"
-            exit 1
+            return 1
         fi
     fi
     if [ ${kd} -eq 0 ] && [ -f "${kd_rpm}" ];then
@@ -252,7 +261,7 @@ function install_kernel_header_devel_euler()
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_devel for euler fail"
-            exit 1
+            return 1
         fi
     fi
 }
@@ -272,7 +281,7 @@ function install_kernel_header_devel()
         rpm -ivh --force --nodeps --replacepkgs ${kh_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_header fail"
-            exit 1
+            return 1
         fi
     fi
     if [ ${kd} -eq 0 ] && [ -f ${kd_rpm} ];then
@@ -280,7 +289,7 @@ function install_kernel_header_devel()
         rpm -ivh --force --nodeps --replacepkgs ${kd_rpm}
         if [[ $? != 0 ]];then
             log_error "install kernel_devel fail"
-            exit 1
+            return 1
         fi
     fi
 }
@@ -295,17 +304,32 @@ function check_resources()
     bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
     if [[ $? != 0 ]];then
         log_error "download ${g_os_ver_arch} fail"
-        exit 1
+        return 1
     fi
 }
 
 function install_sys_packages()
 {
     check_resources
+    local check_resources_status=$?
+    if [[ ${check_resources_status} != 0 ]];then
+        return ${check_resources_status}
+    fi
+
     log_info "install system packages"
 
     install_kernel_header_devel
+    local install_kernel_header_devel_status=$?
+    if [[ ${install_kernel_header_devel_status} != 0 ]];then
+        return ${install_kernel_header_devel_status}
+    fi
+
     install_kernel_header_devel_euler
+    local install_kernel_header_devel_euler_status=$?
+    if [[ ${install_kernel_header_devel_euler_status} != 0 ]];then
+        return ${install_kernel_header_devel_euler_status}
+    fi
+
     local have_rpm=0
     case ${g_os_name} in
     CentOS|EulerOS|SLES|Kylin|BCLinux|Tlinux|OpenEuler)
@@ -316,7 +340,7 @@ function install_sys_packages()
         ;;
     *)
         log_error "check OS ${g_os_name} fail"
-        exit 1
+        return 1
         ;;
     esac
     if [[ "${g_os_ver_arch}" == "Kylin_v10juniper_aarch64" ]];then
@@ -332,7 +356,7 @@ function install_sys_packages()
     fi
     if [[ $? != 0 ]];then
         log_error "install system packages fail"
-        exit 1
+        return 1
     fi
 }
 
@@ -371,13 +395,17 @@ function check_python_resource()
     bash ${BASE_DIR}/start_download.sh --os-list=${g_os_ver_arch}
     if [[ $? != 0 ]];then
         log_error "download ${PYTHON_TAR}.tar.xz fail"
-        exit 1
+        return 1
     fi
 }
 
 function install_python375()
 {
     check_python_resource
+    local check_python_resource_status=$?
+    if [[ ${check_python_resource_status} != 0 ]];then
+        return ${check_python_resource_status}
+    fi
     log_info "install ${PYTHON_VERSION}"
 
     mkdir -p -m 750 ~/build
@@ -441,7 +469,7 @@ function check_run_pkg()
     run_pkg=$(find ${BASE_DIR}/resources/*.run 2>/dev/null | wc -l)
     if [[ ${run_pkg} != 0 ]];then
         log_error "not support run package, please use zip package instead"
-        exit 1
+        return 1
     fi
 }
 
@@ -454,12 +482,12 @@ function check_extracted_size()
         unzip -l ${zip_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
             log_error "${zip_package} does not look like a zip compressed file"
-            exit 1
+            return 1
         fi
         local check_zip=$(unzip -l ${zip_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${ZIP_COUNT_THRESHOLD}" 'END {print ($1 <= size_threshold && $2 <= count_threshold)}')
         if [[ ${check_zip} == 0 ]];then
             log_error "${zip_package} extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
-            exit 1
+            return 1
         fi
     done
     for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.*z*" 2>/dev/null)
@@ -467,12 +495,12 @@ function check_extracted_size()
         tar tvf ${tar_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
             log_error "${tar_package} does not look like a tar compressed file"
-            exit 1
+            return 1
         fi
         local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${TAR_COUNT_THRESHOLD}" '{sum += $3} END {print (sum <= size_threshold && NR <= count_threshold)}')
         if [[ ${check_tar} == 0 ]];then
             log_error "${tar_package} extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
-            exit 1
+            return 1
         fi
     done
     IFS=${IFS_OLD}
@@ -600,20 +628,32 @@ function verify_zip_redirect()
     log_info "The system is busy with checking compressed files, Please wait for a moment..."
     rm -rf ${BASE_DIR}/resources/run_from_*_zip ${BASE_DIR}/resources/zip_tmp
     check_run_pkg
+    local check_run_pkg_status=$?
+    if [[ ${check_run_pkg_status} != 0 ]];then
+        return ${check_run_pkg_status}
+    fi
     check_extracted_size
+    local check_extracted_size_status=$?
+    if [[ ${check_extracted_size_status} != 0 ]];then
+        return ${check_extracted_size_status}
+    fi
     verify_zip > ${BASE_DIR}/tmp.log 2>&1
     local verify_result=$?
     cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install.log
     cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
     if [ ${verify_result} -ne 0 ];then
         log_error "check validation fail"
-        exit 1
+        return 1
     fi
 }
 
 function process_install()
 {
     verify_zip_redirect
+    local verify_zip_redirect_status=$?
+    if [[ ${verify_zip_redirect_status} != 0 ]];then
+        return ${verify_zip_redirect_status}
+    fi
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -628,14 +668,22 @@ function process_install()
     echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_install_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
+    fi
+    if [[ ${process_install_ansible_playbook_status} != 0 ]];then
+        return ${process_install_ansible_playbook_status}
     fi
 }
 
 function process_scene()
 {
     verify_zip_redirect
+    local verify_zip_redirect_status_1=$?
+    if [[ ${verify_zip_redirect_status_1} != 0 ]];then
+        return ${verify_zip_redirect_status_1}
+    fi
     local tmp_scene_play=${BASE_DIR}/playbooks/tmp_scene.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_scene_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -645,8 +693,12 @@ function process_scene()
     echo "ansible-playbook -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
+    fi
+    if [[ ${process_scene_ansible_playbook_status} != 0 ]];then
+        return ${process_scene_ansible_playbook_status}
     fi
 }
 
@@ -663,8 +715,12 @@ function process_test()
     echo "ansible-playbook -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_test_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    local process_test_ansible_playbook_status=$?
     if [ -f ${tmp_test_play} ];then
         rm -f ${tmp_test_play}
+    fi
+    if [[ ${process_test_ansible_playbook_status} != 0 ]];then
+        return ${process_test_ansible_playbook_status}
     fi
 }
 
@@ -672,11 +728,19 @@ function process_check()
 {
     echo "ansible-playbook -i ./inventory_file playbooks/gather_npu_fact.yml -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}"
     ansible_playbook -i ${BASE_DIR}/inventory_file ${BASE_DIR}/playbooks/gather_npu_fact.yml -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION}
+    local process_check_ansible_playbook_status=$?
+    if [[ ${process_check_ansible_playbook_status} != 0 ]];then
+        return ${process_check_ansible_playbook_status}
+    fi
 }
 
 function process_chean()
 {
     ansible -i ${BASE_DIR}/inventory_file all -m shell -a "rm -rf ~/resources.tar ~/resources"
+    local process_chean_ansible_status=$?
+    if [[ ${process_chean_ansible_status} != 0 ]];then
+        return ${process_chean_ansible_status}
+    fi
 }
 
 function print_usage()
@@ -714,23 +778,25 @@ function print_usage()
         tmp=${test#*_}
         echo "                               ${tmp%.*}"
     done
-    exit 0
 }
 
 function parse_script_args() {
     if [ $# = 0 ];then
         print_usage
+        return 2
     fi
     while true; do
         case "$1" in
         --help | -h)
             print_usage
+            return 2
             ;;
         --install=*)
             install_target=$(echo $1 | cut -d"=" -f2)
             if $(echo "${install_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--install parameter is invalid"
                 print_usage
+                return 1
             fi
             shift
             ;;
@@ -739,6 +805,7 @@ function parse_script_args() {
             if $(echo "${install_scene}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--install-scene parameter is invalid"
                 print_usage
+                return 1
             fi
             shift
             ;;
@@ -747,6 +814,7 @@ function parse_script_args() {
             if $(echo "${test_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--test parameter is invalid"
                 print_usage
+                return 1
             fi
             shift
             ;;
@@ -755,6 +823,7 @@ function parse_script_args() {
             if $(echo "${output_file}" | grep -Evq '^[a-zA-Z0-9._,/-]*$');then
                 log_error "--output-file parameter is invalid"
                 print_usage
+                return 1
             fi
             shift
             ;;
@@ -763,6 +832,7 @@ function parse_script_args() {
             if $(echo "${STDOUT_CALLBACK}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--stdout_callback parameter is invalid"
                 print_usage
+                return 1
             fi
             shift
             ;;
@@ -786,6 +856,7 @@ function parse_script_args() {
             if [ "x$1" != "x" ]; then
                 log_error "Unsupported parameters: $1"
                 print_usage
+                return 1
             fi
             break
             ;;
@@ -798,6 +869,7 @@ function check_script_args()
     if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
         log_error "expected one valid argument at least"
         print_usage
+        return 1
     fi
 
     # --install
@@ -812,6 +884,7 @@ function check_script_args()
     done
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
+        return 1
     fi
     unset IFS
 
@@ -823,6 +896,7 @@ function check_script_args()
     fi
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
+        return 1
     fi
 
     # --test
@@ -837,6 +911,7 @@ function check_script_args()
     done
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
+        return 1
     fi
     unset IFS
 
@@ -844,6 +919,7 @@ function check_script_args()
     if [ "x${install_target}" != "x" ] && [ "x${install_scene}" != "x" ];then
         log_error "Unsupported --install and --install-scene at same time"
         print_usage
+        return 1
     fi
 }
 
@@ -853,6 +929,7 @@ function ansible_playbook()
         ansible-playbook $*
     elif [ -f "${output_file}" ];then
         log_error "${output_file} already exists, please specify another output file name"
+        return 1
     else
         ansible-playbook $* > "${output_file}"
     fi
@@ -867,7 +944,7 @@ function check_inventory() {
         return
     fi
     log_error "The inventory_file contains password, please use the SSH key instead"
-    exit 1
+    return 1
 }
 
 function bootstrap()
@@ -880,9 +957,21 @@ function bootstrap()
     local py37_status=$?
     if [ ${py37_status} == ${FALSE} ] && [ $UID -eq 0 ];then
         install_sys_packages
+        local install_sys_packages_status=$?
+        if [[ ${install_sys_packages_status} != 0 ]];then
+            return ${install_sys_packages_status}
+        fi
         install_python375
+        local install_python375_status=$?
+        if [[ ${install_python375_status} != 0 ]];then
+            return ${install_python375_status}
+        fi
     elif [ ${py37_status} == ${FALSE} ] && [ $UID -ne 0 ];then
         install_python375
+        local install_python375_status_1=$?
+        if [[ ${install_python375_status_1} != 0 ]];then
+            return ${install_python375_status_1}
+        fi
     fi
 
     local have_ansible_cmd=$(command -v ansible | wc -l)
@@ -895,7 +984,7 @@ function bootstrap()
 
 function rotate_log()
 {
-    local log_list=$(ls $BASE_DIR/install.log* | sort -r)
+    local log_list=$(ls $1* | sort -r)
     for item in $log_list; do
         local suffix=${item##*.}
         local prefix=${item%.*}
@@ -913,12 +1002,12 @@ function rotate_log()
 
 function check_log()
 {
-    if [[ ! -e $BASE_DIR/install.log ]];then
-        touch $BASE_DIR/install.log
+    if [[ ! -e $1 ]];then
+        touch $1
     fi
-    local log_size=$(ls -l $BASE_DIR/install.log | awk '{ print $5 }')
+    local log_size=$(ls -l $1 | awk '{ print $5 }')
     if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
-        rotate_log
+        rotate_log $1
     fi
 }
 
@@ -946,33 +1035,92 @@ function prepare_environment()
 
 main()
 {
-    check_log
+    check_log ${BASE_DIR}/install.log
+    check_log ${BASE_DIR}/install_operation.log
     set_permission
+
+    check_python_version
+    local check_python_version_status=$?
+    if [[ ${check_python_version_status} != 0 ]];then
+        return ${check_python_version_status}
+    fi
+
     parse_script_args $*
+    local parse_script_args_status=$?
+    if [[ ${parse_script_args_status} != 0 ]];then
+        return ${parse_script_args_status}
+    fi
+
     check_script_args
+    local check_script_args_status=$?
+    if [[ ${check_script_args_status} != 0 ]];then
+        return ${check_script_args_status}
+    fi
+
     if [ -d ${BASE_DIR}/facts_cache ];then
         rm -rf ${BASE_DIR}/facts_cache && mkdir -p -m 750 ${BASE_DIR}/facts_cache
     fi
+
     bootstrap
+    local bootstrap_status=$?
+    if [[ ${bootstrap_status} != 0 ]];then
+        return ${bootstrap_status}
+    fi
+
     check_inventory
+    local check_inventory_status=$?
+    if [[ ${check_inventory_status} != 0 ]];then
+        return ${check_inventory_status}
+    fi
+
     prepare_environment
 
     if [ "x${install_target}" != "x" ];then
         process_install ${install_target}
+        local process_install_status=$?
+        if [[ ${process_install_status} != 0 ]];then
+            return ${process_install_status}
+        fi
     fi
+
     if [ "x${install_scene}" != "x" ];then
         process_scene ${install_scene}
+        local process_scene_status=$?
+        if [[ ${process_scene_status} != 0 ]];then
+            return ${process_scene_status}
+        fi
     fi
+
     if [ "x${test_target}" != "x" ];then
         process_test ${test_target}
+        local process_test_status=$?
+        if [[ ${process_test_status} != 0 ]];then
+            return ${process_test_status}
+        fi
     fi
+
     if [ "x${check_flag}" == "xy" ]; then
         process_check
+        local process_check_status=$?
+        if [[ ${process_check_status} != 0 ]];then
+            return ${process_check_status}
+        fi
     fi
+
     if [ "x${clean_flag}" == "xy" ]; then
         process_chean
+        local process_chean_status=$?
+        if [[ ${process_chean_status} != 0 ]];then
+            return ${process_chean_status}
+        fi
     fi
 
 }
 
 main $*
+main_status=$?
+if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
+    operation_log_info "$0 $*:Failed"
+else
+    operation_log_info "$0 $*:Success"
+fi
