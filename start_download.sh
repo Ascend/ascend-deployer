@@ -7,25 +7,35 @@ readonly LOG_COUNT_THRESHOLD=5
 OS_LIST=""
 PKG_LIST=""
 
+function operation_log_info()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/downloader_operation.log
+}
+
 function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[INFO] $*"
-    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/install_python3.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/downloader.log
 }
 
 function log_error()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[ERROR] $*"
-    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/install_python3.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [ERROR] $*" >> ${BASE_DIR}/downloader.log
 }
 
 function rotate_log()
 {
-    local log_list=$(ls ${BASE_DIR}/install_python3.log* | sort -r)
+    local log_list=$(ls $1* | sort -r)
     for item in $log_list; do
         local suffix=${item##*.}
         local prefix=${item%.*}
@@ -43,10 +53,20 @@ function rotate_log()
 
 function check_log()
 {
-    local log_size=$(ls -l $BASE_DIR/install_python3.log | awk '{ print $5 }')
-    if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
-        rotate_log
+    if [[ ! -e $1 ]];then
+        touch $1
     fi
+    local log_size=$(ls -l $1 | awk '{ print $5 }')
+    if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
+        rotate_log $1
+    fi
+}
+
+function set_permission()
+{
+    chmod 750 ${BASE_DIR}
+    chmod 550 $0
+    chmod 600 ${BASE_DIR}/downloader.log* ${BASE_DIR}/downloader_operation.log* 2>/dev/null
 }
 
 function get_python3()
@@ -77,27 +97,22 @@ function get_python3()
 
 function install_python3()
 {
+
     if [ $(id -u) -ne 0 ];then
         log_error "you are not root user and python3 is not available, please install python3 first by yourselt"
-        exit 1
+        return 1
     fi
-
-    if [[ ! -e ${BASE_DIR}/install_python3.log ]];then
-        touch ${BASE_DIR}/install_python3.log
-    fi
-    chmod 600 ${BASE_DIR}/install_python3.log
-    check_log
 
     have_yum=$(command -v yum | wc -l)
     if [ ${have_yum} -eq 1 ];then
         log_info "yum install -y python3"
         yum install -y python3 > ${BASE_DIR}/tmp.log 2>&1
         local install_result=$?
-        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install_python3.log
+        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/downloader.log
         cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
         if [[ ${install_result} != 0 ]];then
             log_error "python3 is not available and yum install -y python3 failed, please check network or yum"
-            exit 1
+            return 1
         fi
 
     fi
@@ -107,18 +122,18 @@ function install_python3()
         log_info "apt install -y python3"
         apt install -y python3 > ${BASE_DIR}/tmp.log 2>&1
         local install_result=$?
-        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install_python3.log
+        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/downloader.log
         cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
         if [[ ${install_result} != 0 ]];then
             log_error "python3 is not available and apt install -y python3 failed, please check network or apt"
-            exit 1
+            return 1
         fi
     fi
 
     have_python3=$(command -v python3 | wc -l)
     if [ ${have_python3} -eq 0 ];then
         log_error "python3 is not available, please check python3"
-        exit 1
+        return 1
     fi
 }
 
@@ -142,17 +157,18 @@ function print_usage()
         echo "                         ${package}"
     done
     echo -e "\n  notes: When <Version> is missing, <PK> is the latest.\n"
-    exit 0
 }
 
 function parse_script_args() {
     if [ $# = 0 ];then
         print_usage
+        return 2
     fi
     while true; do
         case "$1" in
         --help | -h)
             print_usage
+            return 2
             ;;
         --os-list=*)
             OS_LIST=$(echo $1 | cut -d"=" -f2)
@@ -164,8 +180,9 @@ function parse_script_args() {
             ;;
         *)
             if [ "x$1" != "x" ]; then
-                echo "ERROR" "Unsupported parameters: $1"
+                log_error "Unsupported parameters: $1"
                 print_usage
+                return 1
             fi
             break
             ;;
@@ -176,33 +193,37 @@ function parse_script_args() {
 function check_script_args()
 {
     if [ -z "${OS_LIST}" ] && [ -z "${PKG_LIST}" ];then
-        echo "ERROR" "--os-list or --download expected one argument at least"
+        log_error "--os-list or --download expected one argument at least"
         print_usage
+        return 1
     fi
 
     # --os-list
     if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,-]*$');then
-        echo "ERROR" "--os-list ${OS_LIST} is invalid"
+        log_error "--os-list ${OS_LIST} is invalid"
         print_usage
+        return 1
     fi
     local unsupport=${FALSE}
     IFS=','
     for os in ${OS_LIST}
     do
         if [ "${os}" = "." ] || [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
-            echo "Error: not support download for ${os}"
+            log_error "not support download for ${os}"
             unsupport=${TRUE}
         fi
     done
     unset IFS
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
+        return 1
     fi
 
     # --download
     if $(echo "${PKG_LIST}" | grep -Evq '^[a-zA-Z0-9._,=]*$');then
-        echo "ERROR" "--download ${PKG_LIST} is invalid"
+        log_error "--download ${PKG_LIST} is invalid"
         print_usage
+        return 1
     fi
     local unsupport=${FALSE}
     IFS=','
@@ -215,7 +236,7 @@ function check_script_args()
         *)
         local name_version=$(echo ${package} | awk -F== '{print $1"_"$2}')
             if [ ! -f ${BASE_DIR}/downloader/software/${name_version}.json ];then
-                echo "Error: not support download for ${package}"
+                log_error "not support download for ${package}"
                 unsupport=${TRUE}
             fi
             ;;
@@ -224,18 +245,34 @@ function check_script_args()
     unset IFS
     if [ ${unsupport} == ${TRUE} ];then
         print_usage
+        return 1
     fi
 }
 
 function main()
 {
+    check_log ${BASE_DIR}/downloader.log
+    check_log ${BASE_DIR}/downloader_operation.log
+    set_permission
     parse_script_args $*
+    parse_status=$?
+    if [[ ${parse_status} != 0 ]];then
+        return ${parse_status}
+    fi
+
     check_script_args
+    if [[ $? != 0 ]];then
+        return 1
+    fi
+
     get_python3 >/dev/null 2>&1
     if [[ $? == 0 ]];then
         local pycmd=$(get_python3)
     else
         install_python3
+        if [[ $? != 0 ]];then
+            return 1
+        fi
         local pycmd="python3"
     fi
     local os_cmd=""
@@ -246,7 +283,14 @@ function main()
     if [ ! -z "${PKG_LIST}" ];then
         download_cmd="--download ${PKG_LIST}"
     fi
+    log_info "${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}"
     ${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}
 }
 
 main $*
+main_status=$?
+if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
+    operation_log_info "$0 $*: Failed"
+else
+    operation_log_info "$0 $*: Success"
+fi

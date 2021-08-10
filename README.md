@@ -152,7 +152,7 @@ install_path=/usr/local/Ascend
 ### 安装须知
 
 - install_path参数只能指定CANN软件包的安装路径，root用户安装时该参数有效（且环境上未安装CANN软件包，即没有`/etc/Ascend/ascend_cann_install.info`文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包和边缘组件(atlasedge和ha)的安装路径，驱动包只能安装到默认路径/usr/local/Ascend，边缘组件(atlasedge和ha)只能安装到默认路径/usr/local。
-- 驱动、CANN软件包，会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建，并保证该创建用户的密码、密码有效期以及后续使用中的安全问题。创建用户组和用户的命令如下：
+- 驱动包会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建，并保证该创建用户的密码、密码有效期以及后续使用中的安全问题。创建用户组和用户的命令如下：
 
 ```bash
 #添加HwHiAiUser用户组

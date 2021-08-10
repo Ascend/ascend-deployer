@@ -131,7 +131,7 @@ def parse_argument(download_path):
     args = parser.parse_args()
     if args.os_list is None and args.packages is None:
         parser.print_help()
-        return
+        sys.exit(1)
 
     if args.os_list is not None:
         for os_item in args.os_list.split(','):
@@ -172,10 +172,13 @@ def main():
     entry for console
     """
     download_path = get_download_path()
-    args = parse_argument(download_path)
-
-    if args is None:
-        sys.exit(0)
+    try:
+        args = parse_argument(download_path)
+    except (SystemExit):
+        log_msg = "downloading using pypi ascend-download: Failed"
+        LOG_OPERATION = logger_config.get_logger_operation("main")
+        LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
+        sys.exit(1)
 
     os_list = []
     if args.os_list is not None:
@@ -183,15 +186,37 @@ def main():
     software_list = []
     if args.packages is not None:
         software_list = args.packages.split(',')
-    download_all(os_list, software_list, download_path)
-
+    try:
+        download_all(os_list, software_list, download_path)
+    except (KeyboardInterrupt, SystemExit):
+        download_status = "Failed"
+        exit_status = 1
+    else:
+        download_status = "Success"
+        exit_status = 0
+    finally:
+        log_msg = "downloading --os-list={} --download={}: {}".format(
+            args.os_list, args.packages, download_status)
+        LOG_OPERATION = logger_config.get_logger_operation("main")
+        LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
+        sys.exit(exit_status)
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        download_specified_python()
-        download_python_packages()
-        download_os_packages()
-        download_other_software()
-        download_other_packages()
-        sys.exit(0)
-    main()
+        try:
+            download_specified_python()
+            download_python_packages()
+            download_os_packages()
+            download_other_software()
+            download_other_packages()
+        except (KeyboardInterrupt, SystemExit):
+            download_status = "Failed"
+        else:
+            download_status = "Success"
+        finally:
+            log_msg = "downloading in windows using start_download_ui.bat " \
+                "or start_download.bat: {}".format(download_status)
+            LOG_OPERATION = logger_config.get_logger_operation("main")
+            LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
+    else:
+        main()
