@@ -536,17 +536,17 @@ function compare_crl()
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
-            log_info "update system crl"
+            echo "update system crl success"
             rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
             return 0
         elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             return 0
         else
-            log_info "$2 is newer than $1"
+            echo "$2 is newer than $1, no need to update system crl"
             return 1
         fi
     else
-        log_info "update system crl"
+        echo "update system crl success"
         rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
     fi
     return 0
@@ -1023,7 +1023,7 @@ function set_permission()
         fi
     done
     chmod 750 $BASE_DIR/ $BASE_DIR/playbooks/install
-    chmod 600 $BASE_DIR/install.log* $BASE_DIR/downloader.log* $BASE_DIR/install_python3.log* $BASE_DIR/tools/update_crl.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini 2>/dev/null
+    chmod 600 ${BASE_DIR}/*.log* ${BASE_DIR}/tools/*.log* ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini 2>/dev/null
 }
 
 function prepare_environment()

@@ -144,7 +144,7 @@ install_path=/usr/local/Ascend
 ### Notice
 
 - The install_path parameter can only specify the CANN package's installation path. This parameter is valid for root (The CANN package is not installed on the environment, i.e., there is no `/etc/scend/cann_install.info` file, otherwise it will be installed to the path specified by the contents of the file) and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package can only be installed to the default path /usr/local/Ascend and edge components (AtlasEdge and HA) can only be installed to the default path /usr/local.
-- The driver and CANN software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
+- The driver software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
 
 ```bash
 #add HwHiAiUser group

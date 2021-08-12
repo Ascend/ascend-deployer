@@ -38,25 +38,35 @@ gdNojAmDZwk73Vwty4KrPanEhw==
 EOF
 )
 
+function operation_log_info()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/update_crl_operation.log
+}
+
 function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[INFO] $*"
-    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/update_crl.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/update_crl.log
 }
 
 function log_error()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
     echo "[ERROR] $*"
-    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/update_crl.log
+    echo "${DATE_N} ${USER_N}@${IP_N} [ERROR] $*" >> ${BASE_DIR}/update_crl.log
 }
 
 function rotate_log()
 {
-    local log_list=$(ls ${BASE_DIR}/update_crl.log* | sort -r)
+    local log_list=$(ls $1* | sort -r)
     for item in $log_list; do
         local suffix=${item##*.}
         local prefix=${item%.*}
@@ -74,10 +84,10 @@ function rotate_log()
 
 function check_log()
 {
-    if [[ ! -e ${BASE_DIR}/update_crl.log ]];then
-        touch ${BASE_DIR}/update_crl.log
+    if [[ ! -e $1 ]];then
+        touch $1
     fi
-    local log_size=$(ls -l ${BASE_DIR}/update_crl.log | awk '{ print $5 }')
+    local log_size=$(ls -l $1 | awk '{ print $5 }')
     if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
         rotate_log
     fi
@@ -86,8 +96,8 @@ function check_log()
 function set_permission()
 {
     chmod 750 ${BASE_DIR}
-    chmod 550 ${BASE_DIR}/update_crl.sh
-    chmod 600 ${BASE_DIR}/update_crl.log 2>/dev/null
+    chmod 550 $0
+    chmod 600 ${BASE_DIR}/update_crl.log* ${BASE_DIR}/update_crl_operation.log* 2>/dev/null
 }
 
 function compare_crl()
@@ -139,25 +149,31 @@ upgrade_crl()
     else
         rm -rf ${root_ca_file}
         log_error "$1 or ${sys_crl} check validation fail"
-        exit 1
+        return 1
     fi
     if [[ "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${root_ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]];then
         rm -rf ${root_ca_file}
         log_error "rootca check validation fail"
-        exit 1
+        return 1
     fi
     rm -rf ${root_ca_file}
 }
 
 main()
 {
-    check_log
+    check_log ${BASE_DIR}/update_crl.log
+    check_log ${BASE_DIR}/update_crl_operation.log
     set_permission
     if [[ $# != 1 ]] || [[ ! -f $1 ]];then
         log_error "expected one valid argument"
-        exit 1
+        return 1
     fi
     upgrade_crl $1
 }
 
 main $*
+if [[ $? == 1 ]];then
+    operation_log_info "$0 $*: Failed"
+else
+    operation_log_info "$0 $*: Success"
+fi
