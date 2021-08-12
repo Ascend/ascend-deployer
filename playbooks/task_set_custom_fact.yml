@@ -163,14 +163,7 @@
      cacheable: yes
   when: ansible_user_uid != 0
 
-- name: set cann install params
-  set_fact:
-     cann_install_params: "--install --quiet --install-username={{ user }} --install-usergroup={{ group }}"
-     cacheable: yes
-  when: ansible_user_uid == 0
-
 - name: set cann install params for non-root
   set_fact:
      cann_install_params: "--install --quiet"
      cacheable: yes
-  when: ansible_user_uid != 0
