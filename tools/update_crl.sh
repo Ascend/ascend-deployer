@@ -89,7 +89,7 @@ function check_log()
     fi
     local log_size=$(ls -l $1 | awk '{ print $5 }')
     if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
-        rotate_log
+        rotate_log $1
     fi
 }
 
@@ -97,7 +97,8 @@ function set_permission()
 {
     chmod 750 ${BASE_DIR}
     chmod 550 $0
-    chmod 600 ${BASE_DIR}/update_crl.log* ${BASE_DIR}/update_crl_operation.log* 2>/dev/null
+    chmod 600 ${BASE_DIR}/update_crl.log ${BASE_DIR}/update_crl_operation.log 2>/dev/null
+    chmod 400 ${BASE_DIR}/update_crl.log.? ${BASE_DIR}/update_crl_operation.log.? 2>/dev/null
 }
 
 function compare_crl()

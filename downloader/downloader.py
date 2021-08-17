@@ -26,6 +26,7 @@ CUR_DIR = os.path.dirname(__file__)
 
 sys.path.append(CUR_DIR)
 
+import download_util
 import logger_config
 import pip_downloader
 import os_dep_downloader
@@ -128,10 +129,17 @@ def parse_argument(download_path):
     parser.add_argument('--download', action='store', dest='packages',
             help=download_help)
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except SystemExit as e:
+        if e.code == 0:
+            sys.exit(0)
+        else:
+            sys.exit(1)
+
     if args.os_list is None and args.packages is None:
         parser.print_help()
-        sys.exit(1)
+        sys.exit(0)
 
     if args.os_list is not None:
         for os_item in args.os_list.split(','):
@@ -174,11 +182,18 @@ def main():
     download_path = get_download_path()
     try:
         args = parse_argument(download_path)
-    except (SystemExit):
-        log_msg = "downloading using pypi ascend-download: Failed"
+    except SystemExit as e:
+        if e.code == 1:
+            download_status = "Failed"
+            exit_status = 1
+        else:
+            download_status = "Success"
+            exit_status = 0
         LOG_OPERATION = logger_config.get_logger_operation("main")
+        log_msg = "downloading {}: {}".format(
+            " ".join(sys.argv[1:]), download_status)
         LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
-        sys.exit(1)
+        sys.exit(exit_status)
 
     os_list = []
     if args.os_list is not None:
@@ -195,9 +210,9 @@ def main():
         download_status = "Success"
         exit_status = 0
     finally:
+        LOG_OPERATION = logger_config.get_logger_operation("main")
         log_msg = "downloading --os-list={} --download={}: {}".format(
             args.os_list, args.packages, download_status)
-        LOG_OPERATION = logger_config.get_logger_operation("main")
         LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
         sys.exit(exit_status)
 
@@ -214,9 +229,11 @@ if __name__ == "__main__":
         else:
             download_status = "Success"
         finally:
-            log_msg = "downloading in windows using start_download_ui.bat " \
-                "or start_download.bat: {}".format(download_status)
             LOG_OPERATION = logger_config.get_logger_operation("main")
+            log_msg = "downloading --os-list={} --download={}: {}".format(
+                ",".join(download_util.CONFIG_INST.get_download_os_list()),
+                ",".join(download_util.CONFIG_INST.get_download_pkg_list()),
+                download_status)
             LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
     else:
         main()
