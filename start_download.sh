@@ -66,7 +66,8 @@ function set_permission()
 {
     chmod 750 ${BASE_DIR}
     chmod 550 $0
-    chmod 600 ${BASE_DIR}/downloader.log* ${BASE_DIR}/downloader_operation.log* 2>/dev/null
+    chmod 600 ${BASE_DIR}/downloader.log ${BASE_DIR}/downloader_operation.log 2>/dev/null
+    chmod 400 ${BASE_DIR}/downloader.log.? ${BASE_DIR}/downloader_operation.log.? 2>/dev/null
 }
 
 function get_python3()
