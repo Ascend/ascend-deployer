@@ -43,7 +43,7 @@ finally:
     pass
 
 
-LOG = logger_config.get_logger(__file__)
+LOG = logger_config.LOG
 
 
 class Package(object):

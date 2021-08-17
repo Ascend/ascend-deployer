@@ -20,10 +20,10 @@ import json
 import os
 import sys
 from download_util import calc_sha256, get_specified_python, CONFIG_INST, DOWNLOAD_INST
-from logger_config import get_logger
+import logger_config
 from software_mgr import get_software_name_version, get_software_other
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 PROJECT_DIR = os.path.dirname(CUR_DIR)
 PKG_LIST = CONFIG_INST.get_download_pkg_list()

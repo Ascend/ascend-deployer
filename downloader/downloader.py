@@ -33,7 +33,8 @@ import os_dep_downloader
 import other_downloader
 import software_mgr
 
-LOG = logger_config.get_logger(__file__)
+LOG = logger_config.LOG
+LOG_OPERATION = logger_config.LOG_OPERATION
 
 
 def download_other_packages(dst=None):
@@ -189,7 +190,6 @@ def main():
         else:
             download_status = "Success"
             exit_status = 0
-        LOG_OPERATION = logger_config.get_logger_operation("main")
         log_msg = "downloading {}: {}".format(
             " ".join(sys.argv[1:]), download_status)
         LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
@@ -210,7 +210,6 @@ def main():
         download_status = "Success"
         exit_status = 0
     finally:
-        LOG_OPERATION = logger_config.get_logger_operation("main")
         log_msg = "downloading --os-list={} --download={}: {}".format(
             args.os_list, args.packages, download_status)
         LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
@@ -229,7 +228,6 @@ if __name__ == "__main__":
         else:
             download_status = "Success"
         finally:
-            LOG_OPERATION = logger_config.get_logger_operation("main")
             log_msg = "downloading --os-list={} --download={}: {}".format(
                 ",".join(download_util.CONFIG_INST.get_download_os_list()),
                 ",".join(download_util.CONFIG_INST.get_download_pkg_list()),

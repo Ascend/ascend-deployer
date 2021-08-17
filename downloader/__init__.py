@@ -23,7 +23,7 @@ import shutil
 import platform
 
 
-dir_list = ['downloader', 'playbooks', 'docs']
+dir_list = ['downloader', 'playbooks', 'docs', 'tools']
 file_list = ['install.sh', 'start_download.sh',
              'inventory_file', 'ansible.cfg',
              'README.md', 'README.en.md',
