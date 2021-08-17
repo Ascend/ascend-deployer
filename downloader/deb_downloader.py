@@ -22,11 +22,11 @@ import re
 import sqlite3 as sqlite
 import urllib.request
 import configparser
+import logger_config
 from urllib.error import HTTPError
 from downloader import get_download_path
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
-from logger_config import get_logger
 
 
 DOC = r"""
@@ -37,7 +37,7 @@ universe:ubuntu官方不提供支持与补丁，全靠社区支持。
 muitiverse：非自由软件，完全不提供支持和补丁。
 """
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 
 
 class DebianSource(object):

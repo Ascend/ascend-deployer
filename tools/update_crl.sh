@@ -86,8 +86,9 @@ function check_log()
 function set_permission()
 {
     chmod 750 ${BASE_DIR}
-    chmod 550 ${BASE_DIR}/update_crl.sh
+    chmod 550 $0
     chmod 600 ${BASE_DIR}/update_crl.log 2>/dev/null
+    chmod 400 ${BASE_DIR}/update_crl.log.? 2>/dev/null
 }
 
 function compare_crl()

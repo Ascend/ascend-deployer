@@ -12,7 +12,7 @@ function log_info()
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
     echo "[INFO] $*"
-    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/install_python3.log
+    echo "${DATE_N} ${USER_N} [INFO] $*" >> ${BASE_DIR}/downloader.log
 }
 
 function log_error()
@@ -20,12 +20,12 @@ function log_error()
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
     local USER_N=$(whoami)
     echo "[ERROR] $*"
-    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/install_python3.log
+    echo "${DATE_N} ${USER_N} [ERROR] $*" >> ${BASE_DIR}/downloader.log
 }
 
 function rotate_log()
 {
-    local log_list=$(ls ${BASE_DIR}/install_python3.log* | sort -r)
+    local log_list=$(ls ${BASE_DIR}/downloader.log* | sort -r)
     for item in $log_list; do
         local suffix=${item##*.}
         local prefix=${item%.*}
@@ -43,10 +43,21 @@ function rotate_log()
 
 function check_log()
 {
-    local log_size=$(ls -l $BASE_DIR/install_python3.log | awk '{ print $5 }')
+    if [[ ! -e $BASE_DIR/downloader.log ]];then
+        touch $BASE_DIR/downloader.log
+    fi
+    local log_size=$(ls -l $BASE_DIR/downloader.log | awk '{ print $5 }')
     if [[ ${log_size} -ge ${LOG_SIZE_THRESHOLD} ]];then
         rotate_log
     fi
+}
+
+function set_permission()
+{
+    chmod 750 ${BASE_DIR}
+    chmod 550 $0
+    chmod 600 ${BASE_DIR}/downloader.log 2>/dev/null
+    chmod 400 ${BASE_DIR}/downloader.log.? 2>/dev/null
 }
 
 function get_python3()
@@ -82,18 +93,12 @@ function install_python3()
         exit 1
     fi
 
-    if [[ ! -e ${BASE_DIR}/install_python3.log ]];then
-        touch ${BASE_DIR}/install_python3.log
-    fi
-    chmod 600 ${BASE_DIR}/install_python3.log
-    check_log
-
     have_yum=$(command -v yum | wc -l)
     if [ ${have_yum} -eq 1 ];then
         log_info "yum install -y python3"
         yum install -y python3 > ${BASE_DIR}/tmp.log 2>&1
         local install_result=$?
-        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install_python3.log
+        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/downloader.log
         cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
         if [[ ${install_result} != 0 ]];then
             log_error "python3 is not available and yum install -y python3 failed, please check network or yum"
@@ -107,7 +112,7 @@ function install_python3()
         log_info "apt install -y python3"
         apt install -y python3 > ${BASE_DIR}/tmp.log 2>&1
         local install_result=$?
-        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/install_python3.log
+        cat ${BASE_DIR}/tmp.log >> ${BASE_DIR}/downloader.log
         cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
         if [[ ${install_result} != 0 ]];then
             log_error "python3 is not available and apt install -y python3 failed, please check network or apt"
@@ -164,7 +169,7 @@ function parse_script_args() {
             ;;
         *)
             if [ "x$1" != "x" ]; then
-                echo "ERROR" "Unsupported parameters: $1"
+                log_error "Unsupported parameters: $1"
                 print_usage
             fi
             break
@@ -176,13 +181,13 @@ function parse_script_args() {
 function check_script_args()
 {
     if [ -z "${OS_LIST}" ] && [ -z "${PKG_LIST}" ];then
-        echo "ERROR" "--os-list or --download expected one argument at least"
+        log_error "--os-list or --download expected one argument at least"
         print_usage
     fi
 
     # --os-list
     if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,-]*$');then
-        echo "ERROR" "--os-list ${OS_LIST} is invalid"
+        log_error "--os-list ${OS_LIST} is invalid"
         print_usage
     fi
     local unsupport=${FALSE}
@@ -190,7 +195,7 @@ function check_script_args()
     for os in ${OS_LIST}
     do
         if [ "${os}" = "." ] || [ ! -d ${BASE_DIR}/downloader/config/${os} ];then
-            echo "Error: not support download for ${os}"
+            log_error "not support download for ${os}"
             unsupport=${TRUE}
         fi
     done
@@ -201,7 +206,7 @@ function check_script_args()
 
     # --download
     if $(echo "${PKG_LIST}" | grep -Evq '^[a-zA-Z0-9._,=]*$');then
-        echo "ERROR" "--download ${PKG_LIST} is invalid"
+        log_error "--download ${PKG_LIST} is invalid"
         print_usage
     fi
     local unsupport=${FALSE}
@@ -215,7 +220,7 @@ function check_script_args()
         *)
         local name_version=$(echo ${package} | awk -F== '{print $1"_"$2}')
             if [ ! -f ${BASE_DIR}/downloader/software/${name_version}.json ];then
-                echo "Error: not support download for ${package}"
+                log_error "not support download for ${package}"
                 unsupport=${TRUE}
             fi
             ;;
@@ -229,6 +234,8 @@ function check_script_args()
 
 function main()
 {
+    check_log
+    set_permission
     parse_script_args $*
     check_script_args
     get_python3 >/dev/null 2>&1
@@ -246,6 +253,7 @@ function main()
     if [ ! -z "${PKG_LIST}" ];then
         download_cmd="--download ${PKG_LIST}"
     fi
+    log_info "${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}"
     ${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}
 }
 

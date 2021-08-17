@@ -23,10 +23,10 @@ import time
 from html.parser import HTMLParser
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256, get_specified_python
-from logger_config import get_logger
+import logger_config
 
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 
 
 class SimpleIndexParser(HTMLParser):
@@ -216,8 +216,8 @@ class MyPip(object):
         file_path = os.path.join(dest_path, file_name)
         if not self.need_download_again(file_path, url):
             print(file_name.ljust(60), "exists")
+            LOG.info('{0} no need download again'.format(file_name))
             self.downloaded.append(file_name)
-            LOG.info('no need download again')
             return True
         self.file_download(download_url, file_path)
         print(file_name.ljust(60), "download success")
@@ -240,7 +240,7 @@ class MyPip(object):
         file_path = os.path.join(dest_path, file_name)
         if not self.need_download_again(file_path, url):
             print(file_name.ljust(60), "exists")
-            LOG.info('no need download again')
+            LOG.info('{0} no need download again'.format(file_name))
             self.downloaded.append(file_name)
             return True
         self.file_download(download_url, file_path)
