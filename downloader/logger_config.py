@@ -16,11 +16,20 @@
 
 import getpass
 import logging
+import logging.handlers
 import os
 import platform
 import stat
 
-from logging.handlers import RotatingFileHandler
+
+class RotatingFileHandler(logging.handlers.RotatingFileHandler):
+    def doRollover(self):
+        largest_backfile = "{}.{}".format(self.baseFilename, self.backupCount)
+        if os.path.exists(largest_backfile):
+            os.chmod(largest_backfile, mode=0o600)
+        os.chmod(self.baseFilename, mode=0o400)
+        logging.handlers.RotatingFileHandler.doRollover(self)
+        os.chmod(self.baseFilename, mode=0o600)
 
 
 class BasicLogConfig(object):
@@ -107,3 +116,7 @@ def get_logger_operation(name):
     logger.addHandler(rotating_handler)
     logger.setLevel(LOG_CONF.LOG_LEVEL)
     return logger
+
+
+LOG = get_logger("downloader")
+LOG_OPERATION = get_logger_operation("operation")

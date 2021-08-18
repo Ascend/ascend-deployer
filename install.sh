@@ -1024,7 +1024,7 @@ function set_permission()
     done
     chmod 750 $BASE_DIR/ $BASE_DIR/playbooks/install
     chmod 600 ${BASE_DIR}/*.log ${BASE_DIR}/tools/*.log ${BASE_DIR}/inventory_file $BASE_DIR/ansible.cfg ${BASE_DIR}/downloader/config.ini 2>/dev/null
-    chmod 400 ${BASE_DIR}/*.log.? ${BASE_DIR}/tools/*.log.?
+    chmod 400 ${BASE_DIR}/*.log.? ${BASE_DIR}/tools/*.log.? 2>/dev/null
 }
 
 function prepare_environment()

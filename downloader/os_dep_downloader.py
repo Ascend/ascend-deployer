@@ -21,11 +21,11 @@ import time
 from deb_downloader import Apt
 from rpm_downloader import Yum
 from download_util import CONFIG_INST
-from logger_config import get_logger
+import logger_config
 import software_mgr
 from downloader import get_download_path
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 
 
 class OsDepDownloader:

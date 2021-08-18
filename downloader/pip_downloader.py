@@ -23,10 +23,10 @@ import time
 from html.parser import HTMLParser
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256, get_specified_python
-from logger_config import get_logger
+import logger_config
 
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 
 
 class SimpleIndexParser(HTMLParser):
