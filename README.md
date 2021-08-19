@@ -352,11 +352,11 @@ source ~/.local/ascendrc       # non-root
 
 - 推理场景
 
-开发者可以参见《[CANN 应用软件开发指南 (C&C++)](https://www.huaweicloud.com/ascend/cann)》或《[CANN 应用软件开发指南 (Python)](https://www.huaweicloud.com/ascend/cann)》在开发环境上开发应用程序。
+  开发者如果需要开发应用程序，请参考相应的官方资料，如《CANN 应用软件开发指南 (C&C++)》或《CANN 应用软件开发指南 (Python)》。
 
 - 训练场景
 
-  若需进行网络模型移植和训练，请参考《[TensorFlow网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》或《[PyTorch网络模型移植&训练指南](https://www.huaweicloud.com/ascend/pytorch-tensorflow)》。
+  若需进行网络模型移植和训练，请参考相应的官方资料，如《TensorFlow网络模型移植&训练指南》或《PyTorch网络模型移植&训练指南》。
 - 删除工具
 
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
