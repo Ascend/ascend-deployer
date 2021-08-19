@@ -61,12 +61,14 @@ def download_software(software, dst):
             url_hash = item['sha256']
             if file_hash == url_hash:
                 print(item['filename'].ljust(60), 'exists')
+                LOG.info('{0} no need download again'.format(item['filename']))
                 continue
         if os.path.exists(dest_file) and formal_name == "CANN":
             file_name = os.path.basename(dest_file)
             sha256 = calc_sha256(dest_file)
             if file_name in sha256_map and sha256 == sha256_map[file_name]:
                 print(item['filename'].ljust(60), 'exists')
+                LOG.info('{0} no need download again'.format(item['filename']))
                 continue
         ret = DOWNLOAD_INST.download(item['url'], dest_file)
         if ret:
@@ -125,6 +127,7 @@ def download_other_packages(dst=None):
                 url_hash = item['sha256']
                 if file_hash == url_hash:
                     print(item['filename'].ljust(60), 'exists')
+                    LOG.info('{0} no need download again'.format(item['filename']))
                     continue
             LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
             if DOWNLOAD_INST.download(item['url'], dest_file):
@@ -158,6 +161,7 @@ def download_specified_python(dst=None):
                     url_hash = item['sha256']
                     if file_hash == url_hash:
                         print(item['filename'].ljust(60), 'exists')
+                        LOG.info('{0} no need download again'.format(item['filename']))
                         break
                 LOG.info('download[{0}] -> [{1}]'.format(item['url'], dest_file))
                 if DOWNLOAD_INST.download(item['url'], dest_file):

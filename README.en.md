@@ -342,9 +342,9 @@ Similarly, other software packages or tools installed by offline deployment tool
 # Follow-up
 
 - Inference scenario
-  You can develop applications in the development environment by referring to the [CANN Application Software Development Guide (C and C++)](https://www.huaweicloud.com/intl/en-us/ascend/cann) or [CANN Application Software Development Guide (Python)](https://www.huaweicloud.com/intl/en-us/ascend/cann).
+  If you need to develop applications, please refer to the relevant official materials, such as CANN Application Software Development Guide (C and C++) or CANN Application Software Development Guide (Python).
 - Training scenario
-  For details about network model porting and training, see the [TensorFlow Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow) or [PyTorch Network Model Porting and Training Guide](https://www.huaweicloud.com/intl/en-us/ascend/pytorch-tensorflow).
+  For network model migration and training, please refer to the relevant official materials, such as TensorFlow Network Model Porting and Training Guide or PyTorch Network Model Porting and Training Guide.
 - Delete this tool
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
