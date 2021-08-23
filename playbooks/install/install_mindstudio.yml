@@ -48,6 +48,9 @@
 
     - name: install ubuntu desktop
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/desktop/*.deb
+      environment:
+        PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
+        LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
       when:
         - ms.matched > 0
         - "'Ubuntu' in os_and_arch"

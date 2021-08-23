@@ -1,8 +1,5 @@
 - hosts: '{{ hosts_name }}'
   tasks:
-    - name: create user if not exist
-      import_tasks: ../create_user.yml
-
     - name: modify user group.yml
       import_tasks: ../modify_user_group.yml
       when: ansible_user_uid != 0
