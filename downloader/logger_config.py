@@ -23,6 +23,9 @@ import stat
 
 
 class RotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """
+    rewrite RotatingFileHandler, chmod 600 downloader.log and chmod 400 downloader.log.*
+    """
     def doRollover(self):
         largest_backfile = "{}.{}".format(self.baseFilename, self.backupCount)
         if os.path.exists(largest_backfile):
@@ -119,4 +122,4 @@ def get_logger_operation(name):
 
 
 LOG = get_logger("downloader")
-LOG_OPERATION = get_logger_operation("operation")
+LOG_OPERATION = get_logger_operation("downloader_operation")

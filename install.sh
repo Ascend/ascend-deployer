@@ -51,6 +51,46 @@ gdNojAmDZwk73Vwty4KrPanEhw==
 EOF
 )
 
+readonly ROOT_CA_G2=$(cat << EOF
+-----BEGIN CERTIFICATE-----
+MIIGQjCCA/agAwIBAgIDPDrbMEEGCSqGSIb3DQEBCjA0oA8wDQYJYIZIAWUDBAIB
+BQChHDAaBgkqhkiG9w0BAQgwDQYJYIZIAWUDBAIBBQCiAwIBIDB8MQswCQYDVQQG
+EwJDTjEcMBoGA1UEChMTSHVhd2VpIFRlY2hub2xvZ2llczEnMCUGA1UECxMeSHVh
+d2VpIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MSYwJAYDVQQDEx1IdWF3ZWkgSW50
+ZWdyaXR5IFJvb3QgQ0EgLSBHMjAgFw0yMTAyMDcwOTM2NDZaGA8yMDUxMDUwNzA5
+MzY0NlowfDELMAkGA1UEBhMCQ04xHDAaBgNVBAoTE0h1YXdlaSBUZWNobm9sb2dp
+ZXMxJzAlBgNVBAsTHkh1YXdlaSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTEmMCQG
+A1UEAxMdSHVhd2VpIEludGVncml0eSBSb290IENBIC0gRzIwggIiMA0GCSqGSIb3
+DQEBAQUAA4ICDwAwggIKAoICAQDdiU8j/HUtpiSLjsmr1t1P/nBDTbxuun0OVcia
+Q6Oc+E6y1YXCUmFn+p1WwKEJQetkKbCWlcZch8I2G/f86J/Z4m4ZwZJSV04B/uKQ
+GAy35FW5bNBtvYH3xN4ne0oGW6qWkgJQsDHG6iFZqRBKLx1O7yOhwvEdG5jfJwg2
+6NK5ad75vM6LHA6tEPG9ttMhcmj9VgzUdAFOHOt1IlAkZ+odFn6Prte4i/M0bYZg
+D/LShlgtBp+iDrWD+zHfcWADEGEsEzxyX7CJviJBTnoUwKM0/CQGLzaUTcGKfmVR
+qvlxCuSGRYsZWlOyoGomiSzmHxCMKzshrHW+RTO6YidFvbt/eKM0TRl3sXm6S1+C
++FRY25es4lrXBm1/7VIcYy8CAmBAzYscFkaJqDiOqZ2wH3nDmonZeLgL0gfhSN5X
+ofsOa3+K0FwLGMSs8S6znSyFdmgsdAu53EzQQ/CDolyDKza38sqRMxa2FSvIrbji
+lypuUg6QH4p8XZdLac/D63s69rVbDgct9Yt39e7PCx51XLkQZevzW0wacuylvzyW
+TCHqvNHo3zVLvfhtfB70LkhTTnZIcJFSi/Qz62BfQwBriMLEtNaFDyVA1/ZyJLPa
+O0NvQ7T2tkkfsopSjGq8U9bcirLLyIJT3PW5j+zr96cO4nnO6TK2esXnBC6m/tqr
+NhKnQwIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAd
+BgNVHQ4EFgQUDjkBfSbLAmrgyjRlUCChRGzsf54wHwYDVR0jBBgwFoAUDjkBfSbL
+AmrgyjRlUCChRGzsf54wQQYJKoZIhvcNAQEKMDSgDzANBglghkgBZQMEAgEFAKEc
+MBoGCSqGSIb3DQEBCDANBglghkgBZQMEAgEFAKIDAgEgA4ICAQBhnanpVOz0exdF
+fSyv8VxBZKL0XIYDue5nmeo0CJ2770Tj6NZawOJPkOAluzSAJpGKZdZgTfZdjKgR
+UmGAzL0IBdOf2lbmRyz4Qm1e6nTqB6TvveyeksnxfxDAQq0t2zbIv41OS3RObf5C
+T56TKR7mp7t6QR83Er8zaK8WbehFMx0puRTt+kST7b32Nzp2jI7jxlugi7+/oJoR
+dwYd7NKTdkpjLSBz3dfigt2Gp8U5BTXxAvO6hsVkb4OHbJ5n+h5avY8q/Hzzd2xc
+7bJFHVy5pL4nh/vM1z8/MRZUpxGLKOozNarYESVSzIZc9ovA08WKmaSqXkCgNwEv
+7K/cDCnKAp73aknUAGJg6zAN3BZikSLYM+V+Tmc4FR/UQG/+GSkdvg0kmxKt3izw
+oVctj/Je350VQLOgYkmOTQXdBCtMo8T5q/ZWq8mct1DtS4KaLxgLQQN214QS5MqY
+68mFyuU3eKN7sD7BUzhG6t+phVhFJ6mslPOpaxOSaUFwBXW1nZ4afoKrk7EFXVQ1
+xr37Fsc+a2P7DF9GD4liyzLc+0xOJZRVrM7fNPbdID0a2gp65qyTK4wrD/xsS7c6
+NtAPvl8SX/H76yV7/XFtqmmfRj3YyGj2DctWZ8qUVTsxHQxVMWkeFzf7G4au6jqn
+UCrZxwwkrbPM3H6LA3VdrF1oWN0hjg==
+-----END CERTIFICATE-----
+EOF
+)
+
 DEBUG_CMD=""
 STDOUT_CALLBACK=""
 
@@ -524,12 +564,12 @@ function check_npu_scene()
 
 function compare_crl()
 {
-    openssl crl -verify -in $1 -inform DER -CAfile $3 -noout
+    openssl crl -verify -in $1 -inform DER -CAfile $3 -noout 2>/dev/null
     if [[ $? != 0 ]];then
         return 2
     fi
     if [[ -f $2 ]];then
-        openssl crl -verify -in $2 -inform DER -CAfile $3 -noout
+        openssl crl -verify -in $2 -inform DER -CAfile $3 -noout 2>/dev/null
         if [[ $? != 0 ]];then
             return 3
         fi
@@ -552,75 +592,89 @@ function compare_crl()
     return 0
 }
 
+function zip_extract()
+{
+    local ca_file=$1
+    compare_crl ${crl_file} ${sys_crl} ${ca_file}
+    local verify_crl=$?
+    if [[ ${verify_crl} == 0 ]];then
+        local updated_crl=${crl_file}
+    elif [[ ${verify_crl} == 1 ]];then
+        local updated_crl=${sys_crl}
+    else
+        echo "[WARNING] ${crl_file} or ${sys_crl} check crl validation fail for ${ca_file}" >> ${BASE_DIR}/install.log
+        return 1
+    fi
+    [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
+    && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
+    local verify_success=$?
+    if [[ ${verify_success} -eq 0 ]];then
+        if [[ "$(basename ${zip_file})" =~ zip ]];then
+            if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
+            elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
+            elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
+            elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+                local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+            else
+                return 1
+            fi
+            mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
+        else
+            if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
+            elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_aarch64
+            elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_x86_64
+            elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
+                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_x86_64
+            fi
+            mkdir -p -m 750 ${atlasedge_dir}
+            cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
+            tar -xf ${zip_file} -C ${atlasedge_dir}
+        fi
+    else
+        echo "[WARNING] ${updated_crl} or ${cms_file} check cms validation fail for ${ca_file}" >> ${BASE_DIR}/install.log
+        return 1
+    fi
+}
+
+
 function verify_zip()
 {
-    local IFS_OLD=$IFS
     unset IFS
+    local zip_extract_result=0
     if [[ ${UID} == 0 ]];then
         local sys_crl=/etc/hwsipcrl/ascendsip.crl
     else
         local sys_crl=~/.local/hwsipcrl/ascendsip.crl
     fi
+    local root_ca_g2_file=${BASE_DIR}/playbooks/rootca_g2.pem
+    echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
+    local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
+    echo -e "${ROOT_CA}" > ${root_ca_file}
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
-        echo -e "${ROOT_CA}" > ${root_ca_file}
-        compare_crl ${crl_file} ${sys_crl} ${root_ca_file}
-        local verify_crl=$?
-        if [[ ${verify_crl} == 0 ]];then
-            local updated_crl=${crl_file}
-        elif [[ ${verify_crl} == 1 ]];then
-            local updated_crl=${sys_crl}
+        zip_extract ${root_ca_file} || zip_extract ${root_ca_g2_file}
+        if [[ $? == 0 ]];then
+            rm -rf ${BASE_DIR}/resources/zip_tmp
         else
-            rm -rf ${root_ca_file}
-            echo "[ERROR] ${crl_file} or ${sys_crl} check validation fail"
-            return 1
-        fi
-        [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${root_ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
-        && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${root_ca_file} -binary -content ${zip_file} -purpose any -out /dev/null
-        local verify_success=$?
-        rm -rf ${root_ca_file}
-        if [[ ${verify_success} -eq 0 ]];then
-            if [[ "$(basename ${zip_file})" =~ zip ]];then
-                if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                    local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-                elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                    local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
-                elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                    local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
-                elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                    local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
-                else
-                    return 1
-                fi
-                mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
-            else
-                if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
-                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
-                elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
-                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_aarch64
-                elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
-                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_x86_64
-                elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
-                    local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_x86_64
-                fi
-                mkdir -p -m 750 ${atlasedge_dir}
-                cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
-                tar -xf ${zip_file} -C ${atlasedge_dir}
-            fi
-        fi
-        rm -rf ${BASE_DIR}/resources/zip_tmp
-        chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d 2>/dev/null) 2>/dev/null
-        chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f 2>/dev/null) 2>/dev/null
-        if [[ ${verify_success} -ne 0 ]];then
-            return 1
+            rm -rf ${BASE_DIR}/resources/zip_tmp
+            local zip_extract_result=1
+            break
         fi
     done
-    IFS=${IFS_OLD}
+    rm -rf ${root_ca_g2_file} ${root_ca_file}
+    chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d 2>/dev/null) 2>/dev/null
+    chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f 2>/dev/null) 2>/dev/null
+    return ${zip_extract_result}
 }
 
 function verify_zip_redirect()

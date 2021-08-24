@@ -4,6 +4,7 @@ facts_cache
 *.pyc
 *.whl
 *.log
+*.log.*
 *.xml
 *.sqlite
 *.bz2
