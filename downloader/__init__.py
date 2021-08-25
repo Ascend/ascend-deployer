@@ -23,7 +23,7 @@ import shutil
 import platform
 
 
-dir_list = ['downloader', 'playbooks', 'docs']
+dir_list = ['downloader', 'playbooks', 'docs', 'tools']
 file_list = ['install.sh', 'start_download.sh',
              'inventory_file', 'ansible.cfg',
              'README.md', 'README.en.md',
@@ -45,6 +45,8 @@ def copy_scripts():
         deployer_home = os.getcwd()
 
     ad_path = os.path.join(deployer_home, 'ascend-deployer')
+    if not os.path.exists(ad_path):
+        os.makedirs(ad_path, mode=0o750, exist_ok=True)
     for dirname in dir_list:
         src = os.path.join(root_path, dirname)
         dst = os.path.join(ad_path, dirname)

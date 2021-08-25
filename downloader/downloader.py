@@ -32,7 +32,7 @@ import os_dep_downloader
 import other_downloader
 import software_mgr
 
-LOG = logger_config.get_logger(__file__)
+LOG = logger_config.LOG
 
 
 def download_other_packages(dst=None):

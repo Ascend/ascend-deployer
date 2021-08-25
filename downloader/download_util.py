@@ -24,10 +24,10 @@ import sys
 import hashlib
 import ssl
 import platform
+import logger_config
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
-from logger_config import get_logger
 
 
 def get_ascend_path():
@@ -50,7 +50,7 @@ def get_ascend_path():
     return os.path.join(deployer_home, 'ascend-deployer')
 
 
-LOG = get_logger(__file__)
+LOG = logger_config.LOG
 CUR_DIR = get_ascend_path()
 
 

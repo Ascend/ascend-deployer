@@ -15,16 +15,23 @@
 # ===========================================================================
 
 import logging
+import logging.handlers
 import os
 import platform
 import stat
 
-from logging.handlers import RotatingFileHandler
 
-
-DOCUMENTION = r"""
-Basic Log Configuration
-"""
+class RotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """
+    rewrite RotatingFileHandler, chmod 600 downloader.log and chmod 400 downloader.log.*
+    """
+    def doRollover(self):
+        largest_backfile = "{}.{}".format(self.baseFilename, self.backupCount)
+        if os.path.exists(largest_backfile):
+            os.chmod(largest_backfile, mode=0o600)
+        os.chmod(self.baseFilename, mode=0o400)
+        logging.handlers.RotatingFileHandler.doRollover(self)
+        os.chmod(self.baseFilename, mode=0o600)
 
 
 class BasicLogConfig(object):
@@ -63,23 +70,15 @@ class BasicLogConfig(object):
             "[%(asctime)s] downloader %(levelname)s [pid:%(process)d] " \
             "[%(threadName)s] [%(filename)s:%(lineno)d %(funcName)s] %(message)s"
     LOG_LEVEL = logging.INFO
+    ROTATING_CONF = dict(
+        filename=LOG_FILE,
+        mode='a',
+        maxBytes=20 * 1024 * 1024,
+        backupCount=5,
+        encoding="UTF-8")
 
 
 LOG_CONF = BasicLogConfig()
-
-logging.basicConfig(filename=LOG_CONF.LOG_FILE,
-             level=LOG_CONF.LOG_LEVEL,
-             format=LOG_CONF.LOG_FORMAT_STRING,
-             datefmt=LOG_CONF.LOG_DATE_FORMAT)
-
-
-ROTATING_FILE_LOG_CONF = dict(
-    filename=LOG_CONF.LOG_FILE,
-    mode='a',
-    maxBytes=20 * 1024 * 1024,
-    backupCount=5,
-    encoding="UTF-8"
-)
 
 
 def get_logger(name):
@@ -87,6 +86,13 @@ def get_logger(name):
     get_logger
     """
     logger = logging.getLogger(name)
-    rotating_log_handler = RotatingFileHandler(**ROTATING_FILE_LOG_CONF)
-    logger.addHandler(rotating_log_handler)
+    rotating_handler = RotatingFileHandler(**LOG_CONF.ROTATING_CONF)
+    log_formatter = logging.Formatter(
+        LOG_CONF.LOG_FORMAT_STRING, LOG_CONF.LOG_DATE_FORMAT)
+    rotating_handler.setFormatter(log_formatter)
+    logger.addHandler(rotating_handler)
+    logger.setLevel(LOG_CONF.LOG_LEVEL)
     return logger
+
+
+LOG = get_logger("downloader")
