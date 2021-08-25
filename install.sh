@@ -241,9 +241,14 @@ function get_os_version()
         version=${ver}${codename}
     fi
 
-    # UOS SP1
+    # UOS 20 SP1
     if [ "${id}" == "UOS" ] && [[ "$(grep -oP "^VERSION=\"?\K[\w\ ]+" /etc/os-release | awk '{print $2}')" == "SP1" ]];then
         version="${ver}SP1"
+    fi
+
+    # UOS 20 1020e
+    if [ "${id}" == "UOS" ] && [[ "${kernel_version}" == "4.19.90-2106.3.0.0095.up2.uel20.${arch}" ]];then
+        version="${ver}-1020e"
     fi
 
     echo ${version}
@@ -386,6 +391,9 @@ function install_sys_packages()
     if [[ "${g_os_ver_arch}" == "Kylin_v10juniper_aarch64" ]];then
         local have_rpm=0
     fi
+    if [[ "${g_os_ver_arch}" == "UOS_20-1020e_${arch}" ]];then
+        local have_rpm=1
+    fi
 
     echo "install system packages are listed as follows:" >> ${BASE_DIR}/install.log
     echo "$(ls ${BASE_DIR}/resources/${g_os_ver_arch} | grep -E "\.(rpm|deb)$")" >> ${BASE_DIR}/install.log
@@ -460,8 +468,8 @@ function install_python375()
     ${PYTHON_MINOR} -m pip install --upgrade pip --no-index --find-links ${PYLIB_PATH}
     # install wheel, if not pip will use legacy setup.py install for installation
     ${PYTHON_MINOR} -m pip install wheel --no-index --find-links ${PYLIB_PATH}
-    if [[ "${g_os_name}" == "EulerOS" ]] || [[ "${g_os_name}" == "OpenEuler" ]];then
-        echo "EulerOS or OpenEuler will install selinux when installing Python 3.7.5" >> ${BASE_DIR}/install.log
+    if [[ "${g_os_name}" == "EulerOS" ]] || [[ "${g_os_name}" == "OpenEuler" ]] || [[ "${g_os_ver_arch}" == "UOS_20-1020e_${arch}" ]];then
+        echo "EulerOS or OpenEuler or UOS_20-1020e will install selinux when installing Python 3.7.5" >> ${BASE_DIR}/install.log
         ${PYTHON_MINOR} -m pip install selinux --no-index --find-links ${PYLIB_PATH}
     fi
     echo "export PATH=${PYTHON_PREFIX}/bin:\$PATH" > ${PYTHON_PREFIX}/../ascendrc 2>/dev/null
@@ -500,6 +508,8 @@ function install_ansible()
             sed -i "1536 i\      '20.03': /usr/bin/python3"     ${ansible_path}/config/base.yml
             sed -i "1537 i\    uos:"                    ${ansible_path}/config/base.yml
             sed -i "1538 i\      '20': /usr/bin/python3"     ${ansible_path}/config/base.yml
+            sed -i "1539 i\    uniontech:"                    ${ansible_path}/config/base.yml
+            sed -i "1540 i\      '20': /usr/bin/python3"     ${ansible_path}/config/base.yml
         fi
     fi
 }
