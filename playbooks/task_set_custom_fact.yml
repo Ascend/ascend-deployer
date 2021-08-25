@@ -69,6 +69,14 @@
     - os_id.stdout == "uos"
     - UOS_20.stdout == "SP1"
 
+- name: set os code name for UOS_20-1020e
+  set_fact:
+    code_name: "-1020e"
+    cacheable: yes
+  when:
+    - os_id.stdout == "uos"
+    - "'4.19.90-2106.3.0.0095.up2.uel20' in ansible_kernel"
+
 - name: set os_and_arch
   set_fact:
     os_and_arch: "{{os_name}}_{{os_version}}{{code_name}}_{{ansible_architecture}}"

@@ -35,6 +35,7 @@
 | Tlinux  | 2.4       | x86_64  | 镜像默认Server模式                      |
 | UOS     | 20SP1     | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20SP1     | x86_64  | 镜像默认Minimal模式                     |
+| UOS     | 20-1020e  | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |

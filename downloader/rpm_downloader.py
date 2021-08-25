@@ -153,7 +153,7 @@ class Yum(object):
             if not db_location_href:
                 msg = "%s db_url is not exist, begin to build db." % name
                 print(msg)
-                LOG.warning(msg)
+                LOG.info(msg)
                 primary_xml_location_href = self.parse_repomd(repomd_file,
                                                               'primary')
                 primary_xml_url = urljoin(url, primary_xml_location_href)
@@ -552,7 +552,7 @@ class Yum(object):
             return True
         file_sha256 = calc_sha256(dst_file)
         if target_sha256 != file_sha256:
-            LOG.warn('target sha256 : {}, exists file sha256 : {}'.format(target_sha256, file_sha256))
+            LOG.info('target sha256 : {}, exists file sha256 : {}'.format(target_sha256, file_sha256))
             return True
         else:
             return False

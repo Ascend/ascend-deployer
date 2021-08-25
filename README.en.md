@@ -34,6 +34,7 @@ The offline installation tool provides automatic download and one-click installa
 |  Tlinux  |  2.4    |      x86_64      | A server image is installed by default.  |
 |   UOS    | 20SP1   |     aarch64      | A minimal image is installed by default. |
 |   UOS    | 20SP1   |      x86_64      | A minimal image is installed by default. |
+|   UOS    |20-1020e |     aarch64      | A minimal image is installed by default. |
 |   UOS    |   20    |     aarch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
