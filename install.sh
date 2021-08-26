@@ -576,35 +576,38 @@ function compare_crl()
 {
     openssl crl -verify -in $1 -inform DER -CAfile $3 -noout 2>/dev/null
     if [[ $? != 0 ]];then
+        echo "$3 check $1 validation not pass" >> ${BASE_DIR}/install.log
         return 2
     fi
     if [[ -f $2 ]];then
         openssl crl -verify -in $2 -inform DER -CAfile $3 -noout 2>/dev/null
         if [[ $? != 0 ]];then
+            echo "$3 check $2 validation not pass" >> ${BASE_DIR}/install.log
             return 3
         fi
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
-            echo "update system crl success"
-            rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
+            echo "$2 system crl update success" >> ${BASE_DIR}/install.log
+            mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
             return 0
         elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             return 0
         else
-            echo "$2 is newer than $1, no need to update system crl"
+            echo "$2 is newer than $1, no need to update system crl" >> ${BASE_DIR}/install.log
             return 1
         fi
     else
-        echo "update system crl success"
-        rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
+        echo "$2 system crl update success" >> ${BASE_DIR}/install.log
+        mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
     fi
     return 0
 }
 
 function zip_extract()
 {
-    local ca_file=$1
+    local sys_crl=$1
+    local ca_file=$2
     compare_crl ${crl_file} ${sys_crl} ${ca_file}
     local verify_crl=$?
     if [[ ${verify_crl} == 0 ]];then
@@ -612,7 +615,6 @@ function zip_extract()
     elif [[ ${verify_crl} == 1 ]];then
         local updated_crl=${sys_crl}
     else
-        echo "[WARNING] ${crl_file} or ${sys_crl} check crl validation fail for ${ca_file}" >> ${BASE_DIR}/install.log
         return 1
     fi
     [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
@@ -629,6 +631,7 @@ function zip_extract()
             elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
                 local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
             else
+                echo "not support ${zip_file}, please check" >> ${BASE_DIR}/install.log
                 return 1
             fi
             mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
@@ -647,7 +650,7 @@ function zip_extract()
             tar -xf ${zip_file} -C ${atlasedge_dir}
         fi
     else
-        echo "[WARNING] ${updated_crl} or ${cms_file} check cms validation fail for ${ca_file}" >> ${BASE_DIR}/install.log
+        echo "${updated_crl} or ${cms_file} check cms validation not pass for ${ca_file}" >> ${BASE_DIR}/install.log
         return 1
     fi
 }
@@ -658,9 +661,11 @@ function verify_zip()
     unset IFS
     local zip_extract_result=0
     if [[ ${UID} == 0 ]];then
-        local sys_crl=/etc/hwsipcrl/ascendsip.crl
+        local sys_crl_file=/etc/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=/etc/hwsipcrl/ascendsip_g2.crl
     else
-        local sys_crl=~/.local/hwsipcrl/ascendsip.crl
+        local sys_crl_file=~/.local/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=~/.local/hwsipcrl/ascendsip_g2.crl
     fi
     local root_ca_g2_file=${BASE_DIR}/playbooks/rootca_g2.pem
     echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
@@ -672,7 +677,7 @@ function verify_zip()
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        zip_extract ${root_ca_file} || zip_extract ${root_ca_g2_file}
+        zip_extract ${sys_g2_crl_file} ${root_ca_g2_file} || zip_extract ${sys_crl_file} ${root_ca_file}
         if [[ $? == 0 ]];then
             rm -rf ${BASE_DIR}/resources/zip_tmp
         else

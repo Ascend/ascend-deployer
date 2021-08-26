@@ -38,6 +38,46 @@ gdNojAmDZwk73Vwty4KrPanEhw==
 EOF
 )
 
+readonly ROOT_CA_G2=$(cat << EOF
+-----BEGIN CERTIFICATE-----
+MIIGQjCCA/agAwIBAgIDPDrbMEEGCSqGSIb3DQEBCjA0oA8wDQYJYIZIAWUDBAIB
+BQChHDAaBgkqhkiG9w0BAQgwDQYJYIZIAWUDBAIBBQCiAwIBIDB8MQswCQYDVQQG
+EwJDTjEcMBoGA1UEChMTSHVhd2VpIFRlY2hub2xvZ2llczEnMCUGA1UECxMeSHVh
+d2VpIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MSYwJAYDVQQDEx1IdWF3ZWkgSW50
+ZWdyaXR5IFJvb3QgQ0EgLSBHMjAgFw0yMTAyMDcwOTM2NDZaGA8yMDUxMDUwNzA5
+MzY0NlowfDELMAkGA1UEBhMCQ04xHDAaBgNVBAoTE0h1YXdlaSBUZWNobm9sb2dp
+ZXMxJzAlBgNVBAsTHkh1YXdlaSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTEmMCQG
+A1UEAxMdSHVhd2VpIEludGVncml0eSBSb290IENBIC0gRzIwggIiMA0GCSqGSIb3
+DQEBAQUAA4ICDwAwggIKAoICAQDdiU8j/HUtpiSLjsmr1t1P/nBDTbxuun0OVcia
+Q6Oc+E6y1YXCUmFn+p1WwKEJQetkKbCWlcZch8I2G/f86J/Z4m4ZwZJSV04B/uKQ
+GAy35FW5bNBtvYH3xN4ne0oGW6qWkgJQsDHG6iFZqRBKLx1O7yOhwvEdG5jfJwg2
+6NK5ad75vM6LHA6tEPG9ttMhcmj9VgzUdAFOHOt1IlAkZ+odFn6Prte4i/M0bYZg
+D/LShlgtBp+iDrWD+zHfcWADEGEsEzxyX7CJviJBTnoUwKM0/CQGLzaUTcGKfmVR
+qvlxCuSGRYsZWlOyoGomiSzmHxCMKzshrHW+RTO6YidFvbt/eKM0TRl3sXm6S1+C
++FRY25es4lrXBm1/7VIcYy8CAmBAzYscFkaJqDiOqZ2wH3nDmonZeLgL0gfhSN5X
+ofsOa3+K0FwLGMSs8S6znSyFdmgsdAu53EzQQ/CDolyDKza38sqRMxa2FSvIrbji
+lypuUg6QH4p8XZdLac/D63s69rVbDgct9Yt39e7PCx51XLkQZevzW0wacuylvzyW
+TCHqvNHo3zVLvfhtfB70LkhTTnZIcJFSi/Qz62BfQwBriMLEtNaFDyVA1/ZyJLPa
+O0NvQ7T2tkkfsopSjGq8U9bcirLLyIJT3PW5j+zr96cO4nnO6TK2esXnBC6m/tqr
+NhKnQwIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAd
+BgNVHQ4EFgQUDjkBfSbLAmrgyjRlUCChRGzsf54wHwYDVR0jBBgwFoAUDjkBfSbL
+AmrgyjRlUCChRGzsf54wQQYJKoZIhvcNAQEKMDSgDzANBglghkgBZQMEAgEFAKEc
+MBoGCSqGSIb3DQEBCDANBglghkgBZQMEAgEFAKIDAgEgA4ICAQBhnanpVOz0exdF
+fSyv8VxBZKL0XIYDue5nmeo0CJ2770Tj6NZawOJPkOAluzSAJpGKZdZgTfZdjKgR
+UmGAzL0IBdOf2lbmRyz4Qm1e6nTqB6TvveyeksnxfxDAQq0t2zbIv41OS3RObf5C
+T56TKR7mp7t6QR83Er8zaK8WbehFMx0puRTt+kST7b32Nzp2jI7jxlugi7+/oJoR
+dwYd7NKTdkpjLSBz3dfigt2Gp8U5BTXxAvO6hsVkb4OHbJ5n+h5avY8q/Hzzd2xc
+7bJFHVy5pL4nh/vM1z8/MRZUpxGLKOozNarYESVSzIZc9ovA08WKmaSqXkCgNwEv
+7K/cDCnKAp73aknUAGJg6zAN3BZikSLYM+V+Tmc4FR/UQG/+GSkdvg0kmxKt3izw
+oVctj/Je350VQLOgYkmOTQXdBCtMo8T5q/ZWq8mct1DtS4KaLxgLQQN214QS5MqY
+68mFyuU3eKN7sD7BUzhG6t+phVhFJ6mslPOpaxOSaUFwBXW1nZ4afoKrk7EFXVQ1
+xr37Fsc+a2P7DF9GD4liyzLc+0xOJZRVrM7fNPbdID0a2gp65qyTK4wrD/xsS7c6
+NtAPvl8SX/H76yV7/XFtqmmfRj3YyGj2DctWZ8qUVTsxHQxVMWkeFzf7G4au6jqn
+UCrZxwwkrbPM3H6LA3VdrF1oWN0hjg==
+-----END CERTIFICATE-----
+EOF
+)
+
 function operation_log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
@@ -103,20 +143,22 @@ function set_permission()
 
 function compare_crl()
 {
-    openssl crl -verify -in $1 -inform DER -CAfile $3 -noout
+    openssl crl -verify -in $1 -inform DER -CAfile $3 -noout 2>/dev/null
     if [[ $? != 0 ]];then
+        echo "$3 check $1 validation not pass" >> ${BASE_DIR}/update_crl.log
         return 2
     fi
     if [[ -f $2 ]];then
-        openssl crl -verify -in $2 -inform DER -CAfile $3 -noout
+        openssl crl -verify -in $2 -inform DER -CAfile $3 -noout 2>/dev/null
         if [[ $? != 0 ]];then
+            echo "$3 check $2 validation not pass" >> ${BASE_DIR}/update_crl.log
             return 3
         fi
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
-            log_info "update system crl"
-            rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
+            log_info "$2 system crl update success"
+            mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
             return 0
         elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             log_info "$1 is same with $2, no need to update system crl"
@@ -126,38 +168,50 @@ function compare_crl()
             return 1
         fi
     else
-        log_info "update system crl"
-        rm -rf $(dirname $2) && mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
+        log_info "$2 system crl update success"
+        mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
     fi
     return 0
 }
 
-upgrade_crl()
+function zip_extract()
 {
-    if [[ ${UID} == 0 ]];then
-        local sys_crl=/etc/hwsipcrl/ascendsip.crl
-    else
-        local sys_crl=~/.local/hwsipcrl/ascendsip.crl
-    fi
-    local root_ca_file=${BASE_DIR}/rootca.pem
-    echo -e "${ROOT_CA}" > ${root_ca_file}
-    compare_crl $1 ${sys_crl} ${root_ca_file}
+    local crl_file=$1
+    local sys_crl=$2
+    local ca_file=$3
+    compare_crl ${crl_file} ${sys_crl} ${ca_file}
     local verify_crl=$?
     if [[ ${verify_crl} == 0 ]];then
-        local updated_crl=$1
+        local updated_crl=${crl_file}
     elif [[ ${verify_crl} == 1 ]];then
         local updated_crl=${sys_crl}
     else
-        rm -rf ${root_ca_file}
-        log_error "$1 or ${sys_crl} check validation fail"
         return 1
     fi
-    if [[ "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${root_ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]];then
-        rm -rf ${root_ca_file}
-        log_error "rootca check validation fail"
+    if [[ "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]];then
+        echo "${updated_crl} check ${ca_file} expired" >> ${BASE_DIR}/update_crl.log
         return 1
     fi
-    rm -rf ${root_ca_file}
+}
+
+upgrade_crl()
+{
+    local zip_extract_result=0
+    if [[ ${UID} == 0 ]];then
+        local sys_crl_file=/etc/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=/etc/hwsipcrl/ascendsip_g2.crl
+    else
+        local sys_crl_file=~/.local/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=~/.local/hwsipcrl/ascendsip_g2.crl
+    fi
+    local root_ca_g2_file=${BASE_DIR}/rootca_g2.pem
+    echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
+    local root_ca_file=${BASE_DIR}/rootca.pem
+    echo -e "${ROOT_CA}" > ${root_ca_file}
+    zip_extract $1 ${sys_g2_crl_file} ${root_ca_g2_file} || zip_extract $1 ${sys_crl_file} ${root_ca_file}
+    [[ $? != 0 ]] && local zip_extract_result=1 && log_error "check validation fail"
+    rm -rf ${root_ca_g2_file} ${root_ca_file}
+    return ${zip_extract_result}
 }
 
 main()
