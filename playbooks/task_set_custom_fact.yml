@@ -47,6 +47,12 @@
     cacheable: yes
   when: os_id.stdout in code_name_dict
 
+- name: set euleros kernel flag
+  set_fact:
+    euleros_kernel_flag: "eulerosv2r{{code_name[1]}}.{{ansible_architecture}}"
+    cacheable: yes
+  when: os_name == "EulerOS"
+
 - name: set os_and_arch
   set_fact:
     os_and_arch: "{{os_name}}_{{os_version}}{{code_name}}_{{ansible_architecture}}"

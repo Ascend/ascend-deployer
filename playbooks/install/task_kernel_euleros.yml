@@ -1,0 +1,38 @@
+- name: check kernel headers
+  shell: rpm -qa kernel-headers | wc -l
+  register: kh_cnt
+  changed_when: false
+
+- name: find kernel headers rpm
+  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-headers*' | sort -r | grep -m1 {{ euleros_kernel_flag }}"
+  register: kh_rpm
+  when: kh_cnt.stdout == "0"
+
+- name: install kernel headers rpm
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ kh_rpm.stdout }}
+  when: kh_cnt.stdout == "0" and kh_rpm.stdout != "0"
+  failed_when: false
+  register: kernel_headers_result
+
+- name: check kernel devel
+  shell: rpm -qa kernel-devel | wc -l
+  register: kd_cnt
+  changed_when: false
+
+- name: find kernel devel rpm
+  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-devel*' | sort -r | grep -m1 {{ euleros_kernel_flag }}"
+  register: kd_rpm
+  when: kd_cnt.stdout == "0"
+
+- name: install kernel devel rpm
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ kd_rpm.stdout }}
+  when: kd_cnt.stdout == "0" and kd_rpm.stdout != "0"
+  failed_when: false
+  register: kernel_devel_result
+
+- name: message
+  debug:
+    msg:
+      - "{{ kernel_headers_result | default('NOT DEFINED') }}"
+      - "{{ kernel_devel_result | default('NOT DEFINED') }}"
+  when: kernel_headers_result.changed or kernel_devel_result.changed
