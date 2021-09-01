@@ -12,6 +12,14 @@
     path: "{{ cann_info_path }}/ascend_cann_install.info"
   register: install_info
 
+- name: check ascend toolbox install info
+  stat:
+    path: "{{ cann_info_path }}/ascend_toolbox_install.info"
+  register: toolbox_info
+
+- set_fact: install_info={{toolbox_info}}
+  when: toolbox_info.stat.exists
+
 - name: set install_path enable
   set_fact:
     ins_path_cmd: "--install-path={{ install_path }}"
