@@ -245,6 +245,9 @@
         "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "libseccomp", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "docker-ce-cli",
         "version": "20.10.3",
         "release": "3.el7"
