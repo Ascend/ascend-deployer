@@ -142,23 +142,5 @@
     { "name": "libstdc++-7-dev-arm64-cross" },
     { "name": "libtsan0-arm64-cross" },
     { "name": "libubsan0-arm64-cross" },
-    { "name": "linux-libc-dev-arm64-cross", "info": "cross compiler ends" },
-    {
-      "name": "mindspore-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/cpu/ubuntu_x86/mindspore-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "dst_dir":"Ubuntu_18.04_x86_64/CPU",
-      "sha256": "c21c8e6e92d5e96a3f803daa55cf6b3f23e4744c7e212802270a72f376d60860"
-    },
-    {
-      "name": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ubuntu_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "dst_dir":"Ubuntu_18.04_x86_64/Ascend910",
-      "sha256": "da571c24ef5139135db9cd4d83e19945941f2a7fbb1bda73c0dac4b8b55967c8"
-    },
-    {
-      "name": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/ubuntu_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
-      "dst_dir":"Ubuntu_18.04_x86_64/Ascend310",
-      "sha256": "5499b88a328dc0fa9ab0916684b62e3e5d4a404607cea0e07798eb77503a1cbf"
-    }
+    { "name": "linux-libc-dev-arm64-cross", "info": "cross compiler ends" }
 ]

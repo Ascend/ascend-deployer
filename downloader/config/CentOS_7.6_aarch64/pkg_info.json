@@ -275,17 +275,5 @@
     },
     {
         "name": "ethtool", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
-        "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/centos_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
-        "sha256": "592ae11ce65ad5292e7b826065fe2925ac5152caec2923e8fb13f64a40cb87c1",
-        "dst_dir": "CentOS_7.6_aarch64/Ascend910"
-    },
-    {
-        "name": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
-        "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/centos_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
-        "sha256": "ee4017192d7f6ac1308c22854e4173e856bfe450b4c06ed4fac0ecc7680aee84",
-        "dst_dir": "CentOS_7.6_aarch64/Ascend310"
     }
 ]
