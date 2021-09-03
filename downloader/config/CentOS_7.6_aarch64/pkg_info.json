@@ -275,5 +275,8 @@
     },
     {
         "name": "ethtool", "used_by": ["edge", "ha"]
+    },
+    {
+        "name": "libseccomp", "used_by": [ "driver", "cann", "framework" ]
     }
 ]
