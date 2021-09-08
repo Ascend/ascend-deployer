@@ -606,19 +606,31 @@ function compare_crl()
 
 function zip_extract()
 {
+    if [[ ${UID} == 0 ]];then
+        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    else
+        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    fi
     local sys_crl=$1
     local ca_file=$2
-    compare_crl ${crl_file} ${sys_crl} ${ca_file}
-    local verify_crl=$?
-    if [[ ${verify_crl} == 0 ]];then
-        local updated_crl=${crl_file}
-    elif [[ ${verify_crl} == 1 ]];then
-        local updated_crl=${sys_crl}
+    if [ -f ${ascend_cert_path} ];then
+        ascend_cert_path=$(dirname $(readlink -f "${ascend_cert_path}"))
+        cd ${ascend_cert_path}
+        ./ascend-cert -u ${crl_file}
+        ./ascend-cert ${cms_file} ${zip_file} ${crl_file}
     else
-        return 1
+        compare_crl ${crl_file} ${sys_crl} ${ca_file}
+        local verify_crl=$?
+        if [[ ${verify_crl} == 0 ]];then
+            local updated_crl=${crl_file}
+        elif [[ ${verify_crl} == 1 ]];then
+            local updated_crl=${sys_crl}
+        else
+            return 1
+        fi
+        [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
+        && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     fi
-    [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
-    && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     local verify_success=$?
     if [[ ${verify_success} -eq 0 ]];then
         if [[ "$(basename ${zip_file})" =~ zip ]];then
