@@ -223,7 +223,20 @@ main()
         log_error "expected one valid argument"
         return 1
     fi
-    upgrade_crl $1
+    if [[ ${UID} == 0 ]];then
+        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    else
+        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    fi
+    if [ -f ${ascend_cert_path} ];then
+        if [[ ${UID} == 0 ]];then
+            /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert -u $1
+        else
+            ~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert -u $1
+        fi
+    else
+        upgrade_crl $1
+    fi
 }
 
 main $*
