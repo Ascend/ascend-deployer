@@ -249,7 +249,7 @@ ascend-deployer
      - 安装driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
-     - `--install=mindspore`会安装mindspore 1.2.1版本，需要安装python3.7.5和配套版本的CANN软件包才可正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
+     - `--install=mindspore`会安装mindspore 1.3.0版本，需要安装python3.7.5和配套版本的CANN软件包才可正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
    - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
@@ -388,7 +388,7 @@ source ~/.local/ascendrc       # non-root
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
 | `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的软件包。例如MindStudio、CANN |
 
-当前MindStudio支持下载2.0.0、3.0.1版本，CANN支持下载20.2.RC1、5.0.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+当前MindStudio支持下载2.0.0、3.0.1版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="scene">安装场景介绍</a>
 
