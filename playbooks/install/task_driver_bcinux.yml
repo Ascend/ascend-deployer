@@ -59,7 +59,7 @@
   when: driver_pkg.matched > 0
 
 - name: install driver
-  shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: driver_result.rc == 1
   when: (driver_run is defined) and (driver_run|length > 0)
