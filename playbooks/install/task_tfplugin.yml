@@ -23,7 +23,7 @@
   when: install_info.stat.exists or ansible_user_uid != 0
 
 - name: install tfplugin
-  shell: "bash {{ tfplugin.files[0].path }} {{ cann_install_params }} {{ ins_path_cmd }}"
+  shell: "bash {{ tfplugin.files[0].path }} --nox11 {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"

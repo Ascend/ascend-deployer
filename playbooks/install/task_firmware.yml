@@ -51,7 +51,7 @@
   when: firmware_pkg.matched > 0
 
 - name: install firmware
-  shell: "bash {{ firmware_run }} --full --quiet"
+  shell: "bash {{ firmware_run }} --nox11 --full --quiet"
   register: firmware_result
   when: (firmware_run is defined) and (firmware_run|length > 0)
   failed_when: firmware_result.rc != 0
