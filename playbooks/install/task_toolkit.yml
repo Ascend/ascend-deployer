@@ -23,7 +23,7 @@
   register: toolkit
 
 - name: install toolkit
-  shell: "bash {{ toolkit.files[0].path }} {{ cann_install_params }} {{ins_path_cmd}}"
+  shell: "bash {{ toolkit.files[0].path }} --nox11 {{ cann_install_params }} {{ins_path_cmd}}"
   environment:
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
@@ -42,7 +42,7 @@
   when: os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'
 
 - name: install toolkit aarch64 for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
-  shell: "bash {{ toolkit_aarch64.files[0].path }} {{ cann_install_params }} {{ ins_path_cmd }}"
+  shell: "bash {{ toolkit_aarch64.files[0].path }} --nox11 {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
