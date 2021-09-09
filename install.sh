@@ -606,31 +606,19 @@ function compare_crl()
 
 function zip_extract()
 {
-    if [[ ${UID} == 0 ]];then
-        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
-    else
-        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
-    fi
     local sys_crl=$1
     local ca_file=$2
-    if [ -f ${ascend_cert_path} ];then
-        ascend_cert_path=$(dirname $(readlink -f "${ascend_cert_path}"))
-        cd ${ascend_cert_path}
-        ./ascend-cert -u ${crl_file}
-        ./ascend-cert ${cms_file} ${zip_file} ${crl_file}
+    compare_crl ${crl_file} ${sys_crl} ${ca_file}
+    local verify_crl=$?
+    if [[ ${verify_crl} == 0 ]];then
+        local updated_crl=${crl_file}
+    elif [[ ${verify_crl} == 1 ]];then
+        local updated_crl=${sys_crl}
     else
-        compare_crl ${crl_file} ${sys_crl} ${ca_file}
-        local verify_crl=$?
-        if [[ ${verify_crl} == 0 ]];then
-            local updated_crl=${crl_file}
-        elif [[ ${verify_crl} == 1 ]];then
-            local updated_crl=${sys_crl}
-        else
-            return 1
-        fi
-        [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
-        && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
+        return 1
     fi
+    [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
+    && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     local verify_success=$?
     if [[ ${verify_success} -eq 0 ]];then
         if [[ "$(basename ${zip_file})" =~ zip ]];then
@@ -683,13 +671,26 @@ function verify_zip()
     echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
     local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
     echo -e "${ROOT_CA}" > ${root_ca_file}
+    if [[ ${UID} == 0 ]];then
+        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    else
+        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
+    fi
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        zip_extract ${sys_g2_crl_file} ${root_ca_g2_file} || zip_extract ${sys_crl_file} ${root_ca_file}
+        if [ -f ${ascend_cert_path} ];then
+            ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
+            if [[ $? != 0 ]];then
+                echo "update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
+            fi
+            ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
+        else
+            zip_extract ${sys_g2_crl_file} ${root_ca_g2_file} || zip_extract ${sys_crl_file} ${root_ca_file}
+        fi
         if [[ $? == 0 ]];then
             rm -rf ${BASE_DIR}/resources/zip_tmp
         else
