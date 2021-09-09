@@ -31,7 +31,7 @@
   when: install_info.stat.exists or ansible_user_uid != 0
 
 - name: install toolbox
-  shell: "bash {{ toolbox.files[0].path }} {{ cann_install_params }} {{ins_path_cmd}}"
+  shell: "bash {{ toolbox.files[0].path }} --nox11 {{ cann_install_params }} {{ins_path_cmd}}"
   register: toolbox_result
   when: toolbox.matched > 0
   failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
