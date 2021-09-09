@@ -52,15 +52,5 @@
     { "name": "libnetfilter_conntrack",   "autodependency":"true", "info": "used for edge ha" },
     { "name": "libnfnetlink",   "autodependency":"true", "info": "used for edge ha" },
     { "name": "ethtool",   "autodependency":"true", "info": "used for edge ha" },
-    { "name": "unzip",   "autodependency":"true", "info": "used for edge ha" },
-    { "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
-     "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/euleros_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
-     "sha256": "8853ec5ebb488a34e45846c7fac697f1aff279d59bd5f73563fe6bc76452596e",
-     "dst_dir": "EulerOS_2.8_aarch64/Ascend910"
-    },
-    { "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
-     "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.1.1/MindSpore/ascend/ascend310/euleros_aarch64/mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
-     "sha256": "276f4ed73a341db1bcb42319024bf86ee2687c5ee05662d7a828824b3ddba124",
-     "dst_dir": "EulerOS_2.8_aarch64/Ascend310"
-    }
+    { "name": "unzip",   "autodependency":"true", "info": "used for edge ha" }
 ]
