@@ -1,6 +1,6 @@
 {"name": "CANN",
 "version":"5.0.1",
-"default":true,
+"default":false,
 "systems": {},
 "other": [
     {"filename":"A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_centos7.6-aarch64.zip",

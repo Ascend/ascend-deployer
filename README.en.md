@@ -377,7 +377,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | `--os-list=<OS1>,<OS2>`| set specific os softwares to download          |
 | `--download=<PK1>,<PK2>==<Version>`| download specific software. such as 如MindStudio、CANN |
 
-Currently MindStudio supports 2.0.0 and 3.0.1 versions, and Cann supports 20.2.rc1 and 5.0.1 versions. Only one version of the MindStudio or Cann package should exist in the resources directory at the time of installation, otherwise there may be versions that do not match. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
+Currently MindStudio supports 2.0.0 and 3.0.1 versions, and Cann supports 20.2.rc1, 5.0.1 and 5.0.2.1 versions. Only one version of the MindStudio or Cann package should exist in the resources directory at the time of installation, otherwise there may be versions that do not match. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 
 ## <a name="scene">Installation Scenarios</a>
 
