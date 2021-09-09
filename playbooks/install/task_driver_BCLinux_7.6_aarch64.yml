@@ -9,7 +9,7 @@
   register: driver_pkg_from_zip
 
 - name: install driver for BigCloud Linux from run_from_zip_dir first
-  shell: "bash {{driver_pkg_from_zip.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_pkg_from_zip.files[0].path}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   become: yes
   register: driver_result_from_zip
   failed_when: driver_result_from_zip.rc == 1
@@ -26,7 +26,7 @@
   when: driver_pkg_from_zip.matched == 0
 
 - name: install driver for BigCloud Linux
-  shell: "bash {{driver_pkg.files[0].path}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_pkg.files[0].path}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   become: yes
   register: driver_result
   failed_when: driver_result.rc == 1

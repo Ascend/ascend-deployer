@@ -33,7 +33,7 @@
       register: toolkit
 
     - name: install toolkit
-      shell: "bash {{ toolkit.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
+      shell: "bash {{ toolkit.files[0].path }} --nox11 --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
       become: yes
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib
@@ -66,7 +66,7 @@
       when: install_info.stat.exists
 
     - name: install toolkit aarch64 for Ubuntu_18.04_x86_64
-      shell: "bash {{ toolkit_aarch64.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ ins_path_cmd }}"
+      shell: "bash {{ toolkit_aarch64.files[0].path }} --nox11 --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ ins_path_cmd }}"
       become: yes
       environment:
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib

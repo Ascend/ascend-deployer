@@ -29,7 +29,7 @@
       when: not install_info.stat.exists
 
     - name: install toolbox
-      shell: "bash {{ toolbox.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
+      shell: "bash {{ toolbox.files[0].path }} --nox11 --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ins_path_cmd}}"
       become: yes
       register: toolbox_result
       when: toolbox.matched > 0

@@ -29,7 +29,7 @@
       when: not install_info.stat.exists
 
     - name: install nnae
-      shell: "bash {{ nnae.files[0].path }} --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ ins_path_cmd }}"
+      shell: "bash {{ nnae.files[0].path }} --nox11 --install --quiet --install-username={{ user }} --install-usergroup={{ group }} {{ ins_path_cmd }}"
       become: yes
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ansible_env.PATH}}

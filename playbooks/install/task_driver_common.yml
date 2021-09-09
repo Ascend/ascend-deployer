@@ -50,7 +50,7 @@
   when: driver_pkg.matched > 0
 
 - name: install driver
-  shell: "bash {{driver_run}} --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   environment:
     PATH: /opt/rh/devtoolset-8/root/usr/bin/:/usr/sbin/:/sbin:{{ ansible_env.PATH }}
   register: driver_result
