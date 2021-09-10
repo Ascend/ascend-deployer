@@ -349,6 +349,14 @@ Similarly, other software packages or tools installed by offline deployment tool
 - Delete this tool
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
+| Something that should be deleted | instructions                        |
+|:-------------------------------  |:-------------------------------------|
+| ascend-deployer                  | Directory of tool on the controller  |
+|`pip3 uninstall ascend-deployer`  | Tool pip-installed on the controller, uninstall using commands|
+| ~/ansible                        | Customize information collection configuration files on the controller and remote machines|
+| `~/resources和~/resources.tar`   | Resource directory on the controller and remote machines|
+| ~/build                          | Source package decompression directory on the controller and remote machines|
+
 # Reference Information
 
 ## <a name="parameter">Install Parameter Description</a>
