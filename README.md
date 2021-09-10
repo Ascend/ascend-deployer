@@ -362,6 +362,14 @@ source ~/.local/ascendrc       # non-root
 
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
 
+| 应删除的                       | 说明                                 |
+|:-------------------------------|:-------------------------------------|
+| ascend-deployer                | 控制机上的离线部署工具的目录            |
+|`pip3 uninstall ascend-deployer`| 控制机上pip安装的工具，可用命令卸载     |
+| ~/ansible                      | 控制机和远程机器，自定义信息收集配置文件 |
+| `~/resources和~/resources.tar` | 控制机和远程机器，resource资源目录      |
+| ~/build                        | 控制机和远程机器，源码包的解压目录      |
+
 # 参考信息
 
 ## <a name="parameter">安装参数说明</a>
