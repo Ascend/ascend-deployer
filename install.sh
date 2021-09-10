@@ -529,24 +529,30 @@ function verify_zip()
     local IFS_OLD=$IFS
     unset IFS
     if [[ ${UID} == 0 ]];then
-        local sys_crl=/etc/hwsipcrl/ascendsip.crl
+        local sys_crl_file=/etc/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=/etc/hwsipcrl/ascendsip_g2.crl
+        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
     else
-        local sys_crl=~/.local/hwsipcrl/ascendsip.crl
+        local sys_crl_file=~/.local/hwsipcrl/ascendsip.crl
+        local sys_g2_crl_file=~/.local/hwsipcrl/ascendsip_g2.crl
+        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
     fi
+    local root_ca_g2_file=${BASE_DIR}/playbooks/rootca_g2.pem
+    echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
+    local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
+    echo -e "${ROOT_CA}" > ${root_ca_file}
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
-        local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
-        echo -e "${ROOT_CA}" > ${root_ca_file}
-        compare_crl ${crl_file} ${sys_crl} ${root_ca_file}
-        local verify_crl=$?
-        if [[ ${verify_crl} == 0 ]];then
-            local updated_crl=${crl_file}
-        elif [[ ${verify_crl} == 1 ]];then
-            local updated_crl=${sys_crl}
+        if [ -f ${ascend_cert_path} ];then
+            ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
+            if [[ $? != 0 ]];then
+                echo "ascend-cert update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
+            fi
+            ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
         else
             rm -rf ${root_ca_file}
             echo "[ERROR] ${crl_file} or ${sys_crl} check validation fail"
@@ -977,3 +983,10 @@ main()
 }
 
 main $*
+main_status=$?
+if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
+    operation_log_info "$0 $*:Failed"
+else
+    operation_log_info "$0 $*:Success"
+fi
+exit ${main_status}

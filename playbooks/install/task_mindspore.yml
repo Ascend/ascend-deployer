@@ -3,15 +3,17 @@
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+  register: mindspore_910_result
   when:
     - ansible_local.npu_info.model_number == "9000" or ansible_local.npu_info.model_number == "9010"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10' in os_and_arch"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
 - name: install mindspore_ascend for 310
   shell: python3 -m pip install mindspore_ascend --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+  register: mindspore_310_result
   when:
     - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
@@ -21,21 +23,19 @@
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64"
+  register: mindspore_cpu_result
   when:
     - ansible_local.npu_info.model_number != "9000"
     - ansible_local.npu_info.model_number != "9010"
     - ansible_local.npu_info.model_number != "3000"
     - ansible_local.npu_info.model_number != "3010"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10' in os_and_arch"
+    - "'Ubuntu_18.04' in os_and_arch"
 
 - name: print message
   debug:
     msg:
       - "not support this os: {{ os_and_arch }}, install skipped"
-      - "just support these: CentOS_7.6, Ubuntu_18.04, EulerOS_2.8, OpenEuler_20.03, Kylin_V10."
   when:
-    - "'CentOS_7.6' not in os_and_arch"
-    - "'Ubuntu_18.04' not in os_and_arch"
-    - "'EulerOS_2.8' not in os_and_arch"
-    - "'OpenEuler_20.03' not in os_and_arch"
-    - "'Kylin_V10' not in os_and_arch"
+    - mindspore_910_result is not defined
+    - mindspore_310_result is not defined
+    - mindspore_cpu_result is not defined

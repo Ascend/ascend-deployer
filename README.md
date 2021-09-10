@@ -388,7 +388,7 @@ source ~/.local/ascendrc       # non-root
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
 | `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的软件包。例如MindStudio、CANN |
 
-当前MindStudio支持下载2.0.0、3.0.1版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+当前MindStudio支持下载2.0.0、3.0.1、3.0.2版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="scene">安装场景介绍</a>
 
@@ -534,7 +534,7 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 - A: 安全原因，本工具不要求非root用户拥有sudo权限，所以不支持非root用户安装5.0.1版本以前的toolkit。
 
 3. Q: 工具会用到华为软件完整性保护根证书，但具备验证证书是否被吊销的能力吗？是否有安装包内的CRL文件跟系统本地的CRL文件比较更新的机制？工具是否具备独立的CRL文件比较更新的能力？
-- A: 本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。如果系统本地的CRL文件不存在或生效时间早于安装包内的CRL文件，则系统本地的CRL文件会被安装包内的CRL文件替换。tools目录放置了update_crl.sh脚本，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
+- A: crl文件更新和校验有两种方式，优先使用toolbox/latest/Ascend-DMI/bin/ascend-cert工具进行更新校验，如果该工具不存在，则使用openssl命令进行更新和校验。本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。如果系统本地的CRL文件不存在或生效时间早于安装包内的CRL文件，则系统本地的CRL文件会被安装包内的CRL文件替换。tools目录放置了update_crl.sh脚本，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
 
 
 # 其他安装指导
