@@ -240,8 +240,10 @@ main()
 }
 
 main $*
-if [[ $? == 1 ]];then
+main_status=$?
+if [[ ${main_status} == 1 ]];then
     operation_log_info "$0 $*: Failed"
 else
     operation_log_info "$0 $*: Success"
 fi
+exit ${main_status}

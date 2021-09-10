@@ -663,19 +663,16 @@ function verify_zip()
     if [[ ${UID} == 0 ]];then
         local sys_crl_file=/etc/hwsipcrl/ascendsip.crl
         local sys_g2_crl_file=/etc/hwsipcrl/ascendsip_g2.crl
+        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
     else
         local sys_crl_file=~/.local/hwsipcrl/ascendsip.crl
         local sys_g2_crl_file=~/.local/hwsipcrl/ascendsip_g2.crl
+        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
     fi
     local root_ca_g2_file=${BASE_DIR}/playbooks/rootca_g2.pem
     echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
     local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
     echo -e "${ROOT_CA}" > ${root_ca_file}
-    if [[ ${UID} == 0 ]];then
-        local ascend_cert_path=/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
-    else
-        local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
-    fi
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
@@ -685,7 +682,7 @@ function verify_zip()
         if [ -f ${ascend_cert_path} ];then
             ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
             if [[ $? != 0 ]];then
-                echo "update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
+                echo "ascend-cert update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
             fi
             ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
         else
@@ -1207,3 +1204,4 @@ if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
 else
     operation_log_info "$0 $*:Success"
 fi
+exit ${main_status}

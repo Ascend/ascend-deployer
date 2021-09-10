@@ -142,5 +142,6 @@
     { "name": "libstdc++-7-dev-arm64-cross" },
     { "name": "libtsan0-arm64-cross" },
     { "name": "libubsan0-arm64-cross" },
-    { "name": "linux-libc-dev-arm64-cross", "info": "cross compiler ends" }
+    { "name": "linux-libc-dev-arm64-cross", "info": "cross compiler ends" },
+    {"name": "libgmpxx4ldbl", "info": "used by mindspore"}
 ]

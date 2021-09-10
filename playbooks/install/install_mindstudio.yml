@@ -90,6 +90,7 @@
       when: ms.matched > 0
       with_items:
         - grpcio
+        - grpcio-tools
         - protobuf
         - decorator
         - sympy
@@ -105,6 +106,17 @@
         - matplotlib
         - pyqt5
         - attrs
+        - pytest
+        - wheel
+        - pyyaml
+        - pathlib2
+        - pillow
+        - cffi
+        - pyparsing
+        - xlwt
+        - xlutils
+        - cycler
+        - matplotlib
 
     - name: create symbolic link python for ubuntu
       file:
