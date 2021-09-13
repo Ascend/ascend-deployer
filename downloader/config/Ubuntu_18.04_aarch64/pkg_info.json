@@ -125,5 +125,6 @@
     { "name": "expect" },
     { "name": "ethtool" },
     { "name": "iptables" },
-    { "name": "gzip" }
+    { "name": "gzip" },
+    {"name": "libgmpxx4ldbl", "info": "used by mindspore"}
 ]

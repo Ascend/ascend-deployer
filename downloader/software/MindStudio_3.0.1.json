@@ -1,6 +1,6 @@
 {"name": "MindStudio",
 "version":"3.0.1",
-"default":true,
+"default":false,
 "systems": [
     {"system":"Ubuntu_18.04_x86_64",
     "sys":[{ "name":"ca-certificates-java"},
