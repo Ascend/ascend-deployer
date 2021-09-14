@@ -11,7 +11,7 @@ https://www.hiascend.com/software/mindstudio/download
 ```bash
 ./start_download.sh --os-list=Ubuntu_18.04_x86_64 --download=MindStudio
 ```
-目前MindStudio 2.0.0、3.0.1版本只支持在以上3个OS，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
+目前MindStudio 2.0.0、3.0.1、3.0.2版本只支持在以上3个OS，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
 
 ## 安装
 
@@ -20,7 +20,7 @@ https://www.hiascend.com/software/mindstudio/download
 ```
 
 ## 版本配套
-MindStudio 2.0.0配套CANN 20.2.RC1，MindStudio 3.0.1配套CANN 5.0.1
+MindStudio 2.0.0配套CANN 20.2.RC1，MindStudio 3.0.1配套CANN 5.0.1，MindStudio 3.0.2配套CANN 5.0.2.1
 
 ## 说明
 
