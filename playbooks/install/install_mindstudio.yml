@@ -46,8 +46,9 @@
         - "'Ubuntu' in os_and_arch"
         - ansible_user_uid == 0
 
-    - name: install ubuntu desktop
+    - name: install system packages ubuntu desktop
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/desktop/*.deb
+      register: apt_desktop_result
       environment:
         PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
         LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
@@ -57,8 +58,13 @@
         - ubuntu_desktop is not skipped and ubuntu_desktop.stdout=='0'
         - ansible_user_uid == 0
 
+    - name: message
+      debug: var=apt_desktop_result
+      when: apt_desktop_result.changed
+
     - name: install system packages apt
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/*.deb
+      register: apt_result
       environment:
         PATH: /usr/local/python3.7.5/bin:{{ ansible_env.PATH }}
         LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/gcc7.3.0/lib64
@@ -67,19 +73,21 @@
         - ansible_pkg_mgr == 'apt'
         - ansible_user_uid == 0
 
+    - name: message
+      debug: var=apt_result
+      when: apt_result.changed
+
     - name: install system packages rpm
       shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
+      register: yum_result
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'yum'
         - ansible_user_uid == 0
 
-    - name: install system packages dnf
-      shell: rpm -ivh --force --nodeps --replacepkgs {{ mindstudio_dir }}/{{ os_and_arch }}/*.rpm
-      when:
-        - ms.matched > 0
-        - ansible_pkg_mgr == 'dnf'
-        - ansible_user_uid == 0
+    - name: message
+      debug: var=yum_result
+      when: yum_result.changed
 
     - name: install python libs for mindstudio
       shell: python3.7 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
