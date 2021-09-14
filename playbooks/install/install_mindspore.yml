@@ -17,7 +17,7 @@
       import_tasks: task_cmake.yml
       when:
         - ansible_user_uid == 0
-        - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010"
+        - ansible_local.npu_info.scene == "infer"
         - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
         - cmake_ver.stdout == '' or cmake_ver.stdout is version("3.18.6", "<")
 

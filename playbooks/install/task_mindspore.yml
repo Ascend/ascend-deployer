@@ -5,7 +5,7 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
   register: mindspore_910_result
   when:
-    - ansible_local.npu_info.model_number == "9000" or ansible_local.npu_info.model_number == "9010"
+    - ansible_local.npu_info.scene == "train"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
 - name: install mindspore_ascend for 310
@@ -15,7 +15,7 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
   register: mindspore_310_result
   when:
-    - ansible_local.npu_info.model_number == "3000" or ansible_local.npu_info.model_number == "3010"
+    - ansible_local.npu_info.scene == "infer"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
 
 - name: install mindspore_cpu
@@ -25,10 +25,8 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64"
   register: mindspore_cpu_result
   when:
-    - ansible_local.npu_info.model_number != "9000"
-    - ansible_local.npu_info.model_number != "9010"
-    - ansible_local.npu_info.model_number != "3000"
-    - ansible_local.npu_info.model_number != "3010"
+    - ansible_local.npu_info.scene != "train"
+    - ansible_local.npu_info.scene != "infer"
     - "'Ubuntu_18.04' in os_and_arch"
 
 - name: print message
