@@ -606,6 +606,38 @@ function compare_crl()
 
 function zip_extract()
 {
+    if [[ "$(basename ${zip_file})" =~ zip ]];then
+        if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
+        elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
+        elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
+        elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+        else
+            echo "not support ${zip_file}, please check" >> ${BASE_DIR}/install.log
+            return 1
+        fi
+        mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
+    else
+        if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
+            local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
+        elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
+            local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_aarch64
+        elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
+            local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_x86_64
+        elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
+            local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_x86_64
+        fi
+        mkdir -p -m 750 ${atlasedge_dir}
+        cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
+        tar -xf ${zip_file} -C ${atlasedge_dir}
+    fi
+}
+
+function hmac_check()
+{
     local sys_crl=$1
     local ca_file=$2
     compare_crl ${crl_file} ${sys_crl} ${ca_file}
@@ -620,36 +652,7 @@ function zip_extract()
     [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
     && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     local verify_success=$?
-    if [[ ${verify_success} -eq 0 ]];then
-        if [[ "$(basename ${zip_file})" =~ zip ]];then
-            if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-            elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
-            elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
-            elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-                local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
-            else
-                echo "not support ${zip_file}, please check" >> ${BASE_DIR}/install.log
-                return 1
-            fi
-            mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
-        else
-            if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
-            elif [[ "$(basename ${zip_file})" =~ ha.*aarch64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_aarch64
-            elif [[ "$(basename ${zip_file})" =~ atlasedge.*x86_64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_x86_64
-            elif [[ "$(basename ${zip_file})" =~ ha.*x86_64 ]];then
-                local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/ha_x86_64
-            fi
-            mkdir -p -m 750 ${atlasedge_dir}
-            cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
-            tar -xf ${zip_file} -C ${atlasedge_dir}
-        fi
-    else
+    if [[ ${verify_success} -ne 0 ]];then
         echo "${updated_crl} or ${cms_file} check cms validation not pass for ${ca_file}" >> ${BASE_DIR}/install.log
         return 1
     fi
@@ -659,7 +662,7 @@ function zip_extract()
 function verify_zip()
 {
     unset IFS
-    local zip_extract_result=0
+    local hmac_check_result=0
     if [[ ${UID} == 0 ]];then
         local sys_crl_file=/etc/hwsipcrl/ascendsip.crl
         local sys_g2_crl_file=/etc/hwsipcrl/ascendsip_g2.crl
@@ -683,23 +686,27 @@ function verify_zip()
             ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
             if [[ $? != 0 ]];then
                 echo "ascend-cert update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
+                hmac_check_result=1
+            else
+                ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
+                hmac_check_result=$?
             fi
-            ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
         else
-            zip_extract ${sys_g2_crl_file} ${root_ca_g2_file} || zip_extract ${sys_crl_file} ${root_ca_file}
+            hmac_check ${sys_g2_crl_file} ${root_ca_g2_file} || hmac_check ${sys_crl_file} ${root_ca_file}
+            hmac_check_result=$?
         fi
-        if [[ $? == 0 ]];then
+        if [[ ${hmac_check_result} == 0 ]];then
+            zip_extract
             rm -rf ${BASE_DIR}/resources/zip_tmp
         else
             rm -rf ${BASE_DIR}/resources/zip_tmp
-            local zip_extract_result=1
             break
         fi
     done
     rm -rf ${root_ca_g2_file} ${root_ca_file}
     chmod -R 750  $(find ${BASE_DIR}/resources/run_from_*_zip  -type d 2>/dev/null) 2>/dev/null
     chmod -R 640  $(find ${BASE_DIR}/resources/run_from_*_zip  -type f 2>/dev/null) 2>/dev/null
-    return ${zip_extract_result}
+    return ${hmac_check_result}
 }
 
 function verify_zip_redirect()
