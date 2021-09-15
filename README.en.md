@@ -145,7 +145,7 @@ group=HwHiAiUser
    - CANN software package: [Link](https://www.huaweicloud.com/intl/en-us/ascend/cann)
 2. ZIP packages and run packages are available in both formats. If the same package in these two formats exists in the resources directory, install the ZIP package first. BCLinux should use CentOS7.6 npu package.
 3. Support Atlas 500 and Atlas 500Pro batch installation of IEF Agent, refer to UserManual-IEF documentation to prepare IEF product certificate, registration tools, installation tools, placed in the resources directory.
-   - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+   - IEF relevant certificates and tools: [Link](https://support.huaweicloud.com/usermanual-ief/ief_01_0100.html)
    - The Atlas 500 comes pre-loaded with registration tools and installation tools, so you just need to prepare the product certificate and place it in the Resources directory.The Atlas 500Pro requires all three certificates and tools
    - Atlas 500 only supports the Euleros 2.8 Aarch64 tailoring operating system, not other systems, so it does not support the offline deployment tool to run locally, only supports remote installation, and also does not support non-root installation. Atlas 500Pro supports both local and remote installations
    - Depending on the edge node AtlasEdge middleware working properly, Atlas 500 comes with AtlasEdge middleware， Atlas 500Pro needs to install AtlasEdge middleware first

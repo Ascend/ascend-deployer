@@ -171,7 +171,7 @@ group=HwHiAiUser
    - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
 2. 软件包支持zip包和run包2种格式，如果resources目录下存在这2种格式的同一软件包，优先安装zip格式的软件包；BCLinux应使用CentOS7.6的npu包。
 3. 支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
-   - IEF相关证书和工具：[参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+   - IEF相关证书和工具：[参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0100.html)
    - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装，也不支持非root安装；Atlas 500Pro支持本地和远程安装
    - 依赖边缘节点atlasedge中间件正常工作，Atlas 500自带atlasedge中间件，Atlas 500Pro需要先安装atlasedge中间件
