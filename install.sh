@@ -582,7 +582,7 @@ function verify_zip()
                 fi
                 mkdir -p -m 750 ${atlasedge_dir}
                 cp ${zip_file} ${cms_file} ${crl_file} ${atlasedge_dir}
-                tar -xf ${zip_file} -C ${atlasedge_dir}
+                tar --no-same-owner -xf ${zip_file} -C ${atlasedge_dir}
             fi
         fi
         rm -rf ${BASE_DIR}/resources/zip_tmp
