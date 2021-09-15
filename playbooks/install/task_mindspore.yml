@@ -29,11 +29,11 @@
     - ansible_local.npu_info.scene != "infer"
     - "'Ubuntu_18.04' in os_and_arch"
 
-- name: print message
+- name: message
   debug:
     msg:
-      - "not support this os: {{ os_and_arch }}, install skipped"
+      - "not support os: {{ os_and_arch }} in scene: {{ ansible_local.npu_info.scene }}, mindspore install skipped"
   when:
-    - mindspore_910_result is not defined
-    - mindspore_310_result is not defined
-    - mindspore_cpu_result is not defined
+    - mindspore_910_result.skipped is true
+    - mindspore_310_result.skipped is true
+    - mindspore_cpu_result.skipped is true
