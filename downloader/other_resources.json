@@ -46,29 +46,5 @@
         "url":"https://repo.huaweicloud.com/repository/pypi/packages/88/d0/4572492d633e311c0143ba20596cb5c090d37442d1cd431082193f3bbb3a/PyQt5-5.14.0-5.14.0-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl",
         "sha256":"a757ba71c51f428b52ba404e781e2f19b4436b2c31298b8313339d5817781b65",
         "dest":"resources/pylibs"
-    },
-    {
-        "filename":"mindspore_ascend-1.3.0-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.3.0/MindSpore/ascend/aarch64/mindspore_ascend-1.3.0-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"1a86507f025b23952e77e65a71b1df899038eef1792214a5ff208ea5acd9a1d1",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"mindspore-1.3.0-cp37-cp37m-linux_aarch64.whl",
-        "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.3.0/MindSpore/cpu/aarch64/mindspore-1.3.0-cp37-cp37m-linux_aarch64.whl",
-        "sha256":"57dd06d0f3df5e07be236d3311aee8988d4fb7ba3663348da62451934917429c",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"mindspore_ascend-1.3.0-cp37-cp37m-linux_x86_64.whl",
-        "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.3.0/MindSpore/ascend/x86_64/mindspore_ascend-1.3.0-cp37-cp37m-linux_x86_64.whl",
-        "sha256":"6926563c1a94748bfbcc3c0e377ed755b1ceac1ca076353cdc5194cad92fa8a2",
-        "dest":"resources/pylibs"
-    },
-    {
-        "filename":"mindspore-1.3.0-cp37-cp37m-linux_x86_64.whl",
-        "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.3.0/MindSpore/cpu/x86_64/mindspore-1.3.0-cp37-cp37m-linux_x86_64.whl",
-        "sha256":"aa4cad883dcad7aaa0fa1d3522cd7acd0edac41fee001a18152228095b027b9e",
-        "dest":"resources/pylibs"
     }
 ]

@@ -67,6 +67,8 @@
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
+- 由于配套CANN 5.0.3版本的mindspore版本未正式发布，本版本的工具不下载mindspore的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。mindspore软件配套说明详见[Mindspore官网](https://mindspore.cn/versions)。
+   - 指定场景安装
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 ### 内核头软件包说明
@@ -197,7 +199,7 @@ usermod -a -G HwHiAiUser 非root用户名
    - CANN软件包：[获取链接](https://ascend.huawei.com/#/software/cann)
 2. 软件包仅支持zip包格式，安装时resources目录下只应存在一个版本的软件包，否则可能会有版本不配套的情况。如果resources目录下没有软件包，工具会跳过安装。
 3. 支持Atlas 500和Atlas 500Pro批量安装IEF Agent，参考usermanual-ief文档准备IEF产品证书、注册工具、安装工具，放置于resources目录下；
-   - IEF相关证书和工具：[参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0031.html)
+   - IEF相关证书和工具：[参考链接](https://support.huaweicloud.com/usermanual-ief/ief_01_0100.html)
    - Atlas 500已预置了注册工具和安装工具，所以只需准备产品证书放置于resources目录下；而Atlas 500Pro对这3个证书和工具都需要
    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装，也不支持非root安装；Atlas 500Pro支持本地和远程安装
    - 依赖边缘节点atlasedge中间件正常工作，Atlas 500自带atlasedge中间件，Atlas 500Pro需要先安装atlasedge中间件
@@ -251,8 +253,6 @@ ascend-deployer
      - 安装driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
      - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
      - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
-     - `--install=mindspore`会安装mindspore 1.3.0版本，需要安装python3.7.5和配套版本的CANN软件包才可正常使用，软件配套说明详见[Mindspore官网](https://mindspore.cn/install)。
-   - 指定场景安装
      `./install.sh --install-scene=<scene_name>`
      离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
      `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`
@@ -521,6 +521,7 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 
 ## <a name="url">公网URL</a>
 ```
+https://cmake.org
 https://github.com
 https://gcc.gnu.org
 http://mirrors.bclinux.org
