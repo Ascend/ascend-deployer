@@ -86,6 +86,14 @@ function operation_log_info()
     echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/update_crl_operation.log
 }
 
+function echo_info()
+{
+    local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
+    local USER_N=$(whoami)
+    local IP_N=$(who am i | awk '{print $NF}' | sed 's/[()]//g')
+    echo "${DATE_N} ${USER_N}@${IP_N} [INFO] $*" >> ${BASE_DIR}/update_crl.log
+}
+
 function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
@@ -145,13 +153,13 @@ function compare_crl()
 {
     openssl crl -verify -in $1 -inform DER -CAfile $3 -noout 2>/dev/null
     if [[ $? != 0 ]];then
-        echo "$3 check $1 validation not pass" >> ${BASE_DIR}/update_crl.log
+        echo_info "$3 check $1 validation not pass"
         return 2
     fi
     if [[ -f $2 ]];then
         openssl crl -verify -in $2 -inform DER -CAfile $3 -noout 2>/dev/null
         if [[ $? != 0 ]];then
-            echo "$3 check $2 validation not pass" >> ${BASE_DIR}/update_crl.log
+            echo_info "$3 check $2 validation not pass"
             return 3
         fi
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
@@ -189,7 +197,7 @@ function zip_extract()
         return 1
     fi
     if [[ "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]];then
-        echo "${updated_crl} check ${ca_file} expired" >> ${BASE_DIR}/update_crl.log
+        echo_info "${updated_crl} check ${ca_file} expired"
         return 1
     fi
 }
@@ -229,12 +237,10 @@ main()
         local ascend_cert_path=~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert
     fi
     if [ -f ${ascend_cert_path} ];then
-        if [[ ${UID} == 0 ]];then
-            /usr/local/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert -u $1
-        else
-            ~/Ascend/toolbox/latest/Ascend-DMI/bin/ascend-cert -u $1
-        fi
+        echo_info "${ascend_cert_path} -u $1"
+        ${ascend_cert_path} -u $1
     else
+        echo_info "openssl upgrade $1"
         upgrade_crl $1
     fi
 }

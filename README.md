@@ -544,8 +544,8 @@ https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 2. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
 - A: 安全原因，本工具不要求非root用户拥有sudo权限，所以不支持非root用户安装5.0.1版本以前的toolkit。
 
-3. Q: 工具会用到华为软件完整性保护根证书，但具备验证证书是否被吊销的能力吗？是否有安装包内的CRL文件跟系统本地的CRL文件比较更新的机制？工具是否具备独立的CRL文件比较更新的能力？
-- A: crl文件更新和校验有两种方式，优先使用toolbox/latest/Ascend-DMI/bin/ascend-cert工具进行更新校验，如果该工具不存在，则使用openssl命令进行更新和校验。本工具会比较安装包内的CRL文件和系统本地的CRL文件的生效时间，并使用最新的CRL文件校验证书是否被吊销。对root用户，系统本地的CRL文件为`/etc/hwsipcrl/ascendsip.crl`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl`。如果系统本地的CRL文件不存在或生效时间早于安装包内的CRL文件，则系统本地的CRL文件会被安装包内的CRL文件替换。tools目录放置了update_crl.sh脚本，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
+3. Q: 工具crl文件更新和签名校验的机制是什么样的？是否具备独立的crl文件更新的能力？
+- A: crl文件更新和签名校验有两种方式，优先使用toolbox/latest/Ascend-DMI/bin/ascend-cert工具，如果环境上不存在该工具，则使用openssl开源工具。为兼容新旧软件包的签名格式，本工具会使用2套证书。本工具会比较安装包内的crl文件和系统本地的crl文件的生效时间，并使用最新的crl文件校验证书是否被吊销。对root用户，系统本地的crl文件为`/etc/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`。如果系统本地的crl文件不存在或生效时间早于安装包内的crl文件，则系统本地的crl文件会被安装包内的crl文件替换。tools/update_crl.sh文件具备独立的crl文件更新的能力，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
 
 
 # 其他安装指导
