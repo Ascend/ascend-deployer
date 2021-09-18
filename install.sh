@@ -161,7 +161,7 @@ function get_specified_python()
     if [ ! -z ${ASCEND_PYTHON_VERSION} ];then
         echo ${ASCEND_PYTHON_VERSION}
     else
-        echo $(grep -oP "^ascend_python_version=\K.*" ${BASE_DIR}/downloader/config.ini)
+        echo $(grep -oP "^ascend_python_version=\K.*" ${BASE_DIR}/downloader/config.ini | sed 's/\r$//')
     fi
 }
 
