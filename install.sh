@@ -161,7 +161,7 @@ function get_specified_python()
     if [ ! -z ${ASCEND_PYTHON_VERSION} ];then
         echo ${ASCEND_PYTHON_VERSION}
     else
-        echo $(grep -oP "^ascend_python_version=\K.*" ${BASE_DIR}/downloader/config.ini)
+        echo $(grep -oP "^ascend_python_version=\K.*" ${BASE_DIR}/downloader/config.ini | sed 's/\r$//')
     fi
 }
 
@@ -683,6 +683,7 @@ function verify_zip()
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
         if [ -f ${ascend_cert_path} ];then
+            echo "ascend-cert check ${zip_file}" >> ${BASE_DIR}/install.log
             ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
             if [[ $? != 0 ]];then
                 echo "ascend-cert update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
@@ -692,6 +693,7 @@ function verify_zip()
                 hmac_check_result=$?
             fi
         else
+            echo "openssl check ${zip_file}" >> ${BASE_DIR}/install.log
             hmac_check ${sys_g2_crl_file} ${root_ca_g2_file} || hmac_check ${sys_crl_file} ${root_ca_file}
             hmac_check_result=$?
         fi
