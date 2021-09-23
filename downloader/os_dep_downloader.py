@@ -37,14 +37,15 @@ class OsDepDownloader:
 
     def download(self, os_list, software_list, dst):
         results = {}
+        mindstudio_list = [software for software in software_list if "MindStudio" in software]
         for os_item in os_list:
-            res = self.download_os(os_item, software_list, dst)
+            res = self.download_os(os_item, mindstudio_list, dst)
             results[os_item] = res
         return results
 
     def download_pkg_from_json(self):
         results = {}
-        software_list = [software.replace("_", "==") for software in self.pkg_list]
+        software_list = [software.replace("_", "==") for software in self.pkg_list if "MindStudio" in software]
         for os_item in self.os_list:
             res = self.download_os(os_item, software_list, self.resources_dir)
             results[os_item] = res

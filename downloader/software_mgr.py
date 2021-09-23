@@ -19,7 +19,8 @@ import json
 import os
 
 CUR_DIR = os.path.dirname(__file__)
-g_software_list = []
+g_software_list = set()
+sys_software_list, ms_software_list, other_software_list = ([] for _ in range(3))
 
 
 class Software(object):
@@ -31,6 +32,7 @@ class Software(object):
         self.default = default
         self.sys_pkgs = {}
         self.other_pkgs = {}
+        self.mindspore = {}
         self.version = ""
 
     def __lt__(self, other):
@@ -74,6 +76,20 @@ class Software(object):
         """
         self.sys_pkgs[sys_name] = pkg_list
 
+    def get_mindspore(self, sys_name):
+        """
+        get mindspore
+        """
+        if sys_name not in self.mindspore:
+            return []
+        return self.mindspore[sys_name]
+
+    def set_mindspore(self, sys_name, pkg_list):
+        """
+        set mindspore
+        """
+        self.mindspore[sys_name] = pkg_list
+
     def get_other_pkgs(self):
         """
         get other dependencies
@@ -98,9 +114,14 @@ def load_software(json_file):
         if 'systems' in json_obj:
             for sys_obj in json_obj['systems']:
                 soft.set_sys_pkgs(sys_obj['system'], sys_obj['sys'])
+            sys_software_list.append(soft)
+        if 'mindspore' in json_obj:
+            for sys_obj in json_obj['mindspore']:
+                soft.set_mindspore(sys_obj['system'], sys_obj['whl'])
+            ms_software_list.append(soft)
         if 'other' in json_obj:
             soft.set_other_pkgs(json_obj['other'])
-        g_software_list.append(soft)
+            other_software_list.append(soft)
 
 
 def software_init():
@@ -112,6 +133,8 @@ def software_init():
         for file_name in files:
             if file_name.endswith('json'):
                 load_software(os.path.join(CUR_DIR, 'software', file_name))
+    global g_software_list
+    g_software_list = set(sys_software_list + ms_software_list + other_software_list)
 
 
 def get_software_name_version(software):
@@ -122,7 +145,6 @@ def get_software_name_version(software):
     """
     if len(g_software_list) == 0:
         software_init()
-
     version = ''
     if '==' in software:
         name = software.split('==')[0]
@@ -146,15 +168,33 @@ def get_software_sys(name, sys_name, version=None):
     """
     if len(g_software_list) == 0:
         software_init()
-    g_software_list.reverse()
-    for soft in g_software_list:
+    for soft in sys_software_list:
         if version is None:
             if soft.get_name().lower() == name.lower():
                 return soft.get_sys_pkgs(sys_name)
         else:
             if soft.get_name().lower() == name.lower() and soft.get_version() == version:
                 return soft.get_sys_pkgs(sys_name)
+    return []
 
+
+def get_software_mindspore(name, sys_name, version=None):
+    """
+    获取软件依赖的操作系统依赖
+    :param in:  name      软件名
+    :param in:  sys_name  操作系统
+    :param in:  version   软件版本
+    :return:   软件name在操作系统sys_name下的mindspore whl
+    """
+    if len(g_software_list) == 0:
+        software_init()
+    for soft in ms_software_list:
+        if version is None:
+            if soft.get_name().lower() == name.lower():
+                return soft.get_mindspore(sys_name)
+        else:
+            if soft.get_name().lower() == name.lower() and soft.get_version() == version:
+                return soft.get_mindspore(sys_name)
     return []
 
 
@@ -167,15 +207,13 @@ def get_software_other(name, version=None):
     """
     if len(g_software_list) == 0:
         software_init()
-    g_software_list.reverse()
-    for soft in g_software_list:
+    for soft in other_software_list:
         if version is None:
             if soft.get_name().lower() == name.lower():
                 return soft.get_other_pkgs()
         else:
             if soft.get_name().lower() == name.lower() and soft.get_version() == version:
                 return soft.get_other_pkgs()
-
     return []
 
 

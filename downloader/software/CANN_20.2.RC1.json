@@ -1,7 +1,6 @@
 {"name": "CANN",
 "version":"20.2.RC1",
 "default":false,
-"systems": {},
 "other": [
     {"filename":"A800-9000-npu_20.2.0_centos7.6-aarch64.zip",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/20.2.RC1/A800-9000-npu_20.2.0_centos7.6-aarch64.zip"},

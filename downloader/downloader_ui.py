@@ -115,11 +115,13 @@ class Win(object):
         config = configparser.ConfigParser()
         config.read(self.config_file)
 
-        if config['download']['os_list'] or config['software']['pkg_list']:
+        if not config['download']['os_list'] and not config['software']['pkg_list']:
+            tkinter.messagebox.showwarning(title="Warning", message="至少勾选一项")
+        elif not config['download']['os_list'] and "MindSpore" in config['software']['pkg_list']:
+            tkinter.messagebox.showwarning(title="Warning", message="下载MindSpore时OS_LIST至少勾选一项")
+        else:
             self.root.destroy()
             sys.exit(0)
-        else:
-            tkinter.messagebox.showwarning(title="Warning", message="至少勾选一项")
 
     def read_config(self):
         """

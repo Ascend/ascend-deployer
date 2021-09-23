@@ -1,7 +1,6 @@
 {"name": "CANN",
 "version":"5.0.1",
 "default":false,
-"systems": {},
 "other": [
     {"filename":"A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_centos7.6-aarch64.zip",
         "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.1/A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_centos7.6-aarch64.zip"},

@@ -199,6 +199,12 @@ function check_script_args()
         return 1
     fi
 
+    if [ -z "${OS_LIST}" ] && [ "${PKG_LIST}" =~ "MindSpore" ];then
+        log_error "os_list can not be none when downloading mindspore"
+        print_usage
+        return 1
+    fi
+
     # --os-list
     if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,-]*$');then
         log_error "--os-list ${OS_LIST} is invalid"
@@ -231,7 +237,7 @@ function check_script_args()
     for package in ${PKG_LIST}
     do
         case "${package}" in
-        CANN|MindStudio)
+        CANN|MindStudio|MindSpore)
             continue
             ;;
         *)
