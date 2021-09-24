@@ -1,38 +1,21 @@
-- name: test if mindspore installed
-  find:
-    paths:
-      - "{{ local_path }}/{{ python_version }}/lib"
-    recurse: yes
-    file_type: directory
-    use_regex: yes
-    patterns: "mindspore"
-  register: ms_root
-  when: ansible_user_uid == 0
+- name: check mindspore
+  shell: python3 -m pip list | grep mindspore
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  failed_when: false
+  changed_when: false
+  register: mindspore_version
 
-- name: test if mindspore installed for non-root
-  find:
-    paths:
-      - "{{ local_path }}/lib"
-    recurse: yes
-    file_type: directory
-    use_regex: yes
-    patterns: "mindspore"
-  register: ms_non_root
-  when: ansible_user_uid != 0
-
-- name: set_fact
-  set_fact: ms={{ ms_root }}
-  when: ansible_user_uid == 0
-
-- name: set_fact for non-root
-  set_fact: ms={{ ms_non_root }}
-  when: ansible_user_uid != 0
+- name: message
+  debug: var=mindspore_version
+  when: mindspore_version.stdout != ""
 
 - name: message
   debug:
     msg:
-    - "mindspore not installed"
-  when: ms.matched == 0
+      - "mindspore not installed"
+  when: mindspore_version.stdout == ""
 
 - name: test import mindspore ascend 910
   shell: python3 -c "import mindspore as ms; print(ms.__version__)"
@@ -44,7 +27,7 @@
     PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/"
   register: mindspore_ascend910_version
   when:
-    - ms.matched > 0
+    - mindspore_version.stdout != ""
     - ansible_local.npu_info.scene == "train"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
@@ -58,33 +41,33 @@
     PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/"
   register: mindspore_ascend310_version
   when:
-    - ms.matched > 0
+    - mindspore_version.stdout != ""
     - ansible_local.npu_info.scene == "infer"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
 
 - name: set_version for 910
   set_fact: mindspore_ascend_version={{ mindspore_ascend910_version }}
-  when: mindspore_ascend910_version is defined
+  when: mindspore_ascend910_version.skipped is false
 
 - name: set_version for 310
   set_fact: mindspore_ascend_version={{ mindspore_ascend310_version }}
-  when: mindspore_ascend310_version is defined
+  when: mindspore_ascend310_version.skipped is false
 
 - name: test import mindspore cpu
-  shell: python3 -c "import mindspore as tf; print(tf.__version__)"
+  shell: python3 -c "import mindspore as ms; print(ms.__version__)"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: mindspore_cpu_version
   when:
-    - ms.matched > 0
+    - mindspore_version.stdout != ""
     - ansible_local.npu_info.scene == ""
     - "'Ubuntu_18.04' in os_and_arch"
 
 - name: print mindspore ascend version
   debug: var=mindspore_ascend_version
-  when: mindspore_ascend_version is defined and not 'skipped' in mindspore_ascend_version
+  when: mindspore_ascend_version.skipped is false
 
 - name: print mindspore cpu version
   debug: var=mindspore_cpu_version
-  when: mindspore_cpu_version is defined and not 'skipped' in mindspore_cpu_version
+  when: mindspore_cpu_version.skipped is false

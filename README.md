@@ -67,7 +67,6 @@
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
-- 由于配套CANN 5.0.3版本的mindspore版本未正式发布，本版本的工具不下载mindspore的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。mindspore软件配套说明详见[Mindspore官网](https://mindspore.cn/versions)。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 ### 内核头软件包说明
@@ -395,9 +394,15 @@ source ~/.local/ascendrc       # non-root
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
-| `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的软件包。例如MindStudio、CANN |
+| `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的组件。例如MindSpore、MindStudio、CANN |
 
-当前MindStudio支持下载2.0.0、3.0.1、3.0.2版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+| 可选的组件      | 配套版本1 | 配套版本2 | 配套版本3 |
+|:-------------- | -------- | --------  | -------- |
+| MindStudio     |  2.0.0   |  3.0.1    |  3.0.2   |
+| MindSpore      |  1.1.1   |  1.2.1    |  1.3.0   |
+| CANN           |  20.2.RC1|  5.0.1    |  5.0.2.1 |
+
+安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
 
 ## <a name="scene">安装场景介绍</a>
 
