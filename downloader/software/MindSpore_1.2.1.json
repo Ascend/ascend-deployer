@@ -1,0 +1,102 @@
+{"name": "MindSpore",
+    "version":"1.2.1",
+    "default":false,
+    "mindspore": [
+        {"system":"Ubuntu_18.04_aarch64",
+            "whl":[
+            {
+                "filename": "mindspore-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/cpu/ubuntu_aarch64/mindspore-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "dst_dir":"CPU",
+                "sha256": "bfe97146c1f4643076a7e9eba7a3f2e9d37f6ed079983c7101a7b4a368d9813c"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ubuntu_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "dst_dir":"Ascend910",
+                "sha256": "da0478285ac4f93c26d7cea2f24bb1859f960f1653d9c9f03cf9cbdb0859b904"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/ubuntu_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl" ,
+                "dst_dir":"Ascend310",
+                "sha256": "c30948dd464e21e1e53fb07eb4f52ff3b79f0460e870622b9907d8f20c9ba08a"
+            }]
+        },
+        {"system":"Ubuntu_18.04_x86_64",
+            "whl":[
+            {
+                "filename": "mindspore-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/cpu/ubuntu_x86/mindspore-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "dst_dir":"CPU",
+                "sha256": "c21c8e6e92d5e96a3f803daa55cf6b3f23e4744c7e212802270a72f376d60860"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ubuntu_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "dst_dir":"Ascend910",
+                "sha256": "da571c24ef5139135db9cd4d83e19945941f2a7fbb1bda73c0dac4b8b55967c8"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/ubuntu_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "dst_dir":"Ascend310",
+                "sha256": "5499b88a328dc0fa9ab0916684b62e3e5d4a404607cea0e07798eb77503a1cbf"
+            }]
+        },
+        {"system":"CentOS_7.6_aarch64",
+            "whl":[
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/centos_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "sha256": "592ae11ce65ad5292e7b826065fe2925ac5152caec2923e8fb13f64a40cb87c1",
+                "dst_dir": "Ascend910"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/centos_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "sha256": "ee4017192d7f6ac1308c22854e4173e856bfe450b4c06ed4fac0ecc7680aee84",
+                "dst_dir": "Ascend310"
+            }]
+        },
+        {"system":"CentOS_7.6_x86_64",
+            "whl":[
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/centos_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "sha256": "a2711e4c0f5134ede07fa27634527f36a31a1585695bbddb75040bb78161ea56",
+                "dst_dir": "Ascend910"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/centos_x86/mindspore_ascend-1.2.1-cp37-cp37m-linux_x86_64.whl",
+                "sha256": "399a9b6630d382f1394d5018d683027ec791a7cb46bc28e04a2a28d8581f77d5",
+                "dst_dir": "Ascend310"
+            }]
+        },
+        {"system":"EulerOS_2.8_aarch64",
+            "whl":[
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/euleros_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "sha256": "6eb8eae0f0b8c25ddc5205b1fbc16530543b13b586189687fd6a6ed3eed60d37",
+                "dst_dir": "Ascend910"
+            },
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/ascend310/euleros_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "sha256": "68d218d1e65f11d47aceda48dd4c7648ad02874be57040a314b8fe75538f7f50",
+                "dst_dir": "Ascend310"
+            }]
+        },
+        {"system":"Kylin_V10Tercel_aarch64",
+            "whl":[
+            {
+                "filename": "mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/ascend/kylin_aarch64/mindspore_ascend-1.2.1-cp37-cp37m-linux_aarch64.whl",
+                "dst_dir":"Ascend910",
+                "sha256": "6eb8eae0f0b8c25ddc5205b1fbc16530543b13b586189687fd6a6ed3eed60d37"
+            }]
+        }
+    ]
+}

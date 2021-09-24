@@ -1,39 +1,69 @@
-- name: install mindspore_ascend for 910
-  shell: python3 -m pip install mindspore_ascend --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
-  environment:
-    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
-  register: mindspore_910_result
-  when:
-    - ansible_local.npu_info.scene == "train"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
-
-- name: install mindspore_ascend for 310
-  shell: python3 -m pip install mindspore_ascend --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
-  environment:
-    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
-  register: mindspore_310_result
+- name: find Ascend310 mindspore wheel package
+  find:
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/Ascend310/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "mindspore_ascend.*{{ ansible_architecture }}.whl"
+  register: mindspore_whl_310
   when:
     - ansible_local.npu_info.scene == "infer"
     - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
 
+- name: find Ascend910 mindspore wheel package
+  find:
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/Ascend910/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "mindspore_ascend.*{{ ansible_architecture }}.whl"
+  register: mindspore_whl_910
+  when:
+    - ansible_local.npu_info.scene == "train"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
+
+- name: install mindspore_ascend 310
+  shell: python3 -m pip install {{ mindspore_whl_310.files[0].path }} --no-index {{ pip_install_option }}
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+  when:
+    - mindspore_whl_310.matched is defined and mindspore_whl_310.matched > 0
+
+- name: install mindspore_ascend 910
+  shell: python3 -m pip install {{ mindspore_whl_910.files[0].path }} --no-index {{ pip_install_option }}
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ local_path }}/gcc8.4.0/lib64"
+  when:
+    - mindspore_whl_910.matched is defined and mindspore_whl_910.matched > 0
+
+- name: find mindspore_cpu wheel package
+  find:
+    paths: "{{ resources_dir }}/{{ os_and_arch }}/CPU/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "mindspore.*{{ ansible_architecture }}.whl"
+  register: mindspore_whl_cpu
+  when:
+    - ansible_local.npu_info.scene == ""
+    - "'Ubuntu_18.04' in os_and_arch"
+
 - name: install mindspore_cpu
-  shell: python3 -m pip install mindspore --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
+  shell: python3 -m pip install {{ mindspore_whl_cpu.files[0].path }} --no-index {{ pip_install_option }}
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64"
-  register: mindspore_cpu_result
   when:
-    - ansible_local.npu_info.scene != "train"
-    - ansible_local.npu_info.scene != "infer"
-    - "'Ubuntu_18.04' in os_and_arch"
+    - mindspore_whl_cpu.matched is defined and mindspore_whl_cpu.matched > 0
 
 - name: message
   debug:
     msg:
-      - "not support os: {{ os_and_arch }} in scene: {{ ansible_local.npu_info.scene }}, mindspore install skipped"
+      - "os: {{ os_and_arch }}, scene: {{ ansible_local.npu_info.scene }}, mindspore install skipped"
+      - "maybe you should check mindspore whl package in dir: {{ resources_dir }}/{{ os_and_arch }}/Ascend910(or Ascend310)/"
   when:
-    - mindspore_910_result.skipped is true
-    - mindspore_310_result.skipped is true
-    - mindspore_cpu_result.skipped is true
+    - mindspore_whl_310.skipped is true
+    - mindspore_whl_910.skipped is true
+    - mindspore_whl_cpu.skipped is true

@@ -1,7 +1,6 @@
 {"name": "CANN",
     "version":"5.0.2.1",
     "default":true,
-    "systems": {},
     "other": [
         {"filename":"A300-3010-npu_21.0.2_linux-x86_64.zip",
             "url":"https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resource/toolbox/cann/5.0.2/A300-3010-npu_21.0.2_linux-x86_64.zip"},

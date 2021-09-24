@@ -51,14 +51,14 @@ def download_specified_python(dst=None):
     return other_downloader.download_specified_python(dst)
 
 
-def download_other_software(sofware_list=None, dst=None):
+def download_other_software(software_list=None, dst=None):
     """
-    download other resources, such as source code tar ball
+    download other resources, such as CANN and MindStudio
     """
-    if sofware_list is None and dst is None:
+    if software_list is None and dst is None:
         return other_downloader.download_pkg_from_json()
     else:
-        return other_downloader.download(sofware_list, dst)
+        return other_downloader.download(software_list, dst)
 
 
 def download_python_packages(dst=None):
@@ -84,6 +84,16 @@ def download_python_packages(dst=None):
     return results
 
 
+def download_mindspore(os_list=None, software_list=None, dst=None):
+    """
+    download_mindspore
+    """
+    if software_list is None and dst is None:
+        return other_downloader.download_ms_from_json()
+    else:
+        return other_downloader.download_ms(os_list, software_list, dst)
+
+
 def download_os_packages(os_list=None, software_list=None, dst=None):
     """
     download_os_packages
@@ -102,6 +112,7 @@ def download_all(os_list, software_list, dst):
     res_dir = os.path.join(dst, "resources")
     download_specified_python(dst)
     download_python_packages(res_dir)
+    download_mindspore(os_list, software_list, dst)
     download_os_packages(os_list, software_list, res_dir)
     download_other_software(software_list, dst)
     download_other_packages(dst)
@@ -139,6 +150,11 @@ def parse_argument(download_path):
             sys.exit(1)
 
     if args.os_list is None and args.packages is None:
+        parser.print_help()
+        sys.exit(0)
+
+    if args.os_list is None and "MindSpore" in args.packages:
+        print("os_list can not be none when downloading mindspore")
         parser.print_help()
         sys.exit(0)
 
@@ -221,6 +237,7 @@ if __name__ == "__main__":
         try:
             download_specified_python()
             download_python_packages()
+            download_mindspore()
             download_os_packages()
             download_other_software()
             download_other_packages()
