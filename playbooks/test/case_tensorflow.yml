@@ -1,61 +1,33 @@
-- name: test if tensorflow installed
-  find:
-    paths:
-      - "{{ local_path }}/{{ python_version }}/lib"
-    recurse: yes
-    file_type: directory
-    use_regex: yes
-    patterns: "tensorflow"
-  register: tf_root
-  when: ansible_user_uid == 0
+- name: check tensorflow
+  shell: python3 -m pip list | grep "tensorflow \|tensorflow-cpu"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  failed_when: false
+  changed_when: false
+  register: tf_version
 
-- name: test if tensorflow installed for non-root
-  find:
-    paths:
-      - "{{ local_path }}/lib"
-    recurse: yes
-    file_type: directory
-    use_regex: yes
-    patterns: "tensorflow"
-  register: tf_non_root
-  when: ansible_user_uid != 0
-
-- name: set_fact
-  set_fact: tf={{ tf_root }}
-  when: ansible_user_uid == 0
-
-- name: set_fact for non-root
-  set_fact: tf={{ tf_non_root }}
-  when: ansible_user_uid != 0
+- name: message
+  debug: var=tf_version
+  when: tf_version.stdout != ""
 
 - name: message
   debug:
     msg:
-    - "tensorflow not installed"
-  when: tf.matched == 0
-
-- name: test import tensorflow
-  shell: python3 -c "import tensorflow as tf; print(tf.__version__)"
-  environment:
-    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
-    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
-  register: tf_version
-  when: tf.matched > 0
-
-- name: print tensorflow version
-  debug: var=tf_version
-  when: tf.matched > 0
-  failed_when: tf_version.rc != 0 or (tf_version.rc == 0 and tf_version.stdout != "1.15.0")
+      - "tensorflow not installed"
+  when: tf_version.stdout == ""
 
 - name: check add_ons directory exists
   shell: find {{ ascend_install_path }} -type d | grep add-ons | wc -l
   register: add_ons_dir
-  when: tf.matched > 0
+  when: tf_version.stdout != ""
 
 - name: check add_ons directory contains libprotobuf.so
   shell: find {{ ascend_install_path }}/add-ons/ -type f | grep libprotobuf.so | wc -l
   register: add_ons_dir_protobuf
-  when: tf.matched > 0 and add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
+  when:
+    - tf_version.stdout != ""
+    - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
 
 - name: test npu_bridge without add_ons
   shell: python3 -c "import npu_bridge.estimator; import npu_bridge.hccl; from tensorflow.core.protobuf import rewriter_config_pb2"
@@ -65,13 +37,13 @@
     PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge
   when:
-    - tf.matched > 0
+    - tf_version.stdout != ""
     - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
 
 - name: print npu_bridge without add_ons
   debug: var=import_npu_bridge
   when:
-    - tf.matched > 0
+    - tf_version.stdout != ""
     - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
 
 - name: test npu_bridge with add_ons
@@ -82,13 +54,13 @@
     PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge_with_add_ons
   when:
-    - tf.matched > 0
+    - tf_version.stdout != ""
     - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
     - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'
 
 - name: print npu_bridge with add_ons
   debug: var=import_npu_bridge_with_add_ons
   when:
-    - tf.matched > 0
+    - tf_version.stdout != ""
     - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
     - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'

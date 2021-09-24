@@ -9,6 +9,16 @@
       changed_when: false
       register: import_torch
 
+    - name: message
+      debug: var=import_torch
+      when: import_torch.rc == 0
+
+    - name: message
+      debug:
+        msg:
+          - "pytorch is already installed, pytorch install skipped"
+      when: import_torch.rc == 0
+
     - name: stat gcc-7.3.0
       stat:
         path: "{{ local_path }}/gcc7.3.0"
