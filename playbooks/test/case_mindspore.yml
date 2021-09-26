@@ -46,7 +46,7 @@
   when:
     - ms.matched > 0
     - ansible_local.npu_info.scene == "train"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
 - name: test import mindspore ascend 310
   shell: python3 -c "import mindspore as ms; print(ms.__version__)"
@@ -64,27 +64,27 @@
 
 - name: set_version for 910
   set_fact: mindspore_ascend_version={{ mindspore_ascend910_version }}
-  when: mindspore_ascend910_version is defined
+  when: mindspore_ascend910_version.skipped is false
 
 - name: set_version for 310
   set_fact: mindspore_ascend_version={{ mindspore_ascend310_version }}
-  when: mindspore_ascend310_version is defined
+  when: mindspore_ascend310_version.skipped is false
 
 - name: test import mindspore cpu
-  shell: python3 -c "import mindspore as tf; print(tf.__version__)"
+  shell: python3 -c "import mindspore as ms; print(ms.__version__)"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: mindspore_cpu_version
   when:
     - ms.matched > 0
+    - ansible_local.npu_info.scene == ""
     - "'Ubuntu_18.04' in os_and_arch"
-    - ansible_local.npu_info.scene != "train" and ansible_local.npu_info.scene != "infer"
 
 - name: print mindspore ascend version
   debug: var=mindspore_ascend_version
-  when: mindspore_ascend_version is defined and not 'skipped' in mindspore_ascend_version
+  when: mindspore_ascend_version is defined
 
 - name: print mindspore cpu version
   debug: var=mindspore_cpu_version
-  when: mindspore_cpu_version is defined and not 'skipped' in mindspore_cpu_version
+  when: mindspore_cpu_version.skipped is false
