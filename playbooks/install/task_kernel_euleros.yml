@@ -4,7 +4,7 @@
   changed_when: false
 
 - name: find kernel headers rpm
-  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-headers*' | sort -r | grep -m1 {{ euleros_kernel_flag }}"
+  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-headers*' | sort -r | grep -m1 {{ euleros_kernel_flag }} | wc -l"
   register: kh_rpm
   when: kh_cnt.stdout == "0"
 
@@ -20,7 +20,7 @@
   changed_when: false
 
 - name: find kernel devel rpm
-  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-devel*' | sort -r | grep -m1 {{ euleros_kernel_flag }}"
+  shell: "find {{ resources_dir }}/kernel/ -name 'kernel-devel*' | sort -r | grep -m1 {{ euleros_kernel_flag }} | wc -l"
   register: kd_rpm
   when: kd_cnt.stdout == "0"
 
