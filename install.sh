@@ -676,6 +676,7 @@ function verify_zip()
     echo -e "${ROOT_CA_G2}" > ${root_ca_g2_file}
     local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
     echo -e "${ROOT_CA}" > ${root_ca_file}
+    chmod 600 $2 ${root_ca_g2_file} ${root_ca_file}
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep zip ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
