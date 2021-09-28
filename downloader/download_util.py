@@ -61,7 +61,7 @@ def get_support_url():
     """
     get support url
     """
-    resources_json = os.path.join(CUR_DIR, 'downloader', 'software', 'support_url.json')
+    resources_json = os.path.join(CUR_DIR, 'downloader', 'support_url.json')
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
     return data
@@ -272,10 +272,7 @@ class DownloadUtil:
             LOG.info('%s already deleted', dst_file_name)
 
 
-DOWNLOAD_INST = DownloadUtil()
-
-
-class SupportDownload:
+class Cann_Download:
     browser = None
 
     def __init__(self):
@@ -315,10 +312,10 @@ class SupportDownload:
 
     def login(self):
         login_url = get_support_url().get('login_url')
-        SupportDownload.browser = self.get_firefox_driver()
+        Cann_Download.browser = self.get_firefox_driver()
         self.browser.get(login_url)
         count = 0
-        while SupportDownload.browser.current_url != \
+        while Cann_Download.browser.current_url != \
                 get_support_url().get('support_site'):
             count += 1
             if count > 300:
@@ -353,6 +350,10 @@ class SupportDownload:
         while file_name + '.part' in \
                 [_file_name for _file_name in os.listdir(self.download_dir)]:
             time.sleep(1)
+
+
+DOWNLOAD_INST = DownloadUtil()
+CANN_DOWNLOAD_INST = Cann_Download()
 
 
 def calc_sha256(file_path):
