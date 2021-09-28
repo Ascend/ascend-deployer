@@ -196,6 +196,7 @@ def main():
     """
     entry for console
     """
+    download_status = "Failed"
     download_path = get_download_path()
     try:
         args = parse_argument(download_path)
