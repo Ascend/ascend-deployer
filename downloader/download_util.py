@@ -165,6 +165,7 @@ class DownloadUtil:
                 delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 DownloadUtil.start_time = time.time()
+                print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
                 sys.stdout.write('\n')
                 return is_exists(local_file)
@@ -258,6 +259,7 @@ class Cann_Download:
             return True
 
     def get_firefox_driver(self):
+        import selenium
         from selenium import webdriver
 
         fp = webdriver.FirefoxProfile()
@@ -276,21 +278,31 @@ class Cann_Download:
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
                 raise IOError
-            browser = webdriver.Firefox(firefox_profile=fp,
-                                        port=56003,
-                                        service_args=['--marionette-port',
-                                                      '56004'],
-                                        service_log_path='/dev/null',
-                                        executable_path=driver_path)
+            try:
+                browser = webdriver.Firefox(firefox_profile=fp,
+                                            port=56003,
+                                            service_args=['--marionette-port',
+                                                          '56004'],
+                                            service_log_path='/dev/null',
+                                            executable_path=driver_path)
+            except selenium.common.exceptions.SessionNotCreatedException:
+                print("[ERROR] firefox or geckodriver is not available, please check")
+                LOG.error("firefox or geckodriver is not available")
+                raise
         else:
             driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
             if not os.path.exists(driver_path):
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
                 raise IOError
-            browser = webdriver.Firefox(firefox_profile=fp,
-                                        service_log_path='NUL',
-                                        executable_path=driver_path)
+            try:
+                browser = webdriver.Firefox(firefox_profile=fp,
+                                            service_log_path='NUL',
+                                            executable_path=driver_path)
+            except selenium.common.exceptions.SessionNotCreatedException:
+                print("[ERROR] firefox or geckodriver is not available, please check")
+                LOG.error("firefox or geckodriver is not available")
+                raise
         return browser
 
     def login(self):
@@ -310,6 +322,7 @@ class Cann_Download:
         self.download_dir = os.path.dirname(dst_file_name)
 
         try:
+            import selenium
             from selenium import webdriver
         except ImportError:
             print("[ERROR] import selenium error, please install selenium first")
@@ -326,7 +339,9 @@ class Cann_Download:
             except IOError:
                 LOG.error('download %s failed', file_name)
                 return False
-
+            except selenium.common.exceptions.SessionNotCreatedException:
+                LOG.error('download %s failed', file_name)
+                return False
         delete_if_exist(dst_file_name)
         delete_if_exist(dst_file_name + '.asc')
 
@@ -344,7 +359,7 @@ class Cann_Download:
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
 
-        return is_exists(file_name) and is_exists(file_name + '.asc')
+        return is_exists(dst_file_name) and is_exists(dst_file_name + '.asc')
 
     def wait_download_complete(self, file_name):
         while file_name + '.part' in \
