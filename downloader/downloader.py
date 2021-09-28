@@ -219,7 +219,7 @@ def main():
         software_list = args.packages.split(',')
     try:
         download_all(os_list, software_list, download_path)
-    except (KeyboardInterrupt, SystemExit, ConnectionRefusedError):
+    except (KeyboardInterrupt, SystemExit):
         download_status = "Failed"
         exit_status = 1
     else:
@@ -241,7 +241,7 @@ if __name__ == "__main__":
             download_os_packages()
             download_other_packages()
             download_other_software()
-        except (KeyboardInterrupt, SystemExit, ConnectionRefusedError):
+        except (KeyboardInterrupt, SystemExit):
             download_status = "Failed"
         else:
             download_status = "Success"
