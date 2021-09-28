@@ -165,12 +165,9 @@ class DownloadUtil:
                 delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 DownloadUtil.start_time = time.time()
-                print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
                 sys.stdout.write('\n')
-                if os.path.exists(local_file):
-                    LOG.info('%s download successfully', url)
-                return True
+                return is_exists(local_file)
             except ContentTooShortError as ex:
                 print(ex)
                 LOG.error(ex)
@@ -261,6 +258,8 @@ class Cann_Download:
             return True
 
     def get_firefox_driver(self):
+        from selenium import webdriver
+
         fp = webdriver.FirefoxProfile()
         fp.set_preference("browser.download.folderList", 2)
         fp.set_preference("browser.helperApps.alwaysAsk.force", False)
@@ -274,7 +273,7 @@ class Cann_Download:
         if platform.system() == 'Linux':
             driver_path = os.path.join(ROOT_DIR, 'geckodriver')
             if not os.path.exists(driver_path):
-                print("{} not exists, please check the file".format(driver_path))
+                print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
                 raise IOError
             browser = webdriver.Firefox(firefox_profile=fp,
@@ -286,7 +285,7 @@ class Cann_Download:
         else:
             driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
             if not os.path.exists(driver_path):
-                print("{} not exists, please check the file".format(driver_path))
+                print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
                 raise IOError
             browser = webdriver.Firefox(firefox_profile=fp,
@@ -344,7 +343,8 @@ class Cann_Download:
             return False
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
-        return True
+
+        return is_exists(file_name) and is_exists(file_name + '.asc')
 
     def wait_download_complete(self, file_name):
         while file_name + '.part' in \
@@ -385,9 +385,17 @@ def get_specified_python():
             sys.exit(1)
     return specified_python
 
-
 def delete_if_exist(dst_file_name: str):
     if os.path.exists(dst_file_name):
-        LOG.info('%s already exists', dst_file_name)
+        LOG.info('{} already exists'.format(dst_file_name))
         os.remove(dst_file_name)
-        LOG.info('%s already deleted', dst_file_name)
+        LOG.info('{} already deleted'.format(dst_file_name))
+
+def is_exists(dst_file_name: str):
+    if os.path.exists(dst_file_name):
+        LOG.info('{} exists after downloading, success'.format(dst_file_name))
+        return True
+    else:
+        print('[ERROR] {} not exists after downloading, failed'.format(dst_file_name))
+        LOG.info('{} not exists after downloading, failed'.format(dst_file_name))
+        return False
