@@ -313,16 +313,16 @@ class Cann_Download:
         try:
             from selenium import webdriver
         except ImportError:
-            print("import selenium error, please install selenium first")
-            LOG.error('download %s failed', file_name)
+            print("[ERROR] import selenium error, please install selenium first")
+            LOG.error('import selenium error, download %s failed', file_name)
             return False
 
         if self.browser is None:
             try:
                 self.login()
             except ConnectionRefusedError:
-                print("login timeout or not logged in, please try again")
-                LOG.error('download %s failed', file_name)
+                print("[ERROR] login timeout or not logged in, please try again")
+                LOG.error('login timeout or not logged in, download %s failed', file_name)
                 return False
             except IOError:
                 LOG.error('download %s failed', file_name)
@@ -339,8 +339,8 @@ class Cann_Download:
         self.wait_download_complete(file_name)
         if get_support_url().get('apply_right') in \
                 self.browser.current_url:
-            print("no permission to download, please apply for permission first")
-            LOG.error('download %s failed', file_name)
+            print("[ERROR] no permission to download, please apply for permission first")
+            LOG.error('no permission to download, download %s failed', file_name)
             return False
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
