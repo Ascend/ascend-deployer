@@ -76,7 +76,11 @@ def download_software(software, dst):
         if formal_name != "CANN":
             ret = DOWNLOAD_INST.download(item['url'], dest_file)
         else:
-            ret = CANN_DOWNLOAD_INST.download(item['url'], dest_file)
+            ret = False
+            try:
+                ret = CANN_DOWNLOAD_INST.download(item['url'], dest_file)
+            finally:
+                CANN_DOWNLOAD_INST.quit()
         if ret:
             print(item['filename'].ljust(60), 'download success')
         results.append(ret)

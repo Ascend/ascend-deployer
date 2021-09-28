@@ -199,7 +199,7 @@ function check_script_args()
         return 1
     fi
 
-    if [ -z "${OS_LIST}" ] && [ "${PKG_LIST}" =~ "MindSpore" ];then
+    if [ -z "${OS_LIST}" ] && [[ "${PKG_LIST}" =~ "MindSpore" ]];then
         log_error "os_list can not be none when downloading mindspore"
         print_usage
         return 1
