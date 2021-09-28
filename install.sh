@@ -541,6 +541,7 @@ function verify_zip()
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
         local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
         echo -e "${ROOT_CA}" > ${root_ca_file}
+        chmod 600 ${root_ca_file}
         compare_crl ${crl_file} ${sys_crl} ${root_ca_file}
         local verify_crl=$?
         if [[ ${verify_crl} == 0 ]];then
