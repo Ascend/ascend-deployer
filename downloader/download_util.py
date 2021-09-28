@@ -263,6 +263,89 @@ class DownloadUtil:
 DOWNLOAD_INST = DownloadUtil()
 
 
+class SupportDownload:
+    browser = None
+
+    def __init__(self):
+        super().__init__()
+        self.download_dir = None
+
+    @classmethod
+    def quit(cls):
+        if cls.browser:
+            cls.browser.quit()
+            cls.browser = None
+
+    def get_firefox_driver(self):
+        fp = webdriver.FirefoxProfile()
+        fp.set_preference("browser.download.folderList", 2)
+        fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+        fp.set_preference("browser.download.manager.showAlertOnComplete", True)
+        fp.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                          'application/zip,application/octet-stream,'
+                          'application/x-zip-compressed,multipart/x-zip,'
+                          'application/x-rar-com'
+                          'pressed, application/octet-stream')
+        fp.set_preference("browser.download.dir", self.download_dir)
+        if platform.system() == 'Linux':
+            driver_path = os.path.join(config.AD_HOME, 'geckodriver') # 1
+            browser = webdriver.Firefox(firefox_profile=fp,
+                                        port=WEB_DRIVER_PORT, #2
+                                        service_args=['--marionette-port',
+                                                      f'{FIREFOX_PORT}'], #2
+                                        service_log_path='/dev/null',
+                                        executable_path=driver_path)
+        else:
+            driver_path = os.path.join(config.AD_HOME, 'geckodriver.exe') #1
+            browser = webdriver.Firefox(firefox_profile=fp,
+                                        service_log_path='NUL',
+                                        executable_path=driver_path)
+        return browser
+
+    def login(self):
+        login_url = config.BaseConfig.COMMON_CONFIG.get('login_url') # 3
+        if not login_url:
+            raise ServiceError('login url not found')
+        SupportDownload.browser = self.get_firefox_driver()
+        self.browser.get(login_url)
+        count = 0
+        while SupportDownload.browser.current_url != \
+                config.BaseConfig.COMMON_CONFIG.get('support_site'): #3
+            count += 1
+            if count > 300:
+                raise AuthenticFailure('support site')
+            time.sleep(1)
+
+    def download(self, url: str, local_path: str):
+        if url.endswith('asc'):
+        # will be downloaded with main package
+            return
+        if os.path.isfile(local_path):
+            os.unlink(local_path)
+        if os.path.isfile(local_path + '.asc'):
+            os.unlink(local_path + '.asc')
+        self.download_dir = os.path.dirname(local_path)
+        file_name = os.path.basename(local_path)
+        if self.browser is None:
+            self.login()
+        self.browser.get(url)
+        WebDriverWait(self.browser, 30).until(
+            lambda _driver:
+            _driver.find_element_by_partial_link_text('直接下载'))
+        self.browser.find_element_by_partial_link_text('直接下载').click()
+        self.wait_download_complete(file_name)
+        if config.BaseConfig.COMMON_CONFIG.get('apply_right') in \ #3
+                self.browser.current_url:
+            raise Exception('no permission')
+        self.browser.find_element_by_partial_link_text('pgp').click()
+        self.wait_download_complete(file_name + '.asc')
+
+    def wait_download_complete(self, file_name):
+        while file_name + '.part' in \
+                [_file_name for _file_name in os.listdir(self.download_dir)]:
+            time.sleep(1)
+
+
 def calc_sha256(file_path):
     hash_val = None
     if file_path is None or not os.path.exists(file_path):
