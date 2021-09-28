@@ -25,6 +25,7 @@ import hashlib
 import ssl
 import platform
 import logger_config
+
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
@@ -52,7 +53,17 @@ def get_ascend_path():
 
 LOG = logger_config.LOG
 CUR_DIR = get_ascend_path()
+ROOT_DIR = os.path.dirname(CUR_DIR)
 
+
+def get_support_url():
+    """
+    get support url
+    """
+    resources_json = os.path.join(CUR_DIR, 'downloader', 'support_url.json')
+    with open(resources_json, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+    return data
 
 class ConfigUtil:
     config_file = os.path.join(CUR_DIR, 'downloader/config.ini')
@@ -139,7 +150,7 @@ class DownloadUtil:
 
         res = cls.download_with_retry(url, dst_file_name)
         if not res:
-            print('download {} failed'.format(url))
+            print(url.ljust(60), 'download failed')
             LOG.error('download %s failed', url)
             return False
         else:
@@ -151,15 +162,13 @@ class DownloadUtil:
         for retry in range(1, retry_times + 1):
             try:
                 LOG.info('downloading try: %s from %s', retry, url)
-                cls.delete_if_exist(dst_file_name)
+                delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 DownloadUtil.start_time = time.time()
                 print("downloading {}".format(dst_file_name.split('/')[-1]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
                 sys.stdout.write('\n')
-                if os.path.exists(local_file):
-                    LOG.info('%s download successfully', url)
-                return True
+                return is_exists(local_file)
             except ContentTooShortError as ex:
                 print(ex)
                 LOG.error(ex)
@@ -174,30 +183,9 @@ class DownloadUtil:
                 print('connection reset by peer, retry...')
             finally:
                 pass
-
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
-        return False
-
-    @classmethod
-    def download_no_retry(cls, url: str, dst_file_name: str):
-        try:
-            LOG.info('downloading from %s', url)
-            cls.proxy_inst.build_proxy_handler()
-            DownloadUtil.start_time = time.time()
-            print("downloading {}".format(dst_file_name.split('/')[-1]))
-            local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
-            sys.stdout.write('\n')
-            return True
-        except ContentTooShortError as ex:
-            LOG.error(ex)
-        except URLError as err:
-            LOG.error(err)
-        except socket.timeout as timeout:
-            LOG.error(timeout)
-        finally:
-            pass
         return False
 
     @classmethod
@@ -246,21 +234,141 @@ class DownloadUtil:
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
 
-    @classmethod
-    def check_download_necessary(cls, dst_file_name):
-        if not os.path.exists(dst_file_name):
-            return True
-        return False
 
-    @staticmethod
-    def delete_if_exist(dst_file_name: str):
-        if os.path.exists(dst_file_name):
-            LOG.info('%s already exists', dst_file_name)
-            os.remove(dst_file_name)
-            LOG.info('%s already deleted', dst_file_name)
+class Cann_Download:
+    browser = None
+
+    def __init__(self):
+        self.download_dir = None
+
+    @classmethod
+    def quit(cls):
+        if cls.browser:
+            cls.browser.quit()
+            cls.browser = None
+
+    def download(self, url: str, dst_file_name: str):
+        file_name = os.path.basename(dst_file_name)
+        res = self.download_with_selenium(url, dst_file_name)
+        if not res:
+            print(file_name.ljust(60), 'download failed')
+            LOG.error('download %s failed', file_name)
+            return False
+        else:
+            LOG.info('download %s successfully', file_name)
+            return True
+
+    def get_firefox_driver(self):
+        import selenium
+        from selenium import webdriver
+
+        fp = webdriver.FirefoxProfile()
+        fp.set_preference("browser.download.folderList", 2)
+        fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+        fp.set_preference("browser.download.manager.showAlertOnComplete", True)
+        fp.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                          'application/zip,application/octet-stream,'
+                          'application/x-zip-compressed,multipart/x-zip,'
+                          'application/x-rar-com'
+                          'pressed, application/octet-stream')
+        fp.set_preference("browser.download.dir", self.download_dir)
+        if platform.system() == 'Linux':
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver')
+            if not os.path.exists(driver_path):
+                print("[ERROR] {} not exists, please check the file".format(driver_path))
+                LOG.error("{} not exists, please check the file".format(driver_path))
+                raise IOError
+            try:
+                browser = webdriver.Firefox(firefox_profile=fp,
+                                            port=56003,
+                                            service_args=['--marionette-port',
+                                                          '56004'],
+                                            service_log_path='/dev/null',
+                                            executable_path=driver_path)
+            except selenium.common.exceptions.SessionNotCreatedException:
+                print("[ERROR] firefox or geckodriver is not available, please check")
+                LOG.error("firefox or geckodriver is not available")
+                raise
+        else:
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
+            if not os.path.exists(driver_path):
+                print("[ERROR] {} not exists, please check the file".format(driver_path))
+                LOG.error("{} not exists, please check the file".format(driver_path))
+                raise IOError
+            try:
+                browser = webdriver.Firefox(firefox_profile=fp,
+                                            service_log_path='NUL',
+                                            executable_path=driver_path)
+            except selenium.common.exceptions.SessionNotCreatedException:
+                print("[ERROR] firefox or geckodriver is not available, please check")
+                LOG.error("firefox or geckodriver is not available")
+                raise
+        return browser
+
+    def login(self):
+        login_url = get_support_url().get('login_url')
+        Cann_Download.browser = self.get_firefox_driver()
+        self.browser.get(login_url)
+        count = 0
+        while Cann_Download.browser.current_url != \
+                get_support_url().get('support_site'):
+            count += 1
+            if count > 300:
+                raise ConnectionRefusedError()
+            time.sleep(1)
+
+    def download_with_selenium(self, url: str, dst_file_name: str):
+        file_name = os.path.basename(dst_file_name)
+        self.download_dir = os.path.dirname(dst_file_name)
+
+        try:
+            import selenium
+            from selenium import webdriver
+        except ImportError:
+            print("[ERROR] import selenium error, please install selenium first")
+            LOG.error('import selenium error, download %s failed', file_name)
+            return False
+
+        if self.browser is None:
+            try:
+                self.login()
+            except ConnectionRefusedError:
+                print("[ERROR] login timeout or not logged in, please try again")
+                LOG.error('login timeout or not logged in, download %s failed', file_name)
+                return False
+            except IOError:
+                LOG.error('download %s failed', file_name)
+                return False
+            except selenium.common.exceptions.SessionNotCreatedException:
+                LOG.error('download %s failed', file_name)
+                return False
+        delete_if_exist(dst_file_name)
+        delete_if_exist(dst_file_name + '.asc')
+
+        self.browser.get(url)
+        webdriver.support.wait.WebDriverWait(self.browser, 30).until(
+            lambda _driver:
+            _driver.find_element_by_partial_link_text('直接下载'))
+        self.browser.find_element_by_partial_link_text('直接下载').click()
+        self.wait_download_complete(file_name)
+        if get_support_url().get('apply_right') in \
+                self.browser.current_url:
+            print("[ERROR] no permission to download, please apply for permission first")
+            LOG.error('no permission to download, download %s failed', file_name)
+            return False
+        self.browser.find_element_by_partial_link_text('pgp').click()
+        self.wait_download_complete(file_name + '.asc')
+
+        return is_exists(dst_file_name) and is_exists(dst_file_name + '.asc')
+
+    def wait_download_complete(self, file_name):
+        while file_name + '.part' in \
+                [_file_name for _file_name in os.listdir(self.download_dir)]:
+            time.sleep(1)
 
 
 DOWNLOAD_INST = DownloadUtil()
+CANN_DOWNLOAD_INST = Cann_Download()
 
 
 def calc_sha256(file_path):
@@ -291,3 +399,18 @@ def get_specified_python():
             LOG.error(tips)
             sys.exit(1)
     return specified_python
+
+def delete_if_exist(dst_file_name: str):
+    if os.path.exists(dst_file_name):
+        LOG.info('{} already exists'.format(dst_file_name))
+        os.remove(dst_file_name)
+        LOG.info('{} already deleted'.format(dst_file_name))
+
+def is_exists(dst_file_name: str):
+    if os.path.exists(dst_file_name):
+        LOG.info('{} exists after downloading, success'.format(dst_file_name))
+        return True
+    else:
+        print('[ERROR] {} not exists after downloading, failed'.format(dst_file_name))
+        LOG.info('{} not exists after downloading, failed'.format(dst_file_name))
+        return False

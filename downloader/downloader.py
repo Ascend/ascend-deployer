@@ -114,8 +114,8 @@ def download_all(os_list, software_list, dst):
     download_python_packages(res_dir)
     download_mindspore(os_list, software_list, dst)
     download_os_packages(os_list, software_list, res_dir)
-    download_other_software(software_list, dst)
     download_other_packages(dst)
+    download_other_software(software_list, dst)
 
 
 def parse_argument(download_path):
@@ -196,6 +196,7 @@ def main():
     """
     entry for console
     """
+    download_status = "Failed"
     download_path = get_download_path()
     try:
         args = parse_argument(download_path)
@@ -239,8 +240,8 @@ if __name__ == "__main__":
             download_python_packages()
             download_mindspore()
             download_os_packages()
-            download_other_software()
             download_other_packages()
+            download_other_software()
         except (KeyboardInterrupt, SystemExit):
             download_status = "Failed"
         else:

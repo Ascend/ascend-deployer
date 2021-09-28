@@ -487,7 +487,7 @@
     }
 ],
 "other": [
-    {"filename":"minstudio.tar.gz",
+    {"filename":"MindStudio_2.0.0_linux.tar.gz",
      "url":"https://obs-9be7.obs.myhuaweicloud.com/turing/resource/mindstudio/2.0.0-release/MindStudio_2.0.0_linux.tar.gz",
      "sha256": "dc14ee956458b8023bdfb4fadffff6339d39058b05f60d470c6afa899665a9d9"},
     {"filename":"jbr-11_0_9-linux-aarch64-b944.49.tar.gz",

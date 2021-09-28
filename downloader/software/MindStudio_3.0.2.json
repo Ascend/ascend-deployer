@@ -487,7 +487,7 @@
         }
     ],
     "other": [
-        {"filename":"minstudio.tar.gz",
+        {"filename":"MindStudio_3.0.2_linux.tar.gz",
          "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindStudio/MindStudio%203.0.2/MindStudio_3.0.2_linux.tar.gz",
          "sha256": "c30c40d775b58ea28959c74ea1ad64382285b7429d1910f63f8ef7cc2531aa38"},
         {"filename":"jbr-11_0_9-linux-aarch64-b944.49.tar.gz",

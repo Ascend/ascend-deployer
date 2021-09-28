@@ -65,5 +65,6 @@
     { "name": "libnetfilter_conntrack",   "autodependency":"true", "info": "used for edge ha" },
     { "name": "libnfnetlink",   "autodependency":"true", "info": "used for edge ha" },
     { "name": "ethtool",   "autodependency":"true", "info": "used for edge ha" },
-    { "name": "unzip",   "autodependency":"true", "info": "used for edge ha" }
+    { "name": "unzip",   "autodependency":"true", "info": "used for edge ha" },
+    { "name": "gmp-c++",   "autodependency":"true", "info": "used for mindspore" }
 ]

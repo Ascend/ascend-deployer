@@ -18,6 +18,7 @@
     { "name": "hdf5-devel",     "autodependency":"true", "info": "tensorflow use" },
     { "name": "libaec",         "autodependency":"true", "info": "hdf5 need" },
     { "name": "expect",         "autodependency":"true", "info": "used for edge ha" },
+    { "name": "gmp-c++",        "autodependency":"true", "info": "used for mindspore" },
     { "name": "sshpass",
         "url":"https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
         "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336"
