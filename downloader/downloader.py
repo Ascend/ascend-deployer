@@ -114,8 +114,8 @@ def download_all(os_list, software_list, dst):
     download_python_packages(res_dir)
     download_mindspore(os_list, software_list, dst)
     download_os_packages(os_list, software_list, res_dir)
-    download_other_software(software_list, dst)
     download_other_packages(dst)
+    download_other_software(software_list, dst)
 
 
 def parse_argument(download_path):
@@ -219,7 +219,7 @@ def main():
         software_list = args.packages.split(',')
     try:
         download_all(os_list, software_list, download_path)
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt, SystemExit, ConnectionRefusedError):
         download_status = "Failed"
         exit_status = 1
     else:
@@ -239,9 +239,9 @@ if __name__ == "__main__":
             download_python_packages()
             download_mindspore()
             download_os_packages()
-            download_other_software()
             download_other_packages()
-        except (KeyboardInterrupt, SystemExit):
+            download_other_software()
+        except (KeyboardInterrupt, SystemExit, ConnectionRefusedError):
             download_status = "Failed"
         else:
             download_status = "Success"

@@ -25,6 +25,8 @@ import hashlib
 import ssl
 import platform
 import logger_config
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
@@ -52,7 +54,17 @@ def get_ascend_path():
 
 LOG = logger_config.LOG
 CUR_DIR = get_ascend_path()
+ROOT_DIR = os.path.dirname(CUR_DIR)
 
+
+def get_support_url():
+    """
+    get support url
+    """
+    resources_json = os.path.join(CUR_DIR, 'downloader', 'software', 'support_url.json')
+    with open(resources_json, 'r', encoding='utf-8') as json_file:
+        data = json.load(json_file)
+    return data
 
 class ConfigUtil:
     config_file = os.path.join(CUR_DIR, 'downloader/config.ini')
@@ -267,7 +279,6 @@ class SupportDownload:
     browser = None
 
     def __init__(self):
-        super().__init__()
         self.download_dir = None
 
     @classmethod
@@ -288,32 +299,30 @@ class SupportDownload:
                           'pressed, application/octet-stream')
         fp.set_preference("browser.download.dir", self.download_dir)
         if platform.system() == 'Linux':
-            driver_path = os.path.join(config.AD_HOME, 'geckodriver') # 1
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver')
             browser = webdriver.Firefox(firefox_profile=fp,
-                                        port=WEB_DRIVER_PORT, #2
+                                        port=56003,
                                         service_args=['--marionette-port',
-                                                      f'{FIREFOX_PORT}'], #2
+                                                      '56004'],
                                         service_log_path='/dev/null',
                                         executable_path=driver_path)
         else:
-            driver_path = os.path.join(config.AD_HOME, 'geckodriver.exe') #1
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
             browser = webdriver.Firefox(firefox_profile=fp,
-                                        service_log_path='NUL',
+                                        service_log_path='NULL',
                                         executable_path=driver_path)
         return browser
 
     def login(self):
-        login_url = config.BaseConfig.COMMON_CONFIG.get('login_url') # 3
-        if not login_url:
-            raise ServiceError('login url not found')
+        login_url = get_support_url().get('login_url')
         SupportDownload.browser = self.get_firefox_driver()
         self.browser.get(login_url)
         count = 0
         while SupportDownload.browser.current_url != \
-                config.BaseConfig.COMMON_CONFIG.get('support_site'): #3
+                get_support_url().get('support_site'):
             count += 1
             if count > 300:
-                raise AuthenticFailure('support site')
+                raise ConnectionRefusedError('support site')
             time.sleep(1)
 
     def download(self, url: str, local_path: str):
@@ -334,9 +343,9 @@ class SupportDownload:
             _driver.find_element_by_partial_link_text('直接下载'))
         self.browser.find_element_by_partial_link_text('直接下载').click()
         self.wait_download_complete(file_name)
-        if config.BaseConfig.COMMON_CONFIG.get('apply_right') in \ #3
+        if get_support_url().get('apply_right') in \
                 self.browser.current_url:
-            raise Exception('no permission')
+            raise ConnectionRefusedError('no permission')
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
 
