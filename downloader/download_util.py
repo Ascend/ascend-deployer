@@ -72,6 +72,9 @@ class ConfigUtil:
         self.config = configparser.RawConfigParser()
         self.config.read(self.config_file)
 
+    def get_pypi_url(self):
+        return self.config.get('pypi', 'index_url')
+
     def get_proxy_verify(self):
         return self.config.getboolean('proxy', 'verify')
 
@@ -82,6 +85,9 @@ class ConfigUtil:
     def get_download_pkg_list(self):
         pkg_list = self.config.get('software', 'pkg_list')
         return [x.strip() for x in pkg_list.split(',') if len(x.strip()) != 0]
+
+    def get_python_version(self):
+        return self.config.get('python', 'ascend_python_version')
 
 CONFIG_INST = ConfigUtil()
 
@@ -165,7 +171,7 @@ class DownloadUtil:
                 delete_if_exist(dst_file_name)
                 cls.proxy_inst.build_proxy_handler()
                 DownloadUtil.start_time = time.time()
-                print("downloading {}".format(dst_file_name.split('/')[-1]))
+                print("start downloading {}".format(url.split('/')[-1].split('#')[0]))
                 local_file, _ = request.urlretrieve(url, dst_file_name, schedule)
                 sys.stdout.write('\n')
                 return is_exists(local_file)
@@ -249,7 +255,22 @@ class Cann_Download:
 
     def download(self, url: str, dst_file_name: str):
         file_name = os.path.basename(dst_file_name)
-        res = self.download_with_selenium(url, dst_file_name)
+
+        try:
+            import selenium
+        except ImportError:
+            print("[ERROR] import selenium error, please install selenium first")
+            print(file_name.ljust(60), 'download failed')
+            LOG.error('import selenium error, download %s failed', file_name)
+            return False
+
+        try:
+            res = self.download_with_selenium(url, dst_file_name)
+        except selenium.common.exceptions.WebDriverException as err:
+            print("[ERROR] some problem has occured when runing selenium")
+            LOG.error('selenium.common.exceptions.WebDriverException: %s', err)
+            res = False
+
         if not res:
             print(file_name.ljust(60), 'download failed')
             LOG.error('download %s failed', file_name)
@@ -277,7 +298,13 @@ class Cann_Download:
             if not os.path.exists(driver_path):
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
-                raise IOError
+                raise FileNotFoundError
+            try:
+                os.chmod(driver_path, mode=0o500)
+            except PermissionError as err:
+                print("[ERROR] {} no permission to be chmod to 500, please chown the file to the current user".format(driver_path))
+                LOG.error("{} no permission to be chmod to 500, please chown the file to the current user: {}".format(driver_path, err))
+                raise PermissionError
             try:
                 browser = webdriver.Firefox(firefox_profile=fp,
                                             port=56003,
@@ -285,23 +312,23 @@ class Cann_Download:
                                                           '56004'],
                                             service_log_path='/dev/null',
                                             executable_path=driver_path)
-            except selenium.common.exceptions.SessionNotCreatedException:
+            except selenium.common.exceptions.SessionNotCreatedException as err:
                 print("[ERROR] firefox or geckodriver is not available, please check")
-                LOG.error("firefox or geckodriver is not available")
+                LOG.error("firefox or geckodriver is not available: %s", err)
                 raise
         else:
             driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
             if not os.path.exists(driver_path):
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
-                raise IOError
+                raise FileNotFoundError
             try:
                 browser = webdriver.Firefox(firefox_profile=fp,
                                             service_log_path='NUL',
                                             executable_path=driver_path)
-            except selenium.common.exceptions.SessionNotCreatedException:
+            except selenium.common.exceptions.SessionNotCreatedException as err:
                 print("[ERROR] firefox or geckodriver is not available, please check")
-                LOG.error("firefox or geckodriver is not available")
+                LOG.error("firefox or geckodriver is not available: %s", err)
                 raise
         return browser
 
@@ -314,36 +341,27 @@ class Cann_Download:
                 get_support_url().get('support_site'):
             count += 1
             if count > 300:
+                print("[ERROR] login timeout or not logged in, please try again")
+                LOG.error("login timeout or not logged in")
                 raise ConnectionRefusedError()
             time.sleep(1)
 
     def download_with_selenium(self, url: str, dst_file_name: str):
+        from selenium import webdriver
+
         file_name = os.path.basename(dst_file_name)
         self.download_dir = os.path.dirname(dst_file_name)
-
-        try:
-            import selenium
-            from selenium import webdriver
-        except ImportError:
-            print("[ERROR] import selenium error, please install selenium first")
-            LOG.error('import selenium error, download %s failed', file_name)
-            return False
 
         if self.browser is None:
             try:
                 self.login()
-            except ConnectionRefusedError:
-                print("[ERROR] login timeout or not logged in, please try again")
-                LOG.error('login timeout or not logged in, download %s failed', file_name)
-                return False
-            except IOError:
+            except (ConnectionRefusedError, FileNotFoundError, PermissionError):
                 LOG.error('download %s failed', file_name)
                 return False
-            except selenium.common.exceptions.SessionNotCreatedException:
-                LOG.error('download %s failed', file_name)
-                return False
+
         delete_if_exist(dst_file_name)
         delete_if_exist(dst_file_name + '.asc')
+        print("start downloading {}".format(file_name))
 
         self.browser.get(url)
         webdriver.support.wait.WebDriverWait(self.browser, 30).until(
@@ -385,10 +403,7 @@ def get_specified_python():
     if os.environ.get("ASCEND_PYTHON_VERSION"):
         specified_python = os.environ.get("ASCEND_PYTHON_VERSION")
     else:
-        config_file = os.path.join(CUR_DIR, 'downloader', 'config.ini')
-        config = configparser.ConfigParser()
-        config.read(config_file)
-        specified_python = config['python']['ascend_python_version']
+        specified_python = CONFIG_INST.get_python_version()
     resources_json = os.path.join(CUR_DIR, 'downloader', 'python_version.json')
     with open(resources_json, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)

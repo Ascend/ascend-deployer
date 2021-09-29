@@ -1,0 +1,84 @@
+{
+    "name": "CANN",
+    "version": "5.0.1.spc103",
+    "default": false,
+    "other":  [
+        {"filename": "A300-3000-3010-npu_21.0.1_centos7.6-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363127"
+        },
+        {"filename": "A300-3000-3010-npu_21.0.1_euleros2.8-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363140"
+        },
+        {"filename": "A300-3000-3010-npu_21.0.1_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363130"
+        },
+        {"filename": "A300-3000-3010-npu_21.0.1_ubuntu18.04-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363136"
+        },
+        {"filename": "A300-3010-npu_21.0.1_centos7.6-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363138"
+        },
+        {"filename": "A300-3010-npu_21.0.1_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363139"
+        },
+        {"filename": "A300-3010-npu_21.0.1_ubuntu18.04-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363129"
+        },
+
+        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_centos7.6-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345257"
+        },
+        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_centos8.2-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345247"
+        },
+        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_euleros2.8-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345249"
+        },
+        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc1_ubuntu18.04-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345258"
+        },
+        {"filename": "A300t-9000-A800-9010-npu_21.0.rc1_centos7.6-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345255"
+        },
+        {"filename": "A300t-9000-A800-9010-npu_21.0.rc1_centos8.2-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345251"
+        },
+        {"filename": "A300t-9000-A800-9010-npu_21.0.rc1_debian9.9-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345260"
+        },
+        {"filename": "A300t-9000-A800-9010-npu_21.0.rc1_ubuntu18.04-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252727233-ESW2000345253"
+        },
+
+        {"filename": "Ascend-cann-toolbox_5.0.1.spc103_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375855"
+        },
+        {"filename": "Ascend-cann-toolbox_5.0.1.spc103_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375853"
+        },
+        {"filename": "Ascend-cann-nnae_5.0.1.spc103_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375871"
+        },
+        {"filename": "Ascend-cann-nnae_5.0.1.spc103_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375868"
+        },
+        {"filename": "Ascend-cann-nnrt_5.0.1.spc103_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375866"
+        },
+        {"filename": "Ascend-cann-nnrt_5.0.1.spc103_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375863"
+        },
+        {"filename": "Ascend-cann-tfplugin_5.0.1.spc103_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375860"
+        },
+        {"filename": "Ascend-cann-tfplugin_5.0.1.spc103_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375857"
+        },
+        {"filename": "Ascend-cann-toolkit_5.0.1.spc103_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375849"
+        },
+        {"filename": "Ascend-cann-toolkit_5.0.1.spc103_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253348215-ESW2000375846"
+        }
+    ]
+}

@@ -124,7 +124,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - linux
 
   1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">linux下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
-  2. 支持root和非root用户执行下载操作，非root用户不必拥有sudo权限，但需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
+  2. 支持root和非root用户执行下载操作，非root用户需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
 ## 安装操作
 
 ### 安装参数
@@ -396,13 +396,15 @@ source ~/.local/ascendrc       # non-root
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
 | `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的组件。例如MindSpore、MindStudio、CANN |
 
-| 可选的组件      | 配套版本1 | 配套版本2 | 配套版本3 |
-|:-------------- | -------- | --------  | -------- |
-| MindStudio     |  2.0.0   |  3.0.1    |  3.0.2   |
-| MindSpore      |  1.1.1   |  1.2.1    |  1.3.0   |
-| CANN           |  20.2.RC1|  5.0.1    |  5.0.2.1 |
+本工具默认下载python组件包。当--os-list指定的系统中只有aarch64架构时，只下载aarch64架构系统所需的python组件包；当--os-list指定的系统中只有x86_64架构时，只下载x86_64架构系统所需的python组件包；当--os-list为空或指定的系统中aarch64架构和x86_64架构都有时，2种架构系统所需的python组件包都会下载。
 
-安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+| 可选的组件      | 配套版本1 | 配套版本2 |
+|:-------------- | --------  | -------- |
+| MindStudio     |  3.0.1    |  3.0.2   |
+| MindSpore      |  1.2.1    |  1.3.0   |
+| CANN           |  5.0.1.spc103|  5.0.2.1 |
+
+安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的下载安装请参考[下载安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)；CANN的下载请参考[下载CANN](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md)
 
 ## <a name="scene">安装场景介绍</a>
 
@@ -493,7 +495,7 @@ source ~/.local/ascendrc       # non-root
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64, ...          # 待安装部署的环境OS信息
 [software]
-pkg_list=CANN_5.0.1,MindStudio_3.0.1  # 待部署的CANN或MindStudio
+pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # 待部署的CANN或MindStudio
 ```
 
 ### <a name="sourceconfig">源配置</a>
