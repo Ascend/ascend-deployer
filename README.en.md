@@ -117,7 +117,7 @@ The download function can be used in the Windows or Linux OSs.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 - Linux
   1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
-  2. Support root and non-root users to perform download operations, Non-root users do not need sudo permissions, but do need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
+  2. Support root and non-root users to perform download operations, Non-root users need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
 
 ## Installation
 
@@ -384,11 +384,13 @@ The following table describes the parameters. You can run the `./install.sh --he
 | `--os-list=<OS1>,<OS2>`| set specific os softwares to download          |
 | `--download=<PK1>,<PK2>==<Version>`| download specific components. such as MindSpore、MindStudio、CANN |
 
-| optional components| version 1 | version 2 | version 3 |
-|:-------------- | -------- | --------  | -------- |
-| MindStudio     |  2.0.0   |  3.0.1    |  3.0.2   |
-| MindSpore      |  1.1.1   |  1.2.1    |  1.3.0   |
-| CANN           |  20.2.RC1|  5.0.1    |  5.0.2.1 |
+This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded.
+
+| optional components| version 1 | version 2 |
+|:-------------- | --------  | -------- |
+| MindStudio     |  3.0.1    |  3.0.2   |
+| MindSpore      |  1.2.1    |  1.3.0   |
+| CANN           |  5.0.1.spc103|  5.0.2.1 |
 
 Only one version of MindSpore or MindStudio that matches CANN package version should exist in the Resources directory during installation, as shown above. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. `--download=MindSpore`, --os-list specifies the corresponding OS, please refer to the official website of [mindspore](https://mindspore.cn/versions) for some instructions. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 
@@ -482,7 +484,7 @@ You can configure and modify the download parameters in the **downloader/config.
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 [software]
-pkg_list=CANN_5.0.1,MindStudio_3.0.1  # CANN或MindStudio to be deployed.
+pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # CANN或MindStudio to be deployed.
 ```
 
 ### <a name="sourceconfig">Source Configuration</a>

@@ -73,7 +73,7 @@ function set_permission()
 function get_python3()
 {
     # try this first
-    py36="/usr/bin/python3.6"
+    py36="/usr/bin/python3"
     if [ -f ${py36} ];then
         echo ${py36}
         return 0

@@ -61,27 +61,14 @@ def download_other_software(software_list=None, dst=None):
         return other_downloader.download(software_list, dst)
 
 
-def download_python_packages(dst=None):
+def download_python_packages(os_list=None, res_dir=None):
     """
     download_python_packages
     """
-    script = os.path.realpath(__file__)
-    require_file = os.path.join(os.path.dirname(script), 'requirements.txt')
-    if dst is None:
-        repo_path = os.path.join(os.path.dirname(script), '../resources/pylibs')
+    if os_list is None and res_dir is None:
+        return pip_downloader.download_from_json()
     else:
-        repo_path = os.path.join(dst, 'pylibs')
-
-    pip = pip_downloader.MyPip()
-    results = {'ok': [], 'failed': []}
-    with open(require_file) as file_content:
-        for line in file_content.readlines():
-            LOG.info('[{0}]'.format(line.strip()))
-            if pip.download(line.strip(), repo_path):
-                results['ok'].append(line.strip())
-                continue
-            results['failed'].append(line.strip())
-    return results
+        return pip_downloader.download(os_list, res_dir)
 
 
 def download_mindspore(os_list=None, software_list=None, dst=None):
@@ -111,7 +98,7 @@ def download_all(os_list, software_list, dst):
     """
     res_dir = os.path.join(dst, "resources")
     download_specified_python(dst)
-    download_python_packages(res_dir)
+    download_python_packages(os_list, res_dir)
     download_mindspore(os_list, software_list, dst)
     download_os_packages(os_list, software_list, res_dir)
     download_other_packages(dst)
@@ -196,7 +183,6 @@ def main():
     """
     entry for console
     """
-    download_status = "Failed"
     download_path = get_download_path()
     try:
         args = parse_argument(download_path)

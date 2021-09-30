@@ -9,11 +9,11 @@
         {"filename": "A300-3010-npu_21.0.2_linux-x86_64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/253276357-ESW2000387097"
         },
-        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.2_linux-aarch64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/253882149-ESW2000388117"
+        {"filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.2.spc001_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/254125983-ESW2000412805"
         },
-        {"filename": "A300t-9000-A800-9010-npu_21.0.2_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/253882149-ESW2000388118"
+        {"filename": "A300t-9000-A800-9010-npu_21.0.2.spc001_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/254125983-ESW2000412806"
         },
         {"filename": "A300i-pro-npu_21.0.2_linux-aarch64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/253276369-ESW2000394523"

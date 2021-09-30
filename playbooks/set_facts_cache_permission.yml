@@ -1,7 +1,5 @@
 - hosts: localhost
   tasks:
     - name: set facts_cache dir permission
-      file:
-        path: ../facts_cache
-        mode: u=rwX,g=rX,o=-
-        recurse: yes
+      shell: chmod -R 640 ../facts_cache/*
+      failed_when: false

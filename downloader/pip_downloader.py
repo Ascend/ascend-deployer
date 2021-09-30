@@ -16,12 +16,11 @@
 # ===========================================================================
 
 import os
-import configparser
 import urllib.request
 import http.client
 import time
 from html.parser import HTMLParser
-from download_util import DOWNLOAD_INST
+from download_util import CONFIG_INST, DOWNLOAD_INST
 from download_util import calc_sha256, get_specified_python
 import logger_config
 
@@ -70,10 +69,9 @@ class MyPip(object):
         self.downloaded = []
         # 读取配置
         script = os.path.realpath(__file__)
-        config_file = os.path.join(os.path.dirname(script), 'config.ini')
-        config = configparser.ConfigParser()
-        config.read(config_file)
-        self.pypi_url = config.get('pypi', 'index_url')
+        self.pypi_url = CONFIG_INST.get_pypi_url()
+        self.require_file = os.path.join(os.path.dirname(script), 'requirements.txt')
+        self.repo_path = os.path.join(os.path.dirname(script), '../resources/pylibs')
 
     @staticmethod
     def file_download(url, dest):
@@ -306,7 +304,7 @@ class MyPip(object):
         platform = 'manylinux2014_aarch64'
         return self.download_wheel(name, platform, implement_flag, dest_path)
 
-    def download(self, name, dest_path):
+    def download(self, name, dest_path, arch):
         """
         download
 
@@ -327,10 +325,10 @@ class MyPip(object):
             if self.download_wheel(name, "none", implement_flag, dest_path):
                 return True
 
-            if not self.download_x86(name, implement_flag, dest_path):
+            if "x86_64" in arch and not self.download_x86(name, implement_flag, dest_path):
                 self.download_source(name, dest_path)
 
-            if not self.download_arm(name, implement_flag, dest_path):
+            if "aarch64" in arch and not self.download_arm(name, implement_flag, dest_path):
                 self.download_source(name, dest_path)
             return True
         except Exception:
@@ -340,12 +338,77 @@ class MyPip(object):
             pass
 
 
+my_pip = MyPip()
+
+
+def get_arch(os_list):
+    """
+    根据os_list判断需要下载哪些架构的包
+    """
+    arm, x86 = 0, 0
+    for os_item in os_list:
+        if not arm and "aarch64" in os_item:
+            arm = 1
+        if not x86 and "x86_64" in os_item:
+            x86 = 1
+        if arm and x86:
+            break
+
+    if arm and not x86:
+        arch = "aarch64"
+    elif not arm and x86:
+        arch = "x86_64"
+    else:
+        arch = ("x86_64", "aarch64")
+
+    return arch
+
+
+def download(os_list, res_dir):
+    """
+    按软件列表下载其他部分
+    """
+    if os_list is None:
+        os_list = []
+    arch = get_arch(os_list)
+    repo_path = os.path.join(res_dir, 'pylibs')
+    LOG.info('pip arch is {0}'.format(arch))
+
+    results = {'ok': [], 'failed': []}
+    with open(my_pip.require_file) as file_content:
+        for line in file_content:
+            LOG.info('[{0}]'.format(line.strip()))
+            if my_pip.download(line.strip(), repo_path, arch):
+                results['ok'].append(line.strip())
+                continue
+            results['failed'].append(line.strip())
+    return results
+
+
+def download_from_json():
+    """
+    按config.ini下载其他部分
+    """
+    arch = get_arch(CONFIG_INST.get_download_os_list())
+    repo_path = my_pip.repo_path
+    LOG.info('pip arch is {0}'.format(arch))
+
+    results = {'ok': [], 'failed': []}
+    with open(my_pip.require_file) as file_content:
+        for line in file_content:
+            LOG.info('[{0}]'.format(line.strip()))
+            if my_pip.download(line.strip(), repo_path, arch):
+                results['ok'].append(line.strip())
+                continue
+            results['failed'].append(line.strip())
+    return results
+
+
 def main():
     """
     main
     """
-    my_pip = MyPip()
-    my_pip.download('six==1.15.0', './')
+    download_from_json()
 
 
 if __name__ == '__main__':

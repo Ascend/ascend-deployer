@@ -57,33 +57,36 @@ def download_software(software, dst):
         os.makedirs(download_dir, mode=0o750, exist_ok=True)
     LOG.info('item:{} save dir: {}'.format(software, download_dir))
     results = []
-    for item in others:
-        dest_file = os.path.join(download_dir, item['filename'])
-        if os.path.exists(dest_file) and 'sha256' in item:
-            file_hash = calc_sha256(dest_file)
-            url_hash = item['sha256']
-            if file_hash == url_hash:
-                print(item['filename'].ljust(60), 'exists')
-                LOG.info('{0} no need download again'.format(item['filename']))
-                continue
-        if os.path.exists(dest_file) and formal_name == "CANN":
-            file_name = os.path.basename(dest_file)
-            sha256 = calc_sha256(dest_file)
-            if file_name in sha256_map and sha256 == sha256_map[file_name]:
-                print(item['filename'].ljust(60), 'exists')
-                LOG.info('{0} no need download again'.format(item['filename']))
-                continue
-        if formal_name != "CANN":
-            ret = DOWNLOAD_INST.download(item['url'], dest_file)
-        else:
-            ret = False
-            try:
+    if formal_name == "CANN":
+        try:
+            for item in others:
+                dest_file = os.path.join(download_dir, item['filename'])
+                if os.path.exists(dest_file):
+                    file_name = os.path.basename(dest_file)
+                    sha256 = calc_sha256(dest_file)
+                    if file_name in sha256_map and sha256 == sha256_map[file_name]:
+                        print(item['filename'].ljust(60), 'exists')
+                        LOG.info('{0} no need download again'.format(item['filename']))
+                        continue
                 ret = CANN_DOWNLOAD_INST.download(item['url'], dest_file)
-            finally:
-                CANN_DOWNLOAD_INST.quit()
-        if ret:
-            print(item['filename'].ljust(60), 'download success')
-        results.append(ret)
+                if ret:
+                    print(item['filename'].ljust(60), 'download success')
+                results.append(ret)
+        finally:
+            CANN_DOWNLOAD_INST.quit()
+    else:
+        for item in others:
+            dest_file = os.path.join(download_dir, item['filename'])
+            if os.path.exists(dest_file) and 'sha256' in item:
+                file_hash = calc_sha256(dest_file)
+                if file_hash == item['sha256']:
+                    print(item['filename'].ljust(60), 'exists')
+                    LOG.info('{0} no need download again'.format(item['filename']))
+                    continue
+            ret = DOWNLOAD_INST.download(item['url'], dest_file)
+            if ret:
+                print(item['filename'].ljust(60), 'download success')
+            results.append(ret)
     return all(results)
 
 
