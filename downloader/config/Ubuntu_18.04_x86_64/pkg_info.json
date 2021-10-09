@@ -16,6 +16,7 @@
     { "name": "libuv1" },
     { "name": "cmake" },
     { "name": "cmake-data" },
+    { "name": "curl" },
     { "name": "libcurl4" },
     { "name": "libtinfo5" },
     { "name": "libtinfo-dev" },

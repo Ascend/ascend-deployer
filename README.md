@@ -532,14 +532,17 @@ https://github.com
 https://gcc.gnu.org
 http://mirrors.bclinux.org
 https://archive.kylinos.cn
+https://support.huawei.com
 https://mirrors.tencent.com
 https://mirrors.bfsu.edu.cn
 https://repo.huaweicloud.com
+https://uniportal.huawei.com
 https://mirrors.huaweicloud.com
+https://mirrors.tuna.tsinghua.edu.cn
 https://cache-redirector.jetbrains.com
 https://obs-9be7.obs.myhuaweicloud.com
-https://ms-release.obs.cn-north-4.myhuaweicloud.com
 https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
+https://ms-release.obs.cn-north-4.myhuaweicloud.com
 ```
 
 ## <a name="faq">FAQ</a>
