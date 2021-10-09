@@ -31,19 +31,6 @@ PKG_LIST = CONFIG_INST.get_download_pkg_list()
 OS_LIST = CONFIG_INST.get_download_os_list()
 
 
-def get_sha256_map():
-    """
-    从CANN_<Version>.json文件读取sha256字典，其中记录run包的sha256
-    """
-    sha256_map = {}
-    with open(os.path.join(CUR_DIR, 'sha256.txt')) as sha256_cache:
-        for line in sha256_cache:
-            if line.strip():
-                [sha256, name] = [t.strip() for t in line.split(' ') if len(t) > 0]
-                sha256_map[name] = sha256
-    return sha256_map
-
-
 def download_software(software, dst):
     """
     下载软件的其他资源
@@ -51,7 +38,6 @@ def download_software(software, dst):
     formal_name, version = get_software_name_version(software)
     others = get_software_other(formal_name, version)
     download_dir = os.path.join(dst, "resources", "{0}_{1}".format(formal_name, version))
-    sha256_map = get_sha256_map()
 
     if not os.path.exists(download_dir):
         os.makedirs(download_dir, mode=0o750, exist_ok=True)
@@ -61,10 +47,9 @@ def download_software(software, dst):
         try:
             for item in others:
                 dest_file = os.path.join(download_dir, item['filename'])
-                if os.path.exists(dest_file):
-                    file_name = os.path.basename(dest_file)
-                    sha256 = calc_sha256(dest_file)
-                    if file_name in sha256_map and sha256 == sha256_map[file_name]:
+                if os.path.exists(dest_file) and 'sha256' in item:
+                    file_hash = calc_sha256(dest_file)
+                    if file_hash == item['sha256']:
                         print(item['filename'].ljust(60), 'exists')
                         LOG.info('{0} no need download again'.format(item['filename']))
                         continue

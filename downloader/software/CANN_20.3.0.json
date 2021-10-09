@@ -1,0 +1,132 @@
+{
+    "name": "CANN",
+    "version": "20.3.0",
+    "default": false,
+    "other": [
+        {
+            "filename": "A300-3000-3010-npu_20.2.2_centos7.6-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823277-ESW2000337706",
+            "sha256": "099e67d1d5e13bb5413072467c2a012a8468b46dcc9fc8e3c527c0640cb97647"
+        },
+        {
+            "filename": "A300-3000-3010-npu_20.2.2_euleros2.8-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823277-ESW2000337712",
+            "sha256": "d9e7ff91c6c5ca14e56422a9e0a1fd37cba7f389c9daf05a9d1902a02d5e407c"
+        },
+        {
+            "filename": "A300-3000-3010-npu_20.2.2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823277-ESW2000337708",
+            "sha256": "3191035110da0992f32e60163c9ac2707185aca7b43fcc8e7651f113357d53f0"
+        },
+        {
+            "filename": "A300-3000-3010-npu_20.2.2_ubuntu18.04-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823277-ESW2000337714",
+            "sha256": "29ebd9451a09c0d87e74a283ed3f4c0543b3e078a625745124a78483e7ae6f94"
+        },
+        {
+            "filename": "A300-3010-npu_20.2.2_centos7.6-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823281-ESW2000337756",
+            "sha256": "6a67c4c288ca3cff65cedc2c9d70f3f7d785a81d043f1c23cc2c3d71a72c27b1"
+        },
+        {
+            "filename": "A300-3010-npu_20.2.2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823281-ESW2000337760",
+            "sha256": "a926ce01d6ca8d3a6281cc0be85792c5f51201e88e6e5c8eeee1a83fe5cd4ce6"
+        },
+        {
+            "filename": "A300-3010-npu_20.2.2_ubuntu18.04-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252823281-ESW2000337732",
+            "sha256": "a5d3eceda208ab5ceed4808ecc743088df6a9c0b0660b2258c7b5b4e6938032e"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_20.2.2_centos7.6-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343542",
+            "sha256": "0d049c59ec7c18f343a8c62a1edccdc94956d1e176ada5e983ebbbdd92da4b3a"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_20.2.2_centos8.2-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343544",
+            "sha256": "b325930a1853bf4dfa9a1d70d711e41283e2074c6cd33aa8c428e2f1bd6b3616"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_20.2.2_euleros2.8-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343546",
+            "sha256": "bf51c06928c45c59c338018cf089e93d4b587639632e64cdf6e12aff033712a7"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_20.2.2_ubuntu18.04-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343548",
+            "sha256": "d67a039241a58d39c287e669330d182b6f3c1967b504d260d8e7cdeec7fc8c9f"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_20.2.2_centos7.6-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343550",
+            "sha256": "762f2df9cf30bcc8b9efa20c945630eb584beb0207bdabe0088dae5fc53c0a2d"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_20.2.2_centos8.2-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343552",
+            "sha256": "460dd73c73ea6f94678b8d1b5df366a31139e41b8a4c7d2d97551e1379ee5af8"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_20.2.2_debian9.9-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343554",
+            "sha256": "0833bfc1d67f66658ab689dd99045dafcadefd101c5ca4e75f3ba375d56a3483"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_20.2.2_ubuntu18.04-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/252894541-ESW2000343556",
+            "sha256": "4c6002ee7de8a80b00a4c104ed0d959284617cca8e7e287799123309b2237c8d"
+        },
+        {
+            "filename": "Ascend-cann-toolbox_20.3.0_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346853",
+            "sha256": "f115d7c65d6926dd7d255ae55f91cd5af495c0698550f96ec1003c7291f4aae2"
+        },
+        {
+            "filename": "Ascend-cann-toolbox_20.3.0_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346854",
+            "sha256": "f0876fc963847f1911d127420403743dab6575e200cf5240efbe73a06ce5f10a"
+        },
+        {
+            "filename": "Ascend-cann-nnae_20.3.0_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346845",
+            "sha256": "d7bd869ca27348f871ba41fced5dfcd37dba2956bb7ef65d511b290bec5254fe"
+        },
+        {
+            "filename": "Ascend-cann-nnae_20.3.0_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346844",
+            "sha256": "f89c24d3035fc54d2ce98758b041c6a252c7bfcad3d9b8e3e9988c3e26e4c3cf"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_20.3.0_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346851",
+            "sha256": "70c4649577acaa4858d2dd8c9f1aaefd1249fb0b9f4dfe6ea00837dc1908fe08"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_20.3.0_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346850",
+            "sha256": "88531d73ca4be9abd0cf70356ac948601ccce6e8cb72e47cf9910306ce63fc07"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_20.3.0_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346847",
+            "sha256": "389ec18e77d927e7a486dd044940ffb9570bf42d7e0a16130e8333dc1f4a5657"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_20.3.0_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346846",
+            "sha256": "479b41cc02e4f3871ac2634bc2809a4fd8e891195ab6f9df4ed6e250d9b3536b"
+        },
+        {
+            "filename": "Ascend-cann-toolkit_20.3.0_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346849",
+            "sha256": "34fbba4e18ba4a57b413b005b307a6c96ec1efdb72b884bd49c44f548c7dbbff"
+        },
+        {
+            "filename": "Ascend-cann-toolkit_20.3.0_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346852",
+            "sha256": "56c20309e45583c9a7b646514e6d57c3de7c25ebb3056d6053e3492f2b9be494"
+        }
+    ]
+}

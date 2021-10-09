@@ -6,7 +6,7 @@
 
 需满足以下条件：
 
-1. 用户环境需为Windows系统或Ubuntu系统，其它的Linux系统未经验证，不建议使用。
+1. 用户环境需为Windows系统或Ubuntu系统，其它的Linux系统未经验证，不建议使用。注意本工具的存放路径中不要包含中文。
 
 2. 确保能正常登录[华为企业业务网站](https://support.huawei.com)，并提前申请相应软件包(驱动与固件包、CANN软件包以及Toolbox软件包)的下载权限，可通过点击ascend-deployer/downloader/software/CANN_<version>.json内的url链接跳转申请。
 
@@ -23,7 +23,7 @@
    ls usr/bin/geckodriver   # 查看生成的usr/bin/geckodriver文件，得到geckodriver后清理这些临时文件
    ```
 
-   4.3 请将geckodriver.exe(或geckodriver)文件放置于ascend-deployer工具的同级目录下。安全起见，Linux系统下请确保geckodriver属主为当前用户且权限为600，Windows系统下请确保其他用户对geckodriver.exe无读写权限。
+   4.3 请将geckodriver.exe(或geckodriver)文件放置于ascend-deployer工具的同级目录下。安全起见，Linux系统下请确保geckodriver属主为当前用户且权限为500，Windows系统下请确保其他用户对geckodriver.exe无读写权限。
 
 5. 参考README中“下载操作”步骤，确保系统中python3命令可用，然后执行`pip3 install selenium`安装selenium。若无pip3工具请先自行安装。
 
