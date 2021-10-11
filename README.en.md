@@ -314,6 +314,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --download=          | download specific software. such as 如MindStudio、CANN |
 
 Currently, MindStudio is only supported on Ubuntu_18.04_x86_64, Ubuntu_18.04_aarch64, and Euleros_2.8_aarch64. when --download=MindStudio, the --os-list needs to specify one or more of these three Os at the same time.
+- 2021.10.11 Update: Due to the limited release range of drivers and CANN software packages, this tool does not support `--download=CANN`. Please get the software packages and save them in the resources directory.
 
 ## <a name="scene">Installation Scenarios</a>
 

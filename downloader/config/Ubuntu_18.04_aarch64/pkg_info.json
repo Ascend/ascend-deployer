@@ -38,6 +38,7 @@
     {
         "name": "cmake-data", "used_by": [ "driver", "cann", "framework" ]
     },
+    { "name": "curl" },
     {
         "name": "libcurl4", "used_by": [ "driver", "cann", "framework" ]
     },
