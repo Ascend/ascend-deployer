@@ -429,3 +429,25 @@ def is_exists(dst_file_name: str):
         print('[ERROR] {} not exists after downloading, failed'.format(dst_file_name))
         LOG.info('{} not exists after downloading, failed'.format(dst_file_name))
         return False
+
+def get_arch(os_list):
+    """
+    根据os_list判断需要下载哪些架构的包
+    """
+    arm, x86 = 0, 0
+    for os_item in os_list:
+        if not arm and "aarch64" in os_item:
+            arm = 1
+        if not x86 and "x86_64" in os_item:
+            x86 = 1
+        if arm and x86:
+            break
+
+    if arm and not x86:
+        arch = "aarch64"
+    elif not arm and x86:
+        arch = "x86_64"
+    else:
+        arch = ("x86_64", "aarch64")
+
+    return arch

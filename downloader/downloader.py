@@ -51,14 +51,14 @@ def download_specified_python(dst=None):
     return other_downloader.download_specified_python(dst)
 
 
-def download_other_software(software_list=None, dst=None):
+def download_other_software(os_list=None, software_list=None, dst=None):
     """
     download other resources, such as CANN and MindStudio
     """
     if software_list is None and dst is None:
         return other_downloader.download_pkg_from_json()
     else:
-        return other_downloader.download(software_list, dst)
+        return other_downloader.download(os_list, software_list, dst)
 
 
 def download_python_packages(os_list=None, res_dir=None):
@@ -102,7 +102,7 @@ def download_all(os_list, software_list, dst):
     download_mindspore(os_list, software_list, dst)
     download_os_packages(os_list, software_list, res_dir)
     download_other_packages(dst)
-    download_other_software(software_list, dst)
+    download_other_software(os_list, software_list, dst)
 
 
 def parse_argument(download_path):

@@ -384,7 +384,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | `--os-list=<OS1>,<OS2>`| set specific os softwares to download          |
 | `--download=<PK1>,<PK2>==<Version>`| download specific components. such as MindSpore、MindStudio、CANN |
 
-This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded.
+This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded. Same logic as above to download CANN package for aarch64 or x86_64 architectures.
 
 | optional components| version 1 | version 2 | version 3 |
 |:------------------ | --------  | --------  | -------- |
