@@ -82,19 +82,19 @@
 ```bash
 pip3 install ascend-deployer
 ```
-- 版本要求：python >= 3.6
+- 版本要求：python >= 3.6；ascend-deployer < 1.0
 - 建议以root用户身份，使用系统自带python3及pip3工具安装，若无pip3请自行安装
 - 使用方法参考<a href="#pip_manual">操作指导:pip方式</a>
 
 ### git安装
 
 ```bash
-git clone https://gitee.com/ascend/ascend-deployer.git
+git clone -b br_release_mindx_2.0.2_20220204 https://gitee.com/ascend/ascend-deployer.git
 ```
 
 ### 下载zip安装
 
-点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为022或更高，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为022或更高，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。请在br_release_mindx_2.0.2_20220204分支下获取zip包。
 
 # 操作指导:源码方式
 
@@ -389,14 +389,15 @@ source ~/.local/ascendrc       # non-root
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 
-## <a name="download_parameter">linux下载参数说明</a>
+## <a name="download_parameter">下载参数说明</a>
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
 | `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的软件包。例如MindStudio、CANN |
 
-当前MindStudio支持下载2.0.0、3.0.1、3.0.2版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)
+当前MindStudio支持下载2.0.0、3.0.1、3.0.2版本，CANN支持下载20.2.RC1、5.0.1、5.0.2.1版本，安装时resources目录下只应存在一个版本的MindStudio或CANN包，否则可能会有版本不配套的情况；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；MindStudio的安装请参考[安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)。
+- 2021.10.11更新：由于驱动、CANN软件包发布范围限制，本工具暂不支持`--download=CANN`，请用户获取软件包后自行放置于resources目录下。
 
 ## <a name="scene">安装场景介绍</a>
 

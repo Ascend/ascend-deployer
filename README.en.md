@@ -79,19 +79,19 @@ The offline installation tool provides automatic download and one-click installa
 ```bash
 pip3 install ascend-deployer
 ```
-- Version requirement: python >= 3.6
+- Version requirement: python >= 3.6, ascend-deployer < 1.0
 - It is recommended that you install it as root and use the python3 and pip3 tools on your system. If pip3 is not available, please install it by yourself
 - Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
 
 ```bash
-git clone https://gitee.com/ascend/ascend-deployer.git
+git clone -b br_release_mindx_2.0.2_20220204 https://gitee.com/ascend/ascend-deployer.git
 ```
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk. Please obtain the zip package under the br_release_mindx_2.0.2_20220204 branch.
 
 # Operation Instructions
 
@@ -376,7 +376,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
 
-## <a name="download_parameter">Linux Download Parameter Description</a>
+## <a name="download_parameter">Download Parameter Description</a>
 
 | Parameter           | Description                                    |
 |:------------------- | ---------------------------------------------- |
@@ -384,6 +384,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | `--download=<PK1>,<PK2>==<Version>`| download specific software. such as 如MindStudio、CANN |
 
 Currently MindStudio supports 2.0.0, 3.0.1 and 3.0.2 versions, and Cann supports 20.2.rc1, 5.0.1 and 5.0.2.1 versions. Only one version of the MindStudio or Cann package should exist in the resources directory at the time of installation, otherwise there may be versions that do not match. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
+- 2021.10.11 Update: Due to the limited release range of drivers and CANN software packages, this tool does not support `--download=CANN`. Please get the software packages and save them in the resources directory.
 
 ## <a name="scene">Installation Scenarios</a>
 
