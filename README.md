@@ -80,12 +80,12 @@ python3 -m pip install ascend-deployer
 ### git安装
 
 ```bash
-git clone https://gitee.com/ascend/ascend-deployer.git
+git clone -b 5.0.1.tr5 https://gitee.com/ascend/ascend-deployer.git
 ```
 
 ### 下载zip安装
 
-点击右上角“克隆/下载”按钮，然后点击下方“下载zip”,下载后解压使用。
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”,下载后解压使用。请在5.0.1.tr5分支下获取zip包。
 
 # 操作指导:源码方式
 
@@ -371,6 +371,7 @@ source /usr/local/ascendrc
 | --download=         | 指定下载可选的软件包。例如MindStudio、CANN |
 
 目前只支持在Ubuntu_18.04_x86_64、Ubuntu_18.04_aarch64、EulerOS_2.8_aarch64上安装MindStudio，--download=MindStudio时，--os-list需同时指定这3个OS的某一个或某几个。
+- 2021.10.11更新：由于驱动、CANN软件包发布范围限制，本工具暂不支持`--download=CANN`，请用户获取软件包后自行放置于resources目录下。
 
 ## <a name="scene">安装场景介绍</a>
 
