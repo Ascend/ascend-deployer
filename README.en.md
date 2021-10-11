@@ -44,7 +44,7 @@ The offline installation tool provides automatic download and one-click installa
 |  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
 |:-------------:|:-------------:|:-------------:|
 |  A300-3000    |  A300T-9000   |  A500 Pro-3000|
-|  A300-3010    |  A800-9000    |               |
+|  A300-3010    |  A800-9000    |  Atlas200(EP) |
 |  A300I Pro    |  A800-9010    |               |
 |  A800-3000    |               |               |
 |  A800-3010    |               |               |
@@ -55,10 +55,12 @@ The offline installation tool provides automatic download and one-click installa
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
+- CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
+- The hardware configurations of the Atlas200 EP and A300 card (A300-3000, A300-3010, A800-3000, and A800-3010) cannot be distinguished. The following conditions must be met when using the Atlas200 EP. The Atlas200 EP and A300 inference card environments cannot be deployed in batches. If the deployed machine contains the Atlas200 EP, do not store the NPU package of the A300 EP in the Resources directory. If the deployed machine contains the A300 inference card, do not store the NPU package of the Atlas200 EP in the Resources directory. Because of the above two restrictions, `--download=CANN` does not include the NPU package of Atlas200 EP. Please prepare it yourself.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
 - By default, the **root** user is not allowed to remotely log in to OSs such as EulerOS. Therefore, you need to set **PermitRootLogin** to **yes** in the **sshd_config** file before using this tool(Individual OS configuration methods may be different, please refer to the OS official description), and close the remote connection of root user after using this tool.
 - Support for Ubuntu 18.04.1/5 installation of cross-compiled related components and the Aarch64 architecture toolkit package.
-- CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
+
 - After the kylin V10 system's dependencies are installed, you need to wait for the system configuration to complete before you can use docker and other commands.
 - You need to modify /etc/pam.d/su, delete # before 'auth efficient pam_ rootok.so', so that the root user switch to other users without entering a password when the system is Linx.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
@@ -384,13 +386,13 @@ The following table describes the parameters. You can run the `./install.sh --he
 | `--os-list=<OS1>,<OS2>`| set specific os softwares to download          |
 | `--download=<PK1>,<PK2>==<Version>`| download specific components. such as MindSpore、MindStudio、CANN |
 
-This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded.
+This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded. Same logic as above to download CANN package for aarch64 or x86_64 architectures.
 
-| optional components| version 1 | version 2 |
-|:-------------- | --------  | -------- |
-| MindStudio     |  3.0.1    |  3.0.2   |
-| MindSpore      |  1.2.1    |  1.3.0   |
-| CANN           |  5.0.1.spc103|  5.0.2.1 |
+| optional components| version 1 | version 2 | version 3 |
+|:------------------ | --------  | --------  | -------- |
+| MindStudio         |  2.0.0    |  3.0.1    |  3.0.2   |
+| MindSpore          |  1.1.1    |  1.2.1    |  1.3.0   |
+| CANN               |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |
 
 Only one version of MindSpore or MindStudio that matches CANN package version should exist in the Resources directory during installation, as shown above. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. `--download=MindSpore`, --os-list specifies the corresponding OS, please refer to the official website of [mindspore](https://mindspore.cn/versions) for some instructions. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 

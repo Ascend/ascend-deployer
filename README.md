@@ -46,7 +46,7 @@
 |  中心推理硬件  |  中心训练硬件  |  智能边缘硬件  |
 |:-------------:|:-------------:|:-------------:|
 |  A300-3000    |  A300T-9000   |  A500 Pro-3000|
-|  A300-3010    |  A800-9000    |               |
+|  A300-3010    |  A800-9000    |  Atlas200(EP) |
 |  A300I Pro    |  A800-9010    |               |
 |  A800-3000    |               |               |
 |  A800-3010    |               |               |
@@ -58,10 +58,11 @@
 - 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip、ssh等基本命令。建议在Ubuntu/Debian系统的安装过程中，到【Software selection】这一步时勾选上【OpenSSH server】/【SSH server】这一选项，避免缺失ssh命令。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
+- A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
+- 由于无法区分Atlas200 EP和A300推理卡（A300-3000、A300-3010、A800-3000、A800-3010）的硬件形态，Atlas200 EP场景使用本工具时需满足如下条件。不支持Atlas200 EP和A300推理卡环境批量部署；部署的机器包含Atlas200 EP时，resources目录下不要放置A300的NPU包，部署的机器包含A300推理卡时，resources目录下不要放置Atlas200 EP的NPU包；由于以上2条的限制，`--download=CANN`下载功能也不会包含Atlas200 EP的NPU包，请自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等很多操作系统默认禁止root用户远程连接，所以需提前配置/etc/ssh/sshd_config中PermitRootLogin为yes（个别OS配置方法或许不同，请参考OS官方说明）；用完本工具后，及时关闭root用户远程连接
 - 支持Ubuntu 18.04.1/5安装交叉编译的相关组件和aarch64架构的toolkit软件包。
-- Atlas 300T 训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - Linx系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
@@ -396,13 +397,13 @@ source ~/.local/ascendrc       # non-root
 | `--os-list=<OS1>,<OS2>` | 指定下载的特定操作系统的相关依赖软件      |
 | `--download=<PK1>,<PK2>==<Version>`| 指定下载可选的组件。例如MindSpore、MindStudio、CANN |
 
-本工具默认下载python组件包。当--os-list指定的系统中只有aarch64架构时，只下载aarch64架构系统所需的python组件包；当--os-list指定的系统中只有x86_64架构时，只下载x86_64架构系统所需的python组件包；当--os-list为空或指定的系统中aarch64架构和x86_64架构都有时，2种架构系统所需的python组件包都会下载。
+本工具默认下载python组件包。当--os-list指定的系统中只有aarch64架构时，只下载aarch64架构系统所需的python组件包；当--os-list指定的系统中只有x86_64架构时，只下载x86_64架构系统所需的python组件包；当--os-list为空或指定的系统中aarch64架构和x86_64架构都有时，2种架构系统所需的python组件包都会下载。下载aarch64或x86_64架构的CANN包逻辑同上。
 
-| 可选的组件      | 配套版本1 | 配套版本2 |
-|:-------------- | --------  | -------- |
-| MindStudio     |  3.0.1    |  3.0.2   |
-| MindSpore      |  1.2.1    |  1.3.0   |
-| CANN           |  5.0.1.spc103|  5.0.2.1 |
+| 可选的组件      | 配套版本1  | 配套版本2  | 配套版本3 |
+|:-------------- | --------  | --------  | -------- |
+| MindStudio     |  2.0.0    |  3.0.1    |  3.0.2   |
+| MindSpore      |  1.1.1    |  1.2.1    |  1.3.0   |
+| CANN           |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |
 
 安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的下载安装请参考[下载安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)；CANN的下载请参考[下载CANN](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md)
 

@@ -20,7 +20,7 @@ import json
 import os
 import shutil
 import sys
-from download_util import calc_sha256, get_specified_python, CONFIG_INST, DOWNLOAD_INST, CANN_DOWNLOAD_INST
+from download_util import calc_sha256, get_arch, get_specified_python, CONFIG_INST, DOWNLOAD_INST, CANN_DOWNLOAD_INST
 import logger_config
 from software_mgr import get_software_name_version, get_software_other, get_software_mindspore
 
@@ -31,40 +31,27 @@ PKG_LIST = CONFIG_INST.get_download_pkg_list()
 OS_LIST = CONFIG_INST.get_download_os_list()
 
 
-def get_sha256_map():
-    """
-    从CANN_<Version>.json文件读取sha256字典，其中记录run包的sha256
-    """
-    sha256_map = {}
-    with open(os.path.join(CUR_DIR, 'sha256.txt')) as sha256_cache:
-        for line in sha256_cache:
-            if line.strip():
-                [sha256, name] = [t.strip() for t in line.split(' ') if len(t) > 0]
-                sha256_map[name] = sha256
-    return sha256_map
-
-
-def download_software(software, dst):
+def download_software(software, dst, arch):
     """
     下载软件的其他资源
     """
     formal_name, version = get_software_name_version(software)
     others = get_software_other(formal_name, version)
     download_dir = os.path.join(dst, "resources", "{0}_{1}".format(formal_name, version))
-    sha256_map = get_sha256_map()
 
     if not os.path.exists(download_dir):
         os.makedirs(download_dir, mode=0o750, exist_ok=True)
     LOG.info('item:{} save dir: {}'.format(software, download_dir))
     results = []
     if formal_name == "CANN":
+        if arch == "x86_64" or arch == "aarch64":
+            others = (item for item in others if arch in item['filename'])
         try:
             for item in others:
                 dest_file = os.path.join(download_dir, item['filename'])
-                if os.path.exists(dest_file):
-                    file_name = os.path.basename(dest_file)
-                    sha256 = calc_sha256(dest_file)
-                    if file_name in sha256_map and sha256 == sha256_map[file_name]:
+                if os.path.exists(dest_file) and 'sha256' in item:
+                    file_hash = calc_sha256(dest_file)
+                    if file_hash == item['sha256']:
                         print(item['filename'].ljust(60), 'exists')
                         LOG.info('{0} no need download again'.format(item['filename']))
                         continue
@@ -90,14 +77,17 @@ def download_software(software, dst):
     return all(results)
 
 
-def download(software_list, dst):
+def download(os_list, software_list, dst):
     """
     按软件列表下载其他部分
     """
+    arch = get_arch(os_list)
+    LOG.info('software arch is {0}'.format(arch))
+
     results = {'ok': [], 'failed': []}
     no_mindspore_list = [software for software in software_list if "MindSpore" not in software]
     for software in no_mindspore_list:
-        res = download_software(software, dst)
+        res = download_software(software, dst, arch)
         if res:
             results['ok'].append(software)
             continue
@@ -109,10 +99,13 @@ def download_pkg_from_json():
     """
     按config.ini下载其他部分
     """
+    arch = get_arch(OS_LIST)
+    LOG.info('software arch is {0}'.format(arch))
+
     results = {'ok': [], 'failed': []}
     software_list = [software.replace("_", "==") for software in PKG_LIST if "MindSpore" not in software]
     for software in software_list:
-        res = download_software(software, PROJECT_DIR)
+        res = download_software(software, PROJECT_DIR, arch)
         if res:
             results['ok'].append(software)
             continue

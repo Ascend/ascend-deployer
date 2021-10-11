@@ -21,7 +21,7 @@ import http.client
 import time
 from html.parser import HTMLParser
 from download_util import CONFIG_INST, DOWNLOAD_INST
-from download_util import calc_sha256, get_specified_python
+from download_util import calc_sha256, get_arch, get_specified_python
 import logger_config
 
 
@@ -339,29 +339,6 @@ class MyPip(object):
 
 
 my_pip = MyPip()
-
-
-def get_arch(os_list):
-    """
-    根据os_list判断需要下载哪些架构的包
-    """
-    arm, x86 = 0, 0
-    for os_item in os_list:
-        if not arm and "aarch64" in os_item:
-            arm = 1
-        if not x86 and "x86_64" in os_item:
-            x86 = 1
-        if arm and x86:
-            break
-
-    if arm and not x86:
-        arch = "aarch64"
-    elif not arm and x86:
-        arch = "x86_64"
-    else:
-        arch = ("x86_64", "aarch64")
-
-    return arch
 
 
 def download(os_list, res_dir):
