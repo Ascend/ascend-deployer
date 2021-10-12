@@ -159,6 +159,12 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
+When installing edge components (AtlasEdge and HA), limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
+```bash
+usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA)
+usermod -s /bin/bash HwHiAiUser   # When installing the driver package
+```
+
 - If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
 
 ```
@@ -527,7 +533,6 @@ https://mirrors.bfsu.edu.cn
 https://repo.huaweicloud.com
 https://uniportal.huawei.com
 https://mirrors.huaweicloud.com
-https://mirrors.tuna.tsinghua.edu.cn
 https://cache-redirector.jetbrains.com
 https://obs-9be7.obs.myhuaweicloud.com
 https://obs-9be7.obs.cn-east-2.myhuaweicloud.com

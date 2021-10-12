@@ -166,6 +166,12 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
+- 安装边缘组件(atlasedge和ha)时，需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
+```bash
+usermod -s /sbin/nologin HwHiAiUser   # 安装边缘组件(atlasedge和ha)时
+usermod -s /bin/bash HwHiAiUser   # 安装驱动时
+```
+
 - 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
 
 ```
@@ -539,7 +545,6 @@ https://mirrors.bfsu.edu.cn
 https://repo.huaweicloud.com
 https://uniportal.huawei.com
 https://mirrors.huaweicloud.com
-https://mirrors.tuna.tsinghua.edu.cn
 https://cache-redirector.jetbrains.com
 https://obs-9be7.obs.myhuaweicloud.com
 https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
