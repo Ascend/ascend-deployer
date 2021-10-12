@@ -384,46 +384,13 @@
         "name": "unzip", "used_by": ["edge", "ha"]
     },
     {
-        "name": "container-selinux", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "libsemanage", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "checkpolicy", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "policycoreutils-python-utils", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "python3-audit", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "python3-libselinux", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "python3-libsemanage", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "python3-policycoreutils", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "python3-setools", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "glibc", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "glibc-common", "used_by": ["edge", "ha"]
-    },
-    {
-        "name": "glibc-langpack-en", "used_by": ["edge", "ha"]
-    },
-    {
         "name": "tar", "used_by": ["driver", "cann", "framework"]
     },
     {
         "name": "binutils", "used_by": ["driver", "cann", "framework"]
+    },
+    {
+        "name": "bzip2", "used_by": ["driver", "cann", "framework"]
     },
     {
         "name": "mindspore_ascend-1.1.1-cp37-cp37m-linux_aarch64.whl",
