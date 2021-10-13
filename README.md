@@ -109,7 +109,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
-- 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
+- 安装过程中会创建docker用户组并启动docker服务。安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
 
 ### 下载操作
 
@@ -166,11 +166,13 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
-- 安装边缘组件(atlasedge和ha)时，需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
+- 安装2.0.2版本的边缘组件(atlasedge和ha)时，可能需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
 ```bash
-usermod -s /sbin/nologin HwHiAiUser   # 安装边缘组件(atlasedge和ha)时
+usermod -s /sbin/nologin HwHiAiUser   # 安装2.0.2版本的边缘组件(atlasedge和ha)时
 usermod -s /bin/bash HwHiAiUser   # 安装驱动时
 ```
+
+- 安装2.0.3及以后版本的边缘组件(atlasedge)时，该组件会默认创建一个MindXEdge用户。
 
 - 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
 

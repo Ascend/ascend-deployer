@@ -107,7 +107,7 @@ The download function can be used in the Windows or Linux OSs.
 - Modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
-- After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
+- Docker user groups are created and the Docker service is started during the installation. After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
 
 ### Download
 
@@ -159,11 +159,13 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
-When installing edge components (AtlasEdge and HA), limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
+- When installing edge components (AtlasEdge and HA) in versions 2.0.2, mabey need limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
 ```bash
-usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA)
+usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA) in versions 2.0.2
 usermod -s /bin/bash HwHiAiUser   # When installing the driver package
 ```
+
+- When installing AtlasEdge components in versions 2.0.3 and later, the component creates a MindXEdge user by default.
 
 - If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
 
