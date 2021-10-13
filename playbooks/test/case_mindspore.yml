@@ -41,7 +41,7 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/acllib/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/driver/lib64:{{ ascend_install_path }}/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ local_path }}/{{ python_version }}/lib/{{ python_version }}[:9]/site-packages/mindspore/lib:{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ansible_user_dir}}/Ascend/ascend-toolkit/latest/fwkacllib/lib64/plugin/opskernel"
     TBE_IMPL_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe"
     ASCEND_OPP_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp"
-    PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/"
+    PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages/"
   register: mindspore_ascend910_version
   when:
     - ms.matched > 0
@@ -55,7 +55,7 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/acllib/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/driver/lib64:{{ ascend_install_path }}/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ local_path }}/{{ python_version }}/lib/{{ python_version }}[:9]/site-packages/mindspore/lib:{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe/op_tiling:{{ansible_user_dir}}/Ascend/ascend-toolkit/latest/fwkacllib/lib64/plugin/opskernel"
     TBE_IMPL_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe"
     ASCEND_OPP_PATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp"
-    PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/"
+    PYTHONPATH: "{{ ascend_install_path }}/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages/"
   register: mindspore_ascend310_version
   when:
     - ms.matched > 0
@@ -64,11 +64,11 @@
 
 - name: set_version for 910
   set_fact: mindspore_ascend_version={{ mindspore_ascend910_version }}
-  when: mindspore_ascend910_version.skipped is false
+  when: mindspore_ascend910_version is not skipped
 
 - name: set_version for 310
   set_fact: mindspore_ascend_version={{ mindspore_ascend310_version }}
-  when: mindspore_ascend310_version.skipped is false
+  when: mindspore_ascend310_version is not skipped
 
 - name: test import mindspore cpu
   shell: python3 -c "import mindspore as ms; print(ms.__version__)"
@@ -87,4 +87,4 @@
 
 - name: print mindspore cpu version
   debug: var=mindspore_cpu_version
-  when: mindspore_cpu_version.skipped is false
+  when: mindspore_cpu_version is not skipped
