@@ -155,6 +155,12 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
+- When installing edge components (AtlasEdge and HA) in versions 2.0.2, mabey need limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
+```bash
+usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA) in versions 2.0.2
+usermod -s /bin/bash HwHiAiUser   # When installing the driver package
+```
+
 - If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
 
 ```
