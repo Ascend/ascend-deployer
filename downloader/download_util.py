@@ -312,6 +312,10 @@ class Cann_Download:
                                                           '56004'],
                                             service_log_path='/dev/null',
                                             executable_path=driver_path)
+            except TypeError as err:
+                print("[ERROR] mybey you should patch selenium first")
+                LOG.error("mybey you should patch selenium first: %s", err)
+                raise PermissionError
             except selenium.common.exceptions.SessionNotCreatedException as err:
                 print("[ERROR] firefox or geckodriver is not available, please check")
                 LOG.error("firefox or geckodriver is not available: %s", err)
