@@ -109,7 +109,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考<a href="#sourceconfig">源配置</a>。
 - 下载好的软件会自动存放于resources目录下。
-- 安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
+- 安装过程中会创建docker用户组并启动docker服务。安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
 
 ### 下载操作
 
@@ -166,11 +166,13 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
-- 安装边缘组件(atlasedge和ha)时，需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
+- 安装2.0.2版本的边缘组件(atlasedge和ha)时，可能需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
 ```bash
-usermod -s /sbin/nologin HwHiAiUser   # 安装边缘组件(atlasedge和ha)时
+usermod -s /sbin/nologin HwHiAiUser   # 安装2.0.2版本的边缘组件(atlasedge和ha)时
 usermod -s /bin/bash HwHiAiUser   # 安装驱动时
 ```
+
+- 安装2.0.3及以后版本的边缘组件(atlasedge)时，该组件会默认创建一个MindXEdge用户。
 
 - 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
 
@@ -509,17 +511,14 @@ pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # 待部署的CANN或MindStudio
 
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 
-- Python源配置
-  在downloader/config.ini文件中配置python源，默认使用华为源。
+1. Python源配置。在downloader/config.ini文件中配置python源，默认使用华为源。
 
 ```
 [pypi]
 index_url=https://repo.huaweicloud.com/repository/pypi/simple
 ```
 
-- 系统源配置
-  系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*
-  以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：
+2. 系统源配置。系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*。以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下。这表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
 
 ```
 [base]
@@ -529,7 +528,7 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
-表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
+3. 下载类Centos的系统时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，提升应对潜在的XML漏洞攻击的安全能力。
 
 
 ## <a name="url">公网URL</a>

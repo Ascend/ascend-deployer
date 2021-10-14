@@ -107,7 +107,7 @@ The download function can be used in the Windows or Linux OSs.
 - Modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly. For details, see <a href="#sourceconfig">Source Configuration</a>.
 - The downloaded software is automatically stored in the **resources** directory.
-- After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
+- Docker user groups are created and the Docker service is started during the installation. After the installation, it is recommended to uninstall the third-party components such as gcc and g++ and cpp and jdk that may have security risks in the system.
 
 ### Download
 
@@ -159,11 +159,13 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
-When installing edge components (AtlasEdge and HA), limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
+- When installing edge components (AtlasEdge and HA) in versions 2.0.2, mabey need limit the login status of user HwHiAiUser. When installing the driver package, set user HwHiAiUser to the login state. Set this parameter based on the actual scenario.
 ```bash
-usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA)
+usermod -s /sbin/nologin HwHiAiUser   # When installing edge components (AtlasEdge and HA) in versions 2.0.2
 usermod -s /bin/bash HwHiAiUser   # When installing the driver package
 ```
+
+- When installing AtlasEdge components in versions 2.0.3 and later, the component creates a MindXEdge user by default.
 
 - If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
 
@@ -499,16 +501,14 @@ pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # CANN或MindStudio to be deployed.
 
 The offline installation tool provides the source configuration file. Replace it as required.
 
-- Python source configuration
-  Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.
+1. Python source configuration. Configure the Python source in the **downloader/config.ini** file.The Huawei source is used by default.
 
   ```
   [pypi]
   index_url=https://repo.huaweicloud.com/repository/pypi/simple
   ```
-- OS source configuration
-  OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
-  Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows:
+2. OS source configuration. OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
+  Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows. This indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
   ```
   [base]
@@ -517,8 +517,8 @@ The offline installation tool provides the source configuration file. Replace it
   baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
   ```
 
+3. When downloading a centos-like system, you need to parse the XML files in the system source. You are advised to install the defusedxml component in python3 to improve the security against potential XML vulnerability attacks.
 
-Indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
 ## <a name="url">Public Web Site URL</a>
 ```

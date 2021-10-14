@@ -18,6 +18,18 @@ import os
 import sqlite3 as sqlite
 import xml.sax
 
+import logger_config
+
+LOG = logger_config.LOG
+
+try:
+    import defusedxml
+    defusedxml.defuse_stdlib()
+except ImportError:
+    tips = "defusedxml not found! It is recommended that you install "\
+        "defusedxml to avoid vulnerabilities related to XML parsing."
+    LOG.info(tips)
+
 
 class Require(object):
     def __init__(self, name):

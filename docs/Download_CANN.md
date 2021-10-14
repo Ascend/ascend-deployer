@@ -8,7 +8,7 @@
 
 1. 用户环境需为Windows系统或Ubuntu 18.04.1/5系统，其它的Linux系统未经验证，不建议使用。注意本工具的存放路径中不要包含中文。
 
-2. 确保能正常登录[华为企业业务网站](https://support.huawei.com)，并提前申请相应软件包(驱动与固件包、CANN软件包以及Toolbox软件包)的下载权限，可通过点击ascend-deployer/downloader/software/CANN_<version>.json内的url链接跳转申请。
+2. 确保能正常登录[华为企业业务网站](https://support.huawei.com)，并提前申请相应软件包(驱动与固件包、CANN软件包以及Toolbox软件包)的下载权限，可通过点击ascend-deployer/downloader/software/CANN_`<version>`.json内的url链接跳转申请。
 
 3. 系统中已安装并可通过直接执行`firefox`命令成功运行firefox浏览器。Windows系统下可从[firefox官网](https://www.mozilla.org/en-US/firefox/all/#product-desktop-release)下载对应的安装包后安装该软件，并把安装路径加入到Path环境变量中；Ubuntu系统下可使用系统自带的包管理器进行安装(`apt install firefox`)。
 
@@ -16,10 +16,9 @@
 
    4.1 对于Windows系统和Ubuntu x86_64系统，可从[geckodriver官网](https://github.com/mozilla/geckodriver/releases)获取。Windows系统下载geckodriver-vx.x.x-win64.zip并解压得到geckodriver.exe，Ubuntu x86_64系统下载geckodriver-vx.x.x-linux64.tar.gz并解压得到geckodriver。
 
-   4.2 对于Ubuntu aarch64系统，由于geckodriver官网未提供arm版的geckodriver，但镜像源中有提供firefox-geckodriver软件包，可参考如下操作获取软件包并解压得到geckodriver。
+   4.2 对于Ubuntu aarch64系统，由于geckodriver官网未提供arm版的geckodriver，可从[镜像源网站](https://mirrors.bfsu.edu.cn/ubuntu-ports/pool/main/f/firefox)下载firefox-geckodriver_`<version>`ubuntu0.18.04.1_arm64.deb软件包，参考如下操作解压得到geckodriver。
    ```bash
-   apt download firefox-geckodriver   # 下载firefox-geckodriver软件包，也可以直接从[镜像源](https://mirrors.bfsu.edu.cn/ubuntu-ports/pool/main/f/firefox)下载firefox-geckodriver_<version>ubuntu0.18.04.1_arm64.deb
-   dpkg -x firefox-geckodriver_92.0+build3-0ubuntu0.18.04.1_arm64.deb .   # 把软件包解压到当前目录，解压后会生成一个"usr"目录
+   dpkg -x firefox-geckodriver_<version>ubuntu0.18.04.1_arm64.deb .   # 把软件包解压到当前目录，解压后会生成一个"usr"目录
    ls usr/bin/geckodriver   # 查看生成的usr/bin/geckodriver文件，得到geckodriver后清理这些临时文件
    ```
 
