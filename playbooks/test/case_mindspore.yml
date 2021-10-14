@@ -47,11 +47,11 @@
 
 - name: set_version for 910
   set_fact: mindspore_ascend_version={{ mindspore_ascend910_version }}
-  when: mindspore_ascend910_version.skipped is false
+  when: mindspore_ascend910_version is not skipped
 
 - name: set_version for 310
   set_fact: mindspore_ascend_version={{ mindspore_ascend310_version }}
-  when: mindspore_ascend310_version.skipped is false
+  when: mindspore_ascend310_version is not skipped
 
 - name: test import mindspore cpu
   shell: python3 -c "import mindspore as ms; print(ms.__version__)"
@@ -66,8 +66,8 @@
 
 - name: print mindspore ascend version
   debug: var=mindspore_ascend_version
-  when: mindspore_ascend_version.skipped is false
+  when: mindspore_ascend_version is defined
 
 - name: print mindspore cpu version
   debug: var=mindspore_cpu_version
-  when: mindspore_cpu_version.skipped is false
+  when: mindspore_cpu_version is not skipped
