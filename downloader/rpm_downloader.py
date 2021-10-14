@@ -35,6 +35,9 @@ from yum_metadata.gen_yum_metadata import YumMetadataSqlite
 from yum_metadata.gen_yum_metadata import YumPackageHandler
 from yum_metadata.gen_yum_metadata import Require
 from yum_metadata.gen_yum_metadata import Provide
+
+LOG = logger_config.LOG
+
 try:
     from urlparse import urljoin
 except ImportError:
@@ -42,8 +45,13 @@ except ImportError:
 finally:
     pass
 
-
-LOG = logger_config.LOG
+try:
+    import defusedxml
+    defusedxml.defuse_stdlib()
+except ImportError:
+    tips = "defusedxml not found! It is recommended that you install "\
+        "defusedxml to avoid vulnerabilities related to XML parsing."
+    LOG.info(tips)
 
 
 class Package(object):

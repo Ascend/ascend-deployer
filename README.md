@@ -511,17 +511,14 @@ pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # 待部署的CANN或MindStudio
 
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 
-- Python源配置
-  在downloader/config.ini文件中配置python源，默认使用华为源。
+1. Python源配置。在downloader/config.ini文件中配置python源，默认使用华为源。
 
 ```
 [pypi]
 index_url=https://repo.huaweicloud.com/repository/pypi/simple
 ```
 
-- 系统源配置
-  系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*
-  以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下：
+2. 系统源配置。系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*。以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下。这表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
 
 ```
 [base]
@@ -531,7 +528,7 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
-表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
+3. 下载类Centos的系统时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，提升应对潜在的XML漏洞攻击的安全能力。
 
 
 ## <a name="url">公网URL</a>
