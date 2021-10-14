@@ -20,7 +20,7 @@
     LD_LIBRARY_PATH: /usr/local/python3.7.5/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/opp/op_impl/built-in/ai_core/tbe/op_tiling:/usr/local/python3.7.5/lib/python3.7/site-packages/mindspore/lib
     TBE_IMPL_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe
     ASCEND_OPP_PATH: /usr/local/Ascend/ascend-toolkit/latest/opp
-    PYTHONPATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/fwkacllib/python/site-packages/
+    PYTHONPATH: /usr/local/Ascend/ascend-toolkit/latest/opp/op_impl/built-in/ai_core/tbe:/usr/local/Ascend/ascend-toolkit/latest/fwkacllib/python/site-packages/
   register: ms_version
   become: yes
   when:
