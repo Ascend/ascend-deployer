@@ -163,6 +163,12 @@ groupadd HwHiAiUser
 useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
 ```
 
+- 安装2.0.2版本的边缘组件(atlasedge和ha)时，可能需限制HwHiAiUser用户为不可登录状态。但安装驱动包时，需将HwHiAiUser用户设置为可登录状态。请根据具体场景设置。
+```bash
+usermod -s /sbin/nologin HwHiAiUser   # 安装2.0.2版本的边缘组件(atlasedge和ha)时
+usermod -s /bin/bash HwHiAiUser   # 安装驱动时
+```
+
 - 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
 
 ```
