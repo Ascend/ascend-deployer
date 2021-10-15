@@ -81,6 +81,8 @@ def download(os_list, software_list, dst):
     """
     按软件列表下载其他部分
     """
+    if os_list is None:
+        os_list = []
     arch = get_arch(os_list)
     LOG.info('software arch is {0}'.format(arch))
 
