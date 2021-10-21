@@ -2,7 +2,7 @@
 
 ## Functions
 
-The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory additionally places the Device IP configuration script, the use method can refer to <a href="#Device_IP">Device IP configuration specification</a>.
+The offline installation tool provides automatic download and one-click installation of the OS components and Python third-party dependencies. It also supports the installation of the driver, firmware, and CANN software packages. The tools directory additionally places the Device IP configuration script, the use method can refer to [Device IP configuration](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Configuration.md).
 
 ## Environment Requirements
 
@@ -68,7 +68,8 @@ The offline installation tool provides automatic download and one-click installa
 - tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 
-### Description of the kernel header package
+- Description of the kernel header package
+
 | OS          | kernel header package that matches the kernel version of the system  | How to get            |
 | ---------   | ---------------------------------------------------------------------| ----------------------|
 | EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | Contact the OS vendor, or find it in the "devel_tools.tar.gz" tool component that comes with the corresponding OS |
@@ -94,15 +95,15 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
-## Downloading OS Components and Python Third-party Dependencies
+## Download Instructions
 
 The download function can be used in the Windows or Linux OSs.
 
-### Notice
+### Download Notice
 
 - Modify the configuration file to download required OS components(Windows), edit the **downloader/config.ini** file. For details, see <a href="#config">Configuration Description</a>.
 - A large amount of open source software needs to be installed. The open source software downloaded using the offline installation tool comes from the OS source. You need to fix the vulnerabilities of the open source software as required. You are advised to use the official source to update the software regularly. For details, see <a href="#sourceconfig">Source Configuration</a>.
@@ -113,15 +114,18 @@ The download function can be used in the Windows or Linux OSs.
 
 - Windows
   1. Python 3 is required in Windows. Python 3.7 or later is recommended.
-     Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
-     Complete the installation as prompted. During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
+     Download link: [python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe), Complete the installation as prompted.
+     During the installation, select **Add Python to environment variables** on the **Advanced Options** page. Otherwise, you need to manually add environment variables.
+
   2. Start download.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
-- Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Linux Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
-  2. Support root and non-root users to perform download operations, Non-root users need to have executable permissions for the tool directory; The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
 
-## Installation
+- Linux
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+
+  2. The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
+
+## Installation Instructions
 
 ### install options
 
@@ -235,37 +239,51 @@ ascend-deployer
 ### Single-Device Installation
 
 1. Configure a stand-alone inventory_file file.
-  Edit the **inventory_file** file. The format is shown as follows:
+
+   Edit the inventory_file file. The default is as follows:
 
    ```
    [ascend]
-   localhost ansible_connection='local' # root user
+   localhost ansible_connection='local'
    ```
 
 2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
 
-   - Software-specific installation
-     `./install.sh --install=<package_name>`
-     You can run the `./install.sh --help` command to view the options of <package_name>. Example command:
-     `./install.sh --install=sys_pkg,python375,npu //Install system packages and python3.7.5 and driver and firmware.`
-     Notes:
-     - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
-     - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
-     - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
-     - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
-   - Scenario-specific installation
-     `./install.sh --install-scene=<scene_name>`
-     The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>. Example command:
-      `./install.sh --install-scene=auto     // Automatic installation of all software packages that can be found`
+    - 2.1 Software-specific installation
 
-3. After the installation, run the following command to check whether the specified component works properly:
-   `./install.sh --test=<target>`
-   You can run the `./install.sh --help` command to view the options of <target>. Example command:
-   `./install.sh --test=driver // Test whether the driver is normal.`
+    run the `./install.sh --install=<package_name_1>,<package_name_2>`. The following is an example.
+
+    ```
+    ./install.sh --help     # Viewing Help Information.
+    ./install.sh --install=sys_pkg,python375,npu     # Installing system dependencies and python3.7.5 and driver and firmware.
+    ```
+
+    Notes:
+
+        - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
+        - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
+        - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
+        - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
+
+    - 2.2 Scenario-specific installation(Recommended for non-professional users)
+
+    run the `./install.sh --install-scene=<scene_name>`. The following is an example.
+    ```
+    ./install.sh --install-scene=auto     # Automatic installation of all software packages that can be found
+    ```
+    The offline installation tool provides several basic installation scenarios. For details, see <a href="#scene">Installation Scenarios</a>.
+
+3. After the installation.
+
+    run the `./install.sh --test=<target>`. The following is an example.
+    ```
+    ./install.sh --test=driver     # Test whether the driver is normal.
+    ```
 
 ### Batch Installation
 
 1. SSH connection based on key authentication.
+
    Configure the IP addresses of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
    ```
    [ascend]
@@ -274,15 +292,14 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # non-root user
    ```
 
-Configure the reference operation for key authentication
+   Configure the reference operation for key authentication
    ```bash
    ssh-keygen -t rsa -b 2048   # Log in to the management node and generate the SSH Key. For security reasons, it is recommended that the user Enter the key password at the "Enter passphrase" step, and ensure that the password complexity is reasonable. It is recommended to set the umask to 0077 before executing this command and to restore the original umask after executing it.
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to.
-   ssh <user>@<ip>   # Verify that it is possible to log on to the remote node, and replace <user>@<ip> with the account and IP of the corresponding node to be logged in.
+   ssh <user>@<ip>   # Verify that it is possible to log on to the remote node, and replace <user>@<ip> with the account and IP of the corresponding node to be logged in. After verifying that the login is OK, run the 'exit' command to exit the SSH connection.
    ```
 
-Note:
-- Please be aware of the risks involved in the use and storage of SSH keys.
+   Note: Please be aware of the risks involved in the use and storage of SSH keys.
 
 2. Set up the SSH agent to manage the SSH key to avoid entering the key password during the bulk installation of the tool. The following are the guidelines for setting up an SSH agent:
    ```bash
@@ -290,8 +307,7 @@ Note:
    ssh-add          # Add a private key to the ssh-agent
    ```
 
-3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed.
-    Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
+3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed. Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
 
 4. The following operation is the same as the above Single-Device Installation steps 2 and 3.
 
@@ -352,10 +368,15 @@ Similarly, other software packages or tools installed by offline deployment tool
 # Follow-up
 
 - Inference scenario
+
   If you need to develop applications, please refer to the relevant official materials, such as CANN Application Software Development Guide (C and C++) or CANN Application Software Development Guide (Python).
+
 - Training scenario
+
   For network model migration and training, please refer to the relevant official materials, such as TensorFlow Network Model Porting and Training Guide or PyTorch Network Model Porting and Training Guide.
+
 - Delete this tool
+
   This tool is only used for deployment. When installation completed, it should be deleted for free the disk space.
 
 | Something that should be deleted | instructions                        |
@@ -370,8 +391,7 @@ Similarly, other software packages or tools installed by offline deployment tool
 
 ## <a name="parameter">Install Parameter Description</a>
 
-Select corresponding parameters to install the software. The command format is as follows:
-`./install.sh [options]`
+Select corresponding parameters to install the software. The command likes `./install.sh [options]`.
 The following table describes the parameters. You can run the `./install.sh --help` command to view the options of the following parameters.
 
 | Parameter                         | Description                                                                                                                                                                    |
@@ -477,7 +497,7 @@ If you want to use an HTTP proxy, configure the proxy in an environment variable
    export https_proxy="http://user:password@proxyserverip:port"
    ```
 
-   Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port.
+   Where "user" is the user's internal network name, "password" is the user's password (special characters need to be escaped), "proxyserverip" is the IP address of the proxyserver, and "port" is the port. The principle of configuring proxies in Windows environment variables is the same as that in Linux. For details, see official instructions.
 
 2. Configure the agent in the downloader/config.ini file as follows:
 
@@ -517,7 +537,7 @@ The offline installation tool provides the source configuration file. Replace it
   baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
   ```
 
-3. When downloading a centos-like system, you need to parse the XML files in the system source. You are advised to install the defusedxml component in python3 to improve the security against potential XML vulnerability attacks.
+3. When downloading the centos-like system component, you need to parse the XML files in the system source. You are advised to install the defusedxml component in python3 to improve the security against potential XML vulnerability attacks.
 
 
 ## <a name="url">Public Web Site URL</a>
@@ -541,93 +561,13 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 
 ## <a name="faq">FAQ</a>
 1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
+
 - A: Release the RPM/DPKG tool lock, delete the Python 3.7.5 installation directory, and install again using the tool.(Python 3.7.5 installation directory may refer to <a href="#set_env_var"> to configure the environment variable </a>)
 
 2. Q: Non-root users are prompted for the sudo password when installing the pre-5.0.1 Toolkit.
+
 - A: For security reasons, this tool does not require non-root users to have sudo privileges, so it does not support non-root users to install the toolkit prior to 5.0.1.
 
 3. Q: What is the mechanism of crl file update and signature verification? Whether the crl file can be updated independently?
+
 - A: There are two methods for crl file update and signature verification. The tool at toolbox/latest/Ascend-DMI/bin/ascend-cert is preferred. If this tool does not exist in the environment, openssl is preferred. To be compatible with old and new software package signature formats, the tool uses two sets of certificates. The tool compares the validity time of the crl file in the installation package with that of the local crl file, and uses the latest crl file to check whether the certificate is revoked. For the root user, the system of local crl files for `/etc/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`, for non-root users, This file is `~/.local/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`. If the local crl file does not exist or takes effect earlier than the crl file in the installation package, the local crl file is replaced by the crl file in the installation package. The tools/update_crl.sh supports independent crl file update, Run `bash update_crl.sh <crl_file>` command to update an independent crl file, `<crl_file>` is the path of the crl file uploaded by the user.
-
-
-# Other Install Guide
-
-## <a name="Device_IP">Device IP configuration specification</a>
-The function of this script is to modify the IP address of NPU board card and realize batch configuration by using the batch deployment capability of Ansible tools. The following contents are only for the reference of users with use scenarios of batch configuration.
-
-### Data preparation
-- Server's operating system IP (OS IP) address file.
-- The server's operating system user name and password.
-- The Device IP address file to be configured.
-- Device IP configuration script (deviceip-conf.sh).
-
-### instructions
-- Device IP refers to the IP address of the NPU board to be modified.
-- Please refer to <a href="#IP format">OS IP address and Device IP address format</a> for the server's operating system IP (OS IP) address file and the Device IP address format to be configured.
-- Batch operation does not support mixed device types, that is, the selected device type, the number of NPU standard cards and the configured IP address number, the working mode must be consistent.
-- Each server has 2 NPU boards and each NPU board has 4 NPU chips.In SMP mode, four NPU chips on each NPU board need to be configured with IP addresses of four different network segments.
-
-### steps
-1. Upload the OS IP address file, the Device IP address file, and the Device IP configuration script to the specified directory of the target host (e.g., /root/ uploadDeviceIP, /root/ uploadDeviceIP, /root/ uploadDeviceIP).
-2. Execute the command at the target host specified directory (for example, /root/ uploadDeviceIP)
-```
-
-bash deviceip-conf. sh [Device type] [Number of NPU standard cards] [NPU standard card IP configuration] [Working mode] [OS IP address file] [DeviceIP address file]
-
-```
-Take 8 non-standard NPU board cards using SMP mode A800-9000 as an example, the command is
-```
-
-bash DeviceIP-conf.sh 1 0 0 SMP /root/uploadosip/OS_IP /root/uploaddeviceip/Device_IP
-
-```
-|parameter|instructions|selection|    note    |
-|:------:|:--:|:-----:|:--------------:|
-|Device type|A800-9000 with 8 NPU|1|npu-smi info query number of NPU = 8, enter 1; query number of NPU = 4, enter 2|
-|Number of NPU standard cards|Not NPU standard card|0|With the number of NPU standard cards, A800-9000 is set to 0|
-|NPU standard card IP configuration|Not NPU standard card|0|With the same IP number of NPU standard card, A800-9000 is set to 0|
-|Working mode|SMP|0|According to the actual configuration, SMP(symmetric multiprocessor mode), AMP (asymmetric multiprocessor mode)|
-
-### <a name="IP format">OS IP address and Device IP address format</a>
-You need to convert these two files to UNIX format.
-1. OS IP address file
-- Format 1 (Recommended)
-The IP address segment, like this IPx-IPy, ends with a carriage return, for example:
-```
-
-10.80.100.101~10.80.100.104
-
-```
-- Format 2
-List of IP addresses, one by one, with OS IP addresses, ending with Enter, for example:
-```
-
-10.80.100.101
-10.80.100.102
-10.80.100.103
-10.80.100.104
-
-```
-2. Device IP address file
-- Format 1 (Recommended)
-IP address segment, similar to the format of IPX-IPY /Netmask/Gateway. In SMP mode, the 4 NPU chips on each NPU board need to be configured with the Device IP addresses of 4 different network segments, ending with Enter, for example:
-```
-
-172.168.1.100~172.168.1.107/255.255.255.0/172.168.1.1
-172.168.2.100~172.168.2.107/255.255.255.0/172.168.2.1
-172.168.3.100~172.168.3.107/255.255.255.0/172.168.3.1
-172.168.4.100~172.168.4.107/255.255.255.0/172.168.4.1
-
-```
-- Format 2
-A list of IP addresses, in a format similar to this IP/Netmask/Gateway, gives the OS IP addresses one by one, ending with a press return, for example:
-```
-
-172.168.1.100/255.255.255.0/172.168.1.1
-172.168.2.100/255.255.255.0/172.168.2.1
-172.168.3.100/255.255.255.0/172.168.3.1
-172.168.4.100/255.255.255.0/172.168.4.1
-
-```
-
-```

@@ -2,7 +2,7 @@
 
 ## 功能描述
 
-离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device IP配置脚本，使用方法可参考<a href="#Device_IP">Device IP配置说明</a>。
+离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device IP配置脚本，使用方法可参考[Device IP配置](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Configuration.md)。
 
 ## 环境要求
 
@@ -70,14 +70,15 @@
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
-### 内核头软件包说明
+- 内核头软件包说明
+
 | 操作系统     | 跟系统内核版本一致的内核头软件包                                    | 获取来源            |
 | ---------   | ---------------------------------------------------------------- | --------------------|
 | EulerOS     | kernel-headers-`<version>`、kernel-devel-`<version>`                 | 联系OS厂商，或在对应版本OS附带的"devel_tools.tar.gz"工具组件内查找 |
 | SLES        | kernel-default-`<version>`、kernel-default-devel-`<version>`         | 联系OS厂商，或在对应版本OS的镜像内查找 |
 | Debian      | linux-headers-`<version>`、linux-headers-`<version>`-common、linux-kbuild-`<version>`| 联系OS厂商，或在对应版本OS的镜像内查找 |
 
-## 安装
+## 工具获取与安装
 
 ### pip安装
 
@@ -96,15 +97,15 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### 下载zip安装
 
-点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为022或更高，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为022或更高，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
 
 # 操作指导:源码方式
 
-## 下载系统组件及python第三方依赖
+## 下载功能
 
 支持windows或linux系统使用下载功能。
 
-### 须知
+### 下载须知
 
 - 如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考<a href="#config">配置说明</a>。
 - 由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考<a href="#sourceconfig">源配置</a>。
@@ -116,33 +117,33 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 - windows
 
   1. windows环境需安装python3，推荐使用python3.7版本以上。
-     下载链接：[python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)
-     请根据界面提示完成安装。注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
+     下载链接：[python3.7.5](https://www.python.org/ftp/python/3.7.5/python-3.7.5-amd64.exe)，请根据界面提示完成安装。
+     注意安装时在“Advanced Options"界面勾选” Add Python to environment variables"，否则需手动添加环境变量。
 
   2. 启动下载。
      设置“downloader/config.ini”的os_list或software配置项，运行start_download.bat；或直接运行start_download_ui.bat（推荐使用，可在弹出的简易UI界面上勾选需要下载的OS或PKG相关组件）。
 
 - linux
 
-  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">linux下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
-  2. 支持root和非root用户执行下载操作，非root用户需拥有本工具目录的可执行权限；执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
-## 安装操作
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  2. 执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
+## 安装功能
 
 ### 安装参数
 
 - 安装过程基本参数可通过inventory_file文件配置
 
-默认配置如下：
+    默认配置如下：
 
-```bash
-[ascend]
-localhost ansible_connection='local'
+    ```bash
+    [ascend]
+    localhost ansible_connection='local'
 
-[ascend:vars]
-user=HwHiAiUser
-group=HwHiAiUser
-install_path=/usr/local/Ascend
-```
+    [ascend:vars]
+    user=HwHiAiUser
+    group=HwHiAiUser
+    install_path=/usr/local/Ascend
+    ```
 
 | 配置项          | 说明                                    |
 |:------------ |:------------------------------------- |
@@ -242,36 +243,51 @@ ascend-deployer
 ### 单机安装
 
 1. 配置单机的inventory_file文件。
-   编辑inventory_file文件，格式如下：
+
+   编辑inventory_file文件，默认如下：
 
    ```
    [ascend]
-   localhost ansible_connection='local' # root用户
+   localhost ansible_connection='local'
    ```
 
-2. 执行安装脚本，可根据需要选择安装方式（指定软件安装或指定场景安装）。
+2. 执行安装脚本，可根据需要选择安装方式（指定组件安装或指定场景安装）。
 
-   - 指定软件安装
-     `./install.sh --install=<package_name_1>,<package_name_2>`
-     <package_name>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-     `./install.sh --install=sys_pkg,python375,npu     //安装系统依赖、python3.7.5、driver和firmware`
-     注意事项：
-     - 请按照“sys_pkg>python3.7.5>npu（driver、firmware）>CANN软件包（toolkit、nnrt等）>AI框架（pytorch、tensorflow、mindspore）”顺序进行安装。
-     - 安装driver或firmware后，可能需执行`reboot`重启设备使驱动和固件生效。
-     - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
-     - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
-     `./install.sh --install-scene=<scene_name>`
-     离线部署工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。命令示例如下：
-     `./install.sh --install-scene=auto     //自动安装所有能找到的软件包`
+    - 2.1. 指定组件安装
 
-3. 安装后检查，可通过以下命令检查指定组件能否正常工作。
-   `./install.sh --test=<target>`
-   <target>可选范围可通过执行`./install.sh --help`查看。命令示例如下：
-   `./install.sh --test=driver     //测试driver是否正常`
+    执行命令`./install.sh --install=<package_name_1>,<package_name_2>`，示例如下。
+
+    ```
+    ./install.sh --help     # 查看帮助信息
+    ./install.sh --install=sys_pkg,python375,npu     # 安装系统依赖、python3.7.5、driver和firmware
+    ```
+
+    注意事项：
+
+       - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。
+       - 安装driver或firmware后，可能需执行“reboot”重启设备使驱动和固件生效。
+       - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
+       - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
+
+    - 2.2 指定场景安装（建议非专业用户使用这种方式）
+
+    执行命令`./install.sh --install-scene=<scene_name>`，示例如下。
+    ```
+    ./install.sh --install-scene=auto     # 自动安装所有能找到的软件包
+    ```
+    本工具提供几个基本安装场景，具体可参考<a href="#scene">安装场景介绍</a>。
+
+3. 安装后检查
+
+    执行命令`./install.sh --test=<target>`，示例如下。
+    ```
+    ./install.sh --test=driver     # 测试driver是否正常`
+    ```
 
 ### 批量安装
 
 1. 基于密钥认证的ssh连接。
+
    配置待安装的其他设备的ip地址，编辑inventory_file文件，格式如下：
 
    ```
@@ -281,15 +297,14 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # 非root用户
    ```
 
-设置密钥认证的参考操作如下：
+   设置密钥认证的参考操作如下：
    ```bash
    ssh-keygen -t rsa -b 2048   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且符合密码复杂度要求。建议执行这条命令前先将umask设置为0077，执行完后再恢复原来umask值。
-   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip
-   ssh <user>@<ip>   # 验证是否可以登录远程节点，<user>@<ip>替换成要登录的对应节点的账户和ip
+   ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip。
+   ssh <user>@<ip>   # 验证是否可以登录远程节点，<user>@<ip>替换成要登录的对应节点的账户和ip。验证登录OK后执行`exit`命令退出该ssh连接。
    ```
 
-注意事项:
-- 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险。
+   注意事项: 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险。
 
 2. 设置ssh代理管理ssh密钥，避免工具批量安装操作过程中输入密钥密码。设置ssh代理的参考操作如下：
    ```bash
@@ -297,8 +312,7 @@ ascend-deployer
    ssh-add          # 向ssh-agent添加私钥
    ```
 
-3. 执行`./install.sh --check`测试待安装设备连通性。
-    确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
+3. 执行`./install.sh --check`测试待安装设备连通性。确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
 4. 后续操作同上述的单机安装第2、3步骤。
 5. 工具的批量安装操作完成后，及时退出ssh代理进程，避免安全风险。
    ```bash
@@ -339,7 +353,7 @@ ascend-deployer本质上是install.sh的一个wrapper，使用方法与直接执
 
 # <a name="set_env_var">配置环境变量</a>
 
-离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量:
+离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
 
 ```
 export PATH=/usr/local/python3.7.5/bin:$PATH                         # root
@@ -348,7 +362,7 @@ export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH   # root
 export PATH=~/.local/python3.7.5/bin:$PATH                           # non-root
 export LD_LIBRARY_PATH=~/.local/python3.7.5/lib:$LD_LIBRARY_PATH     # non-root
 ```
-本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量
+本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量。
 ```
 source /usr/local/ascendrc     # root
 source ~/.local/ascendrc       # non-root
@@ -365,6 +379,7 @@ source ~/.local/ascendrc       # non-root
 - 训练场景
 
   若需进行网络模型移植和训练，请参考相应的官方资料，如《TensorFlow网络模型移植&训练指南》或《PyTorch网络模型移植&训练指南》。
+
 - 删除工具
 
   本工具属于安装部署类工具，系统安装完成后应立即删除以释放磁盘空间。
@@ -381,9 +396,8 @@ source ~/.local/ascendrc       # non-root
 
 ## <a name="parameter">安装参数说明</a>
 
-用户根据实际需要选择对应参数完成安装，命令格式如下：
-`./install.sh [options]`
-参数说明请参见下表。表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
+用户根据实际需要选择对应参数完成安装，命令为`./install.sh [options]`。
+参数说明请参见下表，表中各参数的可选参数范围可通过执行`./install.sh --help`查看。
 
 | 参数                                | 说明                                                   |
 |:--------------------------------- | ---------------------------------------------------- |
@@ -398,7 +412,7 @@ source ~/.local/ascendrc       # non-root
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 
-## <a name="download_parameter">linux下载参数说明</a>
+## <a name="download_parameter">下载参数说明</a>
 
 | 参数                  | 说明                      |
 |:------------------- | ----------------------- |
@@ -479,7 +493,7 @@ source ~/.local/ascendrc       # non-root
 
 如需使用http代理，需在环境变量中配置代理。本工具默认校验https证书，如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
 
-1. 环境变量中配置代理，参考如下
+1. Linux环境变量中配置代理，参考如下
    
    ```
    # 配置环境变量
@@ -487,7 +501,7 @@ source ~/.local/ascendrc       # non-root
    export https_proxy="http://user:password@proxyserverip:port"
    ```
    
-   其中user为用户在内部网络中的用户名，password为用户密码（特殊字符需转义），proxyserverip为代理服务器的ip地址，port为端口。
+   其中user为用户在内部网络中的用户名，password为用户密码（特殊字符需转义），proxyserverip为代理服务器的ip地址，port为端口。windows环境变量中配置代理的原理同Linux，具体操作请参考官方说明。
 
 2. 在downloader/config.ini文件中配置是否进行证书校验，内容如下：
    
@@ -528,7 +542,7 @@ baseurl=https://mirrors.huaweicloud.com/centos-altarch/7/os/aarch64
 baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
-3. 下载类Centos的系统时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，提升应对潜在的XML漏洞攻击的安全能力。
+3. 下载类Centos的系统组件时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，以提升应对潜在的XML漏洞攻击的安全能力。
 
 
 ## <a name="url">公网URL</a>
@@ -553,96 +567,13 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 ## <a name="faq">FAQ</a>
 
 1. Q: 首次执行`./install.sh --check`或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
+
 - A: 释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考<a href="#set_env_var">配置环境变量</a>），重新使用工具安装。
 
 2. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
+
 - A: 安全原因，本工具不要求非root用户拥有sudo权限，所以不支持非root用户安装5.0.1版本以前的toolkit。
 
 3. Q: 工具crl文件更新和签名校验的机制是什么样的？是否具备独立的crl文件更新的能力？
+
 - A: crl文件更新和签名校验有两种方式，优先使用toolbox/latest/Ascend-DMI/bin/ascend-cert工具，如果环境上不存在该工具，则使用openssl开源工具。为兼容新旧软件包的签名格式，本工具会使用2套证书。本工具会比较安装包内的crl文件和系统本地的crl文件的生效时间，并使用最新的crl文件校验证书是否被吊销。对root用户，系统本地的crl文件为`/etc/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`。如果系统本地的crl文件不存在或生效时间早于安装包内的crl文件，则系统本地的crl文件会被安装包内的crl文件替换。tools/update_crl.sh文件具备独立的crl文件更新的能力，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
-
-
-# 其他安装指导
-
-## <a name="Device_IP">Device IP配置说明</a>
-
-此脚本的作用是修改NPU板卡IP地址，可利用ansible工具的批量部署能力实现批量配置，以下内容仅供有批量配置使用场景的用户参考使用。
-
-### 数据准备
-
-- 服务器的操作系统IP（OS IP）地址文件
-- 服务器的操作系统用户名和密码
-- 待配置的Device IP地址文件
-- Device IP配置脚本（DeviceIP-conf.sh）
-
-### 说明
-
-- Device IP指的是待修改的NPU板卡IP地址。
-- 服务器的操作系统IP（OS IP）地址文件和待配置的Device IP地址文件的格式请参考<a href="#IP格式说明">OS IP地址和Device IP地址格式说明</a>。
-- 批量操作不支持混合设备类型，即所选设备的设备类型、NPU标卡数量及配置的IP地址个数、工作模式必须一致。
-- 每台服务器有2块NPU板，每块NPU板有4个NPU芯片。SMP模式下每块NPU板上的4个NPU芯片需要配置4个不同网段的IP地址。
-
-### 操作步骤
-
-1. 将OS IP地址文件、Device IP地址文件、Device IP配置脚本上传到目标主机的指定目录（例如分别是/root/uploadosip、/root/uploaddeviceip、/root/uploaddeviceip）。
-
-2. 在目标主机指定目录（例如/root/uploaddeviceip）执行命令
-   
-   ```
-   bash DeviceIP-conf.sh [ 设备类型 ] [ NPU标卡数量 ] [ NPU标卡IP配置 ] [ 工作模式 ] [ OS IP地址文件 ] [ Device IP地址文件 ]
-   ```
-   
-   以8个非标NPU板卡的采用SMP模式的A800-9000为例，命令为
-   
-   ```
-   bash DeviceIP-conf.sh 1 0 0 SMP /root/uploadosip/OS_IP /root/uploaddeviceip/Device_IP
-   ```
-
-| 参数        | 参数说明            | 参数取值 | 备注                                        |
-|:---------:|:---------------:|:----:|:-----------------------------------------:|
-| 设备类型      | 8个NPU的A800-9000 | 1    | npu-smi info查询NPU数量为8，则输入1，查询NPU数量为4，则输入2 |
-| NPU标卡数量   | 不是NPU标卡         | 0    | 同NPU标卡数量，A800-9000请设置为0                   |
-| NPU标卡IP配置 | 不是NPU标卡         | 0    | 同NPU标卡IP数量，A800-9000请设置为0                 |
-| 工作模式      | SMP             | 0    | 根据实际配置，SMP(对称多处理器模式）、AMP（非对称多处理器模式）       |
-
-### <a name="IP格式说明">OS IP地址和Device IP地址格式说明</a>
-
-需要将这2个文件转换为UNIX格式
-
-1. OS IP地址文件
-- 格式1（推荐）
-  IP地址段，类似这个IPx-IPy，以回车结束，例如：
-  
-  ```
-  10.80.100.101~10.80.100.104
-  ```
-
-- 格式2
-  IP地址清单，逐一给出OS IP地址，以回车结束，例如：
-  
-  ```
-  10.80.100.101
-  10.80.100.102
-  10.80.100.103
-  10.80.100.104
-  ```
-2. Device IP地址文件
-- 格式1（推荐）
-  IP地址段，类似这个IPx-IPy/Netmask/Gateway的格式，SMP模式下每块NPU板上的4个NPU芯片需要配置4个不同网段的Device IP地址，以回车结束，例如：
-  
-  ```
-  172.168.1.100~172.168.1.107/255.255.255.0/172.168.1.1
-  172.168.2.100~172.168.2.107/255.255.255.0/172.168.2.1
-  172.168.3.100~172.168.3.107/255.255.255.0/172.168.3.1
-  172.168.4.100~172.168.4.107/255.255.255.0/172.168.4.1
-  ```
-
-- 格式2
-  IP地址清单，类似这个IP/Netmask/Gateway的格式，逐一给出OS IP地址，以回车结束，例如：
-  
-  ```
-  172.168.1.100/255.255.255.0/172.168.1.1
-  172.168.2.100/255.255.255.0/172.168.2.1
-  172.168.3.100/255.255.255.0/172.168.3.1
-  172.168.4.100/255.255.255.0/172.168.4.1
-  ```
