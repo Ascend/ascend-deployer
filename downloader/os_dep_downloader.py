@@ -76,10 +76,14 @@ class OsDepDownloader:
                 downloader = Yum(source_repo_file, 'aarch64')
             else:
                 downloader = Yum(source_repo_file, 'x86_64')
-        if downloader is not None:
-            downloader.make_cache()
 
         res = {'ok': [], 'failed':[]}
+        if downloader is not None:
+            if downloader.make_cache() is False:
+                LOG.error('downloader make_cache failed')
+                res['failed'].append(os_item)
+                return res
+
         with open(config_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
             for item in data:

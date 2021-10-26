@@ -132,6 +132,10 @@ class Apt(object):
                 index_url = '{0}/{1}/Packages.gz'.format(url, self.binary_path)
                 LOG.info('packages_url=[%s]', index_url)
                 packages = self.fetch_package_index(index_url)
+                if packages is False:
+                    print('download {} failed'.format(index_url))
+                    LOG.error('download %s failed', index_url)
+                    return False
                 self.make_cache_from_packages(source.get_url(), repo, packages)
         self.primary_connection.commit()
         self.primary_cur.close()
@@ -151,6 +155,9 @@ class Apt(object):
         :return:
         """
         tmp_file = DOWNLOAD_INST.download_to_tmp(packages_url)
+        if tmp_file is False:
+            LOG.error('download %s failed', packages_url)
+            return False
         with gzip.open(tmp_file) as resp:
             html = resp.read()
         os.unlink(tmp_file)
