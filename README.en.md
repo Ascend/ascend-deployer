@@ -485,7 +485,7 @@ To customize an installation scenario, refer to the preceding configuration file
 
 ## <a name="config">Configuration Description</a>
 
-### Proxy Configuration
+### <a name="proxy_configuration">Proxy Configuration</a>
 
 If you want to use an HTTP proxy, configure the proxy in an environment variable. This tool validates HTTPS certificates by default, if a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 
@@ -571,3 +571,7 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 3. Q: What is the mechanism of crl file update and signature verification? Whether the crl file can be updated independently?
 
 - A: There are two methods for crl file update and signature verification. The tool at toolbox/latest/Ascend-DMI/bin/ascend-cert is preferred. If this tool does not exist in the environment, openssl is preferred. To be compatible with old and new software package signature formats, the tool uses two sets of certificates. The tool compares the validity time of the crl file in the installation package with that of the local crl file, and uses the latest crl file to check whether the certificate is revoked. For the root user, the system of local crl files for `/etc/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`, for non-root users, This file is `~/.local/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`. If the local crl file does not exist or takes effect earlier than the crl file in the installation package, the local crl file is replaced by the crl file in the installation package. The tools/update_crl.sh supports independent crl file update, Run `bash update_crl.sh <crl_file>` command to update an independent crl file, `<crl_file>` is the path of the crl file uploaded by the user.
+
+3. Q: What is the reason why "certificate verify failed" appears when downloading some components?
+
+- A: The tool verifies the HTTPS certificate by default. The preceding error may be caused by an exception of the proxy server certificate. Contact the system administrator. The verification function can be configured in the downloader/config.ini file. For details, see <a href="#proxy_configuration">Proxy Configuration</a>。
