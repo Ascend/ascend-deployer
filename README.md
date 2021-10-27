@@ -489,7 +489,7 @@ source ~/.local/ascendrc       # non-root
 
 ## <a name="config">配置说明</a>
 
-### 代理配置
+### <a name="proxy_configuration">代理配置</a>
 
 如需使用http代理，需在环境变量中配置代理。本工具默认校验https证书，如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
 
@@ -577,3 +577,7 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 3. Q: 工具crl文件更新和签名校验的机制是什么样的？是否具备独立的crl文件更新的能力？
 
 - A: crl文件更新和签名校验有两种方式，优先使用toolbox/latest/Ascend-DMI/bin/ascend-cert工具，如果环境上不存在该工具，则使用openssl开源工具。为兼容新旧软件包的签名格式，本工具会使用2套证书。本工具会比较安装包内的crl文件和系统本地的crl文件的生效时间，并使用最新的crl文件校验证书是否被吊销。对root用户，系统本地的crl文件为`/etc/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`，对非root用户，该文件为`~/.local/hwsipcrl/ascendsip.crl(或ascendsip_g2.crl)`。如果系统本地的crl文件不存在或生效时间早于安装包内的crl文件，则系统本地的crl文件会被安装包内的crl文件替换。tools/update_crl.sh文件具备独立的crl文件更新的能力，执行`bash update_crl.sh <crl_file>`命令即可，`<crl_file>`为用户上传的crl文件路径。
+
+4. Q: 下载部分组件时出现"certificate verify failed"等字样是什么原因？
+
+- A: 下载时本工具默认校验https证书，上述报错可能是代理服务器证书异常，请联系系统管理员处理。该校验功能在downloader/config.ini文件中可配置，具体可参考<a href="#proxy_configuration">代理配置</a>。

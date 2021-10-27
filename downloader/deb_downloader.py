@@ -133,7 +133,7 @@ class Apt(object):
                 LOG.info('packages_url=[%s]', index_url)
                 packages = self.fetch_package_index(index_url)
                 if packages is False:
-                    print('download {} failed'.format(index_url))
+                    print(index_url.ljust(60), 'download failed')
                     LOG.error('download %s failed', index_url)
                     return False
                 self.make_cache_from_packages(source.get_url(), repo, packages)
