@@ -154,7 +154,8 @@ class Yum(object):
             if os.path.exists(repomd_file):
                 os.remove(repomd_file)
             # 下载repomd.xml文件
-            self.download_file(repomd_url, repomd_file)
+            if not self.download_file(repomd_url, repomd_file):
+                return False
 
             # 解析repomod.xml文件，得到数据库文件的url
             db_location_href = self.parse_repomd(repomd_file, 'primary_db')

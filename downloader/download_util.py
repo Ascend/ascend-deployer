@@ -244,6 +244,7 @@ class DownloadUtil:
             print('please wait for a moment...')
             LOG.info('please wait for a moment...')
             time.sleep(retry * 2)
+        return False
 
 
 class Cann_Download:
