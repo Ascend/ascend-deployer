@@ -4,9 +4,44 @@
       import_tasks: ../create_user.yml
       when: ansible_user_uid == 0
 
+    - name: is install tool
+      shell: which npu-smi
+      register: isInstalledTool
+      when: ansible_user_uid == 0
+
+    - name: message
+      debug:
+        msg:
+          - "npu-smi tool is not installed, please check it"
+      when: isInstalledTool.rc == 1
+
+    - name: check health
+      shell: npu-smi info|grep -E '910|710|310'|awk -F' ' '{print $5}'|grep -v '|'
+      register: result_info
+      when: isInstalledTool.rc == 0
+
+    - name: is everychip ok
+      set_fact: NotInstallDriver=true
+      when:
+        - result_info is defined
+        - "'OK' not in '{{item}}'"
+      loop: "{{result_info.stdout_lines}}"
+
     - name: install driver
       import_tasks: task_driver.yml
-      when: ansible_user_uid == 0
+      when:
+        - result_info is defined
+        - NotInstallDriver is undefined
+        - ansible_user_uid == 0
+
+    - name: message
+      debug:
+        msg:
+          - "critical issue with NPU, please check it"
+      when:
+        - result_info is defined
+        - NotInstallDriver is defined
+        - ansible_user_uid == 0
 
     - name: message
       debug:
