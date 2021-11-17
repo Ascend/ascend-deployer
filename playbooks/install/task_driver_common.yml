@@ -8,6 +8,15 @@
   failed_when: true
   when: ansible_local.npu_info.scene == ""
 
+- name: find driver upgrade tool
+  find:
+    path: /usr/local/Ascend/driver
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "upgrade-tool"
+  register: up_tool
+
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
 
 - name: find driver package linux only zip
@@ -67,6 +76,12 @@
   when:
     - (driver_run is defined) and (driver_run|length > 0)
     - "'SLES' in os_and_arch"
+
+- name: upgrade driver
+  shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
+  register: driver_result
+  failed_when: driver_result.rc == 1
+  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 1)
 
 - name: install driver
   shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"

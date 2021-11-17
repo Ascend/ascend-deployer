@@ -10,7 +10,7 @@
 
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
 
-- name: find upgrade tool
+- name: find driver upgrade tool
   find:
     path: /usr/local/Ascend/driver
     recurse: yes
@@ -25,6 +25,15 @@
     - "driver not installed, please install driver first"
   failed_when: true
   when: up_tool.matched == 0
+
+- name: find firmware upgrade tool
+  find:
+    path: /usr/local/Ascend/firmware
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "upgrade"
+  register: up_firm
 
 - name: find firmware package only zip
   find:
@@ -50,10 +59,16 @@
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
   when: firmware_pkg.matched > 0
 
+- name: upgrade firmware
+  shell: "bash {{ firmware_run }} --nox11 --upgrade --quiet"
+  register: firmware_result
+  when: (firmware_run is defined) and (firmware_run|length > 0) and (up_firm.matched == 1)
+  failed_when: firmware_result.rc != 0
+
 - name: install firmware
   shell: "bash {{ firmware_run }} --nox11 --full --quiet"
   register: firmware_result
-  when: (firmware_run is defined) and (firmware_run|length > 0)
+  when: (firmware_run is defined) and (firmware_run|length > 0) and (up_firm.matched == 0)
   failed_when: firmware_result.rc != 0
 
 - name: message
