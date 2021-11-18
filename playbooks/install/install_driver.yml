@@ -21,27 +21,22 @@
       when: isInstalledTool.rc == 0
 
     - name: is everychip ok
-      set_fact: NotInstallDriver=true
+      set_fact: NPUIssue=true
       when:
         - result_info is defined
         - "'OK' not in '{{item}}'"
       loop: "{{result_info.stdout_lines}}"
 
-    - name: install driver
-      import_tasks: task_driver.yml
-      when:
-        - result_info is defined
-        - NotInstallDriver is undefined
-        - ansible_user_uid == 0
-
     - name: message
-      debug:
+      fail:
         msg:
           - "critical issue with NPU, please check it"
       when:
-        - result_info is defined
-        - NotInstallDriver is defined
-        - ansible_user_uid == 0
+        - NPUIssue is defined
+
+    - name: import driver task
+      import_tasks: task_driver.yml
+      when: ansible_user_uid == 0
 
     - name: message
       debug:

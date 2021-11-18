@@ -8,6 +8,15 @@
   failed_when: true
   when: ansible_local.npu_info.scene == ""
 
+- name: find driver upgrade tool
+  find:
+    path: /usr/local/Ascend/driver
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "upgrade-tool"
+  register: up_tool
+
 - set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
 
 - name: find driver package linux only zip
@@ -58,11 +67,17 @@
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: driver_pkg.matched > 0
 
+- name: upgrade driver
+  shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
+  register: driver_result
+  failed_when: driver_result.rc == 1
+  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 1)
+
 - name: install driver
   shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
   register: driver_result
   failed_when: driver_result.rc == 1
-  when: (driver_run is defined) and (driver_run|length > 0)
+  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 0)
 
 - name: message
   debug:
