@@ -95,7 +95,7 @@
   debug:
     msg:
       - "can not find driver package, driver install skipped"
-  when: (driver_run is not defined) or (driver_run|length == 0)
+  when: (driver_run is not defined) or (driver_run|length == 0) and (up_tool.matched == 0)
 
 - name: message
   debug:
