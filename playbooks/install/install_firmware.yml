@@ -5,6 +5,7 @@
       shell: which npu-smi
       register: isInstalledTool
       when: ansible_user_uid == 0
+      ignore_errors: yes
 
     - name: message
       debug:
@@ -20,6 +21,7 @@
     - name: is everychip ok
       set_fact: NPUIssue=true
       when:
+        - isInstalledTool.rc == 0
         - result_info is defined
         - "'OK' not in '{{item}}'"
       loop: "{{result_info.stdout_lines}}"
