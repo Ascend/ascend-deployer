@@ -127,5 +127,6 @@
     { "name": "ethtool" },
     { "name": "iptables" },
     { "name": "gzip" },
-    {"name": "libgmpxx4ldbl", "info": "used by mindspore"}
+    {"name": "libgmpxx4ldbl", "info": "used by mindspore"},
+    { "name": "libseccomp2", "info":"used by new version docker"}
 ]
