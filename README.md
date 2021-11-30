@@ -40,6 +40,8 @@
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | x86_64  | 镜像默认Minimal模式                     |
+| Ubuntu  | 20.04.1   | aarch64 | 镜像默认Minimal模式                     |
+| Ubuntu  | 20.04.1   | x86_64  | 镜像默认Minimal模式                     |
 
 ### 支持的硬件形态说明
 
@@ -69,6 +71,7 @@
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
+- 基于安全考虑，建议将ascend-deployer的下载和解压目录（ascend-deployer目录）进行加固，将其权限设置为仅允许本人使用。
 
 - 内核头软件包说明
 
