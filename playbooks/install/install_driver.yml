@@ -9,7 +9,7 @@
       register: isInstalledTool
       ignore_errors: yes
       when: ansible_user_uid == 0
-      
+
     - name: message
       debug:
         msg:
@@ -23,7 +23,7 @@
       register: result_info
       when:
         - ansible_user_uid == 0      
-        - isInstalledTool.rc == 1
+        - isInstalledTool.rc == 0
 
     - name: is everychip ok
       set_fact: NPUIssue=true
@@ -35,9 +35,10 @@
       loop: "{{result_info.stdout_lines}}"
 
     - name: message
-      fail:
+      debug:
         msg:
           - "critical issue with NPU, please check it"
+      failed_when: true
       when:
         - NPUIssue is defined
 
