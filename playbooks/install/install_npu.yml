@@ -7,23 +7,27 @@
     - name: is install tool
       shell: which npu-smi
       register: isInstalledTool
-      when: ansible_user_uid == 0
       ignore_errors: yes
 
     - name: message
       debug:
         msg:
           - "npu-smi tool is not installed, please check it"
-      when: isInstalledTool.rc == 1
+      when: 
+        - ansible_user_uid == 0
+        - isInstalledTool.rc == 1
 
     - name: check health
       shell: npu-smi info|grep -E '910|710|310'|awk -F' ' '{print $5}'|grep -v '|'
       register: result_info
-      when: isInstalledTool.rc == 0
+      when: 
+        - ansible_user_uid == 0
+        - isInstalledTool.rc == 0
 
     - name: is everychip ok
       set_fact: NPUIssue=true
       when:
+        - ansible_user_uid == 0
         - isInstalledTool.rc == 0
         - result_info is defined
         - "'OK' not in '{{item}}'"

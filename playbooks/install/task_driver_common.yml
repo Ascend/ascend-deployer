@@ -79,8 +79,8 @@
 
 - name: upgrade driver
   shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
-  register: driver_result
-  failed_when: driver_result.rc == 1
+  register: driver_up_result
+  failed_when: driver_up_result.rc == 1
   when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 1)
 
 - name: install driver
@@ -103,7 +103,13 @@
       - "{{ driver_result | default('NOT DEFINED') }}"
   when: driver_result.changed
 
+- name: message
+  debug:
+    msg:
+      - "{{ driver_up_result | default('NOT DEFINED') }}"
+  when: driver_up_result.changed
+
 - name: service host_sys_init start
   shell: service host_sys_init start
   failed_when: false
-  when: driver_result.changed
+  when: (driver_result.changed) or (driver_up_result.changed)
