@@ -30,7 +30,7 @@
         - ansible_user_uid == 0
         - isInstalledTool.rc == 0
         - result_info is defined
-        - "'OK' not in '{{item}}'"
+        - item != 'OK'
       loop: "{{result_info.stdout_lines}}"
 
     - name: message
