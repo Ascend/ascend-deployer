@@ -5,7 +5,8 @@
       shell: which npu-smi
       register: isInstalledTool
       ignore_errors: yes
-
+      when: ansible_user_uid == 0
+      
     - name: message
       debug:
         msg:
