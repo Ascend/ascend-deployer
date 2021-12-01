@@ -39,6 +39,8 @@ The offline installation tool provides automatic download and one-click installa
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|      x86_64      | A minimal image is installed by default. |
+|  Ubuntu  |20.04.1  |     aarch64      | A minimal image is installed by default. |
+|  Ubuntu  |20.04.1  |      x86_64      | A minimal image is installed by default. |
 
 ### Description of supported hardware configuration
 |  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
@@ -67,6 +69,7 @@ The offline installation tool provides automatic download and one-click installa
 - BCLinux 7.6 does not have python3 by default. The `yum install python3` command is run before the download operation. Because the BCLinux 7.6 system source does not contain python3, modify the source configuration file by referring to the BCLinux official configuration file, or change "el7.6" to "el7.7" in "/etc/yum.repos.d/BCLinux-Base.repo"(Run the `sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo` command). After the installation, restore the original configuration.
 - tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
+- Based on security considerations, it is recommended to reinforce the unzipped installation directory(ascend-deployer) and set its permission to only allow owner to use.
 
 - Description of the kernel header package
 
