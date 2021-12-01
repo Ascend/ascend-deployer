@@ -107,6 +107,21 @@ class ProxyUtil:
             context = self.create_unverified_context()
         else:
             context = ssl.create_default_context()
+            safe_ciphers = [
+                'DHE-RSA-AES128-GCM-SHA256',
+                'DHE-RSA-AES256-GCM-SHA384',
+                'ECDHE-ECDSA-AES128-GCM-SHA256',
+                'ECDHE-ECDSA-AES256-GCM-SHA384',
+                'ECDHE-RSA-AES128-GCM-SHA256',
+                'ECDHE-RSA-AES256-GCM-SHA384',
+                'DHE-RSA-AES128-CCM',
+                'DHE-RSA-AES256-CCM']
+            context.options |= ssl.OP_NO_SSLv2
+            context.options |= ssl.OP_NO_SSLv3
+            context.options |= ssl.OP_NO_TLSv1
+            context.options |= ssl.OP_NO_TLSv1_1
+            context.set_ciphers(':'.join(safe_ciphers))
+
         return request.HTTPSHandler(context=context)
 
     def build_proxy_handler(self):
@@ -298,6 +313,29 @@ class Cann_Download:
                           'application/x-zip-compressed,multipart/x-zip,'
                           'application/x-rar-com'
                           'pressed, application/octet-stream')
+        fp.set_preference("security.ssl3.ecdhe_ecdsa_aes_128_gcm_sha256", True)
+        fp.set_preference("security.ssl3.ecdhe_ecdsa_aes_256_gcm_sha384", True)
+        fp.set_preference("security.ssl3.ecdhe_rsa_aes_128_gcm_sha256", True)
+        fp.set_preference("security.ssl3.ecdhe_rsa_aes_256_gcm_sha384", True)
+        forbiddens = [
+            'dhe_dss_aes_128_sha', 'dhe_dss_aes_256_sha', 'dhe_dss_camellia_128_sha',
+            'dhe_dss_camellia_256_sha', 'dhe_dss_des_ede3_sha', 'dhe_dss_des_sha',
+            'dhe_rsa_aes_128_sha', 'dhe_rsa_aes_256_sha', 'dhe_rsa_camellia_128_sha',
+            'dhe_rsa_camellia_256_sha', 'dhe_rsa_des_ede3_sha', 'dhe_rsa_des_sha',
+            'ecdhe_ecdsa_aes_128_sha', 'ecdhe_ecdsa_aes_256_sha', 'ecdhe_ecdsa_chacha20_poly1305_sha256',
+            'ecdhe_ecdsa_des_ede3_sha', 'ecdhe_ecdsa_null_sha', 'ecdhe_ecdsa_rc4_128_sha',
+            'ecdhe_rsa_aes_128_sha', 'ecdhe_rsa_aes_256_sha', 'ecdhe_rsa_chacha20_poly1305_sha256',
+            'ecdhe_rsa_des_ede3_sha', 'ecdhe_rsa_null_sha', 'ecdhe_rsa_rc4_128_sha',
+            'ecdh_ecdsa_aes_128_sha', 'ecdh_ecdsa_aes_256_sha', 'ecdh_ecdsa_des_ede3_sha',
+            'ecdh_ecdsa_null_sha', 'ecdh_ecdsa_rc4_128_sha', 'ecdh_rsa_aes_128_sha', 'ecdh_rsa_aes_256_sha',
+            'ecdh_rsa_des_ede3_sha', 'ecdh_rsa_null_sha', 'ecdh_rsa_rc4_128_sha', 'rsa_1024_des_cbc_sha',
+            'rsa_1024_rc4_56_sha', 'rsa_aes_128_sha', 'rsa_aes_256_sha', 'rsa_camellia_128_sha',
+            'rsa_camellia_256_sha', 'rsa_des_ede3_sha', 'rsa_des_sha', 'rsa_fips_des_ede3_sha',
+            'rsa_fips_des_sha', 'rsa_null_md5', 'rsa_null_sha', 'rsa_rc2_40_md5',
+            'rsa_rc4_40_md5', 'rsa_rc4_128_md5', 'rsa_rc4_128_sha']
+        for value in forbiddens:
+            fp.set_preference("security.ssl3.{}".format(value), False)
+
         fp.set_preference("browser.download.dir", self.download_dir)
         if platform.system() == 'Linux':
             driver_path = os.path.join(ROOT_DIR, 'geckodriver')
