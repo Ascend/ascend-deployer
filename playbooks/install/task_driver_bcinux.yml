@@ -71,7 +71,7 @@
   shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
   register: driver_up_result
   failed_when: driver_up_result.rc == 1
-  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 1)
+  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched > 0)
 
 - name: install driver
   shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
@@ -83,7 +83,7 @@
   debug:
     msg:
       - "can not find driver package, driver install skipped"
-  when: (driver_run is not defined) or (driver_run|length == 0)
+  when: driver_run is not defined
 
 - name: message
   debug:
