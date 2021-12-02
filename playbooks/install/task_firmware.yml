@@ -61,9 +61,9 @@
 
 - name: upgrade firmware
   shell: "bash {{ firmware_run }} --nox11 --upgrade --quiet"
-  register: firmware_result
+  register: firmware_up_result
   when: (firmware_run is defined) and (firmware_run|length > 0) and (up_firm.matched == 1)
-  failed_when: firmware_result.rc != 0
+  failed_when: firmware_up_result.rc != 0
 
 - name: install firmware
   shell: "bash {{ firmware_run }} --nox11 --full --quiet"
@@ -82,3 +82,9 @@
     msg:
       - "{{ firmware_result | default('NOT DEFINED') }}"
   when: firmware_result.changed
+
+- name: message
+  debug:
+    msg:
+      - "{{ firmware_up_result | default('NOT DEFINED') }}"
+  when: firmware_up_result.changed
