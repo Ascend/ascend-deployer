@@ -419,11 +419,11 @@ The following table describes the parameters. You can run the `./install.sh --he
 
 This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded. Same logic as above to download CANN package for aarch64 or x86_64 architectures.
 
-| optional components| version 1 | version 2 | version 3 |
-|:------------------ | --------  | --------  | -------- |
-| MindStudio         |  2.0.0    |  3.0.1    |  3.0.2   |
-| MindSpore          |  1.1.1    |  1.2.1    |  1.3.0   |
-| CANN               |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |
+| optional components| version 1 | version 2 | version 3 | version 4 |
+|:------------------ | --------  | --------  | --------  | -------- |
+| MindStudio         |  2.0.0    |  3.0.1    |  3.0.2    |  3.0.3   |
+| MindSpore          |  1.1.1    |  1.2.1    |  1.3.0    |  1.5.0    |
+| CANN               |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |  5.0.3.1 |
 
 Only one version of MindSpore or MindStudio that matches CANN package version should exist in the Resources directory during installation, as shown above. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. `--download=MindSpore`, --os-list specifies the corresponding OS, please refer to the official website of [mindspore](https://mindspore.cn/versions) for some instructions. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 
@@ -517,7 +517,7 @@ You can configure and modify the download parameters in the **downloader/config.
 [download]
 os_list=CentOS_7.6_aarch64, CentOS_7.6_x86_64, CentOS_8.2_aarch64, CentOS_8.2_x86_64, Ubuntu_18.04_aarch64, Ubuntu_18.04_x86_64 ...          # OS information of the environment to be deployed.
 [software]
-pkg_list=CANN_5.0.2.1,MindStudio_3.0.2  # CANN或MindStudio to be deployed.
+pkg_list=CANN_5.0.3.1,MindStudio_3.0.3  # CANN or MindStudio to be deployed.
 ```
 
 ### <a name="sourceconfig">Source Configuration</a>
