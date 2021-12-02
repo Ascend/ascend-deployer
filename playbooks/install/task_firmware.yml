@@ -62,7 +62,7 @@
 - name: upgrade firmware
   shell: "bash {{ firmware_run }} --nox11 --upgrade --quiet"
   register: firmware_up_result
-  when: (firmware_run is defined) and (firmware_run|length > 0) and (up_firm.matched == 1)
+  when: (firmware_run is defined) and (firmware_run|length > 0) and (up_firm.matched > 0)
   failed_when: firmware_up_result.rc != 0
 
 - name: install firmware
@@ -75,7 +75,7 @@
   debug:
     msg:
       - "can not find firmware package, firmware install skipped"
-  when: (firmware_run is not defined) or (firmware_run|length == 0)
+  when: firmware_run is not defined
 
 - name: message
   debug:
