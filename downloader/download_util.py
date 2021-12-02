@@ -106,21 +106,7 @@ class ProxyUtil:
         if not self.verify:
             context = self.create_unverified_context()
         else:
-            context = ssl.create_default_context()
-            safe_ciphers = [
-                'DHE-RSA-AES128-GCM-SHA256',
-                'DHE-RSA-AES256-GCM-SHA384',
-                'ECDHE-ECDSA-AES128-GCM-SHA256',
-                'ECDHE-ECDSA-AES256-GCM-SHA384',
-                'ECDHE-RSA-AES128-GCM-SHA256',
-                'ECDHE-RSA-AES256-GCM-SHA384',
-                'DHE-RSA-AES128-CCM',
-                'DHE-RSA-AES256-CCM']
-            context.options |= ssl.OP_NO_SSLv2
-            context.options |= ssl.OP_NO_SSLv3
-            context.options |= ssl.OP_NO_TLSv1
-            context.options |= ssl.OP_NO_TLSv1_1
-            context.set_ciphers(':'.join(safe_ciphers))
+            context = self.create_verified_context()
 
         return request.HTTPSHandler(context=context)
 
@@ -136,6 +122,26 @@ class ProxyUtil:
         context.check_hostname = False
         return context
 
+    @staticmethod
+    def create_verified_context():
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        safe_ciphers = [
+            'DHE-RSA-AES128-GCM-SHA256', 'DHE-RSA-AES256-GCM-SHA384', 'DHE-DSS-AES128-GCM-SHA256',
+            'DHE-DSS-AES256-GCM-SHA384', 'DHE-PSK-CHACHA20-POLY1305', 'ECDHE-ECDSA-AES128-GCM-SHA256',
+            'ECDHE-ECDSA-AES256-GCM-SHA384', 'ECDHE-RSA-AES128-GCM-SHA256', 'ECDHE-RSA-AES256-GCM-SHA384',
+            'ECDHE-RSA-CHACHA20-POLY1305', 'ECDHE-PSK-CHACHA20-POLY1305', 'DHE-RSA-AES128-CCM',
+            'DHE-RSA-AES256-CCM', 'DHE-RSA-AES128-CCM8', 'DHE-RSA-AES256-CCM8',
+            'DHE-RSA-CHACHA20-POLY1305', 'PSK-AES128-CCM', 'PSK-AES256-CCM',
+            'DHE-PSK-AES128-CCM', 'DHE-PSK-AES256-CCM', 'PSK-AES128-CCM8',
+            'PSK-AES256-CCM8', 'DHE-PSK-AES128-CCM8', 'DHE-PSK-AES256-CCM8',
+            'ECDHE-ECDSA-AES128-CCM', 'ECDHE-ECDSA-AES256-CCM', 'ECDHE-ECDSA-AES128-CCM8',
+            'ECDHE-ECDSA-AES256-CCM8', 'ECDHE-ECDSA-CHACHA20-POLY1305']
+        context.options |= ssl.OP_NO_SSLv2
+        context.options |= ssl.OP_NO_SSLv3
+        context.options |= ssl.OP_NO_TLSv1
+        context.options |= ssl.OP_NO_TLSv1_1
+        context.set_ciphers(':'.join(safe_ciphers))
+        return context
 
 def schedule(blocknum, blocksize, totalsize):
     try:
