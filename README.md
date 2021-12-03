@@ -40,8 +40,6 @@
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | x86_64  | 镜像默认Minimal模式                     |
-| Ubuntu  | 20.04.1   | aarch64 | 镜像默认Minimal模式                     |
-| Ubuntu  | 20.04.1   | x86_64  | 镜像默认Minimal模式                     |
 
 ### 支持的硬件形态说明
 

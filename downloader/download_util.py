@@ -434,6 +434,7 @@ class Cann_Download:
         return is_exists(dst_file_name) and is_exists(dst_file_name + '.asc')
 
     def wait_download_complete(self, file_name):
+        time.sleep(5)
         while file_name + '.part' in \
                 [_file_name for _file_name in os.listdir(self.download_dir)]:
             time.sleep(1)
