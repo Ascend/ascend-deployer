@@ -39,8 +39,6 @@ The offline installation tool provides automatic download and one-click installa
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|      x86_64      | A minimal image is installed by default. |
-|  Ubuntu  |20.04.1  |     aarch64      | A minimal image is installed by default. |
-|  Ubuntu  |20.04.1  |      x86_64      | A minimal image is installed by default. |
 
 ### Description of supported hardware configuration
 |  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
