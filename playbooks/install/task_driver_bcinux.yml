@@ -8,7 +8,10 @@
   failed_when: true
   when: ansible_local.npu_info.scene == ""
 
-- set_fact: run_dir={{ scene_dict[ansible_local.npu_info.scene] }}
+- name: get npu scene
+  import_tasks: task_get_npu_scene.yml
+
+- set_fact: run_dir={{ scene_dict[npu_scene] }}
 
 - name: find driver package linux only zip
   find:
