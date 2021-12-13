@@ -50,6 +50,7 @@
 |  A300-3000    |  A300T-9000   |  A500 Pro-3000|
 |  A300-3010    |  A800-9000    |  Atlas200(EP) |
 |  A300I Pro    |  A800-9010    |               |
+|  A300V Pro    |               |               |
 |  A800-3000    |               |               |
 |  A800-3010    |               |               |
 
@@ -61,6 +62,7 @@
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
 - A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
+- A300I Pro和A300V Pro卡必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro.
 - 由于无法区分Atlas200 EP和A300推理卡（A300-3000、A300-3010、A800-3000、A800-3010）的硬件形态，Atlas200 EP场景使用本工具时需满足如下条件。不支持Atlas200 EP和A300推理卡环境批量部署；部署的机器包含Atlas200 EP时，resources目录下不要放置A300的NPU包，部署的机器包含A300推理卡时，resources目录下不要放置Atlas200 EP的NPU包；由于以上2条的限制，`--download=CANN`下载功能也不会包含Atlas200 EP的NPU包，请自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
 - EulerOS等很多操作系统默认禁止root用户远程连接，所以需提前配置/etc/ssh/sshd_config中PermitRootLogin为yes（个别OS配置方法或许不同，请参考OS官方说明）；用完本工具后，及时关闭root用户远程连接
@@ -70,8 +72,8 @@
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
-- EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 - 基于安全考虑，建议将ascend-deployer的下载和解压目录（ascend-deployer目录）进行加固，将其权限设置为仅允许本人使用。
+- EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 - 内核头软件包说明
 
