@@ -34,6 +34,16 @@
             "sha256": "c4492cc2539781027e92cd01544cedd7c3d459b57dda377ec683c26c3a83612c"
         },
         {
+            "filename": "Atlas-300v-pro-npu_21.0.3.1_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253845505-ESW2000434115",
+            "sha256": "e56ff7d3e834b7aad1aa793d2ecfcd68bfd758f316107583f1d4154d7a6997ab"
+        },
+        {
+            "filename": "Atlas-300v-pro-npu_21.0.3.1_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253845505-ESW2000434116",
+            "sha256": "480a06f674767907d00c679dcf8880e4ea8cbca23417e7cc967fef3f7bae33f2"
+        },
+        {
             "filename": "Ascend-mindx-toolbox_2.0.3_linux-aarch64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/252907753-ESW2000432656",
             "sha256": "9d5db9a230ca7573cbff6322e0b7e0b95cc95a814d798c028daa30da08bed9f3"
