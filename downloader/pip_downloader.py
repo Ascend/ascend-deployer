@@ -316,8 +316,10 @@ class MyPip(object):
             specified_python = get_specified_python()
             if "Python-3.7" in specified_python:
                 implement_flag = "cp37"
-            else:
+            if "Python-3.8" in specified_python:
                 implement_flag = "cp38"
+            else:
+                implement_flag = "cp39"
 
             if not os.path.exists(dest_path):
                 os.makedirs(dest_path, mode=0o750, exist_ok=True)
