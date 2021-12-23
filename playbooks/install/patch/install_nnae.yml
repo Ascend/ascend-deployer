@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: install nnae patch
+      import_tasks: task_nnae.yml

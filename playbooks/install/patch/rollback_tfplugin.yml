@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: rollback tfplugin
+      import_tasks: task_rollback_tfplugin.yml

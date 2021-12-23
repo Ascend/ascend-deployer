@@ -680,7 +680,7 @@ function verify_zip()
     local root_ca_file=${BASE_DIR}/playbooks/rootca.pem
     echo -e "${ROOT_CA}" > ${root_ca_file}
     chmod 600 $2 ${root_ca_g2_file} ${root_ca_file}
-    for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep ".zip$" ; find ${BASE_DIR}/resources/*.zip 2>/dev/null)
+    for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep ".zip$" ; find ${BASE_DIR}/resources/*.zip 2>/dev/null ; find ${BASE_DIR}/resources/patch/*.zip 2>/dev/null)
     do
         rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
@@ -794,6 +794,58 @@ function process_scene()
     fi
 }
 
+function process_patch()
+{
+    verify_zip_redirect
+    local verify_zip_redirect_status_2=$?
+    if [[ ${verify_zip_redirect_status_2} != 0 ]];then
+        return ${verify_zip_redirect_status_2}
+    fi
+    local tmp_patch_play=${BASE_DIR}/playbooks/tmp_patch.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_patch_play}
+    if [ "x${nocopy_flag}" != "xy" ];then
+        echo "- import_playbook: distribution.yml" >> ${tmp_patch_play}
+    fi
+    IFS=','
+    for target in ${patch_target}
+    do
+        echo "- import_playbook: install/patch/install_${target}.yml" >> ${tmp_patch_play}
+    done
+    unset IFS
+    echo "ansible-playbook -i ./inventory_file ${tmp_patch_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    cat ${tmp_patch_play}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_patch_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    local process_patch_ansible_playbook_status=$?
+    if [ -f ${tmp_patch_play} ];then
+        rm -f ${tmp_patch_play}
+    fi
+    if [[ ${process_patch_ansible_playbook_status} != 0 ]];then
+        return ${process_patch_ansible_playbook_status}
+    fi
+}
+
+function process_patch_rollback()
+{
+    local tmp_patch_rollback_play=${BASE_DIR}/playbooks/tmp_patch_rollback.yml
+    echo "- import_playbook: gather_npu_fact.yml" > ${tmp_patch_rollback_play}
+    IFS=','
+    for target in ${patch_rollback_target}
+    do
+        echo "- import_playbook: install/patch/rollback_${target}.yml" >> ${tmp_patch_rollback_play}
+    done
+    unset IFS
+    echo "ansible-playbook -i ./inventory_file ${tmp_patch_rollback_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    cat ${tmp_patch_rollback_play}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_patch_rollback_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    local process_patch_rollback_ansible_playbook_status=$?
+    if [ -f ${tmp_patch_rollback_play} ];then
+        rm -f ${tmp_patch_rollback_play}
+    fi
+    if [[ ${process_patch_rollback_ansible_playbook_status} != 0 ]];then
+        return ${process_patch_rollback_ansible_playbook_status}
+    fi
+}
+
 function process_test()
 {
     local tmp_test_play=${BASE_DIR}/playbooks/tmp_test.yml
@@ -863,6 +915,20 @@ function print_usage()
         tmp=${scene#*_}
         echo "                               ${tmp%.*}"
     done
+    echo "--patch=<package_name>         Patching specific package:"
+    for target in `find ${BASE_DIR}/playbooks/install/patch/install_*.yml`
+    do
+        target=$(basename ${target})
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
+    echo "--patch-rollback=<package_name> Rollback specific package:"
+    for target in `find ${BASE_DIR}/playbooks/install/patch/install_*.yml`
+    do
+        target=$(basename ${target})
+        tmp=${target#*_}
+        echo "                               ${tmp%.*}"
+    done
     echo "--test=<target>                test the functions:"
     for test in `find ${BASE_DIR}/playbooks/test/test_*.yml`
     do
@@ -896,6 +962,24 @@ function parse_script_args() {
             install_scene=$(echo $1 | cut -d"=" -f2)
             if $(echo "${install_scene}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
                 log_error "--install-scene parameter is invalid"
+                print_usage
+                return 1
+            fi
+            shift
+            ;;
+        --patch=*)
+            patch_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${patch_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
+                log_error "--patch parameter is invalid"
+                print_usage
+                return 1
+            fi
+            shift
+            ;;
+        --patch-rollback=*)
+            patch_rollback_target=$(echo $1 | cut -d"=" -f2)
+            if $(echo "${patch_rollback_target}" | grep -Evq '^[a-zA-Z0-9._,]*$');then
+                log_error "--patch_rollback parameter is invalid"
                 print_usage
                 return 1
             fi
@@ -958,7 +1042,7 @@ function parse_script_args() {
 
 function check_script_args()
 {
-    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
+    if [ -z ${install_target} ] && [ -z ${install_scene} ] && [ -z ${patch_target} ] && [ -z ${patch_rollback_target} ] && [ -z ${test_target} ] && [[ ${check_flag} != "y" ]] && [[ ${clean_flag} != "y" ]];then
         log_error "expected one valid argument at least"
         print_usage
         return 1
@@ -990,6 +1074,38 @@ function check_script_args()
         print_usage
         return 1
     fi
+    
+    # --patch
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${patch_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/patch/install_${target}.yml ];then
+            log_error "not support install patch for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+        return 1
+    fi
+    unset IFS
+
+    # --patch-rollback
+    IFS=','
+    local unsupport=${FALSE}
+    for target in ${patch_rollback_target}
+    do
+        if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/patch/install_${target}.yml ];then
+            log_error "not support rollback for ${target}"
+            unsupport=${TRUE}
+        fi
+    done
+    if [ ${unsupport} == ${TRUE} ];then
+        print_usage
+        return 1
+    fi
+    unset IFS
 
     # --test
     IFS=','
@@ -1181,6 +1297,22 @@ main()
         local process_scene_status=$?
         if [[ ${process_scene_status} != 0 ]];then
             return ${process_scene_status}
+        fi
+    fi
+
+    if [ "x${patch_target}" != "x" ];then
+        process_patch ${patch_target}
+        local process_patch_status=$?
+        if [[ ${process_patch_status} != 0 ]];then
+            return ${process_patch_status}
+        fi
+    fi
+
+    if [ "x${patch_rollback_target}" != "x" ];then
+        process_patch_rollback ${patch_rollback_target}
+        local process_patch_rollback_status=$?
+        if [[ ${process_patch_rollback_status} != 0 ]];then
+            return ${process_patch_rollback_status}
         fi
     fi
 

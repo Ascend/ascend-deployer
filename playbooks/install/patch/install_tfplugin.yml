@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: install tfplugin patch
+      import_tasks: task_tfplugin.yml

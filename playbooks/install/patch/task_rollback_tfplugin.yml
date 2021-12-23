@@ -1,0 +1,24 @@
+- name: find tfplugin rollback script
+  find:
+    paths: "{{ install_path }}/tfplugin/latest/spc/script/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "roll.*.sh"
+  register: tfplugin
+
+- name: rollback tfplugin
+  shell: "{{ tfplugin.files[0].path }}"
+  register: tfplugin_result
+  when: tfplugin.matched > 0
+
+- fail:
+    msg:
+      - "can not find tfplugin rollback script!"
+  when: tfplugin.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "{{ tfplugin_result | default('NOT DEFINED') }}"
+  when: tfplugin_result.changed
