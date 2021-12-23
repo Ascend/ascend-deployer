@@ -209,9 +209,19 @@ def download_ms_whl(os_item, software, dst):
     else:
         os_item_split = os_item.split("_")
         os_name, arch = "_".join(os_item_split[:2]), "_".join(os_item_split[2:])
+        specified_python = get_specified_python()
+        implement_flag = "cp37"
+        if "Python-3.7" in specified_python:
+            implement_flag = "cp37"
+        if "Python-3.8" in specified_python:
+            implement_flag = "cp38"
+        if "Python-3.9" in specified_python:
+            implement_flag = "cp39"
         if os_name == "Ubuntu_18.04":
             whl_list = get_software_mindspore(formal_name, "{}".format(os_item), version)
             for item in whl_list:
+                if item.get('python', 'cp37') != implement_flag:
+                    break
                 dest_file = os.path.join(download_dir, "CPU", os.path.basename(item['url']))
                 if os.path.exists(dest_file) and 'sha256' in item:
                     file_hash = calc_sha256(dest_file)
@@ -229,6 +239,8 @@ def download_ms_whl(os_item, software, dst):
         if os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8", "OpenEuler_20.03LTS", "Kylin_V10Tercel"]:
             whl_list = get_software_mindspore(formal_name, "linux_{}".format(arch), version)
             for item in whl_list:
+                if item.get('python', 'cp37') != implement_flag:
+                    break
                 dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
                 if os.path.exists(dest_file) and 'sha256' in item:
                     file_hash = calc_sha256(dest_file)

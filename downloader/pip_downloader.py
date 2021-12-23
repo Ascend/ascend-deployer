@@ -318,7 +318,7 @@ class MyPip(object):
                 implement_flag = "cp37"
             if "Python-3.8" in specified_python:
                 implement_flag = "cp38"
-            else:
+            if "Python-3.9" in specified_python:
                 implement_flag = "cp39"
 
             if not os.path.exists(dest_path):
