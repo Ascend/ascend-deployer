@@ -1,0 +1,53 @@
+- name: find toolkit aarch64 rollback script
+  find:
+    paths: "{{ install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "roll.*.sh"
+  register: toolkit_aarch64
+  when:
+    - ansible_architecture == 'aarch64'
+
+- name: rollback toolkit for aarch64
+  shell: "{{ toolkit_aarch64.files[0].path }}"
+  register: toolkit_aarch64_result
+  when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched > 0"
+
+- fail:
+    msg:
+      - "can not find toolkit rollback script!"
+  when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched == 0"
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolkit_aarch64_result | default('NOT DEFINED') }}"
+  when: toolkit_aarch64_result.changed
+
+- name: find toolkit x86_64 rollback script
+  find:
+    paths: "{{ install_path }}/ascend-toolkit/latest/x86_64-linux/spc/script/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "roll.*.sh"
+  register: toolkit_x64
+  when:
+    - ansible_architecture == 'x86_64'
+
+- name: rollback toolkit for x86_64
+  shell: "{{ toolkit_x64.files[0].path }}"
+  register: toolkit_x64_result
+  when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
+
+- fail:
+    msg:
+      - "can not find toolkit rollback script!"
+  when: "ansible_architecture == 'x86_64' and toolkit_x64.matched == 0"
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolkit_x64_result | default('NOT DEFINED') }}"
+  when: toolkit_x64_result.changed

@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+    - name: rollback toolkit
+      import_tasks: task_rollback_toolkit.yml
