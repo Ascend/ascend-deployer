@@ -171,7 +171,7 @@ readonly specified_python=$(get_specified_python)
 function check_python_version()
 {
     if $(echo "${specified_python}" | grep -Evq '^Python-3.(7|8|9).([0-9]|1[0-1])$');then
-        log_error "ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11 and 3.9.0~3.9.11"
+        log_error "ascend_python_version is not available, available Python-x.x.x is in 3.7.0~3.7.11 and 3.8.0~3.8.11 and 3.9.0~3.9.6"
         return 1
     fi
 }

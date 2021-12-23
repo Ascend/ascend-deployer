@@ -30,7 +30,7 @@
 
     - name: copy py_compile
       ansible.builtin.copy:
-        src: /usr/local/python_version/lib/python_minor/py_compile.py
+        src: /usr/local/{{ python_version }}/lib/python_minor/py_compile.py
         dest: /usr/lib/python_minor/py_compile.py
         remote_src: no
       when:
@@ -66,8 +66,8 @@
       shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ mindstudio_dir }}/{{ os_and_arch }}/*.deb
       register: apt_result
       environment:
-        PATH: /usr/local/python_version/bin:{{ ansible_env.PATH }}
-        LD_LIBRARY_PATH: /usr/local/python_version/lib:/usr/local/gcc7.3.0/lib64
+        PATH: /usr/local/{{ python_version }}/bin:{{ ansible_env.PATH }}
+        LD_LIBRARY_PATH: /usr/local/{{ python_version }}/lib:/usr/local/gcc7.3.0/lib64
       when:
         - ms.matched > 0
         - ansible_pkg_mgr == 'apt'
@@ -92,8 +92,8 @@
     - name: install python libs for mindstudio
       shell: python_minor -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
       environment:
-        PATH: "{{ local_path }}/python_version/bin:{{ ansible_env.PATH }}"
-        LD_LIBRARY_PATH: "{{ local_path }}/python_version/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
+        PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
       failed_when: false
       when: ms.matched > 0
       with_items:
@@ -138,8 +138,8 @@
 
     - name: create symbolic link python_version
       file:
-        src: /usr/local/python_version/bin/python3
-        dest: /usr/bin/python_version
+        src: /usr/local/{{ python_version }}/bin/python3
+        dest: /usr/bin/{{ python_version }}
         state: link
       when:
         - ms.matched > 0
@@ -147,8 +147,8 @@
 
     - name: create symbolic link python_version for non-root
       file:
-        src: ~/.local/python_version/bin/python3
-        dest: /usr/local/bin/python_version
+        src: ~/.local/{{ python_version }}/bin/python3
+        dest: /usr/local/bin/{{ python_version }}
         state: link
       when:
         - ms.matched > 0
@@ -173,7 +173,7 @@
 
     - name: create symbolic link python_minor
       file:
-        src: /usr/local/python_version/bin/python3
+        src: /usr/local/{{ python_version }}/bin/python3
         dest: /usr/bin/python_minor
         state: link
       when:
@@ -183,7 +183,7 @@
 
     - name: create symbolic link python_minor for non-root
       file:
-        src: ~/.local/python_version/bin/python3
+        src: ~/.local/{{ python_version }}/bin/python3
         dest: /usr/local/bin/python_minor
         state: link
       failed_when: false
@@ -194,7 +194,7 @@
 
     - name: create symbolic link pip3.9.6
       file:
-        src: /usr/local/python_version/bin/pip3
+        src: /usr/local/{{ python_version }}/bin/pip3
         dest: /usr/bin/pip3.9.6
         state: link
       when:
@@ -203,7 +203,7 @@
 
     - name: create symbolic link pip3.9.6 for non-root
       file:
-        src: ~/.local/python_version/bin/pip3
+        src: ~/.local/{{ python_version }}/bin/pip3
         dest: /usr/local/bin/pip3.9.6
         state: link
       when:
@@ -229,7 +229,7 @@
 
     - name: create symbolic link pip3.9
       file:
-        src: /usr/local/python_version/bin/pip3
+        src: /usr/local/{{ python_version }}/bin/pip3
         dest: /usr/bin/pip3.9
         state: link
       when:
@@ -239,7 +239,7 @@
 
     - name: create symbolic link pip3.9 for non-root
       file:
-        src: ~/.local/python_version/bin/pip3
+        src: ~/.local/{{ python_version }}/bin/pip3
         dest: /usr/local/bin/pip3.9
         state: link
       failed_when: false
