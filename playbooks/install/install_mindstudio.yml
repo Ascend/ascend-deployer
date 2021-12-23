@@ -256,9 +256,18 @@
         mode: 0750
       when: ms.matched > 0
 
+    - name: find jdk-aarch64 package
+      find:
+        paths: "{{ mindstudio_dir }}"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: "jbr-.*-linux-aarch64-.*.tar.gz"
+      register: jdk_aarch64_dir
+
     - name: unarchive jdk for aarch64
       unarchive:
-        src: "{{ mindstudio_dir }}/jbr-11_0_9-linux-aarch64-b944.49.tar.gz"
+        src: "{{ jdk_aarch64_dir.files[0].path }}"
         dest: ~/MindStudio
         copy: no
         mode: 0750
@@ -266,9 +275,18 @@
         - ms.matched > 0
         - ansible_architecture == 'aarch64'
 
+    - name: find jdk-x64 package
+      find:
+        paths: "{{ mindstudio_dir }}"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: "jbr-.*-linux-x64-.*.tar.gz"
+      register: jdk_x64_dir
+
     - name: unarchive jdk for x86_64
       unarchive:
-        src: "{{ mindstudio_dir }}/jbr-11_0_9-linux-x64-b944.49.tar.gz"
+        src: "{{ jdk_x64_dir.files[0].path }}"
         dest: ~/MindStudio
         copy: no
       when:
