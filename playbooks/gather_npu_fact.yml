@@ -7,6 +7,11 @@
       setup:
         fact_path: /notexist
 
+    - set_fact: python_minor={{python_version[:-2]}}
+
+    - name: debug
+      debug: var=python_minor
+      
     - name: set custom fact tasks
       import_tasks: task_set_custom_fact.yml
 

@@ -1,5 +1,11 @@
 [
     {
+        "filename":"Python-3.9.6.tar.xz",
+        "url":"https://mirrors.huaweicloud.com/python/3.9.6/Python-3.9.6.tar.xz",
+        "sha256":"397920af33efc5b97f2e0b57e91923512ef89fc5b3c1d21dbfc8c4828ce0108a",
+        "dest":"resources/sources"
+    },
+    {
         "filename":"Python-3.7.5.tar.xz",
         "url":"https://mirrors.huaweicloud.com/python/3.7.5/Python-3.7.5.tar.xz",
         "sha256":"e85a76ea9f3d6c485ec1780fca4e500725a4a7bbc63c78ebc44170de9b619d94",
