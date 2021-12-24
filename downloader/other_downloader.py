@@ -221,7 +221,7 @@ def download_ms_whl(os_item, software, dst):
             whl_list = get_software_mindspore(formal_name, "{}".format(os_item), version)
             for item in whl_list:
                 if item.get('python', 'cp37') != implement_flag:
-                    print("Try to get{} on {}, but it does not match {}".format
+                    print("Try to get {} on {}, but it does not match {}".format
                     (item['filename'], item.get('python'), implement_flag))
                     break
                 dest_file = os.path.join(download_dir, "CPU", os.path.basename(item['url']))
@@ -242,7 +242,7 @@ def download_ms_whl(os_item, software, dst):
             whl_list = get_software_mindspore(formal_name, "linux_{}".format(arch), version)
             for item in whl_list:
                 if item.get('python', 'cp37') != implement_flag:
-                    print("Try to get{} on {}, but it does not match {}".format
+                    print("Try to get {} on {}, but it does not match {}".format
                     (item['filename'], item.get('python'), implement_flag))
                     break
                 dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
