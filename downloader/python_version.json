@@ -1,8 +1,27 @@
 [
+
     {
         "filename":"Python-3.9.6.tar.xz",
         "url":"https://mirrors.huaweicloud.com/python/3.9.6/Python-3.9.6.tar.xz",
         "sha256":"397920af33efc5b97f2e0b57e91923512ef89fc5b3c1d21dbfc8c4828ce0108a",
+        "dest":"resources/sources"
+    },
+    {
+        "filename":"Python-3.9.9.tar.xz",
+        "url":"https://mirrors.huaweicloud.com/python/3.9.9/Python-3.9.9.tar.xz",
+        "sha256":"06828c04a573c073a4e51c4292a27c1be4ae26621c3edc7cf9318418ce3b6d27",
+        "dest":"resources/sources"
+    },
+    {
+        "filename":"Python-3.9.8.tar.xz",
+        "url":"https://mirrors.huaweicloud.com/python/3.9.8/Python-3.9.8.tar.xz",
+        "sha256":"675ce09bf23c09836bf1969b744b1ea4c1a18c32788626632525f08444ebad5c",
+        "dest":"resources/sources"
+    },
+    {
+        "filename":"Python-3.9.7.tar.xz",
+        "url":"https://mirrors.huaweicloud.com/python/3.9.7/Python-3.9.7.tar.xz",
+        "sha256":"f8145616e68c00041d1a6399b76387390388f8359581abc24432bb969b5e3c57",
         "dest":"resources/sources"
     },
     {
