@@ -223,7 +223,7 @@ def download_ms_whl(os_item, software, dst):
                 if item.get('python', 'cp37') != implement_flag:
                     print("Try to get {} on {}, but it does not match {}".format
                     (item['filename'], item.get('python'), implement_flag))
-                    break
+                    continue
                 dest_file = os.path.join(download_dir, "CPU", os.path.basename(item['url']))
                 if os.path.exists(dest_file) and 'sha256' in item:
                     file_hash = calc_sha256(dest_file)
@@ -244,7 +244,7 @@ def download_ms_whl(os_item, software, dst):
                 if item.get('python', 'cp37') != implement_flag:
                     print("Try to get {} on {}, but it does not match {}".format
                     (item['filename'], item.get('python'), implement_flag))
-                    break
+                    continue
                 dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
                 if os.path.exists(dest_file) and 'sha256' in item:
                     file_hash = calc_sha256(dest_file)

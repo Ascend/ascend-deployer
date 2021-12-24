@@ -15,6 +15,7 @@
                 "filename":"mindspore_ascend-1.5.0-cp37-cp37m-linux_aarch64.whl",
                 "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.5.0/MindSpore/ascend/aarch64/mindspore_ascend-1.5.0-cp37-cp37m-linux_aarch64.whl",
                 "dest":"",
+                "python":"cp37",
                 "sha256":"e923540a625c780a2a311d013d7bcb184ff115675380222290528df3ceaa6263"
             }]
         },
@@ -31,6 +32,7 @@
                 "filename":"mindspore_ascend-1.5.0-cp37-cp37m-linux_x86_64.whl",
                 "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.5.0/MindSpore/ascend/x86_64/mindspore_ascend-1.5.0-cp37-cp37m-linux_x86_64.whl",
                 "dest":"",
+                "python":"cp37",
                 "sha256":"8031b58133e5d7d73a04e705b3f810ae0dba900dce5df6ee35e906e93be21157"
             }]
         },
@@ -47,6 +49,7 @@
                 "filename":"mindspore-1.5.0-cp37-cp37m-linux_aarch64.whl",
                 "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.5.0/MindSpore/cpu/aarch64/mindspore-1.5.0-cp37-cp37m-linux_aarch64.whl",
                 "dest":"",
+                "python":"cp37",
                 "sha256":"d92e67e65f3e93cc69c9166b53d8d7ee1968bf4df3cdcdc71e7764e2301afe39"
             }]
         },
@@ -63,6 +66,7 @@
                 "filename":"mindspore-1.5.0-cp37-cp37m-linux_x86_64.whl",
                 "url":"https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.5.0/MindSpore/cpu/x86_64/mindspore-1.5.0-cp37-cp37m-linux_x86_64.whl",
                 "dest":"",
+                "python":"cp37",
                 "sha256":"ee8fc2601b61f3a752aa5e40aadaa9e8b2cb202977297af0066d7c4132d59046"
             }]
         }
