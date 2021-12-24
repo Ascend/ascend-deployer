@@ -262,7 +262,7 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: "jbr-.*-linux-aarch64-.*.tar.gz"
+        patterns: "jbr.*linux-aarch64.*.tar.gz"
       register: jdk_aarch64_dir
 
     - name: unarchive jdk for aarch64
@@ -281,7 +281,7 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: "jbr-.*-linux-x64-.*.tar.gz"
+        patterns: "jbr.*linux-x64.*.tar.gz"
       register: jdk_x64_dir
 
     - name: unarchive jdk for x86_64
