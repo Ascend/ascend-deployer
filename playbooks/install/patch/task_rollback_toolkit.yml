@@ -51,3 +51,25 @@
     msg:
       - "{{ toolkit_x64_result | default('NOT DEFINED') }}"
   when: toolkit_x64_result.changed
+
+- name: find toolkit aarch64 rollback script for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
+  find:
+    paths: "{{ install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: "roll.*.sh"
+  register: toolkit_x64_arm64
+  when:
+    - ansible_architecture == 'x86_64'
+
+- name: rollback toolkit for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
+  shell: "{{ toolkit_x64_arm64.files[0].path }}"
+  register: toolkit_x64_arm64_result
+  when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolkit_x64_arm64_result | default('NOT DEFINED') }}"
+  when: toolkit_x64_arm64_result.changed
