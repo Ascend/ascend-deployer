@@ -30,8 +30,8 @@
 
     - name: copy py_compile
       ansible.builtin.copy:
-        src: /usr/local/{{ python_version }}/lib/python_minor/py_compile.py
-        dest: /usr/lib/python_minor/py_compile.py
+        src: /usr/local/{{ python_version }}/lib/{{ python_minor }}/py_compile.py
+        dest: /usr/lib/{{ python_minor }}/py_compile.py
         remote_src: no
       when:
         - ms.matched > 0
@@ -90,7 +90,7 @@
       when: yum_result.changed
 
     - name: install python libs for mindstudio
-      shell: python_minor -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
+      shell: "{{ python_minor }} -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}"
       environment:
         PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
         LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
@@ -136,7 +136,7 @@
         - ansible_user_uid == 0
         - "'Ubuntu' in os_and_arch"
 
-    - name: create symbolic link python_version
+    - name: create symbolic link {{ python_version }}
       file:
         src: /usr/local/{{ python_version }}/bin/python3
         dest: /usr/bin/{{ python_version }}
@@ -145,7 +145,7 @@
         - ms.matched > 0
         - ansible_user_uid == 0
 
-    - name: create symbolic link python_version for non-root
+    - name: create symbolic link {{ python_version }} for non-root
       file:
         src: ~/.local/{{ python_version }}/bin/python3
         dest: /usr/local/bin/{{ python_version }}
@@ -155,36 +155,36 @@
         - ansible_user_uid != 0
       failed_when: false
 
-    - name: check /usr/bin/python_minor
+    - name: check /usr/bin/{{ python_minor }}
       stat:
-        dest: /usr/bin/python_minor
+        dest: /usr/bin/{{ python_minor }}
       register: stat_python39_root
       when:
         - ms.matched > 0
         - ansible_user_uid == 0
 
-    - name: check /usr/bin/python_minor for non-root
+    - name: check /usr/bin/{{ python_minor }} for non-root
       stat:
-        dest: /usr/local/bin/python_minor
+        dest: /usr/local/bin/{{ python_minor }}
       register: stat_python39_non_root
       when:
         - ms.matched > 0
         - ansible_user_uid != 0
 
-    - name: create symbolic link python_minor
+    - name: create symbolic link {{ python_minor }}
       file:
         src: /usr/local/{{ python_version }}/bin/python3
-        dest: /usr/bin/python_minor
+        dest: /usr/bin/{{ python_minor }}
         state: link
       when:
         - ms.matched > 0
         - ansible_user_uid == 0
         - not stat_python39_root.stat.exists
 
-    - name: create symbolic link python_minor for non-root
+    - name: create symbolic link {{ python_minor }} for non-root
       file:
         src: ~/.local/{{ python_version }}/bin/python3
-        dest: /usr/local/bin/python_minor
+        dest: /usr/local/bin/{{ python_minor }}
         state: link
       failed_when: false
       when:
