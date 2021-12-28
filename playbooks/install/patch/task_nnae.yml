@@ -14,7 +14,7 @@
 
 - name: set install_path enable
   set_fact:
-    ins_path_cmd: "--install-path={{ install_path }}"
+    ins_path_cmd: "--install-path={{ ascend_install_path }}"
   when: not install_info.stat.exists
 
 - name: set install_path disable

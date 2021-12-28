@@ -1,6 +1,6 @@
 - name: find toolkit aarch64 rollback script
   find:
-    paths: "{{ install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -28,7 +28,7 @@
 
 - name: find toolkit x86_64 rollback script
   find:
-    paths: "{{ install_path }}/ascend-toolkit/latest/x86_64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/x86_64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -56,7 +56,7 @@
 
 - name: find toolkit aarch64 rollback script for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
   find:
-    paths: "{{ install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes

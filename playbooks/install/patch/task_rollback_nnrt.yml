@@ -1,6 +1,6 @@
 - name: find nnrt aarch64 rollback script
   find:
-    paths: "{{ install_path }}/nnrt/latest/arm64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/nnrt/latest/arm64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -28,7 +28,7 @@
 
 - name: find nnrt x86_64 rollback script
   find:
-    paths: "{{ install_path }}/nnrt/latest/x86_64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/nnrt/latest/x86_64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes

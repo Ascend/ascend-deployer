@@ -1,6 +1,6 @@
 - name: find tfplugin rollback script
   find:
-    paths: "{{ install_path }}/tfplugin/latest/spc/script/"
+    paths: "{{ ascend_install_path }}/tfplugin/latest/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
