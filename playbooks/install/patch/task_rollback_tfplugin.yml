@@ -12,9 +12,10 @@
   register: tfplugin_result
   when: tfplugin.matched > 0
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find tfplugin rollback script!"
+      - "can not find tfplugin rollback script,tfplugin rollback skipped"
   when: tfplugin.matched == 0
 
 - name: message

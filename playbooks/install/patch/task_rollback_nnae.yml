@@ -12,9 +12,10 @@
   register: nnae_result
   when: nnae.matched > 0
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find nnae rollback script!"
+      - "can not find nnae rollback script,nnae rollback skipped"
   when: nnae.matched == 0
 
 - name: message

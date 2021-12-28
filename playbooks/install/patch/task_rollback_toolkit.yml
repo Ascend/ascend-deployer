@@ -14,9 +14,10 @@
   register: toolkit_aarch64_result
   when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched > 0"
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find toolkit rollback script!"
+      - "can not find toolkit rollback script for aarch64,toolkit rollback skipped"
   when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched == 0"
 
 - name: message
@@ -41,9 +42,10 @@
   register: toolkit_x64_result
   when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find toolkit rollback script!"
+      - "can not find toolkit rollback script for x86_64,toolkit rollback skipped"
   when: "ansible_architecture == 'x86_64' and toolkit_x64.matched == 0"
 
 - name: message
