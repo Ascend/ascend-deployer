@@ -66,7 +66,7 @@
 - name: rollback toolkit for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
   shell: "{{ toolkit_x64_arm64.files[0].path }}"
   register: toolkit_x64_arm64_result
-  when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
+  when: "ansible_architecture == 'x86_64' and toolkit_x64_arm64.matched > 0"
 
 - name: message
   debug:
