@@ -1,6 +1,6 @@
 - name: find nnae rollback script
   find:
-    paths: "{{ install_path }}/nnae/latest/spc/script/"
+    paths: "{{ ascend_install_path }}/nnae/latest/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -12,9 +12,10 @@
   register: nnae_result
   when: nnae.matched > 0
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find nnae rollback script!"
+      - "can not find nnae rollback script,nnae rollback skipped"
   when: nnae.matched == 0
 
 - name: message

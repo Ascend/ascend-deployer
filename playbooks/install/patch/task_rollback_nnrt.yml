@@ -1,6 +1,6 @@
 - name: find nnrt aarch64 rollback script
   find:
-    paths: "{{ install_path }}/nnrt/latest/arm64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/nnrt/latest/arm64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -14,9 +14,10 @@
   register: nnrt_aarch64_result
   when: "ansible_architecture == 'aarch64' and nnrt_aarch64.matched > 0"
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find nnrt rollback script!"
+      - "can not find nnrt rollback script,nnrt rollback skipped"
   when: "ansible_architecture == 'aarch64' and nnrt_aarch64.matched == 0"
 
 - name: message
@@ -27,7 +28,7 @@
 
 - name: find nnrt x86_64 rollback script
   find:
-    paths: "{{ install_path }}/nnrt/latest/x86_64-linux/spc/script/"
+    paths: "{{ ascend_install_path }}/nnrt/latest/x86_64-linux/spc/script/"
     recurse: no
     file_type: file
     use_regex: yes
@@ -41,9 +42,10 @@
   register: nnrt_x64_result
   when: "ansible_architecture == 'x86_64' and nnrt_x64.matched > 0"
 
-- fail:
+- name: message
+  debug:
     msg:
-      - "can not find nnrt rollback script!"
+      - "can not find nnrt rollback script,nnrt rollback skipped"
   when: "ansible_architecture == 'x86_64' and nnrt_x64.matched == 0"  
 
 - name: message
