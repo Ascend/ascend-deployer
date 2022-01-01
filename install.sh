@@ -739,6 +739,8 @@ function verify_zip_redirect()
     fi
 }
 
+FORCE_UPGRADE_NPU=false
+
 function process_install()
 {
     verify_zip_redirect
@@ -757,9 +759,9 @@ function process_install()
         echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
@@ -782,9 +784,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
@@ -896,6 +898,7 @@ function print_usage()
     echo "--check                        check environment"
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
+    echo "--force_upgrade_npu            can force upgarde NPU when not all devices have exception"
     echo "--debug                        enable debug"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
     echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
@@ -1014,6 +1017,10 @@ function parse_script_args() {
             ;;
         --nocopy)
             nocopy_flag=y
+            shift
+            ;;
+        --force_upgrade_npu)
+            FORCE_UPGRADE_NPU=true
             shift
             ;;
         --debug)

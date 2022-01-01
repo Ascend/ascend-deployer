@@ -29,6 +29,7 @@
       failed_when: true
       when:
         - NPUIssue is defined
+        - force_upgrade_npu == 'false'
 
     - name: import firmware task
       import_tasks: task_firmware.yml
