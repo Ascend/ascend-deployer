@@ -32,6 +32,7 @@
       failed_when: true
       when:
         - NPUIssue is defined
+        - force_upgrade_npu == 'false'
 
     - name: import driver task
       import_tasks: task_driver.yml
