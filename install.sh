@@ -1066,6 +1066,9 @@ function check_script_args()
     local unsupport=${FALSE}
     for target in ${install_target}
     do
+        if [ ${target} == 'python' ];then
+            continue
+        fi
         if [ ! -z ${target} ] && [ ! -f ${BASE_DIR}/playbooks/install/install_${target}.yml ];then
             log_error "not support install for ${target}"
             unsupport=${TRUE}
