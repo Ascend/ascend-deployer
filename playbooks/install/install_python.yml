@@ -1,4 +1,4 @@
 - hosts: '{{ hosts_name }}'
   tasks:
     - name: install python3.x.x
-      import_tasks: task_python375.yml
+      import_tasks: task_python.yml
