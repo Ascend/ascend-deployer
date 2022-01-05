@@ -53,7 +53,7 @@
     - name: message
       debug:
         msg:
-          - "can not find tensorflow-1.15.0 aarch64.whl package, install skipped"
+          - "can not find tensorflow-1.15.0 aarch64.whl package or python not compliate, install skipped"
           - "please put the file in the directory: {{ resources_dir }}/pylibs/"
       when:
         - import_tensorflow.rc != 0
