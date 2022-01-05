@@ -31,7 +31,7 @@
     - name: copy py_compile
       ansible.builtin.copy:
         src: /usr/local/{{ python_version }}/lib/{{ python_minor }}/py_compile.py
-        dest: /usr/lib/{{ python_minor }}/py_compile.py
+        dest: /usr/lib/{{ python_minor }}/
         remote_src: no
       when:
         - ms.matched > 0

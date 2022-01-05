@@ -756,6 +756,9 @@ function process_install()
     IFS=','
     for target in ${install_target}
     do
+        if [ ${target} == "python" ];then new_target="python375"
+        else new_target=${target}
+        fi
         echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
     done
     unset IFS
@@ -907,6 +910,9 @@ function print_usage()
     for target in `find ${BASE_DIR}/playbooks/install/install_*.yml`
     do
         target=$(basename ${target})
+        if [ ${target} == "install_python375.yml" ];then
+            target="install_python.yml"
+        fi
         tmp=${target#*_}
         echo "                               ${tmp%.*}"
     done
