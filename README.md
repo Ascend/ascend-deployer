@@ -302,9 +302,9 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # 非root用户
    ```
 
-   设置密钥认证的参考操作如下：
+   设置密钥认证的参考操作如下，请注意ssh密钥和密钥密码在使用和保管过程中的风险，特别是密钥未加密时的风险，用户应按照所在组织的安全策略进行相关配置，包括并不局限于软件版本、口令复杂度要求、安全配置（协议、加密套件、密钥长度等）：
    ```bash
-   ssh-keygen -t rsa -b 2048   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且符合密码复杂度要求。建议执行这条命令前先将umask设置为0077，执行完后再恢复原来umask值。
+   ssh-keygen -t rsa -b 3072   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且符合密码复杂度要求。建议执行这条命令前先将umask设置为0077，执行完后再恢复原来umask值。
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip。
    ssh <user>@<ip>   # 验证是否可以登录远程节点，<user>@<ip>替换成要登录的对应节点的账户和ip。验证登录OK后执行`exit`命令退出该ssh连接。
    ```
@@ -410,11 +410,14 @@ source ~/.local/ascendrc       # non-root
 | --check                           | 检查环境，确保控制机安装好python3.7.5、ansible等组件，并检查与待安装设备的连通性。   |
 | --clean                           | 清理待安装设备用户家目录下的resources目录。                           |
 | --nocopy                          | 在批量安装时不进行资源拷贝。                                       |
+| --force_upgrade_npu               | 当不是所有卡异常时，可以强制升级NPU                                |
 | --debug                           | 开发调测使用。                                                    |
 | --output-file=<output_file>       | 重定向命令执行的输出结果到指定文件。                                   |
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
 | --install-scene=<scene_name>      | 指定场景安装。安装场景请参见<a href="#scene">安装场景介绍</a>。        |
+| --patch=<package_name>            | 指定软件打补丁                                                       |
+| --patch-rollback=<package_name>   | 指定软件的补丁回退                                                   |
 | --test=<target>                   | 检查指定组件能否正常工作。                                            |
 
 ## <a name="download_parameter">下载参数说明</a>
@@ -492,6 +495,16 @@ source ~/.local/ascendrc       # non-root
 
 如需自定义安装场景，可参考上述配置文件进行定制。
 
+## <a name="patch">安装、回退CANN补丁包</a>
+ascend-deployer工具支持CANN冷补丁的安装和回退。
+1. CANN补丁包不支持使用ascend-deployer工具在线下载，用户需自行获取到所需CANN补丁包后，放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在安装前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
+2. 安装、回退CANN冷补丁的执行命令参考如下：
+   - 安装CANN冷补丁（以nnae、tfplugin包为例）：`./install.sh --patch=nnae,tfplugin`
+   - 回退CANN冷补丁（以nnae、tfplugin包为例）：`./install.sh --patch-rollback=nnae,tfplugin`
+3. 关于CANN冷补丁的相关约束如下：
+   - 补丁仅能支持对应的基线版本或相关的补丁版本进行升级。
+   - 基于同一基线版本的补丁，需保证后续安装的补丁版本大于之前安装的补丁版本。
+   - 仅支持回退一次补丁版本。
 ## <a name="config">配置说明</a>
 
 ### <a name="proxy_configuration">代理配置</a>

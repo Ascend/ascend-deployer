@@ -297,9 +297,9 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # non-root user
    ```
 
-   Configure the reference operation for key authentication
+   Configure the reference operation for key authentication.Please pay attention to the risks during the use and storage of SSH keys and key passwords, especially when the keys are not encrypted. Users should configure them according to the security policies of their organization, including but not limited to software version, password complexity requirements, security configuration (protocol, encryption suite, key length, etc.)
    ```bash
-   ssh-keygen -t rsa -b 2048   # Log in to the management node and generate the SSH Key. For security reasons, it is recommended that the user Enter the key password at the "Enter passphrase" step, and ensure that the password complexity is reasonable. It is recommended to set the umask to 0077 before executing this command and to restore the original umask after executing it.
+   ssh-keygen -t rsa -b 3072   # Log in to the management node and generate the SSH Key. For security reasons, it is recommended that the user Enter the key password at the "Enter passphrase" step, and ensure that the password complexity is reasonable. It is recommended to set the umask to 0077 before executing this command and to restore the original umask after executing it.
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to.
    ssh <user>@<ip>   # Verify that it is possible to log on to the remote node, and replace <user>@<ip> with the account and IP of the corresponding node to be logged in. After verifying that the login is OK, run the 'exit' command to exit the SSH connection.
    ```
@@ -405,11 +405,14 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --check                           | Check the environment to ensure that the control machine has installed Python 3.7.5, Ansible and other components, and check the connectivity with the device to be installed. |
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
+| --force_upgrade_npu               | Can force upgrade NPU when not all devices have exception                                         |
 | --debug                           | Performs debugging.                                                                                                                                                            |
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |
 | --install-scene=<scene_name>      | Specifies the scenario for installation. For details about the installation scenarios, see <a href="#scene">Installation Scenarios</a>.                                        |
+| --patch=<package_name>            | Patching specific package                                                                  |
+| --patch-rollback=<package_name>   | Rollback specific package                                                                  |
 | --test=<target>                   | Checks whether the specified component works properly.                                                                                                                         |
 
 ## <a name="download_parameter">Linux Download Parameter Description</a>
@@ -488,6 +491,16 @@ The configuration files for the preceding installation scenarios are stored in t
 
 To customize an installation scenario, refer to the preceding configuration file.
 
+## <a name="patch">Install and rollback cann patch package</a>
+The ascend deployer tool supports cann cold patch installation and fallback.
+1. Cann patch packages do not support online downloading using the ascend deployer tool. Users need to obtain the required cann patch packages by themselves and place them in the ascend deployer / resources / patch (if there is no patch directory, users should create it by themselves). Note that the cann package corresponding to the patch package in the ascend deployer / resources directory should be deleted before installation.
+2. The execution commands for installing and fallback cann cold patch are as follows:
+   - Install cann cold patch (take nnae and tfplugin packages as examples): `./install.sh --patch=nnae,tfplugin`
+   - Fallback cann cold patch (take nnae and tfplugin packages as examples): `./install.sh --patch-rollback=nnae,tfplugin`
+3. The relevant constraints on cann cold patch are as follows:
+   - The patch can only support the upgrade of the corresponding baseline version or related patch version.
+   - For patches based on the same baseline version, ensure that the patch version installed later is greater than the patch version installed earlier.
+   - The patch only supports fallback once.
 ## <a name="config">Configuration Description</a>
 
 ### <a name="proxy_configuration">Proxy Configuration</a>
