@@ -759,7 +759,7 @@ function process_install()
         if [ ${target} == "python" ];then new_target="python375"
         else new_target=${target}
         fi
-        echo "- import_playbook: install/install_${target}.yml" >> ${tmp_install_play}
+        echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
     echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
