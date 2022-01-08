@@ -899,7 +899,7 @@ function print_usage()
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--force_upgrade_npu            can force upgrade NPU when not all devices have exception"
-    echo "--debug                        enable debug"
+    echo "--verbose                      Print verbose"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
     echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
     echo "                               avaiable callback could be listed by: ansible-doc -t callback -l"
@@ -1023,7 +1023,7 @@ function parse_script_args() {
             FORCE_UPGRADE_NPU=true
             shift
             ;;
-        --debug)
+        --verbose)
             DEBUG_CMD="-v"
             shift
             ;;

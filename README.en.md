@@ -406,7 +406,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
 | --force_upgrade_npu               | Can force upgrade NPU when not all devices have exception                                         |
-| --debug                           | Performs debugging.                                                                                                                                                            |
+| --verbose                           | Print verbose.                                                                                                                                                            |
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |
 | --install=<package_name>          | Specifies the software to be installed. If **--install=npu** is specified, the driver and firmware are installed.                                                              |

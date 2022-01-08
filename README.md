@@ -411,7 +411,7 @@ source ~/.local/ascendrc       # non-root
 | --clean                           | 清理待安装设备用户家目录下的resources目录。                           |
 | --nocopy                          | 在批量安装时不进行资源拷贝。                                       |
 | --force_upgrade_npu               | 当不是所有卡异常时，可以强制升级NPU                                |
-| --debug                           | 开发调测使用。                                                    |
+| --verbose                         | 打印详细信息                                                    |
 | --output-file=<output_file>       | 重定向命令执行的输出结果到指定文件。                                   |
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |
 | --install=<package_name>          | 指定软件安装。若指定“--install=npu”，将会安装driver和firmware。       |
