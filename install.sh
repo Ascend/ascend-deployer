@@ -901,7 +901,7 @@ function print_usage()
     echo "--check                        check environment"
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
-    echo "--force_upgrade_npu            can force upgarde NPU when not all devices have exception"
+    echo "--force_upgrade_npu            can force upgrade NPU when not all devices have exception"
     echo "--debug                        enable debug"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
     echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
