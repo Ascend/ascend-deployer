@@ -259,25 +259,30 @@ def download_ms_whl(os_item, software, dst):
                 if ret:
                     print(item['filename'].ljust(60), 'download success')
                 results.append(ret)
-            item = whl_list[0]
-            A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
-            if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8"]:
-                dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
-                if os.path.exists(dest_file) and 'sha256' in item:
-                    file_hash = calc_sha256(dest_file)
-                    url_hash = item['sha256']
-                    if file_hash == url_hash:
-                        LOG.info('{0} exist, no need copy again'.format(dest_file))
+            
+            for item in whl_list:
+                if item.get('python', 'cp37') != implement_flag:
+                    print("Try to get {} on {}, but it does not match {}".format
+                    (item['filename'], item.get('python'), implement_flag))
+                    continue
+                A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
+                if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8"]:
+                    dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
+                    if os.path.exists(dest_file) and 'sha256' in item:
+                        file_hash = calc_sha256(dest_file)
+                        url_hash = item['sha256']
+                        if file_hash == url_hash:
+                            LOG.info('{0} exist, no need copy again'.format(dest_file))
+                        else:
+                            LOG.info('{0} exist but not completed, need copy again'.format(dest_file))
+                            os.remove(dest_file)
+                            shutil.copy(A910_dest_file, dest_file)
                     else:
-                        LOG.info('{0} exist but not completed, need copy again'.format(dest_file))
-                        os.remove(dest_file)
+                        parent_dir = os.path.dirname(dest_file)
+                        if not os.path.exists(parent_dir):
+                            os.makedirs(parent_dir, mode=0o750, exist_ok=True)
+                        LOG.info('{0} not exist, copy from Ascend910'.format(dest_file))
                         shutil.copy(A910_dest_file, dest_file)
-                else:
-                    parent_dir = os.path.dirname(dest_file)
-                    if not os.path.exists(parent_dir):
-                        os.makedirs(parent_dir, mode=0o750, exist_ok=True)
-                    LOG.info('{0} not exist, copy from Ascend910'.format(dest_file))
-                    shutil.copy(A910_dest_file, dest_file)
     return all(results)
 
 
