@@ -260,6 +260,11 @@ def download_ms_whl(os_item, software, dst):
                     print(item['filename'].ljust(60), 'download success')
                 results.append(ret)
             
+            for item in whl_list:
+                if item.get('python', 'cp37') != implement_flag:
+                    print("Try to get {} on {}, but it does not match {}".format
+                    (item['filename'], item.get('python'), implement_flag))
+                    continue
                 A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
                 if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8"]:
                     dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
