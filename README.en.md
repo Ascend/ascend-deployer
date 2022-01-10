@@ -100,7 +100,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 022 or higher before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 077 before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
@@ -126,7 +126,7 @@ The download function can be used in the Windows or Linux OSs.
      Set the os_list or software configuration item of "downloader/config.ini" and run **start_download.bat**.Run **start_download_ui.bat** (recommended because it allows you to select the Related components of OS or PKG to be downloaded on the displayed UI).
 
 - Linux
-  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.
+  1. Run the `./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>` command to start download, refer to <a href="#download_parameter">Download Parameter Description</a>. The following call ` * * sh ` script using `. / * * sh ` way, also can use ` bash * * sh ` calls, please according to actual use.It is recommended to set the environment umask to 077 before downloading.
 
   2. The presence of Python 3 on the environment is checked when the download is performed. If python3 does not exist, it can be divided into two types: if the current user is root, the tool will automatically download python3 through APT, YUM and other tools;If the current user is not root, the tool prompts the user to install Python3.
 
@@ -252,7 +252,7 @@ ascend-deployer
    localhost ansible_connection='local'
    ```
 
-2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.
+2. Run the installation script and select an installation mode (software-specific installation or scenario-specific installation) as required.Note: if other users need to be able to use Python installed by root user, please set umask to 022 in advance. Before setting, confirm that the umask permission meets the security requirements of your organization.
 
     - 2.1 Software-specific installation
 
@@ -546,7 +546,7 @@ The offline installation tool provides the source configuration file. Replace it
   index_url=https://repo.huaweicloud.com/repository/pypi/simple
   ```
 2. OS source configuration. OS source configuration file: **downloader/config/*{os}\__{version}\__{arch}*/source.*xxx***
-  Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows. This indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default and can be modified as needed.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
+  Using CentOS 7.6 AArch64 as an example, the content of the source configuration file **downloader/config/CentOS_7.6_aarch64/source.repo** is as follows. This indicates that both Base and EPEL sources are enabled from which system components will be queried and downloaded.Huawei source is used by default.It can be modified according to business requirements and installation requirements to ensure that its source meets the security / vulnerability repair requirements of the organization.If you modify, select a safe and reliable source and test whether the download and installation behavior is normal, otherwise it may cause incomplete download of the component or abnormal installation.Deleting the source may result in an incomplete download of the component.
 
   ```
   [base]

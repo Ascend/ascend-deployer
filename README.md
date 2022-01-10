@@ -102,7 +102,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### 下载zip安装
 
-点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为022或更高，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为077，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
 
 # 操作指导:源码方式
 
@@ -130,7 +130,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 - linux
 
-  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用。
+  1. 执行`./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>`启动下载，具体可参考<a href="#download_parameter">下载参数说明</a>。以下调用`**.sh`脚本采用`./**.sh`的方式，也可使用`bash **.sh`调用，请根据实际使用，建议下载前将环境umask设置为077。
   2. 执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
 ## 安装功能
 
@@ -256,7 +256,7 @@ ascend-deployer
    localhost ansible_connection='local'
    ```
 
-2. 执行安装脚本，可根据需要选择安装方式（指定组件安装或指定场景安装）。
+2. 执行安装脚本，可根据需要选择安装方式（指定组件安装或指定场景安装）。注意，如果需要其他用户能够使用root用户随后安装的python等，请提前设置umask为022，设置前确认该umask权限符合所在组织的安全要求。
 
     - 2.1. 指定组件安装
 
@@ -550,7 +550,7 @@ pkg_list=CANN_5.0.3.1,MindStudio_3.0.3  # 待部署的CANN或MindStudio
 index_url=https://repo.huaweicloud.com/repository/pypi/simple
 ```
 
-2. 系统源配置。系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*。以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下。这表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据需要修改。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
+2. 系统源配置。系统源配置文件downloader/config/*{os}\__{version}\__{arch}*/source.*xxx*。以CentOS 7.6 aarch64为例，源配置文件downloader/config/CentOS_7.6_aarch64/source.repo内容如下。这表明同时启用base源和epel源，下载系统组件时会从这两个源中查询和下载。默认使用华为源，可根据业务需求和安装需求修改，以保证其源符合所在组织的安全/漏洞修补要求。若修改，请选择安全可靠的源，并测试下载和安装行为是否正常，否则可能造成组件下载不完整或安装异常。若删除源，可能造成组件下载不完整。
 
 ```
 [base]
