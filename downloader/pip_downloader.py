@@ -83,9 +83,9 @@ class MyPip(object):
         :return:
         """
         if os.path.exists(dest):
-            LOG.info('[{0}] exist'.format(dest))
+            LOG.info('[{0}] exist'.format(os.path.basename(dest)))
             os.remove(dest)
-            LOG.info('[{0}] deleted'.format(dest))
+            LOG.info('[{0}] deleted'.format(os.path.basename(dest)))
         DOWNLOAD_INST.download(url, dest)
 
     @staticmethod

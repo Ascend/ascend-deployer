@@ -177,7 +177,7 @@ class DownloadUtil:
     def download(cls, url: str, dst_file_name: str):
         parent_dir = os.path.dirname(dst_file_name)
         if not os.path.exists(parent_dir):
-            LOG.info("mkdir : %s", parent_dir)
+            LOG.info("mkdir : %s", os.path.basename(parent_dir))
             os.makedirs(parent_dir, mode=0o750, exist_ok=True)
 
         res = cls.download_with_retry(url, dst_file_name)
@@ -344,7 +344,7 @@ class Cann_Download:
 
         fp.set_preference("browser.download.dir", self.download_dir)
         if platform.system() == 'Linux':
-            driver_path = os.path.join(ROOT_DIR, 'geckodriver')
+            driver_path = os.path.join(os.path.basename(ROOT_DIR), 'geckodriver')
             if not os.path.exists(driver_path):
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
@@ -371,7 +371,7 @@ class Cann_Download:
                 LOG.error("firefox or geckodriver is not available: %s", err)
                 raise
         else:
-            driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
+            driver_path = os.path.join(os.path.basename(ROOT_DIR), 'geckodriver.exe')
             if not os.path.exists(driver_path):
                 print("[ERROR] {} not exists, please check the file".format(driver_path))
                 LOG.error("{} not exists, please check the file".format(driver_path))
@@ -471,17 +471,17 @@ def get_specified_python():
 
 def delete_if_exist(dst_file_name: str):
     if os.path.exists(dst_file_name):
-        LOG.info('{} already exists'.format(dst_file_name))
+        LOG.info('{} already exists'.format(os.path.basename(dst_file_name)))
         os.remove(dst_file_name)
-        LOG.info('{} already deleted'.format(dst_file_name))
+        LOG.info('{} already deleted'.format(os.path.basename(dst_file_name)))
 
 def is_exists(dst_file_name: str):
     if os.path.exists(dst_file_name):
-        LOG.info('{} exists after downloading, success'.format(dst_file_name))
+        LOG.info('{} exists after downloading, success'.format(os.path.basename(dst_file_name)))
         return True
     else:
-        print('[ERROR] {} not exists after downloading, failed'.format(dst_file_name))
-        LOG.info('{} not exists after downloading, failed'.format(dst_file_name))
+        print('[ERROR] {} not exists after downloading, failed'.format(os.path.basename(dst_file_name)))
+        LOG.info('{} not exists after downloading, failed'.format(os.path.basename(dst_file_name)))
         return False
 
 def get_arch(os_list):
