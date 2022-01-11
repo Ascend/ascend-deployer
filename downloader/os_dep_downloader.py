@@ -59,7 +59,7 @@ class OsDepDownloader:
         dst_dir = os.path.join(dst, os_item)
         if not os.path.exists(dst_dir):
             os.makedirs(dst_dir, mode=0o750, exist_ok=True)
-        LOG.info('item:{} save dir: {}'.format(os_item, dst_dir))
+        LOG.info('item:{} save dir: {}'.format(os_item, os.path.basename(dst_dir)))
 
         config_file = os.path.join(self.project_dir, 'downloader/config/{0}/pkg_info.json'.format(os_item))
         source_list_file = os.path.join(self.project_dir, 'downloader/config/{0}/source.list'.format(os_item))
