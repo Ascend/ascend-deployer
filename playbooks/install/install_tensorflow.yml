@@ -49,12 +49,13 @@
       when:
         - import_tensorflow.rc != 0
         - tensorflow_whl.matched is not defined or (tensorflow_whl.matched is defined and tensorflow_whl.matched > 0)
+        - python_minor == "python3.7"
 
     - name: message
       debug:
         msg:
-          - "can not find tensorflow-1.15.0 aarch64.whl package or python not compliate, install skipped"
+          - "can not find tensorflow-1.15.0 aarch64.whl package or python not compatible, install skipped"
           - "please put the file in the directory: {{ resources_dir }}/pylibs/"
       when:
         - import_tensorflow.rc != 0
-        - tensorflow_whl.matched is defined and tensorflow_whl.matched == 0
+        - (tensorflow_whl.matched is defined and tensorflow_whl.matched == 0) or python_minor != "python3.7"
