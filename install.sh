@@ -532,12 +532,12 @@ function check_extracted_size()
     do
         unzip -l ${zip_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
-            log_error "${zip_package} does not look like a zip compressed file"
+            log_error "$(basename ${zip_package}) does not look like a zip compressed file"
             return 1
         fi
         local check_zip=$(unzip -l ${zip_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${ZIP_COUNT_THRESHOLD}" 'END {print ($1 <= size_threshold && $2 <= count_threshold)}')
         if [[ ${check_zip} == 0 ]];then
-            log_error "${zip_package} extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
+            log_error "$(basename ${zip_package}) extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
             return 1
         fi
     done
@@ -545,12 +545,12 @@ function check_extracted_size()
     do
         tar tvf ${tar_package} >/dev/null 2>&1
         if [[ $? != 0 ]];then
-            log_error "${tar_package} does not look like a tar compressed file"
+            log_error "$(basename ${tar_package}) does not look like a tar compressed file"
             return 1
         fi
         local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${TAR_COUNT_THRESHOLD}" '{sum += $3} END {print (sum <= size_threshold && NR <= count_threshold)}')
         if [[ ${check_tar} == 0 ]];then
-            log_error "${tar_package} extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
+            log_error "$(basename ${tar_package}) extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
             return 1
         fi
     done
@@ -577,29 +577,29 @@ function compare_crl()
 {
     openssl crl -verify -in $1 -inform DER -CAfile $3 -noout 2>/dev/null
     if [[ $? != 0 ]];then
-        echo "$3 check $1 validation not pass" >> ${BASE_DIR}/install.log
+        echo "$(basename $3) check $(basename $1) validation not pass" >> ${BASE_DIR}/install.log
         return 2
     fi
     if [[ -f $2 ]];then
         openssl crl -verify -in $2 -inform DER -CAfile $3 -noout 2>/dev/null
         if [[ $? != 0 ]];then
-            echo "$3 check $2 validation not pass" >> ${BASE_DIR}/install.log
+            echo "$(basename $3) check $(basename $2) validation not pass" >> ${BASE_DIR}/install.log
             return 3
         fi
         local zip_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $1 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         local sys_crl_lastupdate_time=$(date +%s -d "$(openssl crl -in $2 -inform DER -noout -lastupdate | awk -F'lastUpdate=' '{print $2}')")
         if [[ ${zip_crl_lastupdate_time} -gt ${sys_crl_lastupdate_time} ]];then
-            echo "$2 system crl update success" >> ${BASE_DIR}/install.log
+            echo "$(basename $2) system crl update success" >> ${BASE_DIR}/install.log
             mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
             return 0
         elif [[ ${zip_crl_lastupdate_time} -eq ${sys_crl_lastupdate_time} ]];then
             return 0
         else
-            echo "$2 is newer than $1, no need to update system crl" >> ${BASE_DIR}/install.log
+            echo "$(basename $2) is newer than $(basename $1), no need to update system crl" >> ${BASE_DIR}/install.log
             return 1
         fi
     else
-        echo "$2 system crl update success" >> ${BASE_DIR}/install.log
+        echo "$(basename $2) system crl update success" >> ${BASE_DIR}/install.log
         mkdir -p -m 700 $(dirname $2) && cp $1 $2 && chmod 600 $2
     fi
     return 0
@@ -619,10 +619,10 @@ function zip_extract()
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
         else
-            echo "not support ${zip_file}, please check" >> ${BASE_DIR}/install.log
+            echo "not support $(basename ${zip_file}), please check" >> ${BASE_DIR}/install.log
             return 1
         fi
-        mkdir -p -m 750 ${run_from_zip} && unzip -o ${zip_file} -d ${run_from_zip}
+        mkdir -p -m 750 ${run_from_zip} && unzip -oq ${zip_file} -d ${run_from_zip}
     else
         if [[ "$(basename ${zip_file})" =~ atlasedge.*aarch64 ]];then
             local atlasedge_dir=${BASE_DIR}/resources/run_from_cann_zip/atlasedge_aarch64
@@ -656,7 +656,7 @@ function hmac_check()
     && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     local verify_success=$?
     if [[ ${verify_success} -ne 0 ]];then
-        echo "${updated_crl} or ${cms_file} check cms validation not pass for ${ca_file}" >> ${BASE_DIR}/install.log
+        echo "$(basename ${updated_crl}) or $(basename ${cms_file}) check cms validation not pass for $(basename ${ca_file})" >> ${BASE_DIR}/install.log
         return 1
     fi
 }
@@ -682,22 +682,22 @@ function verify_zip()
     chmod 600 $2 ${root_ca_g2_file} ${root_ca_file}
     for zip_package in $(find ${BASE_DIR}/resources/CANN_* 2>/dev/null | grep ".zip$" ; find ${BASE_DIR}/resources/*.zip 2>/dev/null ; find ${BASE_DIR}/resources/patch/*.zip 2>/dev/null)
     do
-        rm -rf ${BASE_DIR}/resources/zip_tmp && unzip ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
+        rm -rf ${BASE_DIR}/resources/zip_tmp && unzip -q ${zip_package} -d ${BASE_DIR}/resources/zip_tmp
         local cms_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.cms 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.cms 2>/dev/null)
         local zip_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz 2>/dev/null)
         local crl_file=$(find ${BASE_DIR}/resources/zip_tmp/*.zip.crl 2>/dev/null || find ${BASE_DIR}/resources/zip_tmp/*.tar.gz.crl 2>/dev/null)
         if [ -f ${ascend_cert_path} ];then
-            echo "ascend-cert check ${zip_file}" >> ${BASE_DIR}/install.log
+            echo "ascend-cert check $(basename ${zip_file})" >> ${BASE_DIR}/install.log
             ${ascend_cert_path} -u ${crl_file} >/dev/null 2>&1
             if [[ $? != 0 ]];then
-                echo "ascend-cert update ${crl_file} to system failed" >> ${BASE_DIR}/install.log
+                echo "ascend-cert update $(basename ${crl_file}) to system failed" >> ${BASE_DIR}/install.log
                 hmac_check_result=1
             else
                 ${ascend_cert_path} ${cms_file} ${zip_file} ${crl_file} >/dev/null 2>&1
                 hmac_check_result=$?
             fi
         else
-            echo "openssl check ${zip_file}" >> ${BASE_DIR}/install.log
+            echo "openssl check $(basename ${zip_file})" >> ${BASE_DIR}/install.log
             hmac_check ${sys_g2_crl_file} ${root_ca_g2_file} || hmac_check ${sys_crl_file} ${root_ca_file}
             hmac_check_result=$?
         fi
@@ -762,7 +762,7 @@ function process_install()
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file ${tmp_install_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?

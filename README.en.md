@@ -521,7 +521,7 @@ If you want to use an HTTP proxy, configure the proxy in an environment variable
 
    ```
    [proxy]
-   verify=true         # Whether to verify the HTTPS certificate. If it is closed, it may encounter a man-in-the-middle attack. Please be aware of the security risks
+   verify=true         # Whether to verify the HTTPS certificate. If it is closed,Please be aware of the security risks
    ```
 
 ### Windows Download Configuration

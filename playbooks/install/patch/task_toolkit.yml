@@ -63,6 +63,8 @@
 - name: message
   debug:
     msg:
-      - "{{ toolkit_result | default('NOT DEFINED') }}"
-      - "{{ toolkit_result_ubuntu | default('NOT DEFINED') }}"
+      - "{{ toolkit_result.stdout | default('NOT DEFINED') }}"
+      - "{{ toolkit_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ toolkit_result_ubuntu.stdout | default('NOT DEFINED') }}"
+      - "{{ toolkit_result_ubuntu.stdout_lines | default('NOT DEFINED') }}"
   when: toolkit_result.changed or toolkit_result_ubuntu.changed

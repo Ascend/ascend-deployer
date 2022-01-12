@@ -23,7 +23,8 @@
 - name: message
   debug:
     msg:
-      - "{{ toolkit_aarch64_result | default('NOT DEFINED') }}"
+      - "{{ toolkit_aarch64_result.stdout | default('NOT DEFINED') }}"
+      - "{{ toolkit_aarch64_result.stdout_lines | default('NOT DEFINED') }}"
   when: toolkit_aarch64_result.changed
 
 - name: find toolkit x86_64 rollback script
@@ -51,7 +52,8 @@
 - name: message
   debug:
     msg:
-      - "{{ toolkit_x64_result | default('NOT DEFINED') }}"
+      - "{{ toolkit_x64_result.stdout | default('NOT DEFINED') }}"
+      - "{{ toolkit_x64_result.stdout_lines | default('NOT DEFINED') }}"
   when: toolkit_x64_result.changed
 
 - name: find toolkit aarch64 rollback script for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
@@ -73,5 +75,6 @@
 - name: message
   debug:
     msg:
-      - "{{ toolkit_x64_arm64_result | default('NOT DEFINED') }}"
+      - "{{ toolkit_x64_arm64_result.stdout | default('NOT DEFINED') }}"
+      - "{{ toolkit_x64_arm64_result.stdout_lines | default('NOT DEFINED') }}"
   when: toolkit_x64_arm64_result.changed
