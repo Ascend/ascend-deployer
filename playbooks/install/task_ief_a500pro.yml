@@ -67,5 +67,6 @@
 - name: ief register message
   debug:
     msg:
-      - "{{ ief_result }}"
+      - "{{ ief_result.stdout | default('NOT DEFINED') }}"
+      - "{{ ief_result.stdout_lines | default('NOT DEFINED') }}"
   when: ief_result.changed

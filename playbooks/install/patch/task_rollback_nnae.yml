@@ -21,5 +21,6 @@
 - name: message
   debug:
     msg:
-      - "{{ nnae_result | default('NOT DEFINED') }}"
+      - "{{ nnae_result.stdout | default('NOT DEFINED') }}"
+      - "{{ nnae_result.stdout_lines | default('NOT DEFINED') }}"
   when: nnae_result.changed

@@ -290,7 +290,7 @@ function main()
     if [ ! -z "${PKG_LIST}" ];then
         download_cmd="--download ${PKG_LIST}"
     fi
-    log_info "${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}"
+    log_info "${pycmd} $(basename ${BASE_DIR})/downloader/downloader.py ${os_cmd} ${download_cmd}"
     ${pycmd} ${BASE_DIR}/downloader/downloader.py ${os_cmd} ${download_cmd}
 }
 

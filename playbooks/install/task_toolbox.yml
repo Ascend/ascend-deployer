@@ -45,5 +45,6 @@
 - name: message
   debug:
     msg:
-      - "{{ toolbox_result | default('NOT DEFINED') }}"
+      - "{{ toolbox_result.stdout | default('NOT DEFINED') }}"
+      - "{{ toolbox_result.stdout_lines | default('NOT DEFINED') }}"
   when: toolbox_result.changed

@@ -525,7 +525,7 @@ ascend-deployer工具支持CANN冷补丁的安装和回退。
    
    ```
    [proxy]
-   verify=true         # 是否校验https证书。如果关闭，可能遭遇中间人攻击，请用户注意安全风险。
+   verify=true         # 是否校验https证书。如果关闭，请用户注意安全风险。
    ```
 
 ### windows下载参数说明
