@@ -62,7 +62,7 @@
   debug:
     msg:
       - "os: {{ os_and_arch }}, scene: {{ ansible_local.npu_info.scene }}, mindspore install skipped"
-      - "maybe you should check mindspore whl package in dir: {{ resources_dir }}/{{ os_and_arch }}/Ascend910(or Ascend310)/"
+      - "maybe you should check mindspore whl package in dir: ascend-deployer/resources/{{ os_and_arch }}/Ascend910(or Ascend310)/"
   when:
     - mindspore_whl_310.skipped is true
     - mindspore_whl_910.skipped is true

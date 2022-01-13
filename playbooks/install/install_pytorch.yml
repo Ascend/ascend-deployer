@@ -63,7 +63,7 @@
       debug:
         msg:
           - "can not find torch or apex whl package"
-          - "please put the files in the directory: {{ resources_dir }}/pylibs/"
+          - "please put the files in the directory: ascend-deployer/resources/pylibs/"
       when:
         - import_torch.rc != 0
         - pytorch_whl.matched == 0 or apex_whl.matched == 0
