@@ -344,16 +344,16 @@ class Cann_Download:
 
         fp.set_preference("browser.download.dir", self.download_dir)
         if platform.system() == 'Linux':
-            driver_path = os.path.join(os.path.basename(ROOT_DIR), 'geckodriver')
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver')
             if not os.path.exists(driver_path):
-                print("[ERROR] {} not exists, please check the file".format(driver_path))
-                LOG.error("{} not exists, please check the file".format(driver_path))
+                print("[ERROR] {} not exists, please check the file".format(os.path.basename(driver_path)))
+                LOG.error("{} not exists, please check the file".format(os.path.basename(driver_path)))
                 raise FileNotFoundError
             try:
                 os.chmod(driver_path, mode=0o500)
             except PermissionError as err:
-                print("[ERROR] {} no permission to be chmod to 500, please chown the file to the current user".format(driver_path))
-                LOG.error("{} no permission to be chmod to 500, please chown the file to the current user: {}".format(driver_path, err))
+                print("[ERROR] {} no permission to be chmod to 500, please chown the file to the current user".format(os.path.basename(driver_path)))
+                LOG.error("{} no permission to be chmod to 500, please chown the file to the current user: {}".format(os.path.basename(driver_path), err))
                 raise PermissionError
             try:
                 browser = webdriver.Firefox(firefox_profile=fp,
@@ -371,10 +371,10 @@ class Cann_Download:
                 LOG.error("firefox or geckodriver is not available: %s", err)
                 raise
         else:
-            driver_path = os.path.join(os.path.basename(ROOT_DIR), 'geckodriver.exe')
+            driver_path = os.path.join(ROOT_DIR, 'geckodriver.exe')
             if not os.path.exists(driver_path):
-                print("[ERROR] {} not exists, please check the file".format(driver_path))
-                LOG.error("{} not exists, please check the file".format(driver_path))
+                print("[ERROR] {} not exists, please check the file".format(os.path.basename(driver_path)))
+                LOG.error("{} not exists, please check the file".format(os.path.basename(driver_path)))
                 raise FileNotFoundError
             try:
                 browser = webdriver.Firefox(firefox_profile=fp,

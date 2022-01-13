@@ -787,7 +787,7 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file ${tmp_scene_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
@@ -817,7 +817,7 @@ function process_patch()
         echo "- import_playbook: install/patch/install_${target}.yml" >> ${tmp_patch_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file ${tmp_patch_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_patch_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_patch_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_patch_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     local process_patch_ansible_playbook_status=$?
@@ -839,7 +839,7 @@ function process_patch_rollback()
         echo "- import_playbook: install/patch/rollback_${target}.yml" >> ${tmp_patch_rollback_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file ${tmp_patch_rollback_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_patch_rollback_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_patch_rollback_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_patch_rollback_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     local process_patch_rollback_ansible_playbook_status=$?
@@ -861,7 +861,7 @@ function process_test()
         echo "- import_playbook: test/test_${target}.yml" >> ${tmp_test_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file ${tmp_test_play} -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_test_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}"
     cat ${tmp_test_play}
     ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_test_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} ${DEBUG_CMD}
     local process_test_ansible_playbook_status=$?
