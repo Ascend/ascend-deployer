@@ -192,7 +192,7 @@ group=HwHiAiUser
 
 | 软件名                 | 说明                                  |
 |:---------------------- |:------------------------------------- |
-| python375、gcc         | python3.7.5和gcc7.3.0，安装在$HOME/.local/目录下  |
+| python、gcc         | python3.7.5和gcc7.3.0，安装在$HOME/.local/目录下  |
 | python框架             | tensorflow、pytorch、mindspore           |
 | CANN                   | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
 | MindStudio             | 安装在$HOME/目录下  |
@@ -264,7 +264,7 @@ ascend-deployer
 
     ```
     ./install.sh --help     # 查看帮助信息
-    ./install.sh --install=sys_pkg,python375,npu     # 安装系统依赖、python3.7.5、driver和firmware
+    ./install.sh --install=sys_pkg,python,npu     # 安装系统依赖、python3.7.5、driver和firmware
     ```
 
     注意事项：
@@ -443,13 +443,13 @@ source ~/.local/ascendrc       # non-root
 | auto        | all                                                              | 安装所有能找到的软件包 |
 | vmhost      | sys_pkg、npu、toolbox                                            | 虚拟机场景             |
 | edge        | sys_pkg、atlasedge、ha                                           | 安装MindX中间件、HA    |
-| offline_dev | sys_pkg、python375、npu、toolkit                                  | 离线开发场景          |
-| offline_run | sys_pkg、python375、npu、nnrt                                     | 离线运行场景          |
-| mindspore   | sys_pkg、python375、npu、toolkit、mindspore                       | mindspore场景         |
-| tensorflow_dev | sys_pkg、python375、npu、toolkit、tfplugin、tensorflow         | tensorflow开发场景    |
-| tensorflow_run | sys_pkg、python375、npu、nnae、tfplugin、tensorflow            | tensorflow运行场景    |
-| pytorch_dev | sys_pkg、python375、npu、toolkit、pytorch                         | pytorch开发场景       |
-| pytorch_run | sys_pkg、python375、npu、nnae、pytorch                            | pytorch运行场景       |
+| offline_dev | sys_pkg、python、npu、toolkit                                  | 离线开发场景          |
+| offline_run | sys_pkg、python、npu、nnrt                                     | 离线运行场景          |
+| mindspore   | sys_pkg、python、npu、toolkit、mindspore                       | mindspore场景         |
+| tensorflow_dev | sys_pkg、python、npu、toolkit、tfplugin、tensorflow         | tensorflow开发场景    |
+| tensorflow_run | sys_pkg、python、npu、nnae、tfplugin、tensorflow            | tensorflow运行场景    |
+| pytorch_dev | sys_pkg、python、npu、toolkit、pytorch                         | pytorch开发场景       |
+| pytorch_run | sys_pkg、python、npu、nnae、pytorch                            | pytorch运行场景       |
 
 上述安装场景的配置文件位于scene目录下，如auto场景的配置文件scene/scene_auto.yml:
 

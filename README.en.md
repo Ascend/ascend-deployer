@@ -188,7 +188,7 @@ group=HwHiAiUser
 
 |Software name  | description|
 |:------------- |:------------------------------------- |
-|Python375, gcc | python3.7.5 and gcc7.3.0 is installed in the $HOME/.local/ directory|
+|Python, gcc | python3.7.5 and gcc7.3.0 is installed in the $HOME/.local/ directory|
 |Python framework | tensorflow, pytorch, mindpore|
 |CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
 |MindStudio | installed in the $HOME/ directory|
@@ -260,12 +260,12 @@ ascend-deployer
 
     ```
     ./install.sh --help     # Viewing Help Information.
-    ./install.sh --install=sys_pkg,python375,npu     # Installing system dependencies and python3.7.5 and driver and firmware.
+    ./install.sh --install=sys_pkg,python,npu     # Installing system dependencies and python3.7.5 and driver and firmware.
     ```
 
     Notes:
 
-        - Installation sequence: sys_pkg > python375 > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
+        - Installation sequence: sys_pkg > python > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
         - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
         - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
         - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
@@ -438,13 +438,13 @@ The offline installation tool provides several basic installation scenarios.
 | auto        | all                                                              | All software packages that can be found are installed |
 | vmhost      | sys_pkg、npu、toolbox                                            | VM host scene                                         |
 | edge        | sys_pkg、atlasedge、ha                                           | Install MindX middleware, HA                          |
-| offline_dev | sys_pkg、python375、npu、toolkit                                  | Offline development scene                            |
-| offline_run | sys_pkg、python375、npu、nnrt                                     | Offline run scene                                    |
-| mindspore   | sys_pkg、python375、npu、toolkit、mindspore                       | mindspore scene                                      |
-| tensorflow_dev | sys_pkg、python375、npu、toolkit、tfplugin、tensorflow         | tensorflow development scene                         |
-| tensorflow_run | sys_pkg、python375、npu、nnae、tfplugin、tensorflow            | tensorflow run scene                                 | 
-| pytorch_dev | sys_pkg、python375、npu、toolkit、pytorch                         | pytorch development scene                            |
-| pytorch_run | sys_pkg、python375、npu、nnae、pytorch                            | pytorch run scene                                    |
+| offline_dev | sys_pkg、python、npu、toolkit                                  | Offline development scene                            |
+| offline_run | sys_pkg、python、npu、nnrt                                     | Offline run scene                                    |
+| mindspore   | sys_pkg、python、npu、toolkit、mindspore                       | mindspore scene                                      |
+| tensorflow_dev | sys_pkg、python、npu、toolkit、tfplugin、tensorflow         | tensorflow development scene                         |
+| tensorflow_run | sys_pkg、python、npu、nnae、tfplugin、tensorflow            | tensorflow run scene                                 | 
+| pytorch_dev | sys_pkg、python、npu、toolkit、pytorch                         | pytorch development scene                            |
+| pytorch_run | sys_pkg、python、npu、nnae、pytorch                            | pytorch run scene                                    |
 
 
 The configuration files for the preceding installation scenarios are stored in the **scene** directory. For example, the following shows the configuration file **scene/scene_auto.yml** of the auto scene:
