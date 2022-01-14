@@ -83,13 +83,11 @@
 - name: message
   debug:
     msg:
-      - "{{ firmware_result.stdout | default('NOT DEFINED') }}"
-      - "{{ firmware_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ firmware_result | default('NOT DEFINED') }}"
   when: firmware_result.changed
 
 - name: message
   debug:
     msg:
-      - "{{ firmware_up_result.stdout | default('NOT DEFINED') }}"
-      - "{{ firmware_up_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ firmware_up_result | default('NOT DEFINED') }}"
   when: firmware_up_result.changed

@@ -103,15 +103,13 @@
 - name: message
   debug:
     msg:
-      - "{{ driver_result.stdout | default('NOT DEFINED') }}"
-      - "{{ driver_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ driver_result | default('NOT DEFINED') }}"
   when: driver_result.changed
 
 - name: message
   debug:
     msg:
-      - "{{ driver_up_result.stdout | default('NOT DEFINED') }}"
-      - "{{ driver_up_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ driver_up_result | default('NOT DEFINED') }}"
   when: driver_up_result.changed
 
 - name: service host_sys_init start
