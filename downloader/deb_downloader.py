@@ -22,11 +22,11 @@ import re
 import sqlite3 as sqlite
 import urllib.request
 import configparser
-import logger_config
 from urllib.error import HTTPError
-from downloader import get_download_path
+import logger_config
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
+from downloader import get_download_path
 
 
 DOC = r"""

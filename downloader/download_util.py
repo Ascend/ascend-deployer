@@ -24,11 +24,11 @@ import sys
 import hashlib
 import ssl
 import platform
-import logger_config
-
 from urllib import request
 from urllib import parse
 from urllib.error import ContentTooShortError, URLError
+
+import logger_config
 
 
 def get_ascend_path():
@@ -97,8 +97,9 @@ class ProxyUtil:
         self.verify = CONFIG_INST.get_proxy_verify()
         self.proxy_handler = self._init_proxy_handler()
         self.https_handler = self._init_https_handler()
-
-    def _init_proxy_handler(self):
+    
+    @staticmethod
+    def _init_proxy_handler():
         return request.ProxyHandler()
 
 

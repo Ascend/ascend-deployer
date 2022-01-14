@@ -28,13 +28,13 @@ from xml.dom import minidom
 from urllib.error import HTTPError
 
 import logger_config
-from downloader import get_download_path
 from download_util import DOWNLOAD_INST
 from download_util import calc_sha256
 from yum_metadata.gen_yum_metadata import YumMetadataSqlite
 from yum_metadata.gen_yum_metadata import YumPackageHandler
 from yum_metadata.gen_yum_metadata import Require
 from yum_metadata.gen_yum_metadata import Provide
+from downloader import get_download_path
 
 LOG = logger_config.LOG
 
