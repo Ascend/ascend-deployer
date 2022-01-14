@@ -23,8 +23,7 @@
 - name: message
   debug:
     msg:
-      - "{{ nnrt_aarch64_result.stdout | default('NOT DEFINED') }}"
-      - "{{ nnrt_aarch64_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ nnrt_aarch64_result | default('NOT DEFINED') }}"
   when: nnrt_aarch64_result.changed
 
 - name: find nnrt x86_64 rollback script
@@ -52,6 +51,5 @@
 - name: message
   debug:
     msg:
-      - "{{ nnrt_x64_result.stdout | default('NOT DEFINED') }}"
-      - "{{ nnrt_x64_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ nnrt_x64_result | default('NOT DEFINED') }}"
   when: nnrt_x64_result.changed

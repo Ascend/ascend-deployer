@@ -14,6 +14,5 @@
 - name: message
   debug:
     msg:
-      - "{{ sys_result.stdout | default('NOT DEFINED') }}"
-      - "{{ sys_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ sys_result | default('NOT DEFINED') }}"
   when: sys_result.changed

@@ -20,18 +20,18 @@ import sys
 import shutil
 import argparse
 import platform
-
-FILE_PATH = os.path.realpath(__file__)
-CUR_DIR = os.path.dirname(__file__)
-
-sys.path.append(CUR_DIR)
-
 import download_util
 import logger_config
 import pip_downloader
 import os_dep_downloader
 import other_downloader
 import software_mgr
+
+
+FILE_PATH = os.path.realpath(__file__)
+CUR_DIR = os.path.dirname(__file__)
+
+sys.path.append(CUR_DIR)
 
 LOG = logger_config.LOG
 LOG_OPERATION = logger_config.LOG_OPERATION
@@ -220,7 +220,7 @@ def main():
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        download_status = "Failed"
+        _download_status = "Failed"
         try:
             download_specified_python()
             download_python_packages()
@@ -229,14 +229,14 @@ if __name__ == "__main__":
             download_other_packages()
             download_other_software()
         except (KeyboardInterrupt, SystemExit):
-            download_status = "Failed"
+            _download_status = "Failed"
         else:
-            download_status = "Success"
+            _download_status = "Success"
         finally:
-            log_msg = "downloading --os-list={} --download={}: {}".format(
+            _log_msg = "downloading --os-list={} --download={}: {}".format(
                 ",".join(download_util.CONFIG_INST.get_download_os_list()),
                 ",".join(download_util.CONFIG_INST.get_download_pkg_list()),
-                download_status)
-            LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
+                _download_status)
+            LOG_OPERATION.info(_log_msg, extra=logger_config.LOG_CONF.EXTRA)
     else:
         main()

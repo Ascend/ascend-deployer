@@ -40,6 +40,5 @@
 - name: message
   debug:
     msg:
-      - "{{ nnrt_result.stdout | default('NOT DEFINED') }}"
-      - "{{ nnrt_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ nnrt_result | default('NOT DEFINED') }}"
   when: nnrt_result.changed

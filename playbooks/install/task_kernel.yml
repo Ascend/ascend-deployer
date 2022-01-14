@@ -43,8 +43,6 @@
 - name: message
   debug:
     msg:
-      - "{{ kernel_headers_result.stdout | default('NOT DEFINED') }}"
-      - "{{ kernel_headers_result.stdout_lines | default('NOT DEFINED') }}"
-      - "{{ kernel_devel_result.stdout | default('NOT DEFINED') }}"
-      - "{{ kernel_devel_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ kernel_headers_result | default('NOT DEFINED') }}"
+      - "{{ kernel_devel_result | default('NOT DEFINED') }}"
   when: kernel_headers_result.changed or kernel_devel_result.changed

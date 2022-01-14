@@ -40,6 +40,5 @@
 - name: message
   debug:
     msg:
-      - "{{ tfplugin_result.stdout | default('NOT DEFINED') }}"
-      - "{{ tfplugin_result.stdout_lines | default('NOT DEFINED') }}"
+      - "{{ tfplugin_result | default('NOT DEFINED') }}"
   when: tfplugin_result.changed
