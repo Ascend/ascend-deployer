@@ -314,7 +314,7 @@ ascend-deployer
 2. 设置ssh代理管理ssh密钥，避免工具批量安装操作过程中输入密钥密码。设置ssh代理的参考操作如下：
    ```bash
    ssh-agent bash   # 开启ssh-agent的bash进程
-   ssh-add          # 向ssh-agent添加私钥
+   ssh-add ~/.ssh/id_rsa         # 向ssh-agent添加私钥
    ```
 
 3. 执行`./install.sh --check`测试待安装设备连通性。确保所有设备都能正常连接，若存在设备连接失败情况，请检查该设备的网络连接和sshd服务是否开启。
