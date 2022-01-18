@@ -180,6 +180,8 @@ usermod -s /bin/bash HwHiAiUser   # 安装驱动时
 
 - 安装2.0.3及以后版本的边缘组件(atlasedge)时，该组件会默认创建一个MindXEdge用户。
 
+- 安装2.0.4版本的边缘组件时，需提前安装haveged，例如Ubuntu系统使用`apt install haveged`命令进行安装，安装后需执行`systemctl enable haveged`和`systemctl start haveged`启动haveged服务。
+
 - 若用户需自行指定运行用户和用户组，可在创建用户和用户组后自行修改inventory_file文件。文件内容如下：
 
 ```
@@ -291,7 +293,7 @@ ascend-deployer
 
 ### 批量安装
 
-1. 基于密钥认证的ssh连接。
+1. 基于密钥认证的ssh连接，安装前请确认系统中未安装paramiko（ansible在某些情况下会使用paramiko，其配置不当容易引起安全问题）。
 
    配置待安装的其他设备的ip地址，编辑inventory_file文件，格式如下：
 
@@ -302,7 +304,7 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # 非root用户
    ```
 
-   设置密钥认证的参考操作如下，请注意ssh密钥和密钥密码在使用和保管过程中的风险，特别是密钥未加密时的风险，用户应按照所在组织的安全策略进行相关配置，包括并不局限于软件版本、口令复杂度要求、安全配置（协议、加密套件、密钥长度等）：
+   设置密钥认证的参考操作如下，请注意ssh密钥和密钥密码在使用和保管过程中的风险，特别是密钥未加密时的风险，用户应按照所在组织的安全策略进行相关配置，包括并不局限于软件版本、口令复杂度要求、安全配置（协议、加密套件、密钥长度等，特别是/etc/ssh下和~/.ssh下的配置）：
    ```bash
    ssh-keygen -t rsa -b 3072   # 登录管理节点并生成SSH Key。安全起见，建议用户到"Enter passphrase"步骤时输入密钥密码，且符合密码复杂度要求。建议执行这条命令前先将umask设置为0077，执行完后再恢复原来umask值。
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上，<user>@<ip>替换成要拷贝到的对应节点的账户和ip。
