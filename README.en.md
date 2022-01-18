@@ -176,6 +176,8 @@ usermod -s /bin/bash HwHiAiUser   # When installing the driver package
 
 - When installing AtlasEdge components in versions 2.0.3 and later, the component creates a MindXEdge user by default.
 
+- When installing the edge components in version 2.0.4, you need to install haveged in advance. For example, Ubuntu system uses the command `apt install haveged`. After installation, you need to execute `systemctl enable haveged` and `systemctl start haveged` to start the haveged service.
+
 - If you need to specify the running user and user group, modify the **inventory_file** file. The file content is as follows:
 
 ```
@@ -287,7 +289,7 @@ ascend-deployer
 
 ### Batch Installation
 
-1. SSH connection based on key authentication.
+1. SSH connection based on key authentication,Please confirm that paramiko is not installed in the system before installation (ansible will use paramiko in some cases, and its improper configuration may cause security problems).
 
    Configure the IP addresses of other devices where the packages to be installed. Edit the **inventory_file** file. The format is shown as follows:
    ```
@@ -297,7 +299,7 @@ ascend-deployer
    ip_address_3 ansible_ssh_user='username'  # non-root user
    ```
 
-   Configure the reference operation for key authentication.Please pay attention to the risks during the use and storage of SSH keys and key passwords, especially when the keys are not encrypted. Users should configure them according to the security policies of their organization, including but not limited to software version, password complexity requirements, security configuration (protocol, encryption suite, key length, etc.)
+   Configure the reference operation for key authentication.Please pay attention to the risks during the use and storage of SSH keys and key passwords, especially when the keys are not encrypted. Users should configure them according to the security policies of their organization, including but not limited to software version, password complexity requirements, security configuration (protocol, encryption suite, key length, etc,especially the configuration under /etc/ssh and ~/.ssh)
    ```bash
    ssh-keygen -t rsa -b 3072   # Log in to the management node and generate the SSH Key. For security reasons, it is recommended that the user Enter the key password at the "Enter passphrase" step, and ensure that the password complexity is reasonable. It is recommended to set the umask to 0077 before executing this command and to restore the original umask after executing it.
    ssh-copy-id -i ~/.ssh/id_rsa.pub <user>@<ip>   # Copy the public key of the management node to the machines of all nodes, and replace <user>@<ip> with the account and ip of the corresponding node to be copied to.
@@ -309,7 +311,7 @@ ascend-deployer
 2. Set up the SSH agent to manage the SSH key to avoid entering the key password during the bulk installation of the tool. The following are the guidelines for setting up an SSH agent:
    ```bash
    ssh-agent bash   # Start the ssh-agent bash process
-   ssh-add          # Add a private key to the ssh-agent
+   ssh-add ~/.ssh/id_rsa         # Add a private key to the ssh-agent
    ```
 
 3. Run the `./install.sh --check` command to test the connectivity of the devices where the packages to be installed. Ensure that all devices can be properly connected. If a device fails to be connected, check whether the network connection of the device is normal and whether sshd is enabled.
