@@ -342,28 +342,3 @@ class YumMetadataSqlite(object):
             sql_as_str = fid.read()
 
         self.primary_cur.executescript(sql_as_str)
-
-
-def main():
-    """
-    main function
-    """
-    primary_xml_file = "test_primary.xml"
-    primary_file_path = os.path.realpath(os.path.dirname(primary_xml_file))
-    meta_sqlite = YumMetadataSqlite(primary_file_path, 'oss_primary.sqlite')
-    meta_sqlite.create_primary_db()
-
-    parser = xml.sax.make_parser()
-    parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-    handler = YumPackageHandler()
-    parser.setContentHandler(handler)
-    parser.parse(primary_xml_file)
-
-    for pkg in handler.packages:
-        print(pkg)
-        pkg.dump_to_primary_sqlite(meta_sqlite.primary_cur)
-    meta_sqlite.primary_connection.commit()
-
-
-if __name__ == "__main__":
-    main()

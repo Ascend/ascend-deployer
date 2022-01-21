@@ -381,14 +381,3 @@ def download_from_json():
                 continue
             results['failed'].append(line.strip())
     return results
-
-
-def main():
-    """
-    main
-    """
-    download_from_json()
-
-
-if __name__ == '__main__':
-    main()

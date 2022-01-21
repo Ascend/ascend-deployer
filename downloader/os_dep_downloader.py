@@ -106,34 +106,3 @@ class OsDepDownloader:
         if downloader is not None:
             downloader.clean_cache()
         return res
-
-
-    def prepare_download_dir(self):
-        for os_item in self.os_list:
-            dst_dir = os.path.join(self.resources_dir, os_item)
-            if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir, mode=0o750, exist_ok=True)
-
-    def clean_download_dir(self):
-        if os.path.exists(self.resources_dir):
-            import shutil
-            shutil.rmtree(self.resources_dir)
-        print('clean resources directory successfully')
-        LOG.info('clean resources directory successfully')
-
-
-def main():
-    os_dep = OsDepDownloader()
-    if len(sys.argv) == 2 and sys.argv[1] == 'clean':
-        print('clean download dir...')
-        LOG.info('clean download dir...')
-        os_dep.clean_download_dir()
-    else:
-        time_start = time.time()
-        os_dep.download_pkg_from_json()
-        print('total time: {} seconds'.format(time.time() - time_start))
-        LOG.info('total time: {} seconds'.format(time.time() - time_start))
-
-
-if __name__ == "__main__":
-    main()

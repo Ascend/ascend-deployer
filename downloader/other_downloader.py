@@ -316,9 +316,3 @@ def download_ms_from_json():
                 continue
             results['failed'].append(software)
     return results
-
-
-if __name__ == '__main__':
-    download_other_packages()
-    download_ms_from_json()
-    download_pkg_from_json()
