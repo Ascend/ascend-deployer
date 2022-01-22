@@ -540,11 +540,6 @@ function check_extracted_size()
             log_error "$(basename ${zip_package}) extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
             return 1
         fi
-        unzip -l ${zip_package} | grep -F "\\" > /dev/null 2>&1
-        if [[ $? == 0 ]];then
-            log_error "The name of $(basename ${zip_package}) contains \\"
-            return 1
-        fi
         unzip -l ${zip_package} | grep -F "../" > /dev/null 2>&1
         if [[ $? == 0 ]];then
             log_error "The name of $(basename ${zip_package}) contains .."
@@ -561,11 +556,6 @@ function check_extracted_size()
         local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${TAR_COUNT_THRESHOLD}" '{sum += $3} END {print (sum <= size_threshold && NR <= count_threshold)}')
         if [[ ${check_tar} == 0 ]];then
             log_error "$(basename ${tar_package}) extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
-            return 1
-        fi
-        tar tvf ${tar_package} | grep -F "\\" > /dev/null 2>&1
-        if [[ $? == 0 ]];then
-            log_error "The name of $(basename ${tar_package}) contains \\"
             return 1
         fi
         tar tf ${tar_package} | grep -F "../" > /dev/null 2>&1
