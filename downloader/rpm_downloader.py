@@ -565,20 +565,3 @@ class Yum(object):
             return True
         else:
             return False
-
-
-def main():
-    """
-    need_download_again
-
-    :param target_sha256:
-    :param dst_file:
-    :return:
-    """
-    yum_inst = Yum('downloader/config/CentOS_8.2_x86_64/source.repo', 'x86_64')
-    yum_inst.make_cache()
-    yum_inst.download_with_dep('gcc', './test')
-
-
-if __name__ == '__main__':
-    main()
