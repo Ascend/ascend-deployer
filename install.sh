@@ -540,6 +540,16 @@ function check_extracted_size()
             log_error "$(basename ${zip_package}) extracted size over 5G or extracted files count over ${ZIP_COUNT_THRESHOLD}"
             return 1
         fi
+        unzip -l ${zip_package} | grep -F "\\" > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${zip_package}) contains \\"
+            return 1
+        fi
+        unzip -l ${zip_package} | grep -F "../" > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${zip_package}) contains .."
+            return 1
+        fi
     done
     for tar_package in $(find ${BASE_DIR}/resources/ -type f -name "*.tar" -o -name "*.tar.*z*" 2>/dev/null)
     do
@@ -551,6 +561,16 @@ function check_extracted_size()
         local check_tar=$(tar tvf ${tar_package} | awk -v size_threshold="${SIZE_THRESHOLD}" -v count_threshold="${TAR_COUNT_THRESHOLD}" '{sum += $3} END {print (sum <= size_threshold && NR <= count_threshold)}')
         if [[ ${check_tar} == 0 ]];then
             log_error "$(basename ${tar_package}) extracted size over 5G or extracted files count over ${TAR_COUNT_THRESHOLD}"
+            return 1
+        fi
+        tar tvf ${tar_package} | grep -F "\\" > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${tar_package}) contains \\"
+            return 1
+        fi
+        tar tf ${tar_package} | grep -F "../" > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${tar_package}) contains .."
             return 1
         fi
     done
@@ -735,6 +755,10 @@ function verify_zip_redirect()
     cat ${BASE_DIR}/tmp.log && rm -rf ${BASE_DIR}/tmp.log
     if [ ${verify_result} -ne 0 ];then
         log_error "check validation fail"
+        return 1
+    fi
+    if [[ $(find ${BASE_DIR}/resources -type f | wc -L) -gt 1023 ]] || [[ $(find ${BASE_DIR}/resources -type l | wc -L) -gt 1023 ]];then
+        log_error "The file name contains more than 1023 characters"
         return 1
     fi
 }
@@ -1361,7 +1385,7 @@ main()
 main $*
 main_status=$?
 if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
-    operation_log_info "$0 $*:Failed"
+    operation_log_info "parameter error,run failed"
 else
     operation_log_info "$0 $*:Success"
 fi
