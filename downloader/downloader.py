@@ -20,6 +20,12 @@ import sys
 import shutil
 import argparse
 import platform
+
+FILE_PATH = os.path.realpath(__file__)
+CUR_DIR = os.path.dirname(__file__)
+
+sys.path.append(CUR_DIR)
+
 import download_util
 import logger_config
 import pip_downloader
@@ -27,11 +33,6 @@ import os_dep_downloader
 import other_downloader
 import software_mgr
 
-
-FILE_PATH = os.path.realpath(__file__)
-CUR_DIR = os.path.dirname(__file__)
-
-sys.path.append(CUR_DIR)
 
 LOG = logger_config.LOG
 LOG_OPERATION = logger_config.LOG_OPERATION
