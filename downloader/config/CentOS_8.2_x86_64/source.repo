@@ -1,11 +1,11 @@
 [base]
-baseurl=https://mirrors.huaweicloud.com/centos/8/BaseOS/x86_64/os/
+baseurl=https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/x86_64/os/
 
 [powertool]
-baseurl=https://mirrors.huaweicloud.com/centos/8/PowerTools/x86_64/os/
+baseurl=https://mirrors.huaweicloud.com/centos-vault/8.2.2004/PowerTools/x86_64/os/
 
 [AppStream]
-baseurl=https://mirrors.huaweicloud.com/centos/8/AppStream/x86_64/os/
+baseurl=https://mirrors.huaweicloud.com/centos-vault/8.2.2004/AppStream/x86_64/os/
 
 [Everyting]
 baseurl=https://mirrors.huaweicloud.com/epel/8/Everything/x86_64/
