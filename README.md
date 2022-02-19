@@ -222,7 +222,7 @@ usermod -a -G HwHiAiUser 非root用户名
    - Atlas 500只支持自带的EulerOS2.8 aarch64裁剪版操作系统，不支持其他系统，因此也不支持离线部署工具本地运行，只支持远程安装，也不支持非root安装；Atlas 500Pro支持本地和远程安装
    - 依赖边缘节点atlasedge中间件正常工作，Atlas 500自带atlasedge中间件，Atlas 500Pro需要先安装atlasedge中间件
    - 依赖IEF服务器正常工作，且边缘设备与IEF之间网络正常，边缘节点是否成功纳管需到IEF的web前端观察，其他限制请参考usermanual-ief文档
-4. docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下（需自行创建该目录），方可进行docker镜像的安装；docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。
+4. docker镜像文件需用户登录ascendhub，拉取镜像后将镜像转存至resources/docker_images目录下（需自行创建该目录），方可进行docker镜像的安装；docker镜像文件命名格式参考ubuntu_18.04_{x86_64 | aarch64}.tar，大括号内为系统架构，仅支持括号内的两种架构。docker镜像的安装会先安装系统包，所以安装docker镜像前先下载对应的系统包；用户需要确保要安装的docker镜像的安全性。
 
 ```
 ascend-deployer
