@@ -205,6 +205,12 @@ function check_script_args()
         return 1
     fi
 
+    if [ -z "${OS_LIST}" ] && [[ "${PKG_LIST}" =~ "MindStudio" ]];then
+        log_error "os_list can not be none when downloading MindStudio"
+        print_usage
+        return 1
+    fi
+
     # --os-list
     if $(echo "${OS_LIST}" | grep -Evq '^[a-zA-Z0-9._,-]*$');then
         log_error "--os-list ${OS_LIST} is invalid"
