@@ -145,6 +145,11 @@ def parse_argument(download_path):
         print("os_list can not be none when downloading mindspore")
         parser.print_help()
         sys.exit(0)
+    
+    if args.os_list is None and "MindStudio" in args.packages:
+        print("os_list can not be none when downloading MindStudio")
+        parser.print_help()
+        sys.exit(0)
 
     if args.os_list is not None:
         for os_item in args.os_list.split(','):
