@@ -159,6 +159,8 @@ install_path=/usr/local/Ascend
 
 - The install_path parameter can specify the CANN package's installation path. This parameter is valid for root (The CANN package is not installed on the environment, i.e., there is no `/etc/scend/cann_install.info` file, otherwise it will be installed to the path specified by the contents of the file) and not for non-root (only to the default ~/Ascend path).The install_path parameter does not specify the installation path for the driver package and edge components (AtlasEdge and HA). The driver package can only be installed to the default path /usr/local/Ascend and edge components (AtlasEdge and HA) can only be installed to the default path /usr/local.
 - The install_path parameter can only specify the Toolbox package's installation path. This parameter is valid for root (The Toolbox package is not installed on the environment, i.e., there is no `/etc/scend/cann_install.info` and `/etc/Ascend/ascend_toolbox_install.info` file, otherwise it will be installed to the path specified by the contents of the file) and not for non-root (only to the default ~/Ascend path).
+- When the offline tool is a zip package, the user needs to confirm that the decompression directory of the offline tool is a new decompression, and the directory permission is 700 without soft links.
+- After installation, the configuration needs to be modified. It is recommended to cancel the login of root user.
 - The driver software packages will user HwHiAiUser and group as default user. The **HwHiAiUser** user must be created first and guarantee the password of the created user, the expiration date of the password and the security issues in subsequent use. The commands to create user and group is below:
 
 ```bash
@@ -510,7 +512,7 @@ The ascend deployer tool supports cann cold patch installation and fallback.
 
 ### <a name="proxy_configuration">Proxy Configuration</a>
 
-If you want to use an HTTP proxy, configure the proxy in an environment variable. This tool validates HTTPS certificates by default, if a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
+If you want to use an proxy, configure the proxy in an environment variable. Users need to pay attention to the security of the proxy.This tool validates HTTPS certificates by default, if a certificate error occurs during the download process, it may be that the proxy server has a security mechanism for certificate replacement, so you need to install the proxy server certificate first.
 
 1. Configure the agent in the environment variable as follows
 
