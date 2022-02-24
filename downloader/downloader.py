@@ -240,8 +240,7 @@ if __name__ == "__main__":
         except (KeyboardInterrupt, SystemExit):
             _download_status = "Failed"
         except Exception:
-            download_status = "Failed"
-            exit_status = 1
+            _download_status = "Failed"
         else:
             _download_status = "Success"
         finally:
