@@ -215,6 +215,9 @@ def main():
     except (KeyboardInterrupt, SystemExit):
         download_status = "Failed"
         exit_status = 1
+    except Exception:
+        download_status = "Failed"
+        exit_status = 1
     else:
         download_status = "Success"
         exit_status = 0
@@ -236,6 +239,9 @@ if __name__ == "__main__":
             download_other_software()
         except (KeyboardInterrupt, SystemExit):
             _download_status = "Failed"
+        except Exception:
+            download_status = "Failed"
+            exit_status = 1
         else:
             _download_status = "Success"
         finally:

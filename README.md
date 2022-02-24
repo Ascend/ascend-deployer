@@ -163,6 +163,8 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 - install_path参数指定CANN软件包的安装路径，root用户安装时该参数有效（且环境上未安装CANN软件包，即没有`/etc/Ascend/ascend_cann_install.info`文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包和边缘组件(atlasedge和ha)的安装路径，驱动包只能安装到默认路径/usr/local/Ascend，边缘组件(atlasedge和ha)只能安装到默认路径/usr/local。
 - install_path参数指定Toolbox软件包的安装路径，root用户安装时该参数有效（且环境上未安装Toolbox软件包，即没有`/etc/Ascend/ascend_cann_install.info`和`/etc/Ascend/ascend_toolbox_install.info`文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）。
+- 离线工具为zip包时，用户需确认离线工具的解压目录为新解压，并且目录权限为700，没有软链接。
+- 安装完成后需修改配置，建议取消root用户的登录。
 - 驱动包会使用HwHiAiUser用户和用户组作为软件包默认运行用户，用户需自行创建，并保证该创建用户的密码、密码有效期以及后续使用中的安全问题。创建用户组和用户的命令如下：
 
 ```bash
@@ -514,7 +516,7 @@ ascend-deployer工具支持CANN冷补丁的安装和回退。
 
 ### <a name="proxy_configuration">代理配置</a>
 
-如需使用http代理，需在环境变量中配置代理。本工具默认校验https证书，如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
+如需使用代理，需在环境变量中配置代理，用户需要注意代理的安全性。本工具默认校验https证书，如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
 
 1. Linux环境变量中配置代理，参考如下
    
