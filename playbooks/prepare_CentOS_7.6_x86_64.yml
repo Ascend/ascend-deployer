@@ -30,3 +30,4 @@
 - name: install libselinux-python
   shell: rpm -ivh --force --replacepkgs --nodeps ~/libselinux/libselinux*.rpm
   when: have_selinux.rc != 0
+  when: ansible_user_uid == 0
