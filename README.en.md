@@ -103,7 +103,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### download zip
 
-Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 077 before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
+Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use.In order to prevent the software package from being maliciously tampered with during delivery or storage, it is recommended that users download the software package and use sha256sum to verify the integrity of the software. For the latest official version of sha256sum, please refer to readme of the master branch. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 077 before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
 
 # Operation Instructions
 
@@ -583,6 +583,10 @@ https://obs-9be7.obs.myhuaweicloud.com
 https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 https://ms-release.obs.cn-north-4.myhuaweicloud.com
 ```
+## <a name='sha256sum'>Sha256sum verification</a>
+| sha256sum                                                        | Version of the ascend-deployer |
+| ---------------------------------------------------------------- | ------------------------------ |
+| 22f7e10677658e7c3d223b32f73786c765e85cf6f66440bf620c3e4275f11e7f | ascend-deployer-2.0.4.B093.zip | 
 
 ## <a name="faq">FAQ</a>
 1. Q: The first time you execute './install.sh --check 'or any other installation command, the system dependencies and Python 3.7.5 will be installed automatically. If the installation process is interrupted unintentionally, the second time you execute the command, the RPM and DPKG tools may be locked, or Python 3.7.5 functionality may be missing.
