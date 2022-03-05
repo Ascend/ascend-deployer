@@ -105,7 +105,7 @@ git clone https://gitee.com/ascend/ascend-deployer.git
 
 ### 下载zip安装
 
-点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为077，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
+点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用（为了防止软件包在传递过程或存储期间被恶意篡改，建议用户下载软件包后使用sha256sum对软件进行完整性校验，当前最新正式版本的sha256sum请参考master分支的readme）。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为077，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
 
 # 操作指导:源码方式
 
@@ -588,6 +588,10 @@ https://obs-9be7.obs.myhuaweicloud.com
 https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
 https://ms-release.obs.cn-north-4.myhuaweicloud.com
 ```
+## <a name='sha256sum'>sha256sum校验</a>
+| sha256sum                                                        | 离线安装版本                    |
+| ---------------------------------------------------------------- | ------------------------------ |
+| 22f7e10677658e7c3d223b32f73786c765e85cf6f66440bf620c3e4275f11e7f | ascend-deployer-2.0.4.B093.zip | 
 
 ## <a name="faq">FAQ</a>
 

@@ -100,7 +100,7 @@ function install_python3()
 {
 
     if [ $(id -u) -ne 0 ];then
-        log_error "you are not root user and python3 is not available, please install python3 first by yourselt"
+        log_error "you are not root user and python3 is not available, please install python3 first by yourself"
         return 1
     fi
 
