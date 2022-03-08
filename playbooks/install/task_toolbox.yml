@@ -4,34 +4,21 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: ".*toolbox.*{{ ansible_architecture }}.run"
+    patterns: ".*toolbox.*{{ ansible_architecture }}.sh"
   register: toolbox
 
-- name: check ascend cann install info
-  stat:
-    path: "{{ cann_info_path }}/ascend_cann_install.info"
-  register: install_info
-
-- name: check ascend toolbox install info
-  stat:
-    path: "{{ cann_info_path }}/ascend_toolbox_install.info"
-  register: toolbox_info
-
-- set_fact: install_info={{toolbox_info}}
-  when: toolbox_info.stat.exists
-
-- name: set install_path enable
+- name: set log_path for root
   set_fact:
-    ins_path_cmd: "--install-path={{ install_path }}"
-  when: not install_info.stat.exists
+    log_path: /var/log/ascend_seclog/
+  when: ansible_user_uid == 0
 
-- name: set install_path disable
+- name: set log_path for non-root
   set_fact:
-    ins_path_cmd: ""
-  when: install_info.stat.exists or ansible_user_uid != 0
+    log_path: ~/var/log/ascend_seclog/
+  when: ansible_user_uid != 0
 
 - name: install toolbox
-  shell: "bash {{ toolbox.files[0].path }} --nox11 {{ cann_install_params }} {{ins_path_cmd}}"
+  shell: "bash {{ toolbox.files[0].path }} {{ log_path }}"
   register: toolbox_result
   when: toolbox.matched > 0
   failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
