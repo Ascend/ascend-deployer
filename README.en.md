@@ -73,6 +73,8 @@ The offline installation tool provides automatic download and one-click installa
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
 - BCLinux 7.6 does not have python3 by default. The `yum install python3` command is run before the download operation. Because the BCLinux 7.6 system source does not contain python3, modify the source configuration file by referring to the BCLinux official configuration file, or change "el7.6" to "el7.7" in "/etc/yum.repos.d/BCLinux-Base.repo"(Run the `sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo` command). After the installation, restore the original configuration.
 - tensorflow-1.15.0 aarch64 and torch-1.5.0/apex-0.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
+- If you plan to use the automatic download function under Linux, please configure the GUI interface in advance and directly run the download instruction.
+- Please use ascend deployer (2.0.4) of the previous iteration to install the old version of the software package.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 - Based on security considerations, it is recommended to reinforce the unzipped installation directory(ascend-deployer) and set its permission to only allow owner to use.
 
