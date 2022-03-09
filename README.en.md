@@ -24,6 +24,7 @@ The offline installation tool provides automatic download and one-click installa
 | EulerOS  |   2.9   |      x86_64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|     aarch64      | A minimal image is installed by default. |
 |  Kylin   |V10Tercel|      x86_64      | A minimal image is installed by default. |
+|  Kylin   |V10GFB   |     aarch64      | A minimal image is installed by default. |
 |  Kylin   |v10juniper|    aarch64      | A minimal image is installed by default. |
 |   Linx   |   6     |     aarch64      | A minimal image is installed by default. |
 |OpenEuler |20.03LTS |     aarch64      | A minimal image is installed by default. |
@@ -35,6 +36,7 @@ The offline installation tool provides automatic download and one-click installa
 |   UOS    | 20SP1   |     aarch64      | A minimal image is installed by default. |
 |   UOS    | 20SP1   |      x86_64      | A minimal image is installed by default. |
 |   UOS    |20-1020e |     aarch64      | A minimal image is installed by default. |
+|   UOS    |20-1021e |     aarch64      | A minimal image is installed by default. |
 |   UOS    |   20    |     aarch64      | A minimal image is installed by default. |
 |   UOS    |   20    |      x86_64      | A minimal image is installed by default. |
 |  Ubuntu  |18.04.1/5|     aarch64      | A minimal image is installed by default. |
@@ -56,6 +58,7 @@ The offline installation tool provides automatic download and one-click installa
 
 - By default, the offline installation tool downloads and installs Python-3.7.5 as a Python version of the Cann package. This is explained in Python-3.7.5.Users can select the Python version by setting the ASCEND_PYTHON_VERSION environment variable, or the ASCEND_PYTHON_VERSION configuration item in the downloader/config.ini file (environment variable is preferred when setting at the same time).The optional Python versions are 3.7.0 to 3.7.11 and 3.8.0 to 3.8.11. This tool has only been fully adapted and tested on Python-3.7.5, and it is strongly recommended not to change the default configuration.
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
+- Kylin V10 GFB system downloads kylin when the system is dependent_ V10Tercel_ Aarch64 is enough.
 - The offline installation tool supports only the default environment after the OS image is successfully installed. Do not install or uninstall software after the OS is installed. If some system software has been uninstalled, causing inconsistency with the default system package, you need to manually configure the network and use tools such as apt, yum, and dnf to install and configure the missing software.
 - The offline installation tool can install only basic libraries to ensure that TensorFlow and PyTorch can run properly. If you need to run complex inference services or model training, the model code may contain libraries related to specific services. You need to install the libraries by yourself.
 - Offline installation tools except install.sh、start_download.sh、start_download_ui.bat and start_download.bat, the rest of the files are not designed for the user to use the interface or command. Do not use them directly.

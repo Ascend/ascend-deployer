@@ -253,6 +253,11 @@ function get_os_version()
         version="${ver}-1020e"
     fi
 
+    # UOS 20 1021e
+    if [ "${id}" == "UOS" ] && [[ "${kernel_version}" == "4.19.90-2109.1.0.0108.up2.uel20.${arch}" ]];then
+        version="${ver}-1021e"
+    fi
+
     echo ${version}
     return 0
 }
@@ -394,6 +399,9 @@ function install_sys_packages()
         local have_rpm=0
     fi
     if [[ "${g_os_ver_arch}" == "UOS_20-1020e_${arch}" ]];then
+        local have_rpm=1
+    fi
+    if [[ "${g_os_ver_arch}" == "UOS_20-1021e_${arch}" ]];then
         local have_rpm=1
     fi
 

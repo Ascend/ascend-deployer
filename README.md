@@ -25,6 +25,7 @@
 | EulerOS | 2.9       | x86_64  | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | aarch64 | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | x86_64  | 镜像默认Minimal模式                     |
+| Kylin   | V10GFB    | aarch_64| 镜像默认Minimal模式                     |
 | Kylin   | v10juniper| aarch64 | 镜像默认Minimal模式                     |
 | Linx    | 6         | aarch64 | 镜像默认Minimal模式                     |
 |OpenEuler|  20.03LTS  | aarch64| 镜像默认Minimal模式                     |
@@ -36,6 +37,7 @@
 | UOS     | 20SP1     | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20SP1     | x86_64  | 镜像默认Minimal模式                     |
 | UOS     | 20-1020e  | aarch64 | 镜像默认Minimal模式                     |
+| UOS     | 20-1021e  | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
@@ -58,6 +60,7 @@
 ## 注意事项
 
 - 离线安装工具默认下载和安装Python-3.7.5作为CANN软件包的配套Python版本，以下全文相关处均以Python-3.7.5进行解释说明。用户可以通过设置ASCEND_PYTHON_VERSION环境变量，或downloader/config.ini文件中的ascend_python_version配置项（同时设置时环境变量优先），自行选择Python版本，可选的Python版本为`3.7.0~3.7.11`和`3.8.0~3.8.11和3.9.0~3.9.9`。本工具仅在Python-3.7.5版本上经过全面适配和测试，强烈建议不要更改默认配置。
+- Kylin V10 GFB系统下载系统依赖时下载Kylin_V10Tercel_aarch64即可。
 - 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip、ssh等基本命令。建议在Ubuntu/Debian系统的安装过程中，到【Software selection】这一步时勾选上【OpenSSH server】/【SSH server】这一选项，避免缺失ssh命令。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
