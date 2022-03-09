@@ -12,6 +12,7 @@ readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
 readonly A300I_PRODUCT_LIST="A300i-pro,Atlas-300i-pro"
 readonly A300V_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
+readonly A300IDUO_PRODOUCT_LIST="Atlas-300i-duo,A300i-duo"
 readonly INFER_PRODUCT_LIST="A300-3000,A300-3010,Atlas-200"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
@@ -252,6 +253,11 @@ function get_os_version()
         version="${ver}-1020e"
     fi
 
+    # UOS 20 1021e
+    if [ "${id}" == "UOS" ] && [[ "${kernel_version}" == "4.19.90-2109.1.0.0108.up2.uel20.${arch}" ]];then
+        version="${ver}-1021e"
+    fi
+
     echo ${version}
     return 0
 }
@@ -393,6 +399,9 @@ function install_sys_packages()
         local have_rpm=0
     fi
     if [[ "${g_os_ver_arch}" == "UOS_20-1020e_${arch}" ]];then
+        local have_rpm=1
+    fi
+    if [[ "${g_os_ver_arch}" == "UOS_20-1021e_${arch}" ]];then
         local have_rpm=1
     fi
 
@@ -628,6 +637,8 @@ function zip_extract()
             local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
+        elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
         else
             echo "not support $(basename ${zip_file}), please check" >> ${BASE_DIR}/install.log
             return 1

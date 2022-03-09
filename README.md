@@ -25,6 +25,7 @@
 | EulerOS | 2.9       | x86_64  | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | aarch64 | 镜像默认Minimal模式                     |
 | Kylin   | V10Tercel | x86_64  | 镜像默认Minimal模式                     |
+| Kylin   | V10GFB    | aarch_64| 镜像默认Minimal模式                     |
 | Kylin   | v10juniper| aarch64 | 镜像默认Minimal模式                     |
 | Linx    | 6         | aarch64 | 镜像默认Minimal模式                     |
 |OpenEuler|  20.03LTS  | aarch64| 镜像默认Minimal模式                     |
@@ -36,6 +37,7 @@
 | UOS     | 20SP1     | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20SP1     | x86_64  | 镜像默认Minimal模式                     |
 | UOS     | 20-1020e  | aarch64 | 镜像默认Minimal模式                     |
+| UOS     | 20-1021e  | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | aarch64 | 镜像默认Minimal模式                     |
 | UOS     | 20        | x86_64  | 镜像默认Minimal模式                     |
 | Ubuntu  | 18.04.1/5 | aarch64 | 镜像默认Minimal模式                     |
@@ -58,6 +60,7 @@
 ## 注意事项
 
 - 离线安装工具默认下载和安装Python-3.7.5作为CANN软件包的配套Python版本，以下全文相关处均以Python-3.7.5进行解释说明。用户可以通过设置ASCEND_PYTHON_VERSION环境变量，或downloader/config.ini文件中的ascend_python_version配置项（同时设置时环境变量优先），自行选择Python版本，可选的Python版本为`3.7.0~3.7.11`和`3.8.0~3.8.11和3.9.0~3.9.9`。本工具仅在Python-3.7.5版本上经过全面适配和测试，强烈建议不要更改默认配置。
+- Kylin V10 GFB系统下载系统依赖时下载Kylin_V10Tercel_aarch64即可。
 - 操作系统必须安装tar、cd、ls、find、grep、chown、chmod、unzip、ssh等基本命令。建议在Ubuntu/Debian系统的安装过程中，到【Software selection】这一步时勾选上【OpenSSH server】/【SSH server】这一选项，避免缺失ssh命令。
 - 离线安装工具仅支持OS镜像安装成功后的默认环境，请不要在安装OS后额外安装或卸载软件。若已卸载某些系统软件，导致与安装默认系统包不一致，需手动配置网络，通过apt、yum、dnf等工具安装配置缺失软件。
 - 离线安装工具只能安装最基本的库，确保TensorFlow和PyTorch能够运行。若需运行较为复杂的推理业务或模型训练，模型代码中可能包含具体业务相关的库，这些库需用户自行安装。
@@ -76,6 +79,8 @@
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - 基于安全考虑，建议将ascend-deployer的下载和解压目录（ascend-deployer目录）进行加固，将其权限设置为仅允许本人使用。
+- 如果准备在Linux下使用自动下载功能，请提前配置好GUI界面并直接运行下载指令。
+- 老版本的软件包请使用上迭代的ascend-deployer（2.0.4）进行安装。
 - EulerOS、SLES、Debian等系统安装驱动时可能会触发驱动源码编译，需要用户自行安装跟系统内核版本（可通过 `uname -r` 命令查看）一致的内核头软件包，具体如下。
 
 - 内核头软件包说明
