@@ -24,7 +24,7 @@
 
    4.3 请将geckodriver.exe(或geckodriver)文件放置于ascend-deployer工具的同级目录下。安全起见，Linux系统下请确保geckodriver属主为当前用户且权限为500，Windows系统下请确保其他用户对geckodriver.exe无读写权限。
 
-5. 参考README中“下载操作”步骤，确保系统中python3命令可用，然后执行`pip3 install selenium==3.141`安装selenium。若无pip3工具请先自行安装。
+5. 参考README中“下载操作”步骤，确保系统中python3命令可用，然后执行`pip3 install selenium`安装selenium。若无pip3工具请先自行安装，用户参考patch自己进行修改。
 
 6. Linux系统下，安全起见，需要控制程序的开启端口和文件权限。用户需执行如下命令对selenium打patch。若无patch工具请先自行安装。
 ```bash
