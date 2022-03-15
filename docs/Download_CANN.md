@@ -24,7 +24,7 @@
 
    4.3 请将geckodriver.exe(或geckodriver)文件放置于ascend-deployer工具的同级目录下。安全起见，Linux系统下请确保geckodriver属主为当前用户且权限为500，Windows系统下请确保其他用户对geckodriver.exe无读写权限。
 
-5. 参考README中“下载操作”步骤，确保系统中python3命令可用，然后执行`pip3 install selenium==3.141`安装selenium。若无pip3工具请先自行安装。
+5. 参考README中“下载操作”步骤，确保系统中python3命令可用，然后执行`pip3 install selenium`安装selenium。若无pip3工具请先自行安装，用户参考patch自己进行修改。
 
 6. Linux系统下，安全起见，需要控制程序的开启端口和文件权限。用户需执行如下命令对selenium打patch。若无patch工具请先自行安装。
 ```bash
@@ -32,14 +32,10 @@ patch <系统python3的第三方包目录>/selenium/webdriver/firefox/webdriver.
 patch <系统python3的第三方包目录>/selenium/webdriver/firefox/firefox_profile.py < <ascend-deployer目录>/patch/selenium_firefox_profile.patch
 ```
 
-7. Linux系统下，确保X11功能可用和相关配置正确，并设置DISPLAY环境变量
-```bash
-export DISPLAY=$(echo $SSH_CLIENT |awk ' {print $1 }'):0.0
-```
-
-8. 测试：执行`firefox`命令运行firefox浏览器，并在地址栏输入网址["https://support.huawei.com"]，能正常访问。如无法访问，请检查网络或代理是否可用。
+7.  测试：执行`firefox`命令运行firefox浏览器，并在地址栏输入网址["https://support.huawei.com"]，能正常访问。如无法访问，请检查网络或代理是否可用。
 
 
 ## 说明
 
 1. 本工具会把软件包及.asc数字签名同时下载下来，用户可从下载页面处获取数字签名验证工具对软件包进行人工验签。
+2. 这个功能要在有GUI界面的linux服务器上直接运行。

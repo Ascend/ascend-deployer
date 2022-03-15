@@ -1,5 +1,5 @@
---- webdriver.py        2021-09-28 19:46:22.029176900 +0800
-+++ webdriver.py.bak    2021-09-29 17:47:22.369080100 +0800
+--- webdriver.py	2022-03-10 09:00:03.035218032 +0000
++++ webdriver.py.bak	2022-03-10 09:05:34.673872208 +0000
 @@ -52,6 +52,7 @@
                   executable_path="geckodriver", options=None,
                   service_log_path="geckodriver.log", firefox_options=None,
@@ -7,7 +7,7 @@
 +                 port=0,
                   keep_alive=True):
          """Starts a new local session of Firefox.
-
+ 
 @@ -158,7 +159,7 @@
          if capabilities.get("marionette"):
              capabilities.pop("marionette")
@@ -17,4 +17,3 @@
                  service_args=service_args,
                  log_path=service_log_path)
              self.service.start()
-
