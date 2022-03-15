@@ -32,14 +32,10 @@ patch <系统python3的第三方包目录>/selenium/webdriver/firefox/webdriver.
 patch <系统python3的第三方包目录>/selenium/webdriver/firefox/firefox_profile.py < <ascend-deployer目录>/patch/selenium_firefox_profile.patch
 ```
 
-7. Linux系统下，确保X11功能可用和相关配置正确，并设置DISPLAY环境变量
-```bash
-export DISPLAY=$(echo $SSH_CLIENT |awk ' {print $1 }'):0.0
-```
-
-8. 测试：执行`firefox`命令运行firefox浏览器，并在地址栏输入网址["https://support.huawei.com"]，能正常访问。如无法访问，请检查网络或代理是否可用。
+7.  测试：执行`firefox`命令运行firefox浏览器，并在地址栏输入网址["https://support.huawei.com"]，能正常访问。如无法访问，请检查网络或代理是否可用。
 
 
 ## 说明
 
 1. 本工具会把软件包及.asc数字签名同时下载下来，用户可从下载页面处获取数字签名验证工具对软件包进行人工验签。
+2. 这个功能要在有GUI界面的linux服务器上直接运行。

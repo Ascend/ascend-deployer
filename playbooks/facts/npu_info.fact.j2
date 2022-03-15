@@ -39,6 +39,10 @@ CHIPS_DICT = {
                  'aarch64'): 'A300i-pro',
     ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0100',
                  'x86_64'): 'A300i-pro',
+    ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0110',
+                 'x86_64'): 'A300i-duo',
+    ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0110',
+                 'aarch64'): 'A300i-duo',
 }
 FIND_METADATA = 'grep 0x1200 /sys/bus/pci/devices/*/class | awk -F \/ \'{print $6}\''
 FIND_PRODUCT_CMD = 'dmidecode -t 1'
@@ -75,6 +79,8 @@ def get_scene(profile_model):
         scene = 'infer'
     if profile_model in ['A800-9000', 'A800-9010', 'Atlas 900 Compute Node']:
         scene = 'train'
+    if profile_model in ['A300i-duo']:
+        scene = 'a300iduo'
 
     return scene
 
@@ -189,7 +195,7 @@ def get_model():
                 return chip_info
             raw_product = product_infos[1]
     product = raw_product.replace('\t', '').replace('\n', '')
-    if 'Atlas' in product:
+    if 'Atlas' in product and ('800 (Model 3000)' not in product and '800 (Model 3010)' not in product):
         return product.strip()
 
     return chip_info
@@ -210,7 +216,8 @@ def get_product(model):
         'A300-3000': 'A300',
         'Atlas 500 (Model 3000)': 'A300',
         'A300i-pro': 'A300i',
-        'A200-3000': 'A200'
+        'A200-3000': 'A200',
+        'A300i-duo': 'Atlas-300i-duo'
     }
     if model in product_dict.keys():
         return product_dict[model]
@@ -232,7 +239,8 @@ def get_model_number(model):
         'A300-3000': '3000',
         'Atlas 500 (Model 3000)': '3000',
         'A300i-pro': 'pro',
-        'A200-3000': '3000'
+        'A200-3000': '3000',
+        'A300i-duo': 'duo'
     }
     if model in model_dict.keys():
         return model_dict[model]
@@ -250,7 +258,8 @@ ALL_MODEL_DICT = {
 'A300-3010': 'A300-3010',
 'A300-3000': 'A300-3000',
 'Atlas 500 (Model 3000)': 'A300-3000',
-'A300i-pro': 'A300i-pro'
+'A300i-pro': 'A300i-pro',
+'A300i-duo': 'A300i-duo'
 }
 
 
