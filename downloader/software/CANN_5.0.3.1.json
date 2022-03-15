@@ -1,7 +1,7 @@
 {
     "name": "CANN",
     "version": "5.0.3.1",
-    "default": true,
+    "default": false,
     "other": [
         {
             "filename": "A300-3000-npu_21.0.3.1_linux-aarch64.zip",

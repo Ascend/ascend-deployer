@@ -1,5 +1,5 @@
 absl-py==0.10.0
-ansible-core==2.11.2
+ansible-core==2.11.9
 resolvelib==0.5.4
 astor==0.8.1
 astroid==2.5.1

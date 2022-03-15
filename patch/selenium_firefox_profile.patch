@@ -1,5 +1,5 @@
---- firefox_profile.py  2021-09-28 19:46:21.935430200 +0800
-+++ firefox_profile.py.bak      2021-09-29 17:48:03.389054500 +0800
+--- firefox_profile.py	2022-03-10 08:59:48.323277935 +0000
++++ firefox_profile.py.bak	2022-03-10 09:13:53.391858241 +0000
 @@ -79,12 +79,12 @@
              shutil.copytree(self.profile_dir, newprof,
                              ignore=shutil.ignore_patterns("parent.lock", "lock", ".parentlock"))
@@ -12,6 +12,15 @@
          if os.path.isfile(self.userPrefs):
 -            os.chmod(self.userPrefs, 0o644)
 +            os.chmod(self.userPrefs, 0o600)
-
+ 
      # Public Methods
      def set_preference(self, key, value):
+@@ -217,7 +217,7 @@
+         """
+         Creates a temp folder to store User.js and the extension
+         """
+-        return tempfile.mkdtemp()
++        return tempfile.mkdtemp(dir=os.path.expanduser('~'))
+ 
+     def _write_user_prefs(self, user_prefs):
+         """

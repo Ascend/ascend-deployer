@@ -195,7 +195,7 @@ def get_model():
                 return chip_info
             raw_product = product_infos[1]
     product = raw_product.replace('\t', '').replace('\n', '')
-    if 'Atlas' in product:
+    if 'Atlas' in product and ('800 (Model 3000)' not in product and '800 (Model 3010)' not in product):
         return product.strip()
 
     return chip_info
