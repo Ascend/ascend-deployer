@@ -206,7 +206,8 @@ group=HwHiAiUser
 
 注意：
   1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
-  2. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
+  2. gcc7.3.0安装后需要建立软链接才能使用,例如root安装的gcc7.3.0执行命令`ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`。
+  3. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
 
 ```bash
 usermod -a -G HwHiAiUser 非root用户名
