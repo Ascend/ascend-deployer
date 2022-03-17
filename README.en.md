@@ -202,7 +202,8 @@ group=HwHiAiUser
 
 Note:
   1. Non-root users need root users to install system components and driver before they can install the above components.
-  2. Non-root users need to join the driver installation group to install and use nnrt and toolkit normally. The default driver installation group is HwHiAiUser, Modify the user group command as follows:
+  2. After installing gcc7.3.0, you need to establish a symbolic link to use it. For example, gcc7.3.0 installed by root executes the command `ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`.
+  3. Non-root users need to join the driver installation group to install and use nnrt and toolkit normally. The default driver installation group is HwHiAiUser, Modify the user group command as follows:
 
 ```bash
 usermod -a -G HwHiAiUser non-root-user
