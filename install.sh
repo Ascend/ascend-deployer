@@ -122,6 +122,87 @@ if [ -z ${ANSIBLE_CACHE_PLUGIN_CONNECTION} ];then
     export ANSIBLE_CACHE_PLUGIN_CONNECTION=$BASE_DIR/facts_cache
 fi
 
+function is_safe_owned_file()
+{
+    local path=$1
+    local user_id=$(stat -c %u ${path})
+    local group_id=$(stat -c %g ${path})
+    if [ ! -n "${user_id}" ] || [ ! -n "${group_id}" ];then
+        echo "user or group not exist"
+        return 1
+    fi
+    if [ $(stat -c '%A' ${path}|cut -c6) == w ] || [ $(stat -c '%A' ${path}|cut -c9) == w ];then
+        echo "${path} does not comply with security rules."
+        return 1
+    fi
+    if [ ${user_id} != "0" ] && [ ${user_id} != ${UID} ];then
+        echo "The path is not owned by root or current user"
+        return 1
+    fi
+    return 0
+}
+
+function is_safe_owned_dir()
+{
+    local path=$1
+    local user_id=$(stat -c %u ${path})
+    local group_id=$(stat -c %g ${path})
+    if [ ! -n "${user_id}" ] || [ ! -n "${group_id}" ];then
+        echo "user or group not exist"
+        return 1
+    fi
+    if [ $(stat -c '%A' ${path}|cut -c6) == w ] || [ $(stat -c '%A' ${path}|cut -c9) == w ];then
+        echo "${path} does not comply with security rules."
+        return 1
+    fi
+    if [ ${user_id} != "0" ] && [ ${user_id} != ${UID} ];then
+        echo "The path is not owned by root or current user"
+        return 1
+    fi
+    return 0
+}
+
+function safe_file()
+{
+    local cur_path=$(realpath "$1")
+    is_safe_owned_file ${cur_path}
+    if [ $? -eq 1 ];then
+        exit 1
+    fi
+    cur_path=$(dirname "$cur_path")
+    safe_dir ${cur_path}
+    if [ $? -eq 1 ];then
+        exit 1
+    fi
+    return 0
+}
+
+function safe_dir()
+{
+    local cur_path=$1
+    while [ "${cur_path}" != "/" ];do
+        is_safe_owned_dir ${cur_path}
+        if [ $? -eq 1 ];then
+            exit 1
+        fi
+        cur_path=$(dirname "$cur_path")
+    done
+    return 0
+}
+
+function check_exec_file()
+{
+    local exec_files=(cat date whoami who awk sed grep bash ls python3 mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch which pwd uname sort stat cut realpath)
+    for i in ${exec_files[@]};do safe_file $(which $i);done
+    local files=(rpm dpkg)
+    for j in ${files[@]};do
+    which $j 2> /dev/null
+    if [ $? -eq 0 ];then
+        safe_file $(which $j)
+    fi
+    done
+}
+
 function log_info()
 {
     local DATE_N=$(date "+%Y-%m-%d %H:%M:%S")
@@ -542,7 +623,12 @@ function check_extracted_size()
         fi
         unzip -l ${zip_package} | grep -F "../" > /dev/null 2>&1
         if [[ $? == 0 ]];then
-            log_error "The name of $(basename ${zip_package}) contains .."
+            log_error "The name of $(basename ${zip_package}) contains ../"
+            return 1
+        fi
+        unzip -l ${zip_package} | grep -F '..\' > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${zip_package}) contains ..\\"
             return 1
         fi
     done
@@ -560,7 +646,12 @@ function check_extracted_size()
         fi
         tar tf ${tar_package} | grep -F "../" > /dev/null 2>&1
         if [[ $? == 0 ]];then
-            log_error "The name of $(basename ${tar_package}) contains .."
+            log_error "The name of $(basename ${tar_package}) contains ../"
+            return 1
+        fi
+        tar tf ${tar_package} | grep -F '..\' > /dev/null 2>&1
+        if [[ $? == 0 ]];then
+            log_error "The name of $(basename ${tar_package}) contains ..\\"
             return 1
         fi
     done
@@ -1274,6 +1365,7 @@ function prepare_environment()
 
 main()
 {
+    check_exec_file
     check_log ${BASE_DIR}/install.log
     check_log ${BASE_DIR}/install_operation.log
     set_permission
