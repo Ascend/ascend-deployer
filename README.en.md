@@ -93,6 +93,7 @@ pip3 install ascend-deployer
 ```
 - Version requirement: python >= 3.6
 - It is recommended that you install it as root and use the python3 and pip3 tools on your system. If pip3 is not available, please install it by yourself
+- Do not install in this way for non root users
 - Refer to <a href="#pip_manual">Operation instruction: pip install</a>
 
 ### git install
@@ -101,15 +102,19 @@ pip3 install ascend-deployer
 git clone https://gitee.com/ascend/ascend-deployer.git
 ```
 
+For security reasons, the user should set the environment umask to 077 before git clone, and only clone and use tools in the user's home directory, which is only for the user's own use.
+
 ### download zip
 
 Click the "clone / download" button in the upper right corner, and then click the "download zip" below to download and unzip to use.In order to prevent the software package from being maliciously tampered with during delivery or storage, it is recommended that users download the software package and use sha256sum to verify the integrity of the software. For the latest official version of sha256sum, please refer to readme of the master branch. This tool can be used by root and non-root users. To avoid the risk of excessive permissions after unzipping, it is recommended to set the environment umask to 077 before unzipping the zip package, and only unzip and use tools in the user's HOME directory, and only for the user's own use. The above two installation methods please pay attention to the tool directory permissions risk.
+
+Confirm whether the owner and authority of the directory and file meet the security requirements of the user's organization, etc. In addition, please note that except for the user himself and other users outside the management room, they should not have the write permission of the parent directory of the installation directory.find {Installation directory} -ls
 
 # Operation Instructions
 
 ## Download Instructions
 
-The download function can be used in the Windows or Linux OSs.
+The download function can be used in the Windows or Linux OSs.Before running, please confirm that the offline installation directory used belongs to the user, and the permissions and groups of the directory need to meet the security requirements of the organization.
 
 ### Download Notice
 
