@@ -196,7 +196,7 @@ function check_exec_file()
     for i in ${exec_files[@]};do safe_file $(which $i);done
     local files=(rpm dpkg)
     for j in ${files[@]};do
-    which $j 2> /dev/null
+    which $j > /dev/null
     if [ $? -eq 0 ];then
         safe_file $(which $j)
     fi
