@@ -1466,7 +1466,7 @@ main()
 
 main $*
 main_status=$?
-if [[ ${main_status} != 0 ]] && [[ ${main_status} != 2 ]];then
+if [[ ${main_status} != 0 ]];then
     operation_log_info "parameter error,run failed"
 else
     operation_log_info "$0 $*:Success"
