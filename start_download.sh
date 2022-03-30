@@ -81,7 +81,7 @@ function check_exec_file()
     for i in ${exec_files[@]};do safe_file $(which $i);done
     local files=(yum apt)
     for j in ${files[@]};do
-    which $j > /dev/null
+    which $j &> /dev/null
     if [ $? -eq 0 ];then
         safe_file $(which $j)
     fi
