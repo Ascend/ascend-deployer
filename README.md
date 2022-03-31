@@ -68,7 +68,7 @@
 - 离线安装工具除了install.sh、start_download.sh、start_download_ui.bat和start_download.bat外，其余文件并非设计给用户使用的接口或者命令，请勿直接使用。
 - 禁止将密码放到inventory_file文件里。
 - A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
-- CentOS 7.6 x86_64作为离线工具所在系统时需升级openssl-devel到1.1或以上版本，并确保该版本的openssl-devel在运行中用到。
+- 用户需要安装openssl-devel 1.1以上的版本，用户可以通过内部源、epel-release等进行安装，安装前请确认该源符合组织安全要求。使用离线安装时，用户可以通过诸如修改C_INCLUDE_PATH环境变量等方式，确认符合要求的openssl-devel能被找到。
 - A300I Pro和A300V Pro卡必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro.
 - 由于无法区分Atlas200 EP和A300推理卡（A300-3000、A300-3010、A800-3000、A800-3010）的硬件形态，Atlas200 EP场景使用本工具时需满足如下条件。不支持Atlas200 EP和A300推理卡环境批量部署；部署的机器包含Atlas200 EP时，resources目录下不要放置A300的NPU包，部署的机器包含A300推理卡时，resources目录下不要放置Atlas200 EP的NPU包；由于以上2条的限制，`--download=CANN`下载功能也不会包含Atlas200 EP的NPU包，请自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
@@ -79,7 +79,7 @@
 - Linx系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
-- 本工具不下载tensorflow-1.15.0 aarch64和torch-1.5.0/apex-0.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
+- 本工具不下载tensorflow-1.15.0 aarch64、torch-1.5.0/apex-0.1 aarch64/x86_64和torch-1.8.1/apex-0.1/torch_npu-1.8.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - 基于安全考虑，建议将ascend-deployer的下载和解压目录（ascend-deployer目录）进行加固，将其权限设置为仅允许本人使用。
 - 如果准备在Linux下使用自动下载功能，请提前配置好GUI界面并直接运行下载指令。
 - 老版本的软件包请使用上迭代的ascend-deployer（2.0.4）进行安装。

@@ -38,8 +38,18 @@
         recurse: no
         file_type: file
         use_regex: yes
-        patterns: ".*torch.*{{ ansible_architecture }}.whl"
+        patterns: ".*torch-.*{{ ansible_architecture }}.whl"
       register: pytorch_whl
+      when: import_torch.rc != 0
+
+    - name: find torch_npu whl package
+      find:
+        paths: "{{ resources_dir }}/pylibs"
+        recurse: no
+        file_type: file
+        use_regex: yes
+        patterns: ".*torch_npu.*{{ ansible_architecture }}.whl"
+      register: torch_npu_whl
       when: import_torch.rc != 0
 
     - name: find apex whl package
