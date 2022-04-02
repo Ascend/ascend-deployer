@@ -947,6 +947,11 @@ function process_patch()
 
 function process_patch_rollback()
 {
+    verify_zip_redirect
+    local verify_zip_redirect_status=$?
+    if [[ ${verify_zip_redirect_status} != 0 ]];then
+        return ${verify_zip_redirect_status}
+    fi
     local tmp_patch_rollback_play=${BASE_DIR}/playbooks/tmp_patch_rollback.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_patch_rollback_play}
     IFS=','
