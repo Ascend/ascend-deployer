@@ -1,21 +1,21 @@
-- name: find tfplugin rollback script
+- name: find tfplugin patch package
   find:
-    paths: "{{ ascend_install_path }}/tfplugin/latest/spc/script/"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "roll.*.sh"
+    patterns: ".*tfplugin.*{{ansible_architecture}}.run"
   register: tfplugin
 
 - name: rollback tfplugin
-  shell: "{{ tfplugin.files[0].path }}"
+  shell: "{{ tfplugin.files[0].path }} --rollback"
   register: tfplugin_result
   when: tfplugin.matched > 0
 
 - name: message
   debug:
     msg:
-      - "can not find tfplugin rollback script,tfplugin rollback skipped"
+      - "can not find tfplugin patch package,tfplugin rollback skipped"
   when: tfplugin.matched == 0
 
 - name: message

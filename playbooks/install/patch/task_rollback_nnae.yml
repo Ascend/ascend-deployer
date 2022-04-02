@@ -1,21 +1,21 @@
-- name: find nnae rollback script
+- name: find nnae patch package
   find:
-    paths: "{{ ascend_install_path }}/nnae/latest/spc/script/"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "roll.*.sh"
+    patterns: ".*nnae.*{{ ansible_architecture }}.run"
   register: nnae
 
 - name: rollback nnae
-  shell: "{{ nnae.files[0].path }}"
+  shell: "{{ nnae.files[0].path }} --rollback"
   register: nnae_result
   when: nnae.matched > 0
 
 - name: message
   debug:
     msg:
-      - "can not find nnae rollback script,nnae rollback skipped"
+      - "can not find nnae package, nnae rollback skipped"
   when: nnae.matched == 0
 
 - name: message

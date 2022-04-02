@@ -1,16 +1,16 @@
 - name: find toolkit aarch64 rollback script
   find:
-    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "roll.*.sh"
+    patterns: ".*toolkit.*aarch64.run"
   register: toolkit_aarch64
   when:
     - ansible_architecture == 'aarch64'
 
 - name: rollback toolkit for aarch64
-  shell: "{{ toolkit_aarch64.files[0].path }}"
+  shell: "{{ toolkit_aarch64.files[0].path }} --rollback"
   register: toolkit_aarch64_result
   when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched > 0"
 
@@ -28,17 +28,17 @@
 
 - name: find toolkit x86_64 rollback script
   find:
-    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/x86_64-linux/spc/script/"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "roll.*.sh"
+    patterns: ".*toolkit.*x86_64.run"
   register: toolkit_x64
   when:
     - ansible_architecture == 'x86_64'
 
 - name: rollback toolkit for x86_64
-  shell: "{{ toolkit_x64.files[0].path }}"
+  shell: "{{ toolkit_x64.files[0].path }}  --rollback"
   register: toolkit_x64_result
   when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
 
@@ -56,17 +56,17 @@
 
 - name: find toolkit aarch64 rollback script for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
   find:
-    paths: "{{ ascend_install_path }}/ascend-toolkit/latest/arm64-linux/spc/script/"
+    paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "roll.*.sh"
+    patterns: "".*toolkit.*aarch64.run""
   register: toolkit_x64_arm64
   when:
     - os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'
 
 - name: rollback toolkit for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
-  shell: "{{ toolkit_x64_arm64.files[0].path }}"
+  shell: "{{ toolkit_x64_arm64.files[0].path }} --rollback"
   register: toolkit_x64_arm64_result
   when: "(os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64') and toolkit_x64_arm64.matched > 0"
 
