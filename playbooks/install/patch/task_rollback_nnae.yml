@@ -8,7 +8,7 @@
   register: nnae
 
 - name: rollback nnae
-  shell: "{{ nnae.files[0].path }} --rollback"
+  shell: "bash {{ nnae.files[0].path }} --rollback"
   register: nnae_result
   when: nnae.matched > 0
 

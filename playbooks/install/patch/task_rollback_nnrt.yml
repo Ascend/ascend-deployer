@@ -10,7 +10,7 @@
     - ansible_architecture == 'aarch64'
 
 - name: rollback nnrt for aarch64
-  shell: "{{ nnrt_aarch64.files[0].path }} --rollback"
+  shell: "bash {{ nnrt_aarch64.files[0].path }} --rollback"
   register: nnrt_aarch64_result
   when: "ansible_architecture == 'aarch64' and nnrt_aarch64.matched > 0"
 
@@ -38,7 +38,7 @@
     - ansible_architecture == 'x86_64'
 
 - name: rollback nnrt for x86_64
-  shell: "{{ nnrt_x64.files[0].path }} --rollback"
+  shell: "bash {{ nnrt_x64.files[0].path }} --rollback"
   register: nnrt_x64_result
   when: "ansible_architecture == 'x86_64' and nnrt_x64.matched > 0"
 

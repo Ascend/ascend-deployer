@@ -8,7 +8,7 @@
   register: tfplugin
 
 - name: rollback tfplugin
-  shell: "{{ tfplugin.files[0].path }} --rollback"
+  shell: "bash {{ tfplugin.files[0].path }} --rollback"
   register: tfplugin_result
   when: tfplugin.matched > 0
 

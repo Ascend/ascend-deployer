@@ -10,7 +10,7 @@
     - ansible_architecture == 'aarch64'
 
 - name: rollback toolkit for aarch64
-  shell: "{{ toolkit_aarch64.files[0].path }} --rollback"
+  shell: "bash {{ toolkit_aarch64.files[0].path }} --rollback"
   register: toolkit_aarch64_result
   when: "ansible_architecture == 'aarch64' and toolkit_aarch64.matched > 0"
 
@@ -38,7 +38,7 @@
     - ansible_architecture == 'x86_64'
 
 - name: rollback toolkit for x86_64
-  shell: "{{ toolkit_x64.files[0].path }}  --rollback"
+  shell: "bash {{ toolkit_x64.files[0].path }}  --rollback"
   register: toolkit_x64_result
   when: "ansible_architecture == 'x86_64' and toolkit_x64.matched > 0"
 
@@ -66,7 +66,7 @@
     - os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'
 
 - name: rollback toolkit for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
-  shell: "{{ toolkit_x64_arm64.files[0].path }} --rollback"
+  shell: "bash {{ toolkit_x64_arm64.files[0].path }} --rollback"
   register: toolkit_x64_arm64_result
   when: "(os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64') and toolkit_x64_arm64.matched > 0"
 
