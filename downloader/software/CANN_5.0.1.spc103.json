@@ -4,6 +4,46 @@
     "default": false,
     "other": [
         {
+            "filename": "A300t-9000-A800-9010-npu_21.0.rc2_ubuntu18.04-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401806",
+            "sha256": "eb080022eee84dce80047d6aef92e9f4fab7652267a5e4435247d269550d1f40"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_21.0.rc2_debian9.9-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401805",
+            "sha256": "04b91d65f6b3b08c6b4e7dd91e568385ccd3d72e4df6153a0ca14919c08ae4a8"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_21.0.rc2_centos8.2-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401804",
+            "sha256": "69fc115b5a4da9b4855b2ff03772f09395df9a0a9e5327ac552905ff7d69ff4d"
+        },
+        {
+            "filename": "A300t-9000-A800-9010-npu_21.0.rc2_centos7.6-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401803",
+            "sha256": "08f72029c6ea4b149ac4e0aedbae40e0f5c4ea86da9db75fac4babe707bdcb2b"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc2_ubuntu18.04-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401802",
+            "sha256": "2c4b85097d593f12c90ecffb93d3a542d162d1a56fd86d30b09a8dbd03aaf191"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc2_euleros2.8-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401801",
+            "sha256": "5c8d7fe7b5257e93bf8fd062c4fbfcfdd296a68b44e709f7efe4610977396bc3"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc2_centos8.2-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401800",
+            "sha256": "9dbcfff6fdceaf9f59d2c227ee3be06018fb80d9d9490d1b7ccca5468c1b482b"
+        },
+        {
+            "filename": "A300t-9000-A800-9000-A900-9000-npu_21.0.rc2_centos7.6-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/253365573-ESW2000401799",
+            "sha256": "dfdd01eaad3e9cbe6803f6f6f2ed0d84a90f71aebae85e2e055ec2de7f50e3b8"
+        },
+        {
             "filename": "A300-3000-3010-npu_21.0.1_centos7.6-aarch64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/253286771-ESW2000363127",
             "sha256": "1dfb7bd0469fb65ac97f422f426b8556c6efefe7760b81445a7a0b8982aa19c2"
