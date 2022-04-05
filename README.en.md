@@ -520,7 +520,7 @@ The ascend deployer tool supports cann cold patch installation and fallback.
 3. The relevant constraints on cann cold patch are as follows:
    - The patch can only support the upgrade of the corresponding baseline version or related patch version.
    - For patches based on the same baseline version, ensure that the patch version installed later is greater than the patch version installed earlier.
-   - The patch only supports fallback once.
+   - The patch only supports fallback once.During fallback, you need to place the patch package when installing the patch in the ascend deployer/resources/patch directory (if there is no patch directory, please create it yourself). Note that the cann package corresponding to the patch package in the ascend deployer/resources directory should be deleted before fallback.
 ## <a name="config">Configuration Description</a>
 
 ### <a name="proxy_configuration">Proxy Configuration</a>

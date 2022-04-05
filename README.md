@@ -523,7 +523,7 @@ ascend-deployer工具支持CANN冷补丁的安装和回退。
 3. 关于CANN冷补丁的相关约束如下：
    - 补丁仅能支持对应的基线版本或相关的补丁版本进行升级。
    - 基于同一基线版本的补丁，需保证后续安装的补丁版本大于之前安装的补丁版本。
-   - 仅支持回退一次补丁版本。
+   - 仅支持回退一次补丁版本。回退时需将安装补丁时的补丁包放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在回退前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
 ## <a name="config">配置说明</a>
 
 ### <a name="proxy_configuration">代理配置</a>
