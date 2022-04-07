@@ -429,13 +429,17 @@ class Cann_Download:
             print("[ERROR] no permission to download, please apply for permission first")
             LOG.error('no permission to download, download %s failed', file_name)
             return False
+        if not os.path.exists(dst_file_name) or os.path.getsize(dst_file_name) < 10:
+            print('[ERROR] The current network is abnormal, please ensure that the network is normal.')
+            LOG.error('[ERROR] The current network is abnormal, please ensure that the network is normal.')
+            sys.exit(1)
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
 
         return is_exists(dst_file_name) and is_exists(dst_file_name + '.asc')
 
     def wait_download_complete(self, file_name):
-        time.sleep(3)
+        time.sleep(10)
         while file_name + '.part' in \
                 [_file_name for _file_name in os.listdir(self.download_dir)]:
             time.sleep(1)
