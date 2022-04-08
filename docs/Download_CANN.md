@@ -39,3 +39,4 @@ patch <系统python3的第三方包目录>/selenium/webdriver/firefox/firefox_pr
 
 1. 本工具会把软件包及.asc数字签名同时下载下来，用户可从下载页面处获取数字签名验证工具对软件包进行人工验签。
 2. 这个功能要在有GUI界面的linux服务器上直接运行。
+3. 请确保下载软件包时网络通畅。
