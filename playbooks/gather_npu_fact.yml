@@ -9,7 +9,7 @@
 
     - set_fact: python_minor={{python_version[:-2]}}
 
-    - name: debug
+    - name: get python version
       debug: var=python_minor
       
     - name: set custom fact tasks
