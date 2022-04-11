@@ -77,9 +77,7 @@ function safe_dir()
 
 function check_exec_file()
 {
-    local exec_files=(cat date whoami who awk sed grep ls chmod find rm basename dirname mv touch which pwd sort stat cut realpath)
-    for i in ${exec_files[@]};do safe_file $(which $i);done
-    local files=(yum apt python3 python)
+    local files=(cat date whoami who awk sed grep ls chmod find rm basename dirname mv touch which pwd sort stat cut realpath yum apt python3 python)
     for j in ${files[@]};do
     which $j &> /dev/null
     if [ $? -eq 0 ];then
