@@ -192,9 +192,7 @@ function safe_dir()
 
 function check_exec_file()
 {
-    local exec_files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch which pwd uname sort stat cut realpath)
-    for i in ${exec_files[@]};do safe_file $(which $i);done
-    local files=(rpm dpkg python python3)
+    local files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch which pwd uname sort stat cut realpath rpm dpkg python python3)
     for j in ${files[@]};do
     which $j &> /dev/null
     if [ $? -eq 0 ];then
