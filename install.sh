@@ -1053,13 +1053,13 @@ function print_usage()
 function parse_script_args() {
     if [ $# = 0 ];then
         print_usage
-        return 2
+        return 6
     fi
     while true; do
         case "$1" in
         --help | -h)
             print_usage
-            return 2
+            return 6
             ;;
         --install=*)
             install_target=$(echo $1 | cut -d"=" -f2)
@@ -1464,7 +1464,7 @@ main()
 
 main $*
 main_status=$?
-if [[ ${main_status} != 0 ]];then
+if [[ ${main_status} != 0 ]] && [[ ${main_status} != 6 ]];then
     operation_log_info "parameter error,run failed"
 else
     operation_log_info "$0 $*:Success"
