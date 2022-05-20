@@ -9,7 +9,7 @@
     file_type: directory
     use_regex: yes
     patterns: ".*atlasedge.*{{ansible_architecture}}"
-  when: ansible_local.npu_info.scene == 'infer' and a500pro_exist.stdout != ""
+  when: (ansible_local.npu_info.scene == 'infer' or ansible_local.npu_info.scene == 'a300i') and a500pro_exist.stdout != ""
   register: atlasedge
 
 - name: install atlasedge
