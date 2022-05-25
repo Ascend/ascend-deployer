@@ -28,7 +28,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "npu-driver.*linux.*{{ ansible_architecture }}.run"
+    patterns: ".*npu-driver.*linux.*{{ ansible_architecture[:3] }}.*.run"
   register: driver_pkg
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
