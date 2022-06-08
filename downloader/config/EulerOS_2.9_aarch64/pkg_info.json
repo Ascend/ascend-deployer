@@ -24,7 +24,7 @@
     { "name": "openssl-devel",  "autodependency":"true", "info": "python ssl" },
     { "name": "ncurses-devel",  "autodependency":"true", "info": "python gnureadline" },
     { "name": "sshpass",
-      "url":"https://mirrors.huaweicloud.com/epel/8/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
+      "url":"https://dl.fedoraproject.org/pub/archive/epel/8.5.2022-05-10/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
       "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336" },
     { "name": "hdf5", 
       "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/aarch64/Packages/hdf5-1.8.20-7.oe1.aarch64.rpm",
