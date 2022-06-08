@@ -44,7 +44,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "npu-firmware.*.run"
+    patterns: ".*npu-firmware.*.run"
   register: firmware_pkg
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
