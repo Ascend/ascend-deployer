@@ -34,7 +34,7 @@
     - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro")
 
 - name: check type
-  shell: npu-smi info -m|grep 710|awk -F' ' '{print $1}'|xargs -L 1 npu-smi info -t product -i|grep -i {{ tmp_npu_desc }} | wc -l
+  shell: npu-smi info -m|grep 310P|awk -F' ' '{print $1}'|xargs -L 1 npu-smi info -t product -i|grep -i {{ tmp_npu_desc }} | wc -l
   register: npu_300vi_check_result_info
   environment:
     PATH: /usr/local/{{ python_version }}/bin:/usr/local/Ascend/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}

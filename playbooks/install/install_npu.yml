@@ -10,7 +10,7 @@
       when: ansible_user_uid == 0
 
     - name: check health
-      shell: npu-smi info|grep -E '910|710|310'|awk -F' ' '{print $5}'|grep -v '|'
+      shell: npu-smi info|grep -E '910|310P|310'|awk -F' ' '{print $5}'|grep -v '|'
       register: result_info
       when: 
         - ansible_user_uid == 0

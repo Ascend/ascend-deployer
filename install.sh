@@ -10,9 +10,7 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
-readonly A300I_PRODUCT_LIST="Ascend310P,A300i-pro,Atlas-300i-pro"
-readonly A300V_PRODUCT_LIST="Ascend310P,A300v-pro,Atlas-300v-pro"
-readonly A300IDUO_PRODOUCT_LIST="Ascend310P,Atlas-300i-duo,A300i-duo"
+readonly A310P_PRODUCT_LIST="Ascend310P"
 readonly INFER_PRODUCT_LIST="Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly TRAIN_PRODUCT_LIST="Ascend910,A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
@@ -718,12 +716,8 @@ function zip_extract()
     if [[ "$(basename ${zip_file})" =~ zip ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-        elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
-        elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
-        elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
+        elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
         elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then

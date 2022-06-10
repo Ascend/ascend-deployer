@@ -39,12 +39,12 @@ code_name_dict:
 code_name: ""
 scene_dict:
   a300i:
-    - "{{ resources_dir }}/run_from_a300i_zip"
+    - "{{ resources_dir }}/run_from_a310p_zip"
   a300v:
-    - "{{ resources_dir }}/run_from_a300v_zip"
+    - "{{ resources_dir }}/run_from_a310p_zip"
   infer:
     - "{{ resources_dir }}/run_from_infer_zip"
   train:
     - "{{ resources_dir }}/run_from_train_zip"
   a300iduo:
-    - "{{ resources_dir }}/run_from_a300iduo_zip"
+    - "{{ resources_dir }}/run_from_a310p_zip"
