@@ -11,6 +11,9 @@ readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
 readonly A310P_PRODUCT_LIST="Ascend310P"
+readonly A300I_PRODUCT_LIST="A300i-pro,Atlas-300i-pro"
+readonly A300V_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
+readonly A300IDUO_PRODOUCT_LIST="Atlas-300i-duo,A300i-duo"
 readonly INFER_PRODUCT_LIST="Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly TRAIN_PRODUCT_LIST="Ascend910,A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
@@ -718,6 +721,12 @@ function zip_extract()
             local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
         elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
+        elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+        elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
+        elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
         elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -848,6 +857,7 @@ function verify_zip_redirect()
 }
 
 FORCE_UPGRADE_NPU=false
+KERNELS_TYPE=nnae
 
 function process_install()
 {
@@ -870,9 +880,9 @@ function process_install()
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
@@ -895,9 +905,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
@@ -1015,6 +1025,7 @@ function print_usage()
     echo "--clean                        clean resources on remote servers"
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--force_upgrade_npu            can force upgrade NPU when not all devices have exception"
+    echo "--kernels_type                 Appoint kernels package type,must be nnae or toolkit,default is nnae"
     echo "--verbose                      Print verbose"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
     echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
@@ -1140,6 +1151,15 @@ function parse_script_args() {
             ;;
         --force_upgrade_npu)
             FORCE_UPGRADE_NPU=true
+            shift
+            ;;
+        --kernels_type=*)
+            KERNELS_TYPE=$(echo $1 | cut -d"=" -f2)
+            if [[ "${KERNELS_TYPE}" != "nnae" ]] && [[ "${KERNELS_TYPE}" != "toolkit" ]];then
+                log_error "--kernels_type parameter is invalid"
+                print_usage
+                return 1
+            fi
             shift
             ;;
         --verbose)

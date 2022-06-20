@@ -21,6 +21,9 @@
 - name: install tfplugin
   import_playbook: ../install/install_tfplugin.yml
 
+- name: install kernels
+  import_playbook: ../install/install_kernels.yml
+
 - name: install toolbox
   import_playbook: ../install/install_toolbox.yml
 
