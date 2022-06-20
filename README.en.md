@@ -214,7 +214,7 @@ group=HwHiAiUser
 |:------------- |:------------------------------------- |
 |Python, gcc | python3.7.5 and gcc7.3.0 is installed in the $HOME/.local/ directory|
 |Python framework | tensorflow, pytorch, mindpore|
-|CANN | toolbox, nnae, nnrt, tfplugin and toolkit are installed in the $HOME directory by default, and the specified path is not supported|
+|CANN | toolbox, nnae, nnrt, tfplugin, toolkit and kernels are installed in the $HOME directory by default, and the specified path is not supported|
 |MindStudio | installed in the $HOME/ directory|
 
 Note:
@@ -431,6 +431,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
 | --force_upgrade_npu               | Can force upgrade NPU when not all devices have exception                                         |
+| --kernels_type                    | Appoint kernels package type,must be nnae or toolkit,default is nnae                              |
 | --verbose                           | Print verbose.                                                                                                                                                            |
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
 | --stdout_callback=<callback_name> | Performs debugging.                                                                                                                                                            |

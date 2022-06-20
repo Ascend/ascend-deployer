@@ -218,7 +218,7 @@ group=HwHiAiUser
 |:---------------------- |:------------------------------------- |
 | python、gcc         | python3.7.5和gcc7.3.0，安装在$HOME/.local/目录下  |
 | python框架             | tensorflow、pytorch、mindspore           |
-| CANN                   | toolbox、nnae、nnrt、tfplugin、toolkit，默认安装在$HOME目录下，不支持指定路径安装 |
+| CANN                   | toolbox、nnae、nnrt、tfplugin、toolkit、kernels，默认安装在$HOME目录下，不支持指定路径安装 |
 | MindStudio             | 安装在$HOME/目录下  |
 
 注意：
@@ -436,6 +436,7 @@ source ~/.local/ascendrc       # non-root
 | --clean                           | 清理待安装设备用户家目录下的resources目录。                           |
 | --nocopy                          | 在批量安装时不进行资源拷贝。                                       |
 | --force_upgrade_npu               | 当不是所有卡异常时，可以强制升级NPU                                |
+| --kernels_type                    | 指定算子包类型，只能是nnae或toolkit，默认为nnae
 | --verbose                         | 打印详细信息                                                    |
 | --output-file=<output_file>       | 重定向命令执行的输出结果到指定文件。                                   |
 | --stdout_callback=<callback_name> | 设置命令执行的输出格式，可用的参数通过"ansible-doc -t callback -l"命令查看。 |

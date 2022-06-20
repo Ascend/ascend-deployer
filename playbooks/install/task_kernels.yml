@@ -1,0 +1,69 @@
+- name: find kernels package for 310P
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*kernels-310p.*.sh"
+  register: kernels_310P
+
+- name: find kernels package for 910
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*kernels-910.*.sh"
+  register: kernels_910
+
+- name: set log_path for root
+  set_fact:
+    log_path: /var/log/ascend_seclog/
+  when: ansible_user_uid == 0
+
+- name: set log_path for non-root
+  set_fact:
+    log_path: ~/var/log/ascend_seclog/
+  when: ansible_user_uid != 0
+
+- name: install kernels for 310P
+  shell: "bash {{ kernels_310P.files[0].path }} {{ log_path }} {{ kernels_type }}"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  register: kernels_310P_result
+  when: kernels_310P.matched > 0
+  failed_when: kernels_310P_result.rc != 0
+
+- name: message for 310P
+  debug:
+    msg:
+      - "can not find kernels package for 310P, kernels install skipped"
+  when: kernels_310P.matched == 0
+
+- name: message for 310P
+  debug:
+    msg:
+      - "{{ kernels_310P_result | default('NOT DEFINED') }}"
+  when: kernels_310P_result.changed
+
+- name: install kernels for 910
+  shell: "bash {{ kernels_910.files[0].path }} {{ log_path }} {{ kernels_type }}"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  register: kernels_910_result
+  when: kernels_910.matched > 0
+  failed_when: kernels_910_result.rc != 0
+
+- name: message for 910
+  debug:
+    msg:
+      - "can not find kernels package for 910, kernels install skipped"
+  when: kernels_910.matched == 0
+
+- name: message for 910
+  debug:
+    msg:
+      - "{{ kernels_910_result | default('NOT DEFINED') }}"
+  when: kernels_910_result.changed
