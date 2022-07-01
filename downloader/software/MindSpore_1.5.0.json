@@ -1,6 +1,6 @@
 {"name": "MindSpore",
     "version":"1.5.0",
-    "default":true,
+    "default":false,
     "mindspore": [
         {"system":"linux_aarch64",
             "whl":[

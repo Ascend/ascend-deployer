@@ -16,11 +16,11 @@ https://www.hiascend.com/software/mindstudio/download
 ## 安装
 
 ```bash
-./install.sh --install=python375,mindstudio
+./install.sh --install=python,mindstudio
 ```
 
 ## 版本配套
-MindStudio 2.0.0配套CANN 20.2.RC1，MindStudio 3.0.1配套CANN 5.0.1，MindStudio 3.0.2配套CANN 5.0.2.1
+MindStudio 2.0.0配套CANN 20.2.RC1，MindStudio 3.0.1配套CANN 5.0.1，MindStudio 3.0.2配套CANN 5.0.2.1, MindStudio 3.0.3配套CANN 5.0.3.1, MindStudio 3.0.4配套CANN 5.0.4, MindStudio 5.1.RC1配套CANN 5.1.RC1
 
 ## 说明
 
