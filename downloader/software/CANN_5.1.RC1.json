@@ -41,12 +41,12 @@
         {
             "filename": "Atlas-300v-pro-npu_22.0.0_linux-x86_64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/255443647-ESW2000521950",
-            "sha256": "db3f42f84b75b262eb751496df2888d4235f9419521612ef6c16a7931eb6d51f"
+            "sha256": "9b3e0186be8d62497ef103a1e0086c8e93f406f70b11bd6476148759be109f76"
         },
         {
             "filename": "Atlas-300i-duo-npu_22.0.0_linux-x86_64.zip",
             "url": "https://support.huawei.com/enterprise/zh/software/256021673-ESW2000521926",
-            "sha256": "9b3e0186be8d62497ef103a1e0086c8e93f406f70b11bd6476148759be109f76"
+            "sha256": "db3f42f84b75b262eb751496df2888d4235f9419521612ef6c16a7931eb6d51f"
         },
         {
             "filename": "Ascend-mindx-toolbox_3.0.RC1_linux-aarch64.zip",

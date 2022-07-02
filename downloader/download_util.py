@@ -424,10 +424,10 @@ class Cann_Download:
             _driver.find_element_by_partial_link_text('直接下载'))
         self.browser.find_element_by_partial_link_text('直接下载').click()
         if get_support_url().get('apply_right') in \
-                    self.browser.current_url:
-                print("[ERROR] no permission to download, please apply for permission first")
-                LOG.error('no permission to download, download %s failed', file_name)
-                return False
+                self.browser.current_url:
+            print("[ERROR] no permission to download, please apply for permission first")
+            LOG.error('no permission to download, download %s failed', file_name)
+            return False
         wait_count = 0
         for _ in range(5):
             time.sleep(5)
