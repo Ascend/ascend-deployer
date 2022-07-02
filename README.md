@@ -224,7 +224,8 @@ group=HwHiAiUser
 注意：
   1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
   2. gcc7.3.0安装后需要建立软链接才能使用,例如root安装的gcc7.3.0执行命令`ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`。
-  3. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
+  3. kernels的安装需要先安装nnae或toolkit，安装kernels需指定--kernels_type参数。
+  4. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
 
 ```bash
 usermod -a -G HwHiAiUser 非root用户名
@@ -465,7 +466,7 @@ source ~/.local/ascendrc       # non-root
 
 ## <a name="scene">安装场景介绍</a>
 
-离线部署工具提供几个基本安装场景。如果系统的gcc版本低于7.3.0，需要安装gcc以确保各场景安装后可正常使用。
+离线部署工具提供几个基本安装场景。如果系统的gcc版本低于7.3.0，安装框架前需要安装gcc以确保各场景安装后可正常使用。gcc7.3.0安装后需要建立软链接才能使用(/usr/bin/gcc指向安装的gcc7.3.0的可执行文件),例如root安装的gcc7.3.0执行命令`ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`。
 
 | 安装场景     | 安装的组件                                                        | 说明            |
 | ---------   | ---------------------------------------------------------------- | ----------------|
