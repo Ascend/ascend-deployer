@@ -274,6 +274,7 @@
       when:
         - ms.matched > 0
         - ansible_architecture == 'aarch64'
+        - jdk_aarch64_dir.matched > 0
 
     - name: find jdk-x64 package
       find:
@@ -292,6 +293,7 @@
       when:
         - ms.matched > 0
         - ansible_architecture == 'x86_64'
+        - jdk_x64_dir.matched > 0
 
     - name: chmod MindStudio to 750
       file:

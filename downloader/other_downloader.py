@@ -19,7 +19,7 @@ import configparser
 import json
 import os
 import shutil
-import sys
+import time
 from download_util import calc_sha256, get_arch, get_specified_python, CONFIG_INST, DOWNLOAD_INST, CANN_DOWNLOAD_INST
 import logger_config
 from software_mgr import get_software_name_version, get_software_other, get_software_mindspore
@@ -60,6 +60,8 @@ def download_software(software, dst, arch):
                     print(item['filename'].ljust(60), 'download success')
                 results.append(ret)
         finally:
+            while '.part' in ','.join(os.listdir(download_dir)):
+                time.sleep(1)
             CANN_DOWNLOAD_INST.quit()
     else:
         for item in others:

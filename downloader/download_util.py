@@ -423,23 +423,29 @@ class Cann_Download:
             lambda _driver:
             _driver.find_element_by_partial_link_text('直接下载'))
         self.browser.find_element_by_partial_link_text('直接下载').click()
-        self.wait_download_complete(file_name)
         if get_support_url().get('apply_right') in \
                 self.browser.current_url:
             print("[ERROR] no permission to download, please apply for permission first")
             LOG.error('no permission to download, download %s failed', file_name)
             return False
-        if not os.path.exists(dst_file_name) or os.path.getsize(dst_file_name) < 10:
-            print('[ERROR] The current network is abnormal, please ensure that the network is normal.')
-            LOG.error('[ERROR] The current network is abnormal, please ensure that the network is normal.')
-            sys.exit(1)
+        wait_count = 0
+        for _ in range(5):
+            time.sleep(5)
+            if not os.path.exists(dst_file_name) and wait_count == 5:
+                print('[ERROR] The current network is abnormal, please ensure that the network is normal.')
+                LOG.error('[ERROR] The current network is abnormal, please ensure that the network is normal.')
+                return False
+            self.wait_download_complete(file_name)
+            if os.path.exists(dst_file_name):
+                break
+            else:
+                wait_count += 1
         self.browser.find_element_by_partial_link_text('pgp').click()
         self.wait_download_complete(file_name + '.asc')
 
         return is_exists(dst_file_name) and is_exists(dst_file_name + '.asc')
 
     def wait_download_complete(self, file_name):
-        time.sleep(10)
         while file_name + '.part' in \
                 [_file_name for _file_name in os.listdir(self.download_dir)]:
             time.sleep(1)

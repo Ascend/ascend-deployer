@@ -220,7 +220,8 @@ group=HwHiAiUser
 Note:
   1. Non-root users need root users to install system components and driver before they can install the above components.
   2. After installing gcc7.3.0, you need to establish a symbolic link to use it. For example, gcc7.3.0 installed by root executes the command `ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`.
-  3. Non-root users need to join the driver installation group to install and use nnrt and toolkit normally. The default driver installation group is HwHiAiUser, Modify the user group command as follows:
+  3. To install kernels, you need to install nnae or toolkit first. When installing kernels, you need to specify --kernels_type parameter.
+  4. Non-root users need to join the driver installation group to install and use nnrt and toolkit normally. The default driver installation group is HwHiAiUser, Modify the user group command as follows:
 
 ```bash
 usermod -a -G HwHiAiUser non-root-user
@@ -460,7 +461,7 @@ Only one version of MindSpore or MindStudio that matches CANN package version sh
 
 ## <a name="scene">Installation Scenarios</a>
 
-The offline installation tool provides several basic installation scenarios.
+The offline installation tool provides several basic installation scenarios.If the GCC version of the system is lower than 7.3.0, GCC needs to be installed before installing the framework to ensure that all scenarios can be used normally after installation. After installing gcc7.3.0, you need to establish a soft link to use it (/usr/bin/gcc points to the executable file of the installed gcc7.3.0). For example, gcc7.3.0 installed by root executes the command `ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`.
 
 | Installation Scenario | Installed Components                                                          | Description                                            |
 | --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |

@@ -224,7 +224,8 @@ group=HwHiAiUser
 注意：
   1. 非root用户需要root用户安装系统组件和driver后才可以安装以上组件。
   2. gcc7.3.0安装后需要建立软链接才能使用,例如root安装的gcc7.3.0执行命令`ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`。
-  3. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
+  3. kernels的安装需要先安装nnae或toolkit，安装kernels需指定--kernels_type参数。
+  4. 非root用户需要加入driver安装的属组，才可以正常安装和使用nnrt和toolkit组件，driver默认安装的属组为HwHiAiUser。修改用户组命令如下：
 
 ```bash
 usermod -a -G HwHiAiUser 非root用户名
@@ -455,17 +456,17 @@ source ~/.local/ascendrc       # non-root
 
 本工具默认下载python组件包。当--os-list指定的系统中只有aarch64架构时，只下载aarch64架构系统所需的python组件包；当--os-list指定的系统中只有x86_64架构时，只下载x86_64架构系统所需的python组件包；当--os-list为空或指定的系统中aarch64架构和x86_64架构都有时，2种架构系统所需的python组件包都会下载。下载aarch64或x86_64架构的CANN包逻辑同上。
 
-| 可选的组件      | 配套版本1  | 配套版本2  | 配套版本3 | 配套版本4 |
-|:-------------- | --------  | --------  | --------  | -------- |
-| MindStudio     |  2.0.0    |  3.0.1    |  3.0.2    |  3.0.3   |
-| MindSpore      |  1.1.1    |  1.2.1    |  1.3.0    |  1.5.0   |
-| CANN           |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |  5.0.3.1 |
+| 可选的组件      | 配套版本1  | 配套版本2  | 配套版本3 | 配套版本4 | 配套版本5 | 配套版本6 |
+|:-------------- | --------  | --------  | --------  | -------- | --------- | -------- |
+| MindStudio     |  2.0.0    |  3.0.1    |  3.0.2    |  3.0.3   |   3.0.4   |  5.1.RC1 |
+| MindSpore      |  1.1.1    |  1.2.1    |  1.3.0    |  1.5.0   |   1.6.2   |  1.7.0   |
+| CANN           |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |  5.0.3.1 | 5.0.4   |  5.1.RC1 |
 
 安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的下载安装请参考[下载安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)；CANN的下载请参考[下载CANN](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md)
 
 ## <a name="scene">安装场景介绍</a>
 
-离线部署工具提供几个基本安装场景。如果系统的gcc版本低于7.3.0，需要安装gcc以确保各场景安装后可正常使用。
+离线部署工具提供几个基本安装场景。如果系统的gcc版本低于7.3.0，安装框架前需要安装gcc以确保各场景安装后可正常使用。gcc7.3.0安装后需要建立软链接才能使用(/usr/bin/gcc指向安装的gcc7.3.0的可执行文件),例如root安装的gcc7.3.0执行命令`ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc`。
 
 | 安装场景     | 安装的组件                                                        | 说明            |
 | ---------   | ---------------------------------------------------------------- | ----------------|

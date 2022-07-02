@@ -1,5 +1,5 @@
 {"name": "MindStudio",
-    "version":"3.0.3",
+    "version":"3.0.4",
     "default":false,
     "systems": [
         {"system":"Ubuntu_18.04_x86_64",
@@ -487,9 +487,9 @@
         }
     ],
     "other": [
-        {"filename":"MindStudio_3.0.3_linux.tar.gz",
-         "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindStudio/MindStudio%203.0.3/MindStudio_3.0.3_linux.tar.gz",
-         "sha256": "0bb85c0677df781d113e35f69c6d45f0fbd542580b1e4c18aea768cbbb1a4125"},
+        {"filename":"MindStudio_3.0.4_linux.tar.gz",
+         "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindStudio/MindStudio%203.0.4/MindStudio_3.0.4_linux.tar.gz",
+         "sha256": "0eb62440c5aa8c0596a4c035a2f62d595855dc632be35e899e40aa5c7e2d8542"},
         {"filename":"jbr-11_0_10-linux-aarch64-b1341.35.tar.gz",
          "url":"https://cache-redirector.jetbrains.com/intellij-jbr/jbr-11_0_10-linux-aarch64-b1341.35.tar.gz",
          "sha256": "4c30c4385546ed7c9a809bc8ba2c272180d7f86bb77b90d8d364451b4b186f8c"},
