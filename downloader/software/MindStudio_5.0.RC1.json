@@ -1,5 +1,5 @@
 {"name": "MindStudio",
-    "version":"5.1.RC1",
+    "version":"5.0.RC1",
     "default":true,
     "systems": [
         {"system":"Ubuntu_18.04_x86_64",
