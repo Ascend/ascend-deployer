@@ -453,7 +453,7 @@ This tool downloads python component packages by default. If the system specifie
 
 | optional components| version 1 | version 2 | version 3 | version 4 | version 5 | version 6 |
 |:------------------ | --------  | --------  | --------  | -------- | ---------- | --------- |
-| MindStudio         |  2.0.0    |  3.0.1    |  3.0.2    |  3.0.3   |    3.0.4   |  5.1.RC1  |
+| MindStudio         |  2.0.0    |  3.0.1    |  3.0.2    |  3.0.3   |    3.0.4   |  5.0.RC1  |
 | MindSpore          |  1.1.1    |  1.2.1    |  1.3.0    |  1.5.0    |   1.6.2   |   1.7.0   |
 | CANN               |  20.3.0   |  5.0.1.spc103|  5.0.2.1 |  5.0.3.1 |  5.0.4   |  5.1.RC1  |
 
