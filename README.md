@@ -82,7 +82,7 @@
 - 支持Ubuntu 18.04.1/5安装交叉编译的相关组件和aarch64架构的toolkit软件包。
 - Kylin v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 - 由于CenOS下安装的docker/containerd等可以多版本并存，所以建议CentOS 7.6和CentOS 8.2系统安装系统依赖前请确认系统上是否已安装docker，如果已安装请使用`yum -y remove docker-ce`、`yum -y remove docker-ce-cli`、`yum -y remove containerd.io`命令卸载后再进行系统依赖的安装。
-- Linx系统，需修改/etc/pam.d/su文件，取消auth sufficient pam_rootok.so前的注释，使root用户su切换其他用户不用输入密码。
+- 建议用户修改 downloader/config 和 downloader/requirements.txt 中的包版本，确保符合所在组织的安全要求。
 - Tlinux系统默认安装完后，/根目录总空间约为20G，resources目录下不可放置超过其磁盘可用空间的包，避免解压或安装失败。
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64、torch-1.5.0/apex-0.1 aarch64/x86_64和torch-1.8.1/apex-0.1/torch_npu-1.8.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
