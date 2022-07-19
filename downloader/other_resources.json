@@ -36,9 +36,9 @@
         "dest":"resources/sources"
     },
     {
-        "filename":"cmake-3.18.6.tar.gz",
-        "url":"https://mindx.obs.cn-south-1.myhuaweicloud.com/opensource/cmake-3.18.6.tar.gz",
-        "sha256":"124f571ab70332da97a173cb794dfa09a5b20ccbb80a08e56570a500f47b6600",
+        "filename":"cmake-3.20.5.tar.gz",
+        "url":"https://mindx.obs.cn-south-1.myhuaweicloud.com/opensource/cmake-3.20.5.tar.gz",
+        "sha256":"12c8040ef5c6f1bc5b8868cede16bb7926c18980f59779e299ab52cbc6f15bb0",
         "dest":"resources/sources"
     },
     {
