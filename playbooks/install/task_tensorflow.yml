@@ -20,7 +20,7 @@
 - name: install tensorflow
   shell: python3 -m pip install tensorflow=={{ tensorflow_version }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ local_path }}/gcc7.3.0/bin:{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ local_path }}/gcc7.3.0/lib64"
     CPATH: /usr/include/hdf5/include/:/usr/include/hdf5/lib/
   when: ansible_architecture == 'aarch64'

@@ -41,7 +41,7 @@
 - name: install python libs
   shell: python3 -m pip install --force-reinstall {{ item }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
   environment:
-    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ local_path }}/gcc7.3.0/bin:{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64"
   failed_when: false
   with_items:

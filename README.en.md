@@ -83,7 +83,9 @@ The offline installation tool provides automatic download and one-click installa
 - Users are advised to modify downloader/config and downloader/requirements.txt to ensure compliance with the security requirements of your organization.
 - After the default installation of tlinux system, the total space of the root directory is about 20G, and the packages that exceed the available disk space can not be placed in the resources directory to avoid decompression or installation failure.
 - BCLinux 7.6 does not have python3 by default. The `yum install python3` command is run before the download operation. Because the BCLinux 7.6 system source does not contain python3, modify the source configuration file by referring to the BCLinux official configuration file, or change "el7.6" to "el7.7" in "/etc/yum.repos.d/BCLinux-Base.repo"(Run the `sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo` command). After the installation, restore the original configuration.
-- tensorflow-1.15.0 aarch64,torch-1.5.0/apex-0.1 aarch64/x86_64 and torch-1.8.1/apex-0.1/torch_npu-1.8.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
+- tensorflow-1.15.0 aarch64,tensorflow-2.6.5 aarch64,torch-1.5.0/apex-0.1 aarch64/x86_64 and torch-1.8.1/apex-0.1/torch_npu-1.8.1 aarch64/x86_64 are not available for download. You need to place them in your resources/pylibs directory, otherwise the installation will be skipped.
+- Please strictly follow the official compilation specification when compiling tensorflow aarch64.
+- Tensorflow 1.15.0 is only applicable to python3.7, and tensorflow 2.6.5 is applicable to python3.7, python3.8, and python3.9.
 - If you plan to use the automatic download function under Linux, please configure the GUI interface in advance and directly run the download instruction.
 - Please use ascend deployer (2.0.4) of the previous iteration to install the old version of the software package.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
@@ -433,6 +435,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
 | --force_upgrade_npu               | Can force upgrade NPU when not all devices have exception                                         |
+ --tensorflow_version               | Appoint tensorflow version,must be 1.15.0 or 2.6.5,default is 2.6.5                               |
 | --kernels_type                    | Appoint kernels package type,must be nnae or toolkit,default is nnae                              |
 | --verbose                           | Print verbose.                                                                                                                                                            |
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |

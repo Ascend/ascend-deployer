@@ -317,6 +317,9 @@ function get_os_version()
 
     # OpenEuler
     if [ "${id}" == "OpenEuler" ];then
+        if [[ "${codename}" =~ "LTS" ]];then
+            codename="LTS"
+        fi
         version=${ver}${codename}
     fi
 

@@ -1,4 +1,4 @@
-absl-py==0.10.0
+absl-py==0.15.0
 ansible-core==2.11.9
 resolvelib==0.5.4
 astor==0.8.1
@@ -9,7 +9,8 @@ attrs==20.3.0
 cached-property==1.5.2
 cachetools==4.2.4
 clang==5.0
-certifi==2020.12.5
+certifi==2022.6.15
+charset-normalizer==2.1.0
 cffi==1.14.0
 chardet==3.0.4
 coverage==5.5
@@ -26,9 +27,9 @@ gast==0.4.0
 gnureadline==8.0.0
 google-auth-oauthlib==0.4.6
 google-auth==1.35.0
-google-pasta==0.2
+google-pasta==0.2.0
 grpcio-tools==1.32.0
-grpcio==1.47.0
+grpcio==1.46.1
 h5py==3.1.0
 idna==2.10
 importlib-metadata==4.12.0
@@ -47,6 +48,7 @@ mpmath==1.1.0
 numpy==1.14.5
 numpy==1.17.5
 numpy==1.19.2
+numpy==1.19.3
 numpy==1.19.5
 oauthlib==3.2.0
 opt-einsum==3.3.0
@@ -91,7 +93,7 @@ typed-ast==1.4.2
 typing-extensions==3.7.4.3
 urllib3==1.25.11
 werkzeug==1.0.1
-wheel==0.35.1
+wheel==0.37.1
 wrapt==1.12.1
 xlrd==1.2.0
 zipp==3.4.1

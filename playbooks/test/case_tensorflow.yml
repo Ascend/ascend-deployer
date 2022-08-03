@@ -1,5 +1,5 @@
 - name: check tensorflow
-  shell: python3 -m pip list | grep -E "tensorflow |tensorflow-cpu|tensorflow-aarch64"
+  shell: python3 -m pip list | grep -E "tensorflow |tensorflow-cpu"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"

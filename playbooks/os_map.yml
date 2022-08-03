@@ -34,7 +34,8 @@ code_name_dict:
     "Tercel": "Tercel"
     "juniper": "juniper"
   openEuler:
-    "LTS-SP1": "LTS-SP1"
+    "LTS-SP1": "LTS"
+    "LTS-SP3": "LTS"
     "LTS": "LTS"
 code_name: ""
 scene_dict:
