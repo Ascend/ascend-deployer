@@ -538,7 +538,7 @@ class Yum(object):
                 print(file_name.ljust(60), 'download success')
                 return True
             print(file_name.ljust(60), 'download failed')
-            return False
+            raise RuntimeError
 
         if 'autodependency' in pkg and pkg['autodependency'] == 'true':
             return self.download_with_dep(name, download_dir, ver, rel)
