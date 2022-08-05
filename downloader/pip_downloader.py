@@ -335,7 +335,7 @@ class MyPip(object):
             return True
         except Exception:
             print(name.ljust(60), "download failed")
-            return False
+            raise
         finally:
             pass
 

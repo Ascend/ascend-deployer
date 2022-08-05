@@ -82,7 +82,7 @@ class OsDepDownloader:
             if downloader.make_cache() is False:
                 LOG.error('downloader make_cache failed')
                 res['failed'].append(os_item)
-                return res
+                raise RuntimeError
 
         with open(config_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -92,6 +92,7 @@ class OsDepDownloader:
                     continue
                 print('download failed', item['name'])
                 res['failed'].append(item['name'])
+                raise RuntimeError
 
         for software in software_list:
             formal_name, version = software_mgr.get_software_name_version(software)
@@ -103,6 +104,7 @@ class OsDepDownloader:
                     continue
                 print('download failed', pkg['name'])
                 res['failed'].append(pkg['name'])
+                raise RuntimeError
         if downloader is not None:
             downloader.clean_cache()
         return res

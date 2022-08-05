@@ -69,7 +69,6 @@
 - 离线安装工具除了install.sh、start_download.sh、start_download_ui.bat和start_download.bat外，其余文件并非设计给用户使用的接口或者命令，请勿直接使用。
 - 禁止将密码放到inventory_file文件里。
 - A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
-- 系统包安装时，需确保系统上openssl版本为1.1。x86_64的用户需要安装openssl-devel 1.1，用户可以通过内部源、epel-release等进行安装，安装前请确认该源符合组织安全要求。使用离线安装时，用户可以通过诸如修改C_INCLUDE_PATH环境变量等方式，确认符合要求的openssl-devel能被找到,参考`declare -x C_INCLUDE_PATH="/usr/include/openssl11"`及`declare -x OPENSSL_ROOT_DIR="/usr/lib64/openssl11"`配置环境变量。aarch64的用户需要获取openssl 1.1，请参考[参考链接](https://www.openssl.org/source/)，获取软件包后，进行编译安装，方法请参考[参考链接](https://wiki.openssl.org/index.php/Compilation_and_Installation)。安装好后可以参考`export C_INCLUDE_PATH=/usr/local/openssl/include`及`declare -x OPENSSL_ROOT_DIR="/usr/local/openssl/lib"`配置环境变量，以确认符合要求的openssl能被找到。
 - A300I Pro和A300V Pro卡必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro.编辑inventory_file文件，格式如下：
 
    ```

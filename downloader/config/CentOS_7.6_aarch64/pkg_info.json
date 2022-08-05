@@ -5,6 +5,21 @@
         "sha256": "1be6190e29f5f55dced9aae529a29ad3f80fe8df408cd053dca92d9091e56575"
     },
     {
+        "name": "openssl",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/aarch64/os/Packages/openssl-1.1.1c-15.el8.aarch64.rpm",
+        "sha256": "cf10392c322c02c017b9f127102d45c91825af4c4edf21d2ae727fa1d8fc84c2"
+    },
+    {
+        "name": "openssl-libs",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/aarch64/os/Packages/openssl-libs-1.1.1c-15.el8.aarch64.rpm",
+        "sha256": "e25209f9c272a5407ed0d8397e6f8ce8d6de1bb3a6186b06d23ec1533d19d18a"
+    },
+    {
+        "name": "openssl-devel",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/aarch64/os/Packages/openssl-devel-1.1.1c-15.el8.aarch64.rpm",
+        "sha256": "d44d32917756f320b9a2a441723901c61a941fc690e542499c371a8bec6f73f5"
+    },
+    {
         "name": "docker-ce-cli",
         "version": "20.10.8",
         "release": "3.el7"
@@ -143,12 +158,6 @@
     },
     {
         "name": "pcre-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "openssl-libs", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "openssl-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "sqlite", "used_by": [ "driver", "cann", "framework" ]
