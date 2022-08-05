@@ -185,7 +185,7 @@ class DownloadUtil:
         if not res:
             print(url.ljust(60), 'download failed')
             LOG.error('download %s failed', url)
-            return False
+            raise RuntimeError
         else:
             LOG.info('download %s successfully', url)
             return True

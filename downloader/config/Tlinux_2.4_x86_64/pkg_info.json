@@ -129,12 +129,6 @@
         "name": "pcre-devel", "used_by": [ "driver", "cann", "framework" ]
     },
     {
-        "name": "openssl-libs", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "openssl-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
         "name": "sqlite", "used_by": [ "driver", "cann", "framework" ]
     },
     {
@@ -238,6 +232,21 @@
     },
     {
         "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "openssl",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/openssl-1.1.1c-15.el8.x86_64.rpm",
+        "sha256": "0ea161cbcbbf5db609bb4d7524750c0a6e57dc279282aa021aabf63a7cc63e79"
+    },
+    {
+        "name": "openssl-libs",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/openssl-libs-1.1.1c-15.el8.x86_64.rpm",
+        "sha256": "212def76c7dcc2cc8422b9ebcb9a485050c32f68cebabf66012bca3936cf79c3"
+    },
+    {
+        "name": "openssl-devel",
+        "url":"https://mirrors.huaweicloud.com/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/openssl-devel-1.1.1c-15.el8.x86_64.rpm",
+        "sha256": "7c1cdec5e46fb029dc086cc88d6467674acaf8f1b7fb70f11f109d7acb85d6ac"
     },
     {
         "name": "docker-ce-cli",
