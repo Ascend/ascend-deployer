@@ -317,6 +317,9 @@ function get_os_version()
 
     # OpenEuler
     if [ "${id}" == "OpenEuler" ];then
+        if [[ "${codename}" =~ "LTS" ]];then
+            codename="LTS"
+        fi
         version=${ver}${codename}
     fi
 
@@ -847,9 +850,6 @@ function verify_zip_redirect()
     fi
 }
 
-FORCE_UPGRADE_NPU=false
-KERNELS_TYPE=nnae
-
 function process_install()
 {
     verify_zip_redirect
@@ -871,9 +871,9 @@ function process_install()
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
@@ -896,9 +896,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
@@ -1017,6 +1017,7 @@ function print_usage()
     echo "--nocopy                       do not copy resources to remote servers when install for remote"
     echo "--force_upgrade_npu            can force upgrade NPU when not all devices have exception"
     echo "--kernels_type                 Appoint kernels package type,must be nnae or toolkit,default is nnae"
+    echo "--tensorflow_version           Appoint tensorflow version,must be 1.15.0 or 2.6.5,default is 2.6.5"
     echo "--verbose                      Print verbose"
     echo "--output-file=<output_file>    Redirect the output of ansible execution results to a file"
     echo "--stdout_callback=<callback_name> set stdout_callback for ansible"
@@ -1061,6 +1062,10 @@ function print_usage()
         echo "                               ${tmp%.*}"
     done
 }
+
+FORCE_UPGRADE_NPU=false
+KERNELS_TYPE=nnae
+TENSORFLOW_VERSION=2.6.5
 
 function parse_script_args() {
     if [ $# = 0 ];then
@@ -1148,6 +1153,15 @@ function parse_script_args() {
             KERNELS_TYPE=$(echo $1 | cut -d"=" -f2)
             if [[ "${KERNELS_TYPE}" != "nnae" ]] && [[ "${KERNELS_TYPE}" != "toolkit" ]];then
                 log_error "--kernels_type parameter is invalid"
+                print_usage
+                return 1
+            fi
+            shift
+            ;;
+        --tensorflow_version=*)
+            TENSORFLOW_VERSION=$(echo $1 | cut -d"=" -f2)
+            if [[ "${TENSORFLOW_VERSION}" != "1.15.0" ]] && [[ "${TENSORFLOW_VERSION}" != "2.6.5" ]];then
+                log_error "--tensorflow_version parameter is invalid"
                 print_usage
                 return 1
             fi

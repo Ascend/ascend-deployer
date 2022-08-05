@@ -1,5 +1,5 @@
 - name: check tensorflow
-  shell: python3 -m pip list | grep "tensorflow \|tensorflow-cpu"
+  shell: python3 -m pip list | grep -E "tensorflow |tensorflow-cpu"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
@@ -37,13 +37,30 @@
     PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge
   when:
-    - tf_version.stdout != ""
+    - "'1.15.0' in tf_version.stdout"
     - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
 
 - name: print npu_bridge without add_ons
   debug: var=import_npu_bridge
   when:
-    - tf_version.stdout != ""
+    - "'1.15.0' in tf_version.stdout"
+    - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
+
+- name: test npu_device without add_ons
+  shell: python3 -c "import npu_device; from tensorflow.core.protobuf import rewriter_config_pb2"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64"
+    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
+  register: import_npu_device
+  when:
+    - "'2.6.5' in tf_version.stdout"
+    - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
+
+- name: print npu_device without add_ons
+  debug: var=import_npu_device
+  when:
+    - "'2.6.5' in tf_version.stdout"
     - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
 
 - name: test npu_bridge with add_ons
@@ -54,13 +71,32 @@
     PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
   register: import_npu_bridge_with_add_ons
   when:
-    - tf_version.stdout != ""
+    - "'1.15.0' in tf_version.stdout"
     - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
     - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'
 
 - name: print npu_bridge with add_ons
   debug: var=import_npu_bridge_with_add_ons
   when:
-    - tf_version.stdout != ""
+    - "'1.15.0' in tf_version.stdout"
+    - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
+    - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'
+
+- name: test npu_device with add_ons
+  shell: python3 -c "import npu_device; from tensorflow.core.protobuf import rewriter_config_pb2"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/add-ons/"
+    PYTHONPATH: "{{ ascend_install_path }}/tfplugin/latest/tfplugin/python/site-packages:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/python/site-packages:{{ ascend_install_path }}/nnae/latest/fwkacllib/python/site-packages"
+  register: import_npu_device_with_add_ons
+  when:
+    - "'2.6.5' in tf_version.stdout"
+    - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
+    - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'
+
+- name: print npu_device with add_ons
+  debug: var=import_npu_device_with_add_ons
+  when:
+    - "'2.6.5' in tf_version.stdout"
     - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
     - add_ons_dir_protobuf.rc == 0 and add_ons_dir_protobuf.stdout != '0'
