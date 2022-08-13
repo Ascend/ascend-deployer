@@ -299,7 +299,7 @@ ascend-deployer
 
        - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。
        - 安装driver或firmware后，可能需执行“reboot”重启设备使驱动和固件生效。
-       - 部分组件存在运行时依赖，如pytorch需要toolkit提供运行时依赖，tensorflow + npubridge需要tfplugin提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
+       - 部分组件存在运行时依赖，如pytorch需要toolkit或nnae提供运行时依赖，tensorflow 调用npu资源需要tfplugin + toolkit或nnae提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
        - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。
 
     - 2.2 指定场景安装（建议非专业用户使用这种方式）
@@ -633,3 +633,6 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 4. Q: 下载部分组件时出现"certificate verify failed"等字样是什么原因？
 
 - A: 下载时本工具默认校验https证书，上述报错可能是代理服务器证书异常，请联系系统管理员处理。该校验功能在downloader/config.ini文件中可配置，具体可参考<a href="#proxy_configuration">代理配置</a>。
+
+5. Q: euler系统作为worker节点时安装tensoflow2.6.5出现“Failed to connect to the host via ssh: Shared connection to XX closed"等字样。
+- A: 主机中设置了ssh连接会话超时时间，部署任务的时间超过了设置的ssh连接会话超时时间会导致该错误。修改“/etc/ssh/sshd_config”文件中的“ClientAliveInterval”关键字的值为“1800”（超时时间为30分钟），然后执行`systemctl restart sshd`重启sshd服务。

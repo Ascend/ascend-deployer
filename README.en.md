@@ -295,7 +295,7 @@ ascend-deployer
 
         - Installation sequence: sys_pkg > python > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
         - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
-        - Some components require runtime dependencies. For example, PyTorch requires the Toolkit to provide runtime dependencies, TensorFlow and npubridge require TFPlugin to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
+        - Some components require runtime dependencies. For example, PyTorch requires the Toolkit or nnae to provide runtime dependencies, TensorFlow and npubridge and npudevice require TFPlugin and toolkit or TFPlugin and nnae to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
         - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
 
     - 2.2 Scenario-specific installation(Recommended for non-professional users)
@@ -624,6 +624,9 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 
 - A: There are two methods for crl file update and signature verification. The tool at toolbox/latest/Ascend-DMI/bin/ascend-cert is preferred. If this tool does not exist in the environment, openssl is preferred. To be compatible with old and new software package signature formats, the tool uses two sets of certificates. The tool compares the validity time of the crl file in the installation package with that of the local crl file, and uses the latest crl file to check whether the certificate is revoked. For the root user, the system of local crl files for `/etc/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`, for non-root users, This file is `~/.local/hwsipcrl/ascendsip.crl(or ascendsip_g2.crl)`. If the local crl file does not exist or takes effect earlier than the crl file in the installation package, the local crl file is replaced by the crl file in the installation package. The tools/update_crl.sh supports independent crl file update, Run `bash update_crl.sh <crl_file>` command to update an independent crl file, `<crl_file>` is the path of the crl file uploaded by the user.
 
-3. Q: What is the reason why "certificate verify failed" appears when downloading some components?
+4. Q: What is the reason why "certificate verify failed" appears when downloading some components?
 
 - A: The tool verifies the HTTPS certificate by default. The preceding error may be caused by an exception of the proxy server certificate. Contact the system administrator. The verification function can be configured in the downloader/config.ini file. For details, see <a href="#proxy_configuration">Proxy Configuration</a>。
+
+5. Q: When the Euler system is a worker node, the words "Failed to connect to the host via ssh: Shared connection to XX closed" appear in the installation tensorflow2.6.5 .
+- A: The SSH connection session timeout is set in the host. This error will be caused if the deployment task time exceeds the set SSH connection session timeout. Modify the value of the "clientaliveinterval" keyword in the "/etc/ssh/sshd_config" file to "1800" (the timeout is 30 minutes), and then execute `systemctl restart sshd` to restart the sshd service.
