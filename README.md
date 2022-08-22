@@ -575,6 +575,7 @@ baseurl=https://mirrors.huaweicloud.com/epel/7/aarch64
 ```
 
 3. 下载类Centos的系统组件时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，以提升应对潜在的XML漏洞攻击的安全能力。
+4. 下载系统依赖出现资源不存在时，可修改downloader/config/*{os}\__{version}\__{arch}*/pkg_info.json文件，参考格式指定资源获取链接。确认资源链接符合组织安全要求。
 
 
 ## <a name="url">公网URL</a>

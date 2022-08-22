@@ -26,7 +26,7 @@
     { "name": "guile",          "autodependency":"true", "info": "make need libguile-2.0.so.22 maybe" },
     { "name": "elfutils-devel", "autodependency":"true", "info": "used for driver maybe" },
     { "name": "sshpass",
-      "url":"https://mirrors.huaweicloud.com/epel/8/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm",
+      "url":"https://dl.fedoraproject.org/pub/archive/epel/8.5.2022-05-10/Everything/x86_64/Packages/s/sshpass-1.06-9.el8.x86_64.rpm",
       "sha256": "d30541c4470226e2e6708198692f6e62e9435d5b48d0240f089dce7230fc5a49" },
     { "name": "hdf5", 
       "url":"https://mirrors.huaweicloud.com/openeuler/openEuler-20.03-LTS/OS/x86_64/Packages/hdf5-1.8.20-7.oe1.x86_64.rpm",
