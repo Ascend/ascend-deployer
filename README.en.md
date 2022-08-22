@@ -570,6 +570,7 @@ The offline installation tool provides the source configuration file. Replace it
   ```
 
 3. When downloading the centos-like system component, you need to parse the XML files in the system source. You are advised to install the defusedxml component in python3 to improve the security against potential XML vulnerability attacks.
+4. Download System Dependency: when the resource does not exist, you can modify downloader/config/*{OS}\__{version}\__{arch}*/pkg_info.json file, the reference format specifies the resource acquisition link. Confirm that the resource link complies with the organization's security requirements.
 
 
 ## <a name="url">Public Web Site URL</a>

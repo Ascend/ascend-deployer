@@ -9,6 +9,10 @@
         "url": "https://mirrors.bfsu.edu.cn/centos-vault/8.2.2004/BaseOS/aarch64/os/Packages/kernel-headers-4.18.0-193.el8.aarch64.rpm",
         "sha256": "645ee20ea3ac8f81f27053d8e7803c2a65fc3d9ef252cb23253a540db60811b2"
     },
+    { "name": "sshpass",
+        "url":"https://dl.fedoraproject.org/pub/archive/epel/8.5.2022-05-10/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
+        "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336"
+    },
     {
         "name": "docker-ce-cli",
         "version": "20.10.8",
@@ -229,9 +233,6 @@
     },
     {
         "name": "libsepol-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "sshpass", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "libmpc", "used_by": [ "driver", "cann", "framework" ]
