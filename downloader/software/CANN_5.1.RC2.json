@@ -4,49 +4,54 @@
     "default": true,
     "other": [
         {
-            "filename": "A300-3000-npu_22.0.0.2_linux-aarch64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/256269265-ESW2000537652",
-            "sha256": "9d160e2947a4b5d4b91be7eae85e7cd7a080a311df666439310996c31c29e9c5"
+            "filename": "A300-3000-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563494",
+            "sha256": "9cf94d234c33b6321377607af4d565eb8e6d0a0620fa98f396618f4699bcc90f"
         },
         {
-            "filename": "A300-3010-npu_22.0.0.2_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/256269273-ESW2000537692",
-            "sha256": "01c68ce779f05fd13e517933b548657b8b4d9a4446d05c66d2320599d57f5d5b"
+            "filename": "A300-3010-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563511",
+            "sha256": "afbe27009ea89870c8ab98e27317bed679b3cb7e5d63d61ee3c92235b93e2153"
         },
         {
-            "filename": "A300t-9000-npu_22.0.0.2_linux-aarch64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/256341669-ESW2000537703",
-            "sha256": "4610a568d735d508ec630c55619139380b712fc132230a12ad2c01aeba11aafb"
+            "filename": "A300t-9000-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563534",
+            "sha256": "78c144eb668e4b69b692701b97b418560dd4541cd58e5fc71ea9b677f877c117"
         },
         {
-            "filename": "A300t-9000-npu_22.0.0.2_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/256341669-ESW2000537704",
-            "sha256": "f1fe4439201a384eaf5f00e44f5560f065b99bb36af503ddce2600489920ada4"
+            "filename": "A300t-9000-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563524",
+            "sha256": "1ef8158371ab78f374d3552f5b848d7778d7e3a12c270a59963529ed901fb699"
         },
         {
-            "filename": "Atlas-300i-pro-npu_22.0.0_linux-aarch64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/255443623-ESW2000521937",
-            "sha256": "d38c605d71eb58aef1b2b89f5eacadf4c89d6e3a77e7551914cb43d1e4808814"
+            "filename": "Atlas-300i-pro-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563473",
+            "sha256": "3e0f7c35b468092c128d4af95ab38c3015e734485dd8d50dc19a506a5a6da5d9"
         },
         {
-            "filename": "Atlas-300i-pro-npu_22.0.0_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/255443623-ESW2000521938",
-            "sha256": "92cdac97f6c9ea4e650ea99d7333f0698cd312332df6f6d3878b4a577ecd6595"
+            "filename": "Atlas-300i-pro-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563466",
+            "sha256": "efcdfa86c4d5e0c27b057023d6691ff3c317e0f5d4e75b8117c245e967fc682c"
         },
         {
-            "filename": "Atlas-300v-pro-npu_22.0.0_linux-aarch64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/255443647-ESW2000521949",
-            "sha256": "83366e3fb8baeef3dda8f5ad3a1270f35bd78d4a9ae82bbeb5839bed33ee97be"
+            "filename": "Atlas-300v-pro-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563500",
+            "sha256": "7857a7f1eb1847624e4c794e045e7c213d5593072980450940f02f9443213a1d"
         },
         {
-            "filename": "Atlas-300v-pro-npu_22.0.0_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/255443647-ESW2000521950",
-            "sha256": "9b3e0186be8d62497ef103a1e0086c8e93f406f70b11bd6476148759be109f76"
+            "filename": "Atlas-300v-pro-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563502",
+            "sha256": "a92ec54e0625931923597860787931d1b4efcebc8aea7530897086e462523f54"
         },
         {
-            "filename": "Atlas-300i-duo-npu_22.0.0_linux-x86_64.zip",
-            "url": "https://support.huawei.com/enterprise/zh/software/256021673-ESW2000521926",
-            "sha256": "db3f42f84b75b262eb751496df2888d4235f9419521612ef6c16a7931eb6d51f"
+            "filename": "Atlas-300i-duo-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563451",
+            "sha256": "5b7f7859410da86af876f71f5e46ccfa041a49be67f920d5e2fb3bc759fd74c2"
+        },
+        {
+            "filename": "Atlas-300i-duo-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563450",
+            "sha256": "90886eedd2f365f28751c68d52fe75a6ff3836182f88619f544ce22faa626c3d"
         },
         {
             "filename": "Ascend-mindx-toolbox_3.0.RC2_linux-aarch64.zip",
