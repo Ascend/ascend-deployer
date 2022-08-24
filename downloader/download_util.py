@@ -428,7 +428,7 @@ class Cann_Download:
             print("[ERROR] no permission to download, please apply for permission first")
             LOG.error('no permission to download, download %s failed', file_name)
             return False
-        wait_count = 0
+        wait_count = 1
         for _ in range(5):
             time.sleep(5)
             if not os.path.exists(dst_file_name) and wait_count == 5:
