@@ -33,6 +33,7 @@ patch <系统python3的第三方包目录>/selenium/webdriver/firefox/firefox_pr
 ```
 
 7. 测试：执行`firefox`命令运行firefox浏览器，并在地址栏输入网址["https://support.huawei.com"]，能正常访问。如无法访问，请检查网络或代理是否可用。
+8. 如果提示下载失败，说明网络有问题，请多尝试几次下载。
 
 
 ## 说明

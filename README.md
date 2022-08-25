@@ -56,6 +56,7 @@
 |  A300I DUO    |               |               |
 |  A800-3000    |               |               |
 |  A800-3010    |               |               |
+|  A300V        |               |               |
 
 
 ## 注意事项
@@ -69,12 +70,13 @@
 - 离线安装工具除了install.sh、start_download.sh、start_download_ui.bat和start_download.bat外，其余文件并非设计给用户使用的接口或者命令，请勿直接使用。
 - 禁止将密码放到inventory_file文件里。
 - A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
-- A300I Pro和A300V Pro卡必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro.编辑inventory_file文件，格式如下：
+- A300I Pro、A300V Pro和A300V卡必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro，A300V须配置为300v。编辑inventory_file文件，格式如下：
 
    ```
    [ascend]
    localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
    ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
+   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v'      # A300V
    ```
 - 由于无法区分Atlas200 EP和A300推理卡（A300-3000、A300-3010、A800-3000、A800-3010）的硬件形态，Atlas200 EP场景使用本工具时需满足如下条件。不支持Atlas200 EP和A300推理卡环境批量部署；部署的机器包含Atlas200 EP时，resources目录下不要放置A300的NPU包，部署的机器包含A300推理卡时，resources目录下不要放置Atlas200 EP的NPU包；由于以上2条的限制，`--download=CANN`下载功能也不会包含Atlas200 EP的NPU包，请自行准备。
 - SLES安装驱动时，离线安装工具会设置/etc/modprobe.d/10-unsupported-modules.conf里的“allow_unsupported_modules ”的值为“1”，表示允许系统启动过程中加载非系统自带驱动。
@@ -459,11 +461,11 @@ source ~/.local/ascendrc       # non-root
 
 本工具默认下载python组件包。当--os-list指定的系统中只有aarch64架构时，只下载aarch64架构系统所需的python组件包；当--os-list指定的系统中只有x86_64架构时，只下载x86_64架构系统所需的python组件包；当--os-list为空或指定的系统中aarch64架构和x86_64架构都有时，2种架构系统所需的python组件包都会下载。下载aarch64或x86_64架构的CANN包逻辑同上。
 
-| 可选的组件      | 配套版本1  | 配套版本2  | 配套版本3 | 配套版本4 | 配套版本5 |
-|:-------------- | --------  | --------  | --------  | -------- | --------- |
-| MindStudio     |  2.0.0    |  3.0.2    |  3.0.3   |   3.0.4   |  5.0.RC1 |
-| MindSpore      |  1.1.1    |  1.3.0    |  1.5.0   |   1.6.2   |  1.7.0   |
-| CANN           |  20.3.0   |  5.0.2.1 |  5.0.3.1 | 5.0.4   |  5.1.RC1 |
+| 可选的组件      | 配套版本1  | 配套版本2  | 配套版本3 | 配套版本4 | 配套版本5 | 配套版本6 |
+|:-------------- | --------  | --------  | --------  | -------- | --------- | -------- |
+| MindStudio     |  2.0.0    |  3.0.2    |  3.0.3   |   3.0.4   |  5.0.RC1 | 5.0.RC2   |
+| MindSpore      |  1.1.1    |  1.3.0    |  1.5.0   |   1.6.2   |  1.7.0   | 1.8.0     |
+| CANN           |  20.3.0   |  5.0.2.1  |  5.0.3.1 | 5.0.4   |  5.1.RC1.1 | 5.1.RC2   | 
 
 安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；`./start_download.sh --download=<PK1>,<PK2>==<Version>`，当`<Version>`为空时，会下载最新版本的`<PK>`；`--download=MindSpore`时，--os-list需指定对应的OS，OS及相关配套说明详见[Mindspore官网](https://mindspore.cn/versions)；MindStudio的下载安装请参考[下载安装MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md)；CANN的下载请参考[下载CANN](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md)
 

@@ -54,6 +54,7 @@ The offline installation tool provides automatic download and one-click installa
 |  A300I DUO    |               |               |
 |  A800-3000    |               |               |
 |  A800-3010    |               |               |
+|  A300V        |               |               |
 
 ## Precautions
 
@@ -66,11 +67,12 @@ The offline installation tool provides automatic download and one-click installa
 - Offline installation tools except install.sh、start_download.sh、start_download_ui.bat and start_download.bat, the rest of the files are not designed for the user to use the interface or command. Do not use them directly.
 - It is forbidden to put the password in the inventory_file file.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
-- A300I Pro and A300V Pro must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**.Edit inventory_file in the following format:
+- A300I Pro,A300V Pro and A300v must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.Edit inventory_file in the following format:
   ```
    [ascend]
    localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
    ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
+   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v'  # A300V
    ```
 - The hardware configurations of the Atlas200 EP and A300 card (A300-3000, A300-3010, A800-3000, and A800-3010) cannot be distinguished. The following conditions must be met when using the Atlas200 EP. The Atlas200 EP and A300 inference card environments cannot be deployed in batches. If the deployed machine contains the Atlas200 EP, do not store the NPU package of the A300 EP in the Resources directory. If the deployed machine contains the A300 inference card, do not store the NPU package of the Atlas200 EP in the Resources directory. Because of the above two restrictions, `--download=CANN` does not include the NPU package of Atlas200 EP. Please prepare it yourself.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
@@ -454,11 +456,11 @@ The following table describes the parameters. You can run the `./install.sh --he
 
 This tool downloads python component packages by default. If the system specified by --os-list has only aarch64 architecture, only python component packages required by aarch64 architecture system will be downloaded. If the system specified by --os-list has only x86_64 architecture, only python component packages required by x86_64 architecture are downloaded. When --os-list is empty or the specified system has both aarch64 and x86_64 architectures, the Python component packages required for both architectures are downloaded. Same logic as above to download CANN package for aarch64 or x86_64 architectures.
 
-| optional components| version 1 | version 2 | version 3 | version 4 | version 5 |
-|:------------------ | --------  | --------  | --------  | -------- | ---------- |
-| MindStudio         |  2.0.0    |  3.0.2    |  3.0.3   |    3.0.4   |  5.0.RC1  |
-| MindSpore          |  1.1.1    |  1.3.0    |  1.5.0    |   1.6.2   |   1.7.0   |
-| CANN               |  20.3.0   |  5.0.2.1 |  5.0.3.1 |  5.0.4   |  5.1.RC1  |
+| optional components| version 1 | version 2 | version 3 | version 4 | version 5 | version 6 |
+|:------------------ | --------  | --------  | --------  | -------- | ---------- | --------- |
+| MindStudio         |  2.0.0    |  3.0.2    |  3.0.3   |    3.0.4   |  5.0.RC1  | 5.0.RC2   |
+| MindSpore          |  1.1.1    |  1.3.0    |  1.5.0    |   1.6.2   |   1.7.0   | 1.8.0     |
+| CANN               |  20.3.0   |  5.0.2.1 |  5.0.3.1 |  5.0.4   |  5.1.RC1.1  |  5.1.RC2   |
 
 Only one version of MindSpore or MindStudio that matches CANN package version should exist in the Resources directory during installation, as shown above. `./start_download.sh --download=<PK1>,<PK2>==<Version>`, when `<Version>` is missing, `<PK>` is the latest. `--download=MindSpore`, --os-list specifies the corresponding OS, please refer to the official website of [mindspore](https://mindspore.cn/versions) for some instructions. MindStudio installation please refer to the [install MindStudio](https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md).
 

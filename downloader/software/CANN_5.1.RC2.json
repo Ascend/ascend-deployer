@@ -1,0 +1,107 @@
+{
+    "name": "CANN",
+    "version": "5.1.RC2",
+    "default": true,
+    "other": [
+        {
+            "filename": "A300-3000-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563494",
+            "sha256": "9cf94d234c33b6321377607af4d565eb8e6d0a0620fa98f396618f4699bcc90f"
+        },
+        {
+            "filename": "A300-3010-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563511",
+            "sha256": "afbe27009ea89870c8ab98e27317bed679b3cb7e5d63d61ee3c92235b93e2153"
+        },
+        {
+            "filename": "A300t-9000-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563534",
+            "sha256": "78c144eb668e4b69b692701b97b418560dd4541cd58e5fc71ea9b677f877c117"
+        },
+        {
+            "filename": "A300t-9000-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563524",
+            "sha256": "1ef8158371ab78f374d3552f5b848d7778d7e3a12c270a59963529ed901fb699"
+        },
+        {
+            "filename": "Atlas-300i-pro-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563473",
+            "sha256": "3e0f7c35b468092c128d4af95ab38c3015e734485dd8d50dc19a506a5a6da5d9"
+        },
+        {
+            "filename": "Atlas-300i-pro-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563466",
+            "sha256": "efcdfa86c4d5e0c27b057023d6691ff3c317e0f5d4e75b8117c245e967fc682c"
+        },
+        {
+            "filename": "Atlas-300v-pro-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563500",
+            "sha256": "7857a7f1eb1847624e4c794e045e7c213d5593072980450940f02f9443213a1d"
+        },
+        {
+            "filename": "Atlas-300v-pro-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563502",
+            "sha256": "a92ec54e0625931923597860787931d1b4efcebc8aea7530897086e462523f54"
+        },
+        {
+            "filename": "Atlas-300i-duo-npu_5.1.rc2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563451",
+            "sha256": "5b7f7859410da86af876f71f5e46ccfa041a49be67f920d5e2fb3bc759fd74c2"
+        },
+        {
+            "filename": "Atlas-300i-duo-npu_5.1.rc2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/256003831-ESW2000563450",
+            "sha256": "90886eedd2f365f28751c68d52fe75a6ff3836182f88619f544ce22faa626c3d"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.RC2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255422147-ESW2000563253",
+            "sha256": "4b3cf8a26c805b26bba7a19af187a3e3e6a0df4e0aa2b36c041f65e368b2e693"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.RC2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255422147-ESW2000563255",
+            "sha256": "1d940f3eed5edb292d36fb68ff56bd4cb6c8a916e506e1004997bc3d45a367f6"
+        },
+        {
+            "filename": "Ascend-cann-nnae_5.1.RC2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563405",
+            "sha256": "4893e25178991cf6f6235f4a29301d805ecbeceda1c94f4f740815a1280fa440"
+        },
+        {
+            "filename": "Ascend-cann-nnae_5.1.RC2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563412",
+            "sha256": "1773e1323229239543dc8944f8680da3263e3a30b4e8d0f62e302a84854a4bfb"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_5.1.RC2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563415",
+            "sha256": "d7358777e8bfe1a698717bb023979fdeb6b6368bf473ce7034d1129c6394dc91"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_5.1.RC2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563413",
+            "sha256": "6429f50207dd8b128613911798f6e5067c36ece7c19920415ae10bd6bafb8d01"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_5.1.RC2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563410",
+            "sha256": "e0dc615f412f23b581b92b00d5afe5a1a7140822d5270866a0f4cd9d3d663c73"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_5.1.RC2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563407",
+            "sha256": "7be6b0b356d48ca4fa9f6e8194436618e3e23daf07c912c69d2ba6ba84c4e31d"
+        },
+        {
+            "filename": "Ascend-cann-toolkit_5.1.RC2_linux-aarch64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563408",
+            "sha256": "9210e4acd42f4b1e4a836f6507de2d3355546e5ebc1f5516812db00e42f2af64"
+        },
+        {
+            "filename": "Ascend-cann-toolkit_5.1.RC2_linux-x86_64.zip",
+            "url": "https://support.huawei.com/enterprise/zh/software/255432335-ESW2000563409",
+            "sha256": "be3d77e1e609352f2f9eb1cc027b1cd8faa2aaba61e8717815786b207bcf7071"
+        }
+    ]
+}

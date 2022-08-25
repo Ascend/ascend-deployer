@@ -1,11 +1,11 @@
 - name: Check when detect 300i/v but not set cus_npu_info
   debug:
     msg:
-      - "when NPU is 300i/300v, cus_npu_info must be set to 300i-pro or 300v-pro"
+      - "when NPU is 300i/300v, cus_npu_info must be set to 300i-pro or 300v-pro or 300v"
   failed_when: true
   when:
     - ansible_local.npu_info.product == "A300i"
-    - (cus_npu_info is not defined) or (cus_npu_info != "300i-pro" and cus_npu_info != "300v-pro")
+    - (cus_npu_info is not defined) or (cus_npu_info != "300i-pro" and cus_npu_info != "300v-pro" and cus_npu_info != "300v")
 
 - name: Check when detect not 300i/v but set cus_npu_info
   debug:
@@ -18,10 +18,10 @@
 
 - name: set npu scene first step
   set_fact:
-    tmp_npu_scene: "{{ 'a300i' if cus_npu_info == '300i-pro' else 'a300v'}}"
+    tmp_npu_scene: a300i
   when:
     - ansible_local.npu_info.product == "A300i"
-    - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro")
+    - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro") or (cus_npu_info != "300v")
 
 - name: set npu scene second step
   set_fact:
