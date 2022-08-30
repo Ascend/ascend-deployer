@@ -21,6 +21,10 @@
   import_tasks: task_get_npu_scene.yml
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
+  when: old_cann == "after-5.1"
+
+- set_fact: run_dir={{ old_scene_dict[npu_scene] }}
+  when: old_cann == "before-5.1"
 
 - name: find driver package linux only zip
   find:

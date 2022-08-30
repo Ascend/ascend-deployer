@@ -18,10 +18,10 @@
 
 - name: set npu scene first step
   set_fact:
-    tmp_npu_scene: a300i
+    tmp_npu_scene: "{{ 'a300i' if cus_npu_info == '300i-pro' else 'a300v'}}"
   when:
     - ansible_local.npu_info.product == "A300i"
-    - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro") or (cus_npu_info != "300v")
+    - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro") or (cus_npu_info == "300v")
 
 - name: set npu scene second step
   set_fact:

@@ -1,4 +1,4 @@
-- name: find toolbox package
+- name: find toolbox script
   find:
     paths: "{{ cann_dirs }}"
     recurse: no
@@ -6,31 +6,85 @@
     use_regex: yes
     patterns: ".*toolbox.*{{ ansible_architecture }}.sh"
   register: toolbox
+  when: old_cann == "after-5.1"
 
 - name: set log_path for root
   set_fact:
     log_path: /var/log/ascend_seclog/
-  when: ansible_user_uid == 0
+  when: old_cann == "after-5.1" and ansible_user_uid == 0
 
 - name: set log_path for non-root
   set_fact:
     log_path: ~/var/log/ascend_seclog/
-  when: ansible_user_uid != 0
+  when: old_cann == "after-5.1" and ansible_user_uid != 0
 
 - name: install toolbox
   shell: "bash {{ toolbox.files[0].path }} {{ log_path }}"
   register: toolbox_result
-  when: toolbox.matched > 0
+  when: old_cann == "after-5.1" and toolbox.matched > 0
   failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
 
 - name: message
   debug:
     msg:
       - "can not find toolbox package, toolbox install skipped"
-  when: toolbox.matched == 0
+  when: old_cann == "after-5.1" and toolbox.matched == 0
 
 - name: message
   debug:
     msg:
       - "{{ toolbox_result | default('NOT DEFINED') }}"
-  when: toolbox_result.changed
+  when: old_cann == "after-5.1" and toolbox_result.changed
+
+- name: find toolbox package
+  find:
+    paths: "{{ cann_dirs }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*toolbox.*{{ ansible_architecture }}.run"
+  register: toolbox
+  when: old_cann == "before-5.1"
+
+- name: check ascend cann install info
+  stat:
+    path: "{{ cann_info_path }}/ascend_cann_install.info"
+  register: install_info
+  when: old_cann == "before-5.1"
+
+- name: check ascend toolbox install info
+  stat:
+    path: "{{ cann_info_path }}/ascend_toolbox_install.info"
+  register: toolbox_info
+  when: old_cann == "before-5.1"
+
+- set_fact: install_info={{toolbox_info}}
+  when: old_cann == "before-5.1" and toolbox_info.stat.exists
+
+- name: set install_path enable
+  set_fact:
+    ins_path_cmd: "--install-path={{ install_path }}"
+  when: old_cann == "before-5.1" and (not install_info.stat.exists)
+
+- name: set install_path disable
+  set_fact:
+    ins_path_cmd: ""
+  when: old_cann == "before-5.1" and (install_info.stat.exists or ansible_user_uid != 0)
+
+- name: install toolbox
+  shell: "bash {{ toolbox.files[0].path }} --nox11 {{ cann_install_params }} {{ins_path_cmd}}"
+  register: toolbox_result
+  when: old_cann == "before-5.1" and (toolbox.matched > 0)
+  failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "can not find toolbox package, toolbox install skipped"
+  when: old_cann == "before-5.1" and toolbox.matched == 0
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolbox_result | default('NOT DEFINED') }}"
+  when: old_cann == "before-5.1" and toolbox_result.changed
