@@ -910,10 +910,16 @@ function process_install()
         echo "- import_playbook: distribution.yml" >> ${tmp_install_play}
     fi
     IFS=','
+    if [[ ${install_target} =~ "driver" && ${install_target} =~ "firmware" ]];then
+        echo "- import_playbook: install/install_npu.yml" >> ${tmp_install_play}
+    fi
     for target in ${install_target}
     do
         if [ ${target} == "python" ];then new_target="python375"
         else new_target=${target}
+        fi
+        if [[ ${target} == "driver" || ${target} == "firmware" ]] && [[ ${install_target} =~ "driver" && ${install_target} =~ "firmware" ]];then
+            continue
         fi
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
