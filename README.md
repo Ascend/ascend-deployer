@@ -299,7 +299,7 @@ ascend-deployer
 
     注意事项：
 
-       - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。
+       - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。安装时resources目录下的CANN包版本需和npu配套。
        - 安装driver或firmware后，可能需执行“reboot”重启设备使驱动和固件生效。
        - 部分组件存在运行时依赖，如pytorch需要toolkit或nnae提供运行时依赖，tensorflow 调用npu资源需要tfplugin + toolkit或nnae提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
        - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。

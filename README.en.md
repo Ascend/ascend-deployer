@@ -295,7 +295,7 @@ ascend-deployer
 
     Notes:
 
-        - Installation sequence: sys_pkg > python > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).
+        - Installation sequence: sys_pkg > python > npu(driver and firmware) > CANN software package(such as the Toolkit and nnrt) > AI framework(pytorch、tensorflow、mindspore).During installation, the cann package version under the resources directory needs to be matched with NPU.
         - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
         - Some components require runtime dependencies. For example, PyTorch requires the Toolkit or nnae to provide runtime dependencies, TensorFlow and npubridge and npudevice require TFPlugin and toolkit or TFPlugin and nnae to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
         - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
