@@ -1118,7 +1118,7 @@ function print_usage()
 
 FORCE_UPGRADE_NPU=false
 KERNELS_TYPE=nnae
-TENSORFLOW_VERSION=2.6.5
+TENSORFLOW_VERSION=1.15.0
 
 function parse_script_args() {
     if [ $# = 0 ];then
