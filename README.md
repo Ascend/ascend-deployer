@@ -89,7 +89,7 @@
 - BCLinux 7.6系统默认无python3，在执行下载操作时会先执行`yum install python3`命令。由于BCLinux 7.6系统源无python3组件，请用户参考BCLinux官方修改源配置文件，或直接将"/etc/yum.repos.d/BCLinux-Base.repo"里的"el7.6"字样改为"el7.7"(执行`sed -i 's/el7.6/el7.7/g' /etc/yum.repos.d/BCLinux-Base.repo`命令)，安装完成后请恢复原来的配置。
 - 本工具不下载tensorflow-1.15.0 aarch64、tensorflow-2.6.5 aarch64、torch-1.5.0/apex-0.1 aarch64/x86_64和torch-1.8.1/apex-0.1/torch_npu-1.8.1 aarch64/x86_64的Python组件包，需用户自行准备后放置在resources/pylibs目录下，否则会跳过安装。
 - tensorflow aarch64编译时请严格遵守官方的编译规范。
-- tensorflow 1.15.0 仅适配python3.7，tensorflow 2.6.5 适配python3.7、python3.8、python3.9。
+- tensorflow 1.15.0 仅适配python3.7，tensorflow 2.6.5 适配python3.7、python3.8、python3.9。由于依赖冲突，已安装一个版本后，安装另一个版本需先卸载已安装版本。
 - 基于安全考虑，建议将ascend-deployer的下载和解压目录（ascend-deployer目录）进行加固，将其权限设置为仅允许本人使用。
 - 如果准备在Linux下使用自动下载功能，请提前配置好GUI界面并直接运行下载指令。
 - 老版本的软件包请使用上迭代的ascend-deployer（2.0.4）进行安装。
@@ -299,7 +299,7 @@ ascend-deployer
 
     注意事项：
 
-       - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。
+       - 请按照“sys_pkg>python3.7.5>npu(driver、firmware)>CANN软件包(toolkit、nnrt等)>AI框架(pytorch、tensorflow、mindspore)”顺序进行安装。安装时resources目录下的CANN包版本需和npu配套。
        - 安装driver或firmware后，可能需执行“reboot”重启设备使驱动和固件生效。
        - 部分组件存在运行时依赖，如pytorch需要toolkit或nnae提供运行时依赖，tensorflow 调用npu资源需要tfplugin + toolkit或nnae提供运行时依赖，mindspore需要driver和toolkit提供运行时的依赖。
        - 所有python库的安装都必须先安装python3.7.5，如pytorch、tensorflow、mindspore等。

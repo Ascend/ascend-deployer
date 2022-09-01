@@ -10,7 +10,10 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
-readonly A310P_PRODUCT_LIST="Ascend310P,Atlas-300v,A300i-pro,Atlas-300i-pro,A300v-pro,Atlas-300v-pro,Atlas-300i-duo,A300i-duo"
+readonly A300I_PRODUCT_LIST="A300i-pro,Atlas-300i-pro"
+readonly A300V_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
+readonly A300IDUO_PRODOUCT_LIST="A300i-duo,Atlas-300i-duo"
+readonly A310P_PRODUCT_LIST="Ascend310P,Atlas-300v"
 readonly INFER_PRODUCT_LIST="Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly TRAIN_PRODUCT_LIST="Ascend910,A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
@@ -714,11 +717,55 @@ function compare_crl()
     return 0
 }
 
+OLD_CANN="after-5.1"
+OLD_CANN_VERSION="5.0,20,2.0"
+OLD_NPU_VERSION="20,21,22"
+function check_zip_version()
+{
+    local zip_version=$(basename ${zip_file} | cut -d '_' -f2)
+    IFS=","
+    for version in $1
+    do
+        if [[ "$zip_version" =~ ${version} ]];then
+            echo 1
+            unset IFS
+            return 0
+        fi
+    done
+    echo 0
+    unset IFS
+    return 0
+}
+
 function zip_extract()
 {
     if [[ "$(basename ${zip_file})" =~ zip ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
+            if [[ $(check_zip_version ${OLD_CANN_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+            fi
+        elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+            else
+                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
+        elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
+            else
+                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
+        elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
+            else
+                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
         elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -863,17 +910,23 @@ function process_install()
         echo "- import_playbook: distribution.yml" >> ${tmp_install_play}
     fi
     IFS=','
+    if [[ ${install_target} =~ "driver" && ${install_target} =~ "firmware" ]];then
+        echo "- import_playbook: install/install_npu.yml" >> ${tmp_install_play}
+    fi
     for target in ${install_target}
     do
         if [ ${target} == "python" ];then new_target="python375"
         else new_target=${target}
         fi
+        if [[ ${target} == "driver" || ${target} == "firmware" ]] && [[ ${install_target} =~ "driver" && ${install_target} =~ "firmware" ]];then
+            continue
+        fi
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
@@ -896,9 +949,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann=${OLD_CANN} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
@@ -1065,7 +1118,7 @@ function print_usage()
 
 FORCE_UPGRADE_NPU=false
 KERNELS_TYPE=nnae
-TENSORFLOW_VERSION=2.6.5
+TENSORFLOW_VERSION=1.15.0
 
 function parse_script_args() {
     if [ $# = 0 ];then
