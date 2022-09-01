@@ -436,7 +436,7 @@ The following table describes the parameters. You can run the `./install.sh --he
 | --clean                           | Clean the Resources directory under the user's home directory for the device to be installed.                                                                                  |
 | --nocopy                          | Forbids resources copying during batch installation.                                                                                                                           |
 | --force_upgrade_npu               | Can force upgrade NPU when not all devices have exception                                         |
- --tensorflow_version               | Appoint tensorflow version,must be 1.15.0 or 2.6.5,default is 2.6.5                               |
+ --tensorflow_version               | Appoint tensorflow version,must be 1.15.0 or 2.6.5,default is 1.15.0                              |
 | --kernels_type                    | Appoint kernels package type,must be nnae or toolkit,default is nnae                              |
 | --verbose                           | Print verbose.                                                                                                                                                            |
 | --output-file=<output_file>       | Set the output format of the command execution. The available parameters can be viewed with the command "ansible -doc-t callback-l".                                           |
