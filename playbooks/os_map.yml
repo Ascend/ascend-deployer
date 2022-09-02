@@ -49,6 +49,8 @@ scene_dict:
     - "{{ resources_dir }}/run_from_train_zip"
   a300iduo:
     - "{{ resources_dir }}/run_from_a310p_zip"
+  soc:
+    - "{{ resources_dir }}/run_from_soc_zip"
 old_scene_dict:
   a300i:
     - "{{ resources_dir }}/run_from_a300i_zip"

@@ -16,13 +16,37 @@
     - ansible_local.npu_info.product != "A300i"
     - cus_npu_info is defined
 
-- name: set npu scene first step
+- name: Check when detect NPU but set chip_name
+  debug:
+    msg:
+      - "when NPU is detected, chip_name must be undefined"
+  failed_when: true
+  when:
+    - ansible_local.npu_info.product != ""
+    - chip_name is defined
+
+- name: Check when NPU is not detected but set chip_name
+  debug:
+    msg:
+      - "when chip_name set, chip_name must be set to 310P"
+  failed_when: true
+  when:
+    - chip_name is defined and chip_name != "310P"
+
+- name: set tmp_npu_scene when set cus_npu_info
   set_fact:
     tmp_npu_scene: "{{ 'a300i' if cus_npu_info == '300i-pro' else 'a300v'}}"
   when:
     - ansible_local.npu_info.product == "A300i"
     - (cus_npu_info == "300i-pro") or (cus_npu_info == "300v-pro") or (cus_npu_info == "300v")
 
-- name: set npu scene second step
+- name: set tmp_npu_scene when set chip_name
+  set_fact:
+    tmp_npu_scene: soc
+  when:
+    - chip_name is defined
+    - ansible_local.npu_info.product == ""
+
+- name: set npu scene
   set_fact:
     npu_scene: "{{ tmp_npu_scene if tmp_npu_scene is defined else ansible_local.npu_info.scene }}"

@@ -1,15 +1,15 @@
 - name: include vars
   include_vars: ../os_map.yml
 
+- name: get npu scene
+  import_tasks: task_get_npu_scene.yml
+
 - name: message
   debug:
     msg:
       - "can not find npu card, please check!"
   failed_when: true
-  when: ansible_local.npu_info.scene == ""
-
-- name: get npu scene
-  import_tasks: task_get_npu_scene.yml
+  when: ansible_local.npu_info.scene == "" and npu_scene == ""
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
   when: old_cann == "after-5.1"
@@ -29,7 +29,7 @@
 - name: message
   debug:
     msg:
-    - "driver not installed, please install driver first"
+      - "driver not installed, please install driver first"
   failed_when: true
   when: up_tool.matched == 0
 
