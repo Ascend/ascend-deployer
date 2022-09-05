@@ -1,12 +1,15 @@
 - name: include vars
   include_vars: ../os_map.yml
 
+- name: get npu scene
+  import_tasks: task_get_npu_scene.yml
+
 - name: message
   debug:
     msg:
       - "can not find npu card, please check!"
   failed_when: true
-  when: ansible_local.npu_info.scene == ""
+  when: ansible_local.npu_info.scene == "" and npu_scene == ""
 
 - name: find driver upgrade tool
   find:
@@ -16,9 +19,6 @@
     use_regex: yes
     patterns: "upgrade-tool"
   register: up_tool
-
-- name: get npu scene
-  import_tasks: task_get_npu_scene.yml
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
   when: old_cann == "after-5.1"

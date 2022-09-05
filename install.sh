@@ -10,6 +10,7 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
+readonly A310P_SOC_PRODUCT_LIST="Ascend-hdk-310p-npu-soc"
 readonly A300I_PRODUCT_LIST="A300i-pro,Atlas-300i-pro"
 readonly A300V_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
 readonly A300IDUO_PRODOUCT_LIST="A300i-duo,Atlas-300i-duo"
@@ -745,6 +746,8 @@ function zip_extract()
             if [[ $(check_zip_version ${OLD_CANN_VERSION}) == 1 ]];then
                 OLD_CANN="before-5.1"
             fi
+        elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${zip_file})) == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
                 OLD_CANN="before-5.1"
