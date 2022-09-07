@@ -67,12 +67,13 @@ The offline installation tool provides automatic download and one-click installa
 - Offline installation tools except install.sh、start_download.sh、start_download_ui.bat and start_download.bat, the rest of the files are not designed for the user to use the interface or command. Do not use them directly.
 - It is forbidden to put the password in the inventory_file file.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
-- A300I Pro,A300V Pro and A300v must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.Edit inventory_file in the following format:
+- A300I Pro,A300V Pro and A300v must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.1U SOC must be set varialble **chip_name** in inventory_file.The value of chip_name is 310p.Edit inventory_file in the following format:
   ```
    [ascend]
    localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
    ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
-   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v'  # A300V
+   ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # A300V
+   ip_address_3 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
    ```
 - The hardware configurations of the Atlas200 EP and A300 card (A300-3000, A300-3010, A800-3000, and A800-3010) cannot be distinguished. The following conditions must be met when using the Atlas200 EP. The Atlas200 EP and A300 inference card environments cannot be deployed in batches. If the deployed machine contains the Atlas200 EP, do not store the NPU package of the A300 EP in the Resources directory. If the deployed machine contains the A300 inference card, do not store the NPU package of the Atlas200 EP in the Resources directory. Because of the above two restrictions, `--download=CANN` does not include the NPU package of Atlas200 EP. Please prepare it yourself.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
@@ -88,7 +89,6 @@ The offline installation tool provides automatic download and one-click installa
 - Please strictly follow the official compilation specification when compiling tensorflow aarch64.
 - Tensorflow 1.15.0 is only applicable to python3.7, and tensorflow 2.6.5 is applicable to python3.7, python3.8, and python3.9.Due to dependency conflict, after installing one version, you need to uninstall the installed version before installing another version.
 - If you plan to use the automatic download function under Linux, please configure the GUI interface in advance and directly run the download instruction.
-- Please use ascend deployer (2.0.4) of the previous iteration to install the old version of the software package.
 - Euleros, SLES, Debian and other systems may trigger driver source compilation when installing the driver. Users are required to install the kernel header package consistent with the kernel version of the system (which can be viewed through 'uname -r' command). The details are as follows.
 - Based on security considerations, it is recommended to reinforce the unzipped installation directory(ascend-deployer) and set its permission to only allow owner to use.
 
@@ -299,6 +299,7 @@ ascend-deployer
         - After the driver or firmware is installed, maybe you need run the `reboot` command to restart the device for the driver and firmware to take effect.
         - Some components require runtime dependencies. For example, PyTorch requires the Toolkit or nnae to provide runtime dependencies, TensorFlow and npubridge and npudevice require TFPlugin and toolkit or TFPlugin and nnae to provide runtime dependencies, and mindspore require driver and toolkit to provide runtime dependencies.
         - All the installation of Python libraries must first install Python 3.7.5, such as python, tensorflow, Mindstore, etc.
+        - During installation, the running environment time needs to be calibrated to the correct UTC time through the date - s command.
 
     - 2.2 Scenario-specific installation(Recommended for non-professional users)
 
