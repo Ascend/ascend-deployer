@@ -4,13 +4,13 @@
     recurse: yes
     file_type: file
     use_regex: yes
-    patterns: "Makefile"
+    patterns: "version.info"
   register: driver
 
 - name: message
   debug:
     msg:
-    - "driver not installed"
+      - "driver not installed"
   when: driver.matched == 0
 
 - name: execute npu-smi info
