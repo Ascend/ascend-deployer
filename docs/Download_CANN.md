@@ -41,3 +41,4 @@ patch <系统python3的第三方包目录>/selenium/webdriver/firefox/firefox_pr
 1. 本工具会把软件包及.asc数字签名同时下载下来，用户可从下载页面处获取数字签名验证工具对软件包进行人工验签。
 2. 这个功能要在有GUI界面的linux服务器上直接运行。
 3. 请确保下载软件包时网络通畅。
+4. 如果下载失败，请确认ascend-deployer/downloader/software/CANN_`<version>`.json内的URL可以正常访问，如果出现资源不存在或已删除，请访问网址["https://support.huawei.com/enterprise/zh/ascend-computing/ascend-data-center-solution-pid-251167910/software"]查看版本配套关系，参考ascend-deployer/downloader/software/CANN_`<version>`.json的格式替换失效的filename和url。
