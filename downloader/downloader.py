@@ -15,6 +15,7 @@
 # limitations under the License.
 # ===========================================================================
 """downloader"""
+import glob
 import os
 import sys
 import shutil
@@ -185,6 +186,18 @@ def get_download_path():
     return os.path.join(deployer_home, 'ascend-deployer')
 
 
+def delete_glibc(os_list, download_path):
+    delete_os_list = ['Kylin_V10Tercel_aarch64', 'Kylin_V10Tercel_x86_64']
+    for i in delete_os_list:
+        if i in os_list:
+            os_dir = os.path.join(download_path, 'resources', i)
+            glibc = glob.glob('{}/glibc-[0-9]*'.format(os_dir))
+            try:
+                os.unlink(glibc[0])
+            except IndexError:
+                pass
+
+
 def main():
     """
     entry for console
@@ -225,7 +238,9 @@ def main():
         log_msg = "downloading --os-list={} --download={}: {}".format(
             args.os_list, args.packages, download_status)
         LOG_OPERATION.info(log_msg, extra=logger_config.LOG_CONF.EXTRA)
+        delete_glibc(os_list, download_path)
         sys.exit(exit_status)
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -249,5 +264,6 @@ if __name__ == "__main__":
                 ",".join(download_util.CONFIG_INST.get_download_pkg_list()),
                 _download_status)
             LOG_OPERATION.info(_log_msg, extra=logger_config.LOG_CONF.EXTRA)
+            delete_glibc(download_util.CONFIG_INST.get_download_os_list(), get_download_path())
     else:
         main()
