@@ -45,16 +45,16 @@ The offline installation tool provides automatic download and one-click installa
 |  Ubuntu  |20.04.1  |      x86_64      | A minimal image is installed by default. |
 
 ### Description of supported hardware configuration
-|  Central Inference Hardware  |  Central Training Hardware  |  Intelligent Edge Hardware  |
-|:-------------:|:-------------:|:-------------:|
-|  A300-3000    |  A300T-9000   |  A500 Pro-3000|
-|  A300-3010    |  A800-9000    |  Atlas200(EP) |
-|  A300I Pro    |  A800-9010    |               |
-|  A300V Pro    |               |               |
-|  A300I DUO    |               |               |
-|  A800-3000    |               |               |
-|  A800-3010    |               |               |
-|  A300V        |               |               |
+|  Central Inference Hardware     |  Central Training Hardware  |  Intelligent Edge Hardware  |
+|:-------------:|:---------------:|:-------------:|
+|  A300-3000    |  A300T-9000     |  A500 Pro-3000|
+|  A300-3010    |  A800-9000      |  Atlas200(EP) |
+|  A300I Pro    |  A800-9010      |               |
+|  A300V Pro    |  Atlas 300T Pro |               |
+|  A300I DUO    |                 |               |
+|  A800-3000    |                 |               |
+|  A800-3010    |                 |               |
+|  A300V        |                 |               |
 
 ## Precautions
 
@@ -67,13 +67,15 @@ The offline installation tool provides automatic download and one-click installa
 - Offline installation tools except install.sh、start_download.sh、start_download_ui.bat and start_download.bat, the rest of the files are not designed for the user to use the interface or command. Do not use them directly.
 - It is forbidden to put the password in the inventory_file file.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
-- A300I Pro,A300V Pro and A300v must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.1U SOC must be set varialble **chip_name** in inventory_file.The value of chip_name is 310p.Edit inventory_file in the following format:
+- A300I Pro,A300V Pro,A300v,A300T-9000 and Atlas 300T Pro must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.1U SOC must be set varialble **chip_name** in inventory_file.The value of chip_name is 310p.Edit inventory_file in the following format:
   ```
    [ascend]
    localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
    ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
    ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # A300V
-   ip_address_3 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
+   ip_address_3 ansible_ssh_user='root' cus_npu_info='300t'      # A300T-9000
+   ip_address_4 ansible_ssh_user='root' cus_npu_info='300t-pro'  # Atlas 300T Pro
+   ip_address_5 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
    ```
 - The hardware configurations of the Atlas200 EP and A300 card (A300-3000, A300-3010, A800-3000, and A800-3010) cannot be distinguished. The following conditions must be met when using the Atlas200 EP. The Atlas200 EP and A300 inference card environments cannot be deployed in batches. If the deployed machine contains the Atlas200 EP, do not store the NPU package of the A300 EP in the Resources directory. If the deployed machine contains the A300 inference card, do not store the NPU package of the Atlas200 EP in the Resources directory. Because of the above two restrictions, `--download=CANN` does not include the NPU package of Atlas200 EP. Please prepare it yourself.
 - When installing the SLES driver, the offline installer will set "allow_unsupported_modules" in /etc/modprob. d/10-unsupported-modules.conf to "1", which means that non-native drivers are allowed to be loaded during system boot.
