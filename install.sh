@@ -17,6 +17,7 @@ readonly A300IDUO_PRODOUCT_LIST="A300i-duo,Atlas-300i-duo"
 readonly A310P_PRODUCT_LIST="Ascend-hdk-310p,Ascend310P,Atlas-300v"
 readonly INFER_PRODUCT_LIST="Ascend-hdk-310,Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly TRAIN_PRODUCT_LIST="Ascend-hdk-910,Ascend910,A300t-9000,A800-9000,A800-9010,A900-9000"
+readonly TRAIN_PRO_PRODUCT_LIST="Atlas-300t-pro"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
 readonly APP_NAME_LIST=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
 
@@ -775,6 +776,8 @@ function zip_extract()
             local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
         elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
+        elif [[ $(check_npu_scene ${TRAIN_PRO_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_train_pro_zip
         else
             echo "not support $(basename ${zip_file}), please check" >> ${BASE_DIR}/install.log
             return 1

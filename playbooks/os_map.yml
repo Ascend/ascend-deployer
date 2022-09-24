@@ -47,6 +47,8 @@ scene_dict:
     - "{{ resources_dir }}/run_from_infer_zip"
   train:
     - "{{ resources_dir }}/run_from_train_zip"
+  trainpro:
+    - "{{ resources_dir }}/run_from_train_pro_zip"
   a300iduo:
     - "{{ resources_dir }}/run_from_a310p_zip"
   soc:
