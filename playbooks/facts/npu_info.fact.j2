@@ -86,7 +86,7 @@ def get_scene(profile_model):
 
 
 def get_chip_info(vid, did, svid, sdid, arch):
-    chip_meta_data = ChipMetaData(vid, did, svid, sdid, arch)
+    chip_meta_data = ChipMetaData(vid.lower(), did.lower(), svid, sdid, arch)
     return CHIPS_DICT.get(chip_meta_data, '--')
 
 
@@ -143,18 +143,22 @@ def get_metadatas(bdf_path):
 
 
 def get_model():
-    bdf_file_path = ''
+    bdf_file_paths = []
     DEVNULL = open(os.devnull, 'w')
-    chip_count = 0
     for candidate_dir in glob.glob('/sys/bus/pci/devices/*'):
         find_metadata_cmd = ["grep", "0x1200",
                              os.path.join(candidate_dir, "class")]
         return_code = subprocess.call(find_metadata_cmd, shell=False,
                                       stdout=DEVNULL, stderr=subprocess.STDOUT)
         if return_code == 0:
-            bdf_file_path = candidate_dir
-            chip_count = chip_count + 1
+            bdf_file_paths.append(candidate_dir)
+    for bdf_file_path in bdf_file_paths:
+        model = _get_model(bdf_file_path, DEVNULL)
+        if model != '--':
+            return model
+    return '--'
 
+def _get_model(bdf_file_path, DEVNULL):
     ret = check_metadata_file_existance(bdf_file_path)
     if not ret:
         return '--'
