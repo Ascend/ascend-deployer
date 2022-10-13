@@ -58,6 +58,7 @@ The offline installation tool provides automatic download and one-click installa
 
 ## Precautions
 
+- If the gcc version of the system is lower than 7.3.0, the offline installation tool will be automatically installed, which takes a long time; Users can also avoid the automatic upgrade by manually upgrading in advance and configuring environment variables.
 - By default, the offline installation tool downloads and installs Python-3.7.5 as a Python version of the Cann package. This is explained in Python-3.7.5.Users can select the Python version by setting the ASCEND_PYTHON_VERSION environment variable, or the ASCEND_PYTHON_VERSION configuration item in the downloader/config.ini file (environment variable is preferred when setting at the same time).The optional Python versions are 3.7.0 to 3.7.11 and 3.8.0 to 3.8.11. This tool has only been fully adapted and tested on Python-3.7.5, and it is strongly recommended not to change the default configuration.
 - Basic commands such as **tar**, **cd**, **ls**, **find**, **grep**, **chown**, **chmod**, **unzip**, **bzip2**,**ssh** must be installed in the OS. It is recommended that during the installation process of Ubuntu/Debian system, select the option of [OpenSSH Server]/[SSH Server] when going to [Software Selection] to avoid missing SSH command.
 - Kylin V10 GFB system downloads kylin when the system is dependent_ V10Tercel_ Aarch64 is enough.
