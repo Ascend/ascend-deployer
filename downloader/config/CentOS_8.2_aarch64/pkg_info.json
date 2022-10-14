@@ -13,6 +13,10 @@
         "url":"https://dl.fedoraproject.org/pub/archive/epel/8.5.2022-05-10/Everything/aarch64/Packages/s/sshpass-1.06-9.el8.aarch64.rpm",
         "sha256": "9656bf3703739b0b29b68e0574781118e2327a8e2ee11319fd214c74b9d3c336"
     },
+    { "name": "dkms-2.7.1-1.el7.noarch.rpm",
+        "url":"https://mirrors.huaweicloud.com/epel/7/aarch64/Packages/d/dkms-2.7.1-1.el7.noarch.rpm",
+        "sha256": "cb617642732cdc5e81ab6afb9e805f084865716580f944d78034c7d5298025d2"
+    },
     {
         "name": "docker-ce-cli",
         "version": "20.10.8",
@@ -275,9 +279,6 @@
     },
     {
         "name": "bzip2-devel", "used_by": [ "driver", "cann", "framework" ]
-    },
-    {
-        "name": "dkms", "used_by": [ "driver", "cann", "framework" ]
     },
     {
         "name": "elfutils-libelf", "used_by": [ "driver", "cann", "framework" ]
