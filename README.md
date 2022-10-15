@@ -642,3 +642,8 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 
 5. Q: euler系统作为worker节点时安装tensoflow2.6.5出现“Failed to connect to the host via ssh: Shared connection to XX closed"等字样。
 - A: 主机中设置了ssh连接会话超时时间，部署任务的时间超过了设置的ssh连接会话超时时间会导致该错误。修改“/etc/ssh/sshd_config”文件中的“ClientAliveInterval”关键字的值为“1800”（超时时间为30分钟），然后执行`systemctl restart sshd`重启sshd服务。
+
+1. Q: 如果系统安装torch-1.8.1后导入torch出现“ImportError: libblas.so.3: cannot open shared object file: No such file or directory”等字样是什么原因？
+- A：系统未安装openblas依赖，导致没有这个库，执行`yum install openblas`安装系统依赖，然后创建软链接。创建方式参考如下（请以具体的库版本为准）：
+  - 执行`find / -name libopenblas*so`查找libopenblas-r0.3.9.so文件（具体显示的版本以实际为准）。
+  - 执行`ln -s /usr/lib64/libopenblas-r0.3.9.so /usr/lib64/libblas.so.3`和`ln -s /usr/lib64/libopenblas-r0.3.9.so /usr/lib64/liblapack.so.3`创建软链接。
