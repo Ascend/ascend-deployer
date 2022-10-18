@@ -641,3 +641,6 @@ https://ms-release.obs.cn-north-4.myhuaweicloud.com
 - A: The system does not install the openblas dependency, which results in the absence of this library. Execute `yum install openblas` to install the system dependency, and then create a soft link. The creation method is as follows (please refer to the specific library version):
   - Execute `find / -name libopenblas*so` to find the libopenblas-r0.3.9.so file (the specific version displayed is subject to the actual version).
   - Execute `ln -s /usr/lib64/libopenblas-r0.3.9.so /usr/lib64/libblas.so.3` and `ln -s /usr/lib64/libopenblas-r0.3.9.so /usr/lib64/liblapack.so.3` Create soft links.
+
+7. Q: What is the reason for the words "ImportError: libquadmath.so.0: cannot open shared object file: No such file or directory" when importing torch after installing torch-1.8.1 in the system.
+- A: There is no system dependency. Execute 'yum install libquadmath' to install the system dependency.
