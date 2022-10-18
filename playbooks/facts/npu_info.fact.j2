@@ -198,6 +198,7 @@ def _get_model(bdf_file_path, DEVNULL):
             if len(product_infos) < 2:
                 return chip_info
             raw_product = product_infos[1]
+            break
     product = raw_product.replace('\t', '').replace('\n', '')
     if 'Atlas' in product and ('800 (Model 3000)' not in product and '800 (Model 3010)' not in product):
         return product.strip()
