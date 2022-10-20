@@ -47,16 +47,17 @@
 
 ### 支持的硬件形态说明
 
-|  中心推理硬件  |  中心训练硬件    |  智能边缘硬件  |
-|:-------------:|:---------------:|:-------------:|
-|  A300-3000    |  A300T-9000     |  A500 Pro-3000|
-|  A300-3010    |  A800-9000      |  Atlas200(EP) |
-|  A300I Pro    |  A800-9010      |               |
-|  A300V Pro    |  Atlas 300T Pro |               |
-|  A300I DUO    |                 |               |
-|  A800-3000    |                 |               |
-|  A800-3010    |                 |               |
-|  A300V        |                 |               |
+|  中心推理硬件       |  中心训练硬件    |  智能边缘硬件  |
+|:------------------:|:---------------:|:-------------:|
+|  A300-3000         |  A300T-9000     |  A500 Pro-3000|
+|  A300-3010         |  A800-9000      |  Atlas200(EP) |
+|  Atlas 300I Pro    |  A800-9010      |               |
+|  Atlas 300V Pro    |  Atlas 300T Pro |               |
+|  Atlas 300I Duo    |                 |               |
+|  A800-3000         |                 |               |
+|  A800-3010         |                 |               |
+|  Atlas 300V        |                 |               |
+|  Atlas 200I SoC A1 |                 |               |
 
 
 ## 注意事项
@@ -71,13 +72,13 @@
 - 离线安装工具除了install.sh、start_download.sh、start_download_ui.bat和start_download.bat外，其余文件并非设计给用户使用的接口或者命令，请勿直接使用。
 - 禁止将密码放到inventory_file文件里。
 - A300T训练卡低版本内核（低于4.5）的CentOS 7.6 x86_64需要将CentOS升级至8.0及以上或添加内核补丁，否则可能导致固件安装失败。添加内核补丁的方法请参考[参考链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be)。
-- A300I Pro、A300V Pro、A300V、A300T-9000和Atlas 300T pro卡安装驱动或固件时必须在inventory_file中提前配置cus_npu_info变量, 其中, A300I pro须配置为300i-pro, A300V Pro须配置为300v-pro，A300V须配置为300v，A300T-9000须配置为300t，Atlas 300T Pro须配置为300t-pro。1U SOC形态安装驱动或固件和toolbox时必须在inventory_file中提前配置chip_name变量，值为310P。编辑inventory_file文件，格式如下：
+- Atlas 300I Pro、Atlas 300V Pro、Atlas 300V、A300T-9000和Atlas 300T pro卡安装驱动或固件时必须在inventory_file中提前配置cus_npu_info变量, 其中, Atlas 300I pro须配置为300i-pro, Atlas 300V Pro须配置为300v-pro，Atlas 300V须配置为300v，A300T-9000须配置为300t，Atlas 300T Pro须配置为300t-pro。1U SOC形态安装驱动或固件和toolbox时必须在inventory_file中提前配置chip_name变量，值为310P。编辑inventory_file文件，格式如下：
 
    ```
    [ascend]
-   localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
-   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
-   ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # A300V
+   localhost ansible_connection='local' cus_npu_info='300i-pro'  # Atlas 300I Pro
+   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # Atlas 300V Pro
+   ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # Atlas 300V
    ip_address_3 ansible_ssh_user='root' cus_npu_info='300t'      # A300T-9000
    ip_address_4 ansible_ssh_user='root' cus_npu_info='300t-pro'  # Atlas 300T Pro
    ip_address_5 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
