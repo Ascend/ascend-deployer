@@ -46,15 +46,16 @@ The offline installation tool provides automatic download and one-click installa
 
 ### Description of supported hardware configuration
 |  Central Inference Hardware     |  Central Training Hardware  |  Intelligent Edge Hardware  |
-|:-------------:|:---------------:|:-------------:|
-|  A300-3000    |  A300T-9000     |  A500 Pro-3000|
-|  A300-3010    |  A800-9000      |  Atlas200(EP) |
-|  A300I Pro    |  A800-9010      |               |
-|  A300V Pro    |  Atlas 300T Pro |               |
-|  A300I DUO    |                 |               |
-|  A800-3000    |                 |               |
-|  A800-3010    |                 |               |
-|  A300V        |                 |               |
+|:------------------:|:---------------:|:-------------:|
+|  A300-3000         |  A300T-9000     |  A500 Pro-3000|
+|  A300-3010         |  A800-9000      |  Atlas200(EP) |
+|  Atlas 300I Pro    |  A800-9010      |               |
+|  Atlas 300V Pro    |  Atlas 300T Pro |               |
+|  Atlas 300I Duo    |                 |               |
+|  A800-3000         |                 |               |
+|  A800-3010         |                 |               |
+|  Atlas 300V        |                 |               |
+|  Atlas 200I SoC A1 |                 |               |
 
 ## Precautions
 
@@ -68,12 +69,12 @@ The offline installation tool provides automatic download and one-click installa
 - Offline installation tools except install.sh、start_download.sh、start_download_ui.bat and start_download.bat, the rest of the files are not designed for the user to use the interface or command. Do not use them directly.
 - It is forbidden to put the password in the inventory_file file.
 - CentOS 7.6 x86_64 with lower version kernel (below 4.5) of ATLAS 300T training card requires CentOS to be upgraded to 8.0 or above or a kernel patch is added. Failure to do so may result in firmware installation failure.Add a kernel patch method please refer to the reference [link] (https://support.huawei.com/enterprise/zh/doc/EDOC1100162133/b56ad5be).
-- A300I Pro,A300V Pro,A300v,A300T-9000 and Atlas 300T Pro must be set variable **cus_npu_info** in inventory_file, A300I pro should be **300i-pro**, A300V Pro should be **300v-pro**,A300V shoud be **300V**.1U SOC must be set varialble **chip_name** in inventory_file.The value of chip_name is 310p.Edit inventory_file in the following format:
+- Atlas 300I Pro,Atlas 300V Pro,Atlas 300V,A300T-9000 and Atlas 300T Pro must be set variable **cus_npu_info** in inventory_file, Atlas 300I pro should be **300i-pro**, Atlas 300V Pro should be **300v-pro**,Atlas 300V shoud be **300V**.1U SOC must be set varialble **chip_name** in inventory_file.The value of chip_name is 310p.Edit inventory_file in the following format:
   ```
    [ascend]
-   localhost ansible_connection='local' cus_npu_info='300i-pro'  # A300I Pro
-   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # A300V Pro
-   ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # A300V
+   localhost ansible_connection='local' cus_npu_info='300i-pro'  # Atlas 300I Pro
+   ip_address_1 ansible_ssh_user='root' cus_npu_info='300v-pro'  # Atlas 300V Pro
+   ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # Atlas 300V
    ip_address_3 ansible_ssh_user='root' cus_npu_info='300t'      # A300T-9000
    ip_address_4 ansible_ssh_user='root' cus_npu_info='300t-pro'  # Atlas 300T Pro
    ip_address_5 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
