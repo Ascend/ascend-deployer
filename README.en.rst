@@ -826,6 +826,10 @@ Batch Installation
 
       exit   # Exit the ssh-agent bash process
 
+6. The default concurrency number is 5, and the maximum concurrency number is 255. 
+   If the number of environments to be deployed is greater than 5, 
+   you can modify the forks value in the ansible.cfg file to the total number of nodes to be deployed.
+
 Operation instruction: pip install
 ==================================
 
