@@ -26,4 +26,6 @@
         src: ~/resources.tar
         dest: ~/
         copy: no
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
       when: ansible_connection != "local"
