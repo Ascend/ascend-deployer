@@ -813,7 +813,7 @@ function hmac_check()
         return 1
     fi
     [[ ! "$(openssl crl -in ${updated_crl} -inform DER -noout -text)" =~ "$(openssl x509 -in ${ca_file} -serial -noout | awk -F'serial=' '{print $2}')" ]] \
-    && openssl cms -verify -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
+    && openssl cms -verify --no_check_time -in ${cms_file} -inform DER -CAfile ${ca_file} -binary -content ${zip_file} -purpose any -out /dev/null 2>/dev/null
     local verify_success=$?
     if [[ ${verify_success} -ne 0 ]];then
         echo "$(basename ${updated_crl}) or $(basename ${cms_file}) check cms validation not pass for $(basename ${ca_file})" >> ${BASE_DIR}/install.log

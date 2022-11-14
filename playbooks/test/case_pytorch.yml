@@ -30,7 +30,10 @@
     - add_ons_dir.rc == 0 and add_ons_dir.stdout != '0'
 
 - name: test import pytorch without add-ons
-  shell: . {{ ascend_install_path }}/ascend-toolkit/set_env.sh && python3 -c "import torch; print(torch.__version__)"
+  shell: |
+    if [ -f {{ ascend_install_path }}/ascend-toolkit/set_env.sh ];then . {{ ascend_install_path }}/ascend-toolkit/set_env.sh;fi
+    if [ -f {{ ascend_install_path }}/nnae/set_env.sh ];then . {{ ascend_install_path }}/nnae/set_env.sh;fi
+    python3 -c "import torch; print(torch.__version__)"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64"
@@ -47,7 +50,10 @@
     - add_ons_dir.stdout == '0' or add_ons_dir_protobuf.stdout == '0'
 
 - name: test import pytorch with add-ons
-  shell: . {{ ascend_install_path }}/ascend-toolkit/set_env.sh && python3 -c "import torch; print(torch.__version__)"
+  shell:
+    if [ -f {{ ascend_install_path }}/ascend-toolkit/set_env.sh ];then . {{ ascend_install_path }}/ascend-toolkit/set_env.sh;fi
+    if [ -f {{ ascend_install_path }}/nnae/set_env.sh ];then . {{ ascend_install_path }}/nnae/set_env.sh;fi
+    python3 -c "import torch; print(torch.__version__)"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/ascend-toolkit/latest/fwkacllib/lib64:{{ ascend_install_path }}/nnae/latest/fwkacllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/ascend-toolkit/latest/atc/lib64:{{ ascend_install_path }}/add-ons/"
