@@ -20,13 +20,35 @@
     patterns: "upgrade-tool"
   register: up_tool
 
+- set_fact: train_dir={{ scene_dict['train'] }}
+
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
   when: old_cann == "after-5.1"
 
 - set_fact: run_dir={{ old_scene_dict[npu_scene] }}
   when: old_cann == "before-5.1"
 
+- name: stat train_pro_dir
+  stat:
+    path: "{{ resources_dir }}/run_from_train_pro_zip"
+  register: train_pro_dir
+
 - name: find driver package linux only zip
+  find:
+    paths: "{{ train_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*npu-driver.*linux.*{{ ansible_architecture[:3] }}.*.run"
+  register: trainpro_pkg
+  when: not train_pro_dir.stat.exists and cus_npu_info is defined and cus_npu_info == '300t-pro'
+
+- set_fact: driver_pro_run={{trainpro_pkg.files[0].path}}
+  when:
+    - cus_npu_info is defined and cus_npu_info == '300t-pro'
+    - not train_pro_dir.stat.exists and trainpro_pkg.matched > 0
+
+- name: find driver package linux only zip again 
   find:
     paths: "{{ run_dir }}"
     recurse: no
@@ -75,22 +97,24 @@
   when: driver_pkg.matched > 0
 
 - name: upgrade driver
-  shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
+  shell: "bash {{driver_run|default(driver_pro_run)}} --nox11 --upgrade --quiet"
   register: driver_up_result
   failed_when: driver_up_result.rc == 1
-  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched > 0)
+  when: (driver_run is defined and driver_run|length > 0 or driver_pro_run is defined and driver_pro_run|length > 0) and (up_tool.matched > 0)
 
 - name: install driver
-  shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  shell: "bash {{driver_run|default(driver_pro_run)}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
+  environment:
+    PATH: /opt/rh/devtoolset-8/root/usr/bin/:/usr/sbin/:/sbin:{{ ansible_env.PATH }}
   register: driver_result
   failed_when: driver_result.rc == 1
-  when: (driver_run is defined) and (driver_run|length > 0) and (up_tool.matched == 0)
+  when: (driver_run is defined and driver_run|length > 0 or driver_pro_run is defined and driver_pro_run|length > 0) and (up_tool.matched == 0)
 
 - name: message
   debug:
     msg:
       - "can not find driver package, driver install skipped"
-  when: driver_run is not defined
+  when: driver_run is undefined and driver_pro_run is undefined
 
 - name: message
   debug:
