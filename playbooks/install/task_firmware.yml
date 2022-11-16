@@ -19,10 +19,15 @@
 - set_fact: run_dir={{ old_scene_dict[npu_scene] }}
   when: old_cann == "before-5.1"
 
-- name: stat train_pro_dir
+- name: stat run_dir
   stat:
-    path: "{{ resources_dir }}/run_from_train_pro_zip"
-  register: train_pro_dir
+    path: "{{ run_dir[0] }}"
+  register: run_dir_stat
+
+- name: stat train_dir
+  stat:
+    path: "{{ train_dir[0] }}"
+  register: train_dir_stat
 
 - name: find driver upgrade tool
   find:
@@ -57,12 +62,12 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pro_pkg
-  when: not train_pro_dir.stat.exists and cus_npu_info is defined and cus_npu_info == '300t-pro'
+  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro'
 
 - set_fact: firmware_pro_run={{firmware_pro_pkg.files[0].path}}
   when:
     - cus_npu_info is defined and cus_npu_info == '300t-pro'
-    - not train_pro_dir.stat.exists and firmware_pro_pkg.matched > 0
+    - (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and firmware_pro_pkg.matched > 0
 
 - name: find firmware package only zip again
   find:
@@ -72,9 +77,10 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pkg
+  when: run_dir_stat.stat.exists
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when: firmware_pkg.matched > 0
+  when: run_dir_stat.stat.exists and firmware_pkg.matched > 0
 
 - name: find firmware package
   find:
@@ -84,12 +90,10 @@
     use_regex: yes
     patterns: "{{ ansible_local.npu_info.product }}.*firmware.*.run"
   register: firmware_pkg
-  when: (cus_npu_info is defined and cus_npu_info != '300t-pro') or cus_npu_info is undefined
+  when: run_dir_stat.stat.exists
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when:
-    - (cus_npu_info is defined and cus_npu_info != '300t-pro') or cus_npu_info is undefined
-    - firmware_pkg.matched > 0
+  when: run_dir_stat.stat.exists and firmware_pkg.matched > 0
 
 - name: upgrade firmware
   shell: "bash {{ firmware_run|default(firmware_pro_run) }} --nox11 --upgrade --quiet"
