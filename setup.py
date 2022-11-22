@@ -43,7 +43,7 @@ os.chmod('ascend_deployer/start_download.sh', stat.S_IEXEC | stat.S_IRUSR | stat
 shutil.copyfile('LICENSE', 'ascend_deployer/LICENSE')
 
 
-with open('README.md', encoding='utf-8') as f:
+with open('README.rst', encoding='utf-8') as f:
     readme = f.read()
 
 setuptools.setup(
@@ -51,7 +51,7 @@ setuptools.setup(
     version='0.0.3',
     description=('ascend offline installer'),
     url = 'https://gitee.com/ascend/ascend-deployer',
-    long_description_content_type = "text/markdown",
+    long_description_content_type = "text/x-rst",
     long_description=readme,
     classifiers = [
         'Programming Language :: Python :: 3',
