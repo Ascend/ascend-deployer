@@ -201,7 +201,7 @@ pip安装
 -  版本要求：python >= 3.6
 -  建议以root用户身份，使用系统自带python3及pip3工具安装，若无pip3请自行安装
 -  非root用户请勿使用该方式进行安装。
--  使用方法参考操作指导:pip方式
+-  使用方法参考 `操作指导:pip方式`_
 
 git安装
 ~~~~~~~
@@ -232,8 +232,8 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
 下载须知
 ~~~~~~~~
 
--  如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考配置说明。
--  由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考源配置。
+-  如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考 配置说明_。
+-  由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考 源配置_。
 -  下载好的软件会自动存放于resources目录下。
 -  安装过程中会创建docker用户组并启动docker服务。安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
 
@@ -252,7 +252,7 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
 
 -  linux
 
-   1. 执行\ ``./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>``\ 启动下载，具体可参考下载参数说明。以下调用\ ``**.sh``\ 脚本采用\ ``./**.sh``\ 的方式，也可使用\ ``bash **.sh``\ 调用，请根据实际使用，建议下载前将环境umask设置为077。
+   1. 执行\ ``./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>``\ 启动下载，具体可参考 下载参数说明_。以下调用\ ``**.sh``\ 脚本采用\ ``./**.sh``\ 的方式，也可使用\ ``bash **.sh``\ 调用，请根据实际使用，建议下载前将环境umask设置为077。
    2. 执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
 
 安装功能
@@ -438,11 +438,12 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
 
    执行命令\ ``./install.sh --install-scene=<scene_name>``\ ，示例如下。
    ``./install.sh --install-scene=auto     # 自动安装所有能找到的软件包``
-   本工具提供几个基本安装场景，具体可参考安装场景介绍。
+   本工具提供几个基本安装场景，具体可参考 安装场景介绍_。
 
 3. 安装后检查
 
-   执行命令\ ``./install.sh --test=<target>``\ ，示例如下。
+   执行命令\ ``./install.sh --test=<target>``\ ，示例如下：
+   
    :literal:`./install.sh --test=driver     # 测试driver是否正常`
 
 批量安装
@@ -603,7 +604,7 @@ python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
 --output-file             重定向命令执行的输出结果到指定文件。          
 --stdout_callback         设置命令执行的输出格式，可用的参数通过“ansible-doc -t callback -l”命令查看。                                       
 --install                 指定软件安装。若指定“–install=npu”，将会安装driver和firmware。                          
---install-scene           指定场景安装。安装场景请参见安装场景介绍。  
+--install-scene           指定场景安装。安装场景请参见 安装场景介绍_。  
 --patch                   指定软件打补丁                              
 --patch-rollback          指定软件的补丁回退                          
 --test                    检查指定组件能否正常工作。                  
@@ -708,7 +709,7 @@ CANN补丁包不支持使用ascend-deployer工具在线下载，用户需自行�
 仅支持回退一次补丁版本。回退时需将安装补丁时的补丁包放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在回退前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
 
 配置说明
--------
+--------
 
 代理配置
 ~~~~~~~~
@@ -808,7 +809,7 @@ FAQ
    首次执行\ ``./install.sh --check``\ 或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
 
 -  A:
-   释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考配置环境变量），重新使用工具安装。
+   释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考 配置环境变量_），重新使用工具安装。
 
 2. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
 

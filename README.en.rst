@@ -215,7 +215,7 @@ Precautions
 -  If the sles system dependency download fails, please modify the
    source of opensuse by yourself. For example, for sles12.4 system,
    please modify the
-   downloader:raw-latex:`\config`:raw-latex:`\SLES`\_12.4_x86_64:raw-latex:`\source`.repo.
+   ``downloader/config/SLES_12.4_x86_64/source.repo``.
 
 -  The offline installation tool supports only the default environment
    after the OS image is successfully installed. Do not install or
@@ -397,7 +397,7 @@ pip install
    pip3 tools on your system. If pip3 is not available, please install
    it by yourself
 -  Do not install in this way for non root users
--  Refer to Operation instruction: pip install
+-  Refer to `Operation instruction: pip install`_
 
 git install
 ~~~~~~~~~~~
@@ -449,13 +449,12 @@ Download Notice
 
 -  Modify the configuration file to download required OS
    components(Windows), edit the **downloader/config.ini** file. For
-   details, see Configuration Description.
+   details, see `Configuration Description`_.
 -  A large amount of open source software needs to be installed. The
    open source software downloaded using the offline installation tool
    comes from the OS source. You need to fix the vulnerabilities of the
    open source software as required. You are advised to use the official
-   source to update the software regularly. For details, see Source
-   Configuration.
+   source to update the software regularly. For details, see `Source Configuration`_.
 -  The downloaded software is automatically stored in the **resources**
    directory.
 -  Docker user groups are created and the Docker service is started
@@ -486,8 +485,8 @@ Download
 
    1. Run the
       ``./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>``
-      command to start download, refer to Download Parameter
-      Description. The following call \` \* \* sh ``script using``. / \*
+      command to start download, refer to `Linux Download Parameter Description`_.
+      The following call \` \* \* sh ``script using``. / \*
       \* sh ``way, also can use`` bash \* \* sh \` calls, please
       according to actual use.It is recommended to set the environment
       umask to 077 before downloading.
@@ -756,12 +755,12 @@ Single-Device Installation
    is an example.
    ``./install.sh --install-scene=auto     # Automatic installation of all software packages that can be found``
    The offline installation tool provides several basic installation
-   scenarios. For details, see Installation Scenarios.
+   scenarios. For details, see `Installation Scenarios`_.
 
 3. After the installation.
 
-   run the ``./install.sh --test=<target>``. The following is an
-   example.
+   run the ``./install.sh --test=<target>``. The following is an example:
+   
    ``./install.sh --test=driver     # Test whether the driver is normal.``
 
 Batch Installation
@@ -831,7 +830,7 @@ Batch Installation
    you can modify the forks value in the ansible.cfg file to the total number of nodes to be deployed.
 
 Operation instruction: pip install
-==================================
+===================================
 
 When the tool is installed with pip, two entrances will be provided for
 easy operation.
@@ -880,7 +879,7 @@ environment variable ASCEND_Deployer_HOME. Non-root users must ensure
 that the directory exists and can read and write properly.
 
 Environment Variable Configuration
-==================================
+===================================
 
 The offline deployment tool can install Python 3.7.5, To ensure that the
 built-in Python (Python 2.x or Python 3.x) is not affected, you need to
@@ -1004,8 +1003,8 @@ options of the following parameters.
 |          | are installed.                                            |
 +----------+-----------------------------------------------------------+
 | –instal  | Specifies the scenario for installation. For details      |
-| l-scene= | about the installation scenarios, see Installation        |
-|          | Scenarios.                                                |
+| l-scene= | about the installation scenarios, see `Installation       |
+|          | Scenarios`_.                                              |
 +----------+-----------------------------------------------------------+
 | –patch=  | Patching specific package                                 |
 +----------+-----------------------------------------------------------+
@@ -1016,7 +1015,7 @@ options of the following parameters.
 +----------+-----------------------------------------------------------+
 
 Linux Download Parameter Description
-------------------------------------
+-------------------------------------
 
 +--------------------+-------------------------------------------------+
 | Parameter          | Description                                     |
@@ -1062,9 +1061,10 @@ please refer to the official website of
 `mindspore <https://mindspore.cn/versions>`__ for some instructions.
 MindStudio installation please refer to the `install
 MindStudio <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md>`__.
+CANN installation please refer to the `install CANN <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md>`__.
 
 Installation Scenarios
-----------------------
+-----------------------
 
 The offline installation tool provides several basic installation
 scenarios.If the GCC version of the system is lower than 7.3.0, GCC
@@ -1298,8 +1298,7 @@ FAQ
 
 -  A: Release the RPM/DPKG tool lock, delete the Python 3.7.5
    installation directory, and install again using the tool.(Python
-   3.7.5 installation directory may refer to to configure the
-   environment variable )
+   3.7.5 installation directory may refer to to `Environment Variable Configuration`_ )
 
 2. Q: Non-root users are prompted for the sudo password when installing
    the pre-5.0.1 Toolkit.
