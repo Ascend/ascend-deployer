@@ -268,6 +268,7 @@ class DownloadUtil:
             time.sleep(retry * 2)
         return False
 
+DOWNLOAD_INST = DownloadUtil()
 
 class Cann_Download:
     browser = None
@@ -282,6 +283,8 @@ class Cann_Download:
             cls.browser = None
 
     def download(self, url: str, dst_file_name: str):
+        if "support.huawei" not in url:
+            return DOWNLOAD_INST.download(url, dst_file_name)
         file_name = os.path.basename(dst_file_name)
 
         try:
@@ -451,7 +454,6 @@ class Cann_Download:
             time.sleep(1)
 
 
-DOWNLOAD_INST = DownloadUtil()
 CANN_DOWNLOAD_INST = Cann_Download()
 
 

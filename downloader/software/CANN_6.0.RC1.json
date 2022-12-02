@@ -1,0 +1,57 @@
+{
+    "name": "CANN",
+    "version": "6.0.RC1",
+    "default": true,
+    "other": [
+        {
+            "filename": "Ascend-cann-toolkit_6.0.RC1_linux-aarch64.zip",
+            "url" : "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-toolkit_6.0.RC1_linux-aarch64.zip",
+            "sha256": ""
+        },
+        {
+            "filename": "Ascend-cann-toolkit_6.0.RC1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-toolkit_6.0.RC1_linux-x86_64.zip",
+            "sha256":""
+        },
+        {
+            "filename": "Ascend-cann-nnae_6.0.RC1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-nnae_6.0.RC1_linux-aarch64.zip",
+            "sha256": ""
+        },
+        {
+            "filename": "Ascend-cann-nnae_6.0.RC1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-nnae_6.0.RC1_linux-x86_64.zip",
+            "sha256": ""
+        },
+        {
+            "filename": "Ascend-cann-nnrt_6.0.RC1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-nnrt_6.0.RC1_linux-aarch64.zip",
+            "sha256":""
+        },
+        {
+            "filename": "Ascend-cann-nnrt_6.0.RC1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-nnrt_6.0.RC1_linux-x86_64.zip",
+            "sha256":""
+        },
+        {
+            "filename": "A800-9000-npu_6.0.rc1_linux-aarch64.zip",
+            "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.RC3.1/A800-9000-npu_6.0.rc1_linux-aarch64.zip",
+            "sha256":"d03f23394b691f92ac11db066c16fac789e66a8434bf4a29b7ea10517b76ecb5"
+        },
+        {
+            "filename": "A800-9010-npu_6.0.rc1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.RC3.1/A800-9010-npu_6.0.rc1_linux-x86_64.zip",
+            "sha256": "02013351cdee0f1238e92ea6842052f73d7d8fe2c5a589788a27df3712417259"
+        },
+        {
+            "filename":"A300-3000-npu_6.0.rc1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK%2022.0.RC5/A300-3000-npu_6.0.rc1_linux-aarch64.zip",
+            "sha256": "d14c24964add60aa7879582c575afc8b0c24f2c0a74f18946a68f025a400f3f5"
+        },
+        {
+            "filename": "A300-3010-npu_6.0.rc1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK%2022.0.RC5/A300-3010-npu_6.0.rc1_linux-x86_64.zip",
+            "sha256":"9b2250a34394a1623fdf3af859ddc316e7e1d16b3f88bbe8a84060b432931b46"
+        }
+    ]
+}
