@@ -52,6 +52,16 @@
             "filename": "A300-3010-npu_6.0.rc1_linux-x86_64.zip",
             "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK%2022.0.RC5/A300-3010-npu_6.0.rc1_linux-x86_64.zip",
             "sha256":"9b2250a34394a1623fdf3af859ddc316e7e1d16b3f88bbe8a84060b432931b46"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_6.0.RC1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-tfplugin_6.0.RC1_linux-aarch64.zip",
+            "sha256": "7d78a502d48668690040315c746b807e915dffb64a702a867a07dacbcfce2375"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_6.0.RC1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-tfplugin_6.0.RC1_linux-x86_64.zip",
+            "sha256": "43ef235ec034614110d5893486b8b7d8f22edf192edbad26dceca77958342e7e"
         }
     ]
 }
