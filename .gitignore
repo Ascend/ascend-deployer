@@ -13,3 +13,4 @@ facts_cache
 *.egg-info
 build
 *.gz
+.vscode
