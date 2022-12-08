@@ -1,43 +1,42 @@
 简介
 ====
 
-功能描述
---------
-
 离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device
 IP配置脚本，使用方法可参考\ `Device
 IP配置 <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Configuration.md>`__\ 。
 
 快速指南
---------
+========
+
+本工具主要支持开局场景（环境仅安装了OS），其他场景如果遇到问题，请见常见问题处理。
 
 安装内容
-~~~~~~~~~
+--------
 
-工具支持安装的内容参考下图，其中绿色部分是工具支持安装的。
+工具支持安装的内容参考下图，其中红色部分是工具必须安装的，橙色部分和绿色部分是工具可选安装的，如果要运行框架橙色部分也是必须安装的。
 
 .. image:: ./assets/1.png
 
 安装场景
-~~~~~~~~
+--------
 
-=============== =================================================== =====================
-安装场景         安装的组件                                            说明
-=============== =================================================== =====================
-auto            all                                                  安装所有能找到的软件包
-vmhost          sys_pkg、npu、toolbox                                虚拟机场景
-edge            sys_pkg、atlasedge、ha                               安装MindX中间件、HA
-offline_dev     sys_pkg、python、npu、toolkit                        离线开发场景
-offline_run     sys_pkg、python、npu、nnrt                           离线运行场景
-mindspore       sys_pkg、python、npu、toolkit、mindspore             mindspore场景
-tensorflow_dev  sys_pkg、python、npu、toolkit、tfplugin、tensorflow  tensorflow开发场景
-tensorflow_run  sys_pkg、python、npu、nnae、tfplugin、tensorflow     tensorflow运行场景
-pytorch_dev     sys_pkg、python、npu、toolkit、pytorch               pytorch开发场景
-pytorch_run     sys_pkg、python、npu、nnae、pytorch                  pytorch运行场景         
-=============== =================================================== =====================
+=============== ========================================================= =====================================
+安装场景         安装的组件                                                 说明
+=============== ========================================================= =====================================
+auto            all（常用示例：sys_pkg、python、npu、toolkit、mindspore）    安装所有能找到的软件包，驱动和固件必装
+vmhost          sys_pkg、npu、toolbox                                      虚拟机场景
+edge            sys_pkg、atlasedge、ha                                     安装MindX中间件、HA
+offline_dev     sys_pkg、python、npu、toolkit                              离线开发场景
+offline_run     sys_pkg、python、npu、nnrt                                 离线运行场景
+mindspore       sys_pkg、python、npu、toolkit、mindspore                   mindspore场景
+tensorflow_dev  sys_pkg、python、npu、toolkit、tfplugin、tensorflow        tensorflow开发场景
+tensorflow_run  sys_pkg、python、npu、nnae、tfplugin、tensorflow           tensorflow运行场景
+pytorch_dev     sys_pkg、python、npu、toolkit、pytorch                     pytorch开发场景
+pytorch_run     sys_pkg、python、npu、nnae、pytorch                        pytorch运行场景         
+=============== ========================================================= =====================================
 
 使用样例
-~~~~~~~~~
+--------
 
 以下以Ubuntu_18.04_x86_64系统，服务器上插Atlas 300I Pro推理卡为例快速展示工具的使用方式。
 
@@ -84,14 +83,13 @@ pytorch_run     sys_pkg、python、npu、nnae、pytorch                  pytorch
       source /usr/local/ascendrc                # 配置python环境变量
       source /usr/local/Ascend/nnae/set_env.sh  # 配置nnae的环境变量
 
-
-**下面的内容为工具的使用指南详情**。
+详细指南
+========
 
 环境要求
 --------
 
 支持的操作系统说明
-~~~~~~~~~~~~~~~~~~
 
 ========= ========== ======== ===================
 操作系统  版本       CPU架构  安装类型
@@ -133,7 +131,6 @@ Ubuntu    20.04.1    x86_64   镜像默认Minimal模式
 ========= ========== ======== ===================
 
 支持的硬件形态说明
-~~~~~~~~~~~~~~~~~~
 
 ================= ============== =============
 中心推理硬件      中心训练硬件   智能边缘硬件
@@ -150,7 +147,6 @@ Atlas 200I SoC A1
 ================= ============== =============
 
 注意事项
---------
 
 -  如果系统的gcc版本低于7.3.0，离线安装工具会自动安装，该过程耗时较长；用户也可通过手动提前升级并配置环境变量的方式来规避该自动升级。
 
@@ -265,11 +261,12 @@ Atlas 200I SoC A1
 |           |                                                | 的镜像内查找 |
 +-----------+------------------------------------------------+--------------+
 
-工具获取与安装
---------------
+操作指导
+---------
 
-pip安装
-~~~~~~~
+本工具安装方式有pip安装、git安装和zip安装，用户可选择其中一种方式。
+
+1. pip安装
 
 .. code:: bash
 
@@ -278,10 +275,41 @@ pip安装
 -  版本要求：python >= 3.6
 -  建议以root用户身份，使用系统自带python3及pip3工具安装，若无pip3请自行安装
 -  非root用户请勿使用该方式进行安装。
--  使用方法参考 `操作指导:pip方式`_
 
-git安装
-~~~~~~~
+pip安装场景
+~~~~~~~~~~~~
+
+当本工具使用pip安装时，将提供2个入口方便操作
+
+-  ascend-download 下载器
+-  ascend-deployer 部署器
+
+2个入口对root和非root用户均可用
+
+1.1 下载软件包
+
+.. code:: bash
+
+   ascend-download --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>
+
+Win 10和Linux均可执行
+
+-  所有资源下载至ascend-deployer/resources
+
+-  windows下在执行命令的当前目录生成ascend-deployer目录。下载完成后将
+   整个目录拷贝至待部署linux服务器即可使用。
+
+-  linux下将在用户HOME目录下生成ascend-deployer目录，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
+
+1.2 安装软件包
+
+.. code:: bash
+
+   ascend-deployer --install=<pkg1,pkg2>
+
+ascend-deployer本质上是install.sh的一个wrapper，使用方法与直接执行ascend-deployer目录中的install.sh完全相同。ascend-deployer命令将自动寻找用户HOME目录下的ascend-deployer/install.sh文件执行，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
+
+2. git安装
 
 .. code:: bash
 
@@ -290,32 +318,28 @@ git安装
 基于安全考虑，用户在git
 clone前应将环境umask设置为077，并只在用户HOME目录下clone、使用工具，并仅供本用户自己使用。
 
-下载zip安装
-~~~~~~~~~~~
+3. 下载zip安装
 
 点击右上角“克隆/下载”按钮，然后点击下方“下载zip”，下载后解压使用（为了防止软件包在传递过程或存储期间被恶意篡改，建议用户下载软件包后使用sha256sum对软件进行完整性校验，当前最新正式版本的sha256sum请参考master分支的readme）。本工具支持root和非root用户使用。为避免解压后权限过大风险，建议解压zip包前将环境umask设置为077，并只在用户HOME目录下解压、使用工具，并仅供本用户自己使用。以上2种安装方式请同样注意工具目录的权限风险。
 
 确认目录和文件的属主及权限是否符合用户所在的组织的安全要求等。另外，请注意，除用户本人以及管理用户外的其他用户，不应拥有安装目录的上级目录的写权限，find
 {安装目录} -ls 查看目录权限。
 
-操作指导:源码方式
------------------
+git、zip安装场景
+~~~~~~~~~~~~~~~~~
 
-下载功能
---------
+3.1 下载软件包
 
 支持windows或linux系统使用下载功能。运行前请确认使用的离线安装目录属于用户自己所有，且目录的权限和属组需要符合所在组织的安全要求。
 
 下载须知
-~~~~~~~~
 
 -  如需配置代理、通过修改配置文件的方式调整为下载所需OS的组件（windows场景）等，可编辑“downloader/config.ini”文件，具体可参考 配置说明_。
--  由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考 源配置_。
+-  由于需要安装大量开源软件，离线安装工具下载的开源软件均来自操作系统源，开源软件的漏洞和修复需要用户自行根据情况修复，强烈建议使用官方源并定期更新。具体可参考 `配置说明`_ 中的源配置。
 -  下载好的软件会自动存放于resources目录下。
 -  安装过程中会创建docker用户组并启动docker服务。安装完成后，建议卸载系统中可能存在安全风险的gcc、g++、cpp、jdk等第三方组件。
 
 下载操作
-~~~~~~~~
 
 -  windows
 
@@ -332,11 +356,9 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
    1. 执行\ ``./start_download.sh --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>``\ 启动下载，具体可参考 下载参数说明_。以下调用\ ``**.sh``\ 脚本采用\ ``./**.sh``\ 的方式，也可使用\ ``bash **.sh``\ 调用，请根据实际使用，建议下载前将环境umask设置为077。
    2. 执行下载时会先检查环境上是否存在python3，如果python3不存在时，分2种：如果当前用户是root用户，本工具会通过apt、yum等工具自动下载python3；如果当前用户是非root用户，本工具会提示用户自行安装python3。
 
-安装功能
----------
+3.2 安装软件包
 
 安装参数
-~~~~~~~~
 
 -  安装过程基本参数可通过inventory_file文件配置
 
@@ -363,7 +385,6 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
 +--------------+--------------------------------------------------------------+
 
 安装须知
-~~~~~~~~
 
 -  install_path参数指定CANN软件包的安装路径，root用户安装时该参数有效（且环境上未安装CANN软件包，即没有\ ``/etc/Ascend/ascend_cann_install.info``\ 文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）；install_path参数不指定驱动包和边缘组件(atlasedge和ha)的安装路径，驱动包只能安装到默认路径/usr/local/Ascend，边缘组件(atlasedge和ha)只能安装到默认路径/usr/local。
 -  install_path参数指定Toolbox软件包的安装路径，root用户安装时该参数有效（且环境上未安装Toolbox软件包，即没有\ ``/etc/Ascend/ascend_cann_install.info``\ 和\ ``/etc/Ascend/ascend_toolbox_install.info``\ 文件，否则会安装到该文件内容指定的路径），非root用户安装时该参数无效（只能安装到默认路径~/Ascend）。
@@ -426,7 +447,6 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
    usermod -a -G HwHiAiUser 非root用户名
 
 准备软件包
-~~~~~~~~~~
 
 1. 根据实际需要准备待安装软件包（支持驱动、固件、CANN软件包的安装），将待安装软件包放置于resources目录下，参考如下：
 
@@ -479,7 +499,6 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
       |- ...
 
 单机安装
-~~~~~~~~
 
 1. 配置单机的inventory_file文件。
 
@@ -524,7 +543,6 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
    :literal:`./install.sh --test=driver     # 测试driver是否正常`
 
 批量安装
-~~~~~~~~
 
 1. 基于密钥认证的ssh连接，安装前请确认系统中未安装paramiko（ansible在某些情况下会使用paramiko，其配置不当容易引起安全问题）。
 
@@ -566,66 +584,43 @@ clone前应将环境umask设置为077，并只在用户HOME目录下clone、使�
 
 6. 默认并发数为5，最高并发数为255，如果待部署环境的数量大于5，可以修改ansible.cfg文件中的forks值，改成待部署的节点总数以加快部署速度。
 
-操作指导:pip方式
-================
+安装、回退CANN补丁包
 
-当本工具使用pip安装时，将提供2个入口方便操作
+ascend-deployer工具支持CANN冷补丁的安装和回退。 1.
+CANN补丁包不支持使用ascend-deployer工具在线下载，用户需自行获取到所需CANN补丁包后，放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在安装前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
+1. 安装、回退CANN冷补丁的执行命令参考如下： -
+安装CANN冷补丁（以nnae、tfplugin包为例）：\ ``./install.sh --patch=nnae,tfplugin``
+-
+回退CANN冷补丁（以nnae、tfplugin包为例）：\ ``./install.sh --patch-rollback=nnae,tfplugin``
+3. 关于CANN冷补丁的相关约束如下： -
+补丁仅能支持对应的基线版本或相关的补丁版本进行升级。 -
+基于同一基线版本的补丁，需保证后续安装的补丁版本大于之前安装的补丁版本。
+-
+仅支持回退一次补丁版本。回退时需将安装补丁时的补丁包放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在回退前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
 
--  ascend-download 下载器
--  ascend-deployer 部署器
+安装后操作
+----------
 
-2个入口对root和非root用户均可用
+-  配置环境变量
+   
+   离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
 
-下载
-----
+   ::
 
-.. code:: bash
+      export PATH=/usr/local/python3.7.5/bin:$PATH                         # root
+      export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH   # root
 
-   ascend-download --os-list=<OS1>,<OS2> --download=<PK1>,<PK2>==<Version>
+      export PATH=~/.local/python3.7.5/bin:$PATH                           # non-root
+      export LD_LIBRARY_PATH=~/.local/python3.7.5/lib:$LD_LIBRARY_PATH     # non-root
 
-Win 10和Linux均可执行
-
--  所有资源下载至ascend-deployer/resources
-
--  windows下在执行命令的当前目录生成ascend-deployer目录。下载完成后将
-   整个目录拷贝至待部署linux服务器即可使用。
-
--  linux下将在用户HOME目录下生成ascend-deployer目录，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
-
-安装
-----
-
-.. code:: bash
-
-   ascend-deployer --install=<pkg1,pkg2>
-
-ascend-deployer本质上是install.sh的一个wrapper，使用方法与直接执行ascend-deployer目录中的install.sh完全相同。ascend-deployer命令将自动寻找用户HOME目录下的ascend-deployer/install.sh文件执行，可通过设置环境变量ASCEND_DEPLOYER_HOME替换用户HOME目录，非root用户须保证该目录存在且能正常读写。
-
-配置环境变量
-============
-
-离线部署工具可以安装python3.7.5，为不影响系统自带python(python2.x or
-python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
-
-::
-
-   export PATH=/usr/local/python3.7.5/bin:$PATH                         # root
-   export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH   # root
-
-   export PATH=~/.local/python3.7.5/bin:$PATH                           # non-root
-   export LD_LIBRARY_PATH=~/.local/python3.7.5/lib:$LD_LIBRARY_PATH     # non-root
-
-本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量。
-
-::
-
-   source /usr/local/ascendrc     # root
-   source ~/.local/ascendrc       # non-root
-
-同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
-
-后续任务
-========
+   本工具执行安装操作时会自动在本机安装python3.7.5，并把以上环境变量内容写进/usr/local/ascendrc文件内，执行如下命令便可轻松设置python3.7.5的环境变量。
+   
+   ::
+   
+      source /usr/local/ascendrc     # root
+      source ~/.local/ascendrc       # non-root
+   
+   同样，离线部署工具安装的其他软件包或工具，需用户参考相应的官方资料后配置环境变量或进行其他设置后，方可正常使用。
 
 -  推理场景
 
@@ -659,10 +654,10 @@ python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
 +----------------------------------+----------------------------------+
 
 参考信息
-========
+--------
 
 安装参数说明
-------------
+~~~~~~~~~~~~
 
 用户根据实际需要选择对应参数完成安装，命令为\ ``./install.sh [options]``\ 。
 参数说明请参见下表，表中各参数的可选参数范围可通过执行\ ``./install.sh --help``\ 查看。
@@ -688,7 +683,7 @@ python3.x)， 在使用python3.7.5之前，需配置如下环境变量。
 ========================= =============================================================================
 
 下载参数说明
-------------
+~~~~~~~~~~~~
 
 ================================== ===============================
  参数                              说明                           
@@ -710,7 +705,7 @@ CANN       20.3.0    5.0.2.1   5.0.3.1   5.0.4     5.1.RC1.1 5.1.RC2
 安装时resources目录下只应存在一个版本且跟CANN包版本配套的MindSpore或MindStudio，配套关系如上；\ ``./start_download.sh --download=<PK1>,<PK2>==<Version>``\ ，当\ ``<Version>``\ 为空时，会下载最新版本的\ ``<PK>``\ ；\ ``--download=MindSpore``\ 时，–os-list需指定对应的OS，OS及相关配套说明详见\ `Mindspore官网 <https://mindspore.cn/versions>`__\ ；MindStudio的下载安装请参考\ `下载安装MindStudio <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Install_MindStudio.md>`__\ ；CANN的下载请参考\ `下载CANN <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Download_CANN.md>`__
 
 安装场景介绍
-------------
+~~~~~~~~~~~~
 
 离线部署工具提供几个基本安装场景。如果系统的gcc版本低于7.3.0，安装框架前需要安装gcc以确保各场景安装后可正常使用。gcc7.3.0安装后需要建立软链接才能使用(/usr/bin/gcc指向安装的gcc7.3.0的可执行文件),例如root安装的gcc7.3.0执行命令\ ``ln -sf /usr/local/gcc7.3.0/bin/gcc /usr/bin/gcc``\ 。
 
@@ -770,26 +765,10 @@ pytorch_run     sys_pkg、python、npu、nnae、pytorch                  pytorch
 
 如需自定义安装场景，可参考上述配置文件进行定制。
 
-安装、回退CANN补丁包
---------------------
-
-ascend-deployer工具支持CANN冷补丁的安装和回退。 1.
-CANN补丁包不支持使用ascend-deployer工具在线下载，用户需自行获取到所需CANN补丁包后，放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在安装前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
-1. 安装、回退CANN冷补丁的执行命令参考如下： -
-安装CANN冷补丁（以nnae、tfplugin包为例）：\ ``./install.sh --patch=nnae,tfplugin``
--
-回退CANN冷补丁（以nnae、tfplugin包为例）：\ ``./install.sh --patch-rollback=nnae,tfplugin``
-3. 关于CANN冷补丁的相关约束如下： -
-补丁仅能支持对应的基线版本或相关的补丁版本进行升级。 -
-基于同一基线版本的补丁，需保证后续安装的补丁版本大于之前安装的补丁版本。
--
-仅支持回退一次补丁版本。回退时需将安装补丁时的补丁包放置于ascend-deployer/resources/patch(如不存在patch目录用户请自行创建)目录下，注意在回退前删除ascend-deployer/resources目录下补丁包对应的CANN软件包。
-
 配置说明
---------
+~~~~~~~~~
 
 代理配置
-~~~~~~~~
 
 如需使用代理，需在环境变量中配置代理，用户需要注意代理的安全性。本工具默认校验https证书，如果下载过程中出现证书错误，可能是代理服务器有证书替换的安全机制，则需要先安装代理服务器证书。
 
@@ -811,7 +790,6 @@ CANN补丁包不支持使用ascend-deployer工具在线下载，用户需自行�
       verify=true         # 是否校验https证书。如果关闭，请用户注意安全风险。
 
 windows下载参数说明
-~~~~~~~~~~~~~~~~~~~
 
 在downloader/config.ini文件中可进行windows下载行为配置，将其调整为下载所需组件（不建议直接修改配置文件，建议运行start_download_ui.bat使用UI界面勾选所需组件）。
 
@@ -823,7 +801,6 @@ windows下载参数说明
    pkg_list=CANN_5.0.3.1,MindStudio_3.0.3  # 待部署的CANN或MindStudio
 
 源配置
-~~~~~~
 
 离线安装工具已提供源配置文件，用户可根据实际进行替换。
 
@@ -849,7 +826,7 @@ windows下载参数说明
 3. 下载类Centos的系统组件时需解析系统源内的xml文件，建议在系统python3中安装defusedxml安全组件，以提升应对潜在的XML漏洞攻击的安全能力。
 
 公网URL
--------
+~~~~~~~~
 
 ::
 
@@ -869,24 +846,14 @@ windows下载参数说明
    https://obs-9be7.obs.cn-east-2.myhuaweicloud.com
    https://ms-release.obs.cn-north-4.myhuaweicloud.com
 
-sha256sum校验
--------------
-
-+------------------------------------------------+---------------------+
-| sha256sum                                      | 离线安装版本        |
-+================================================+=====================+
-| 22f7e10677658e7c3d                             | ascend-depl         |
-| 223b32f73786c765e85cf6f66440bf620c3e4275f11e7f | oyer-2.0.4.B093.zip |
-+------------------------------------------------+---------------------+
-
 FAQ
----
+~~~~
 
 1. Q:
    首次执行\ ``./install.sh --check``\ 或其他安装命令时，会自动安装系统依赖和python3.7.5，如果人为异常中断安装过程，再次执行命令时则可能出现rpm、dpkg工具被锁或python3.7.5功能缺失的情况。
 
 -  A:
-   释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考 配置环境变量_），重新使用工具安装。
+   释放rpm、dpkg工具锁，删除python3.7.5安装目录（python3.7.5安装目录可参考 `安装后操作`_ 中的配置环境变量），重新使用工具安装。
 
 2. Q: 非root用户安装5.0.1版本以前的toolkit时提示输入sudo密码。
 
