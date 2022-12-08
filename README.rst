@@ -211,9 +211,7 @@ Atlas 200I SoC A1
 -  Kylin
    v10系统安装系统依赖后，需等待系统配置完成，方可正常使用docker等命令。
 
--  由于CenOS下安装的docker/containerd等可以多版本并存，所以建议CentOS
-   7.6和CentOS
-   8.2系统安装系统依赖前请确认系统上是否已安装docker，如果已安装请使用\ ``yum -y remove docker-ce``\ 、\ ``yum -y remove docker-ce-cli``\ 、\ ``yum -y remove containerd.io``\ 命令卸载后再进行系统依赖的安装。
+-  安装系统依赖前请确认系统上是否已安装docker，如果已安装请先卸载后再进行系统依赖的安装。
 
 -  建议用户修改 downloader/config 和 downloader/requirements.txt
    中的包版本，确保符合所在组织的安全要求。

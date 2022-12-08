@@ -199,9 +199,18 @@ def _get_model(bdf_file_path, DEVNULL):
                 return chip_info
             raw_product = product_infos[1]
             break
-    product = raw_product.replace('\t', '').replace('\n', '')
-    if 'Atlas' in product and ('800 (Model 3000)' not in product and '800 (Model 3010)' not in product):
-        return product.strip()
+    product = raw_product.replace('\t', '').replace('\n', '').strip()
+    product_name = (
+        "Atlas 800 (Model 9000)",
+        "Atlas 800 (Model 9010)",
+        "Atlas 900 (Model 9000)",
+        "Atlas 900 Compute Node",
+        "Atlas 500 Pro (Model 3000)",
+        "Atlas 500 Pro(Model 3000)",
+        "Atlas 500 (Model 3000)",
+    )
+    if product in product_name:
+        return product
 
     return chip_info
 

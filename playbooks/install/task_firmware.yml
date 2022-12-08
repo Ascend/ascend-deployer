@@ -11,6 +11,8 @@
   failed_when: true
   when: ansible_local.npu_info.scene == "" and npu_scene == ""
 
+- set_fact: normalize910_dir={{ scene_dict['normalize910'] }}
+
 - set_fact: train_dir={{ scene_dict['train'] }}
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
@@ -18,6 +20,11 @@
 
 - set_fact: run_dir={{ old_scene_dict[npu_scene] }}
   when: old_cann == "before-5.1"
+
+- name: stat normalize910_dir
+  stat:
+    path: "{{ normalize910_dir[0] }}"
+  register: normalize910_dir_stat
 
 - name: stat run_dir
   stat:
@@ -54,7 +61,7 @@
     patterns: "upgrade"
   register: up_firm
 
-- name: find firmware package only zip
+- name: find firmware package only zip first
   find:
     paths: "{{ train_dir }}"
     recurse: no
@@ -62,14 +69,14 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pro_pkg
-  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro'
+  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro' and ansible_local.npu_info.scene == 'train'
 
 - set_fact: firmware_pro_run={{firmware_pro_pkg.files[0].path}}
   when:
     - cus_npu_info is defined and cus_npu_info == '300t-pro'
     - (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and firmware_pro_pkg.matched > 0
 
-- name: find firmware package only zip again
+- name: find firmware package only zip second
   find:
     paths: "{{ run_dir }}"
     recurse: no
@@ -81,6 +88,19 @@
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
   when: run_dir_stat.stat.exists and firmware_pkg.matched > 0
+
+- name: find driver package linux only zip third
+  find:
+    paths: "{{ normalize910_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*npu-firmware.*.run"
+  register: firmware_pkg
+  when: normalize910_dir_stat.stat.exists and ansible_local.npu_info.scene == 'train'
+
+- set_fact: firmware_run={{firmware_pkg.files[0].path}}
+  when: normalize910_dir_stat.stat.exists and firmware_pkg.matched > 0 and ansible_local.npu_info.scene == 'train'
 
 - name: find firmware package
   find:
