@@ -1,4 +1,6 @@
 #!/bin/bash
+unset LD_LIBRARY_PATH
+declare -x PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:"${ASCENDPATH}""
 readonly TRUE=1
 readonly FALSE=0
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
