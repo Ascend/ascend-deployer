@@ -293,12 +293,7 @@ Precautions
    wait for the system configuration to complete before you can use
    docker and other commands.
 
--  Since the docker and containerd installed under cenos can coexist in
-   multiple versions, it is recommended to confirm whether docker has
-   been installed on the system before installing system dependency on
-   CentOS 7.6 and CentOS 8.2 systems. If so, please uninstall it with
-   ``yum -y remove docker-ce``\ 、\ ``yum -y remove docker-ce-cli``\ 、\ ``yum -y remove containerd.io``
-   command before installing system dependency.
+-  Before installing system dependencies, please confirm whether Docker is installed on the system. If it is installed, please uninstall it before installing system dependencies.
 
 -  Users are advised to modify downloader/config and
    downloader/requirements.txt to ensure compliance with the security

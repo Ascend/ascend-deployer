@@ -20,6 +20,8 @@
     patterns: "upgrade-tool"
   register: up_tool
 
+- set_fact: normalize910_dir={{ scene_dict['normalize910'] }}
+
 - set_fact: train_dir={{ scene_dict['train'] }}
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
@@ -27,6 +29,11 @@
 
 - set_fact: run_dir={{ old_scene_dict[npu_scene] }}
   when: old_cann == "before-5.1"
+
+- name: stat normalize910_dir
+  stat:
+    path: "{{ normalize910_dir[0] }}"
+  register: normalize910_dir_stat
 
 - name: stat run_dir
   stat:
@@ -38,7 +45,7 @@
     path: "{{ train_dir[0] }}"
   register: train_dir_stat
 
-- name: find driver package linux only zip
+- name: find driver package linux only zip first
   find:
     paths: "{{ train_dir }}"
     recurse: no
@@ -46,14 +53,14 @@
     use_regex: yes
     patterns: ".*npu-driver.*linux.*{{ ansible_architecture[:3] }}.*.run"
   register: trainpro_pkg
-  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro'
+  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and ansible_local.npu_info.scene == 'train'
 
 - set_fact: driver_pro_run={{trainpro_pkg.files[0].path}}
-  when:
-    - cus_npu_info is defined and cus_npu_info == '300t-pro'
+  when: 
+    - ansible_local.npu_info.scene == 'train'
     - (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and trainpro_pkg.matched > 0
 
-- name: find driver package linux only zip again 
+- name: find driver package linux only zip second
   find:
     paths: "{{ run_dir }}"
     recurse: no
@@ -65,6 +72,19 @@
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: run_dir_stat.stat.exists and driver_pkg.matched > 0
+
+- name: find driver package linux only zip third
+  find:
+    paths: "{{ normalize910_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*npu-driver.*linux.*{{ ansible_architecture[:3] }}.*.run"
+  register: driver_pkg
+  when: normalize910_dir_stat.stat.exists and ansible_local.npu_info.scene == 'train'
+
+- set_fact: driver_run={{driver_pkg.files[0].path}}
+  when: normalize910_dir_stat.stat.exists and driver_pkg.matched > 0 and ansible_local.npu_info.scene == 'train'
 
 - name: find driver package specific_os only zip
   find:
