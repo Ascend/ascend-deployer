@@ -62,6 +62,26 @@
             "filename": "Ascend-cann-tfplugin_6.0.RC1_linux-x86_64.zip",
             "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.RC1/Ascend-cann-tfplugin_6.0.RC1_linux-x86_64.zip",
             "sha256": "43ef235ec034614110d5893486b8b7d8f22edf192edbad26dceca77958342e7e"
+        },
+        {   
+            "filename":"Ascend-hdk-310p-npu_6.0.rc1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK%2022.0.RC5/Ascend-hdk-310p-npu_6.0.rc1_linux-aarch64.zip",
+            "sha256": "b528abafa94186063cadfdedc43e0c210024a0ff01473b46d427641acbb7f958"
+        },
+        {
+            "filename":"Ascend-hdk-310p-npu_6.0.rc1_linux-x86-64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK%2022.0.RC5/Ascend-hdk-310p-npu_6.0.rc1_linux-x86-64.zip",
+            "sha256": "2cf74ec490eac51c7817f8ae11841eab8c4ff24fb191f1961f5f0c6a552670fe"
+        },
+        {
+            "filename":"Atlas-300t-pro-npu_6.0.rc1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.RC3.1/Atlas-300t-pro-npu_6.0.rc1_linux-aarch64.zip",
+            "sha256": "e349875adcb2deeaa6cb9080fae61cd947d85b6529c3e33a50794979787c568d"
+        },
+        {
+            "filename":"Atlas-300t-pro-npu_6.0.rc1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.RC3.1/Atlas-300t-pro-npu_6.0.rc1_linux-x86_64.zip",
+            "sha256": "f94e47a268f832f74267279fce0857e923264d2320e0d3b6bcd640bf06b94b35"
         }
     ]
 }
