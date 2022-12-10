@@ -53,7 +53,7 @@ pytorch_run     sys_pkg、python、npu、nnae、pytorch                        p
 
       ascend-download --os-list=Ubuntu_18.04_x86_64 --download=CANN==6.0.RC1,MindSpore==1.9.0
 
-   执行以上命令后，自动下载好OS所需依赖，CANN软件包和配套的驱动和固件包，以及x86_64架构的Tensorflow安装包和docker软件等，**并存放到ascend-deployer/resources目录下**。
+   执行以上命令后，自动下载好OS所需依赖，CANN软件包和配套的驱动和固件包，以及x86_64架构的Tensorflow安装包和docker软件等，**并存放到$HOME/ascend-deployer/resources目录下**。
 
 4. 创建驱动的运行用户HwHiAiUser。
 
