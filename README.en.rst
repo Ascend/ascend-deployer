@@ -186,6 +186,10 @@ Description of supported hardware configuration
 Precautions
 -----------
 
+-  If the offline installation tool cannot run due to environment 
+   variables, users need to configure ASCENDPATH according to the actual
+   situation of the environment.
+   
 -  If the gcc version of the system is lower than 7.3.0, the offline
    installation tool will be automatically installed, which takes a long
    time; Users can also avoid the automatic upgrade by manually

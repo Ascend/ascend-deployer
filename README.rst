@@ -16,6 +16,9 @@ IP配置 <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Co
 
 工具支持安装的内容参考下图，其中绿色部分是工具支持安装的。
 
+
+
+
 .. image:: ./assets/1.png
 
 安装场景
@@ -151,6 +154,8 @@ Atlas 200I SoC A1
 
 注意事项
 --------
+
+-  如果离线安装工具因环境变量问题无法运行，用户需自行根据环境实际状况配置ASCENDPATH进行处理。
 
 -  如果系统的gcc版本低于7.3.0，离线安装工具会自动安装，该过程耗时较长；用户也可通过手动提前升级并配置环境变量的方式来规避该自动升级。
 
