@@ -16,9 +16,6 @@ IP配置 <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Co
 
 工具支持安装的内容参考下图，其中绿色部分是工具支持安装的。
 
-
-
-
 .. image:: ./assets/1.png
 
 安装场景
