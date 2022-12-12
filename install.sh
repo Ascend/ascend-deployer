@@ -612,15 +612,6 @@ function install_ansible()
     fi
 }
 
-function check_run_pkg()
-{
-    run_pkg=$(find ${BASE_DIR}/resources/*.run 2>/dev/null | wc -l)
-    if [[ ${run_pkg} != 0 ]];then
-        log_error "not support run package, please use zip package instead"
-        return 1
-    fi
-}
-
 function check_extracted_size()
 {
     local IFS_OLD=$IFS
@@ -883,12 +874,7 @@ function verify_zip()
 function verify_zip_redirect()
 {
     log_info "The system is busy with checking compressed files, Please wait for a moment..."
-    rm -rf ${BASE_DIR}/resources/run_from_*_zip ${BASE_DIR}/resources/zip_tmp
-    check_run_pkg
-    local check_run_pkg_status=$?
-    if [[ ${check_run_pkg_status} != 0 ]];then
-        return ${check_run_pkg_status}
-    fi
+    rm -rf ${BASE_DIR}/resources/zip_tmp
     check_extracted_size
     local check_extracted_size_status=$?
     if [[ ${check_extracted_size_status} != 0 ]];then
@@ -908,8 +894,85 @@ function verify_zip_redirect()
     fi
 }
 
+function check_run_version()
+{
+    local run_version=$(basename ${run_file} | cut -d '_' -f2)
+    IFS=","
+    for version in $1
+    do
+        if [[ "$run_version" =~ ${version} ]];then
+            echo 1
+            unset IFS
+            return 0
+        fi
+    done
+    echo 0
+    unset IFS
+    return 0
+}
+
+function check_run_pkg()
+{
+    if [[ "$(basename ${run_file})" =~ run ]];then
+        if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_cann_zip
+            if [[ $(check_run_version ${OLD_CANN_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+            fi
+        elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${run_file})) == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_soc_zip
+        elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300i_zip
+            else
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
+        elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300v_zip
+            else
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
+        elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+                OLD_CANN="before-5.1"
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300iduo_zip
+            else
+                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
+            fi
+        elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
+        elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_infer_zip
+        elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_train_zip
+        elif [[ $(check_npu_scene ${TRAIN_PRO_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_train_pro_zip
+        elif [[ $(check_npu_scene ${NORMALIZE_910_PRODUCT_LSIT} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_910_zip
+        else
+            echo "not support $(basename ${run_file}), please check" >> ${BASE_DIR}/install.log
+            return 1
+        fi
+        mkdir -p -m 750 ${run_pkg_dir} && cp ${run_file} ${run_pkg_dir}
+    fi
+}
+
+function check_run_pkgs()
+{
+    unset IFS
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
+    for run_file in $(find ${BASE_DIR}/resources -name '*.run')
+    do
+        check_run_pkg
+    done
+}
+
 function process_install()
 {
+    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status=$?
     if [[ ${verify_zip_redirect_status} != 0 ]];then
@@ -949,6 +1012,7 @@ function process_install()
 
 function process_scene()
 {
+    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status_1=$?
     if [[ ${verify_zip_redirect_status_1} != 0 ]];then
@@ -974,6 +1038,7 @@ function process_scene()
 
 function process_patch()
 {
+    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status_2=$?
     if [[ ${verify_zip_redirect_status_2} != 0 ]];then
@@ -1004,6 +1069,7 @@ function process_patch()
 
 function process_patch_rollback()
 {
+    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status=$?
     if [[ ${verify_zip_redirect_status} != 0 ]];then
