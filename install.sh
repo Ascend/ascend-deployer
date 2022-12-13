@@ -716,13 +716,13 @@ function compare_crl()
 OLD_CANN="after-5.1"
 OLD_CANN_VERSION="5.0,20,2.0"
 OLD_NPU_VERSION="20,21,22"
-function check_zip_version()
+function check_file_version()
 {
-    local zip_version=$(basename ${zip_file} | cut -d '_' -f2)
+    local file_version=$(basename $2 | cut -d '_' -f2)
     IFS=","
     for version in $1
     do
-        if [[ "$zip_version" =~ ${version} ]];then
+        if [[ "$file_version" =~ ${version} ]];then
             echo 1
             unset IFS
             return 0
@@ -738,27 +738,27 @@ function zip_extract()
     if [[ "$(basename ${zip_file})" =~ zip ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_zip_version ${OLD_CANN_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_CANN_VERSION} ${zip_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
             fi
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${zip_file})) == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
             else
                 local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
             fi
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
             else
                 local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
             fi
         elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_zip_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
             else
@@ -894,49 +894,32 @@ function verify_zip_redirect()
     fi
 }
 
-function check_run_version()
-{
-    local run_version=$(basename ${run_file} | cut -d '_' -f2)
-    IFS=","
-    for version in $1
-    do
-        if [[ "$run_version" =~ ${version} ]];then
-            echo 1
-            unset IFS
-            return 0
-        fi
-    done
-    echo 0
-    unset IFS
-    return 0
-}
-
 function check_run_pkg()
 {
     if [[ "$(basename ${run_file})" =~ run ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_run_version ${OLD_CANN_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_CANN_VERSION} ${run_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
             fi
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${run_file})) == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_pkg_dir=${BASE_DIR}/resources/run_from_a300i_zip
             else
                 local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
             fi
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_pkg_dir=${BASE_DIR}/resources/run_from_a300v_zip
             else
                 local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
             fi
         elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_run_version ${OLD_NPU_VERSION}) == 1 ]];then
+            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
                 OLD_CANN="before-5.1"
                 local run_pkg_dir=${BASE_DIR}/resources/run_from_a300iduo_zip
             else
@@ -1038,7 +1021,6 @@ function process_scene()
 
 function process_patch()
 {
-    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status_2=$?
     if [[ ${verify_zip_redirect_status_2} != 0 ]];then
@@ -1069,7 +1051,6 @@ function process_patch()
 
 function process_patch_rollback()
 {
-    check_run_pkgs
     verify_zip_redirect
     local verify_zip_redirect_status=$?
     if [[ ${verify_zip_redirect_status} != 0 ]];then
