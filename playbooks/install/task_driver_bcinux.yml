@@ -81,10 +81,10 @@
     use_regex: yes
     patterns: ".*npu-driver.*linux.*{{ ansible_architecture[:3] }}.*.run"
   register: driver_pkg
-  when: normalize910_dir_stat.stat.exists and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists
 
 - set_fact: driver_run={{driver_pkg.files[0].path}}
-  when: normalize910_dir_stat.stat.exists and driver_pkg.matched > 0 and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists and driver_pkg.matched > 0
 
 - name: find driver package specific_os only zip
   find:

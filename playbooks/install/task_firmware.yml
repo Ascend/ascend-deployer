@@ -69,11 +69,11 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pro_pkg
-  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro' and ansible_local.npu_info.scene == 'train'
+  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and ansible_local.npu_info.scene == 'train'
 
 - set_fact: firmware_pro_run={{firmware_pro_pkg.files[0].path}}
   when:
-    - cus_npu_info is defined and cus_npu_info == '300t-pro'
+    - ansible_local.npu_info.scene == 'train'
     - (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and firmware_pro_pkg.matched > 0
 
 - name: find firmware package only zip second
@@ -97,10 +97,10 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pkg
-  when: normalize910_dir_stat.stat.exists and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when: normalize910_dir_stat.stat.exists and firmware_pkg.matched > 0 and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists and firmware_pkg.matched > 0
 
 - name: find firmware package
   find:

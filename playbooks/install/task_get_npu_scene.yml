@@ -28,7 +28,7 @@
     tmp_npu_scene: "{{ 'train' if cus_npu_info == '300t' else 'trainpro'}}"
   when:
     - cus_npu_info is defined
-    - ansible_local.npu_info.product == "A300t"
+    - ansible_local.npu_info.scene == 'train'
     - (cus_npu_info == "300t") or (cus_npu_info == "300t-pro") 
 
 - name: set tmp_npu_scene when set chip_name
