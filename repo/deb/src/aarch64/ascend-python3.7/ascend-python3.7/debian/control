@@ -1,0 +1,12 @@
+Source: ascend-python3.7
+Section: devel
+Priority: optional
+Maintainer: yuncliu <liuyuncheng@huawei.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://www.python.org/
+
+Package: ascend-python3.7
+Architecture: arm64
+Depends: libbz2-1.0, libc6 (>= 2.17), libdb5.3, libffi6 (>= 3.2), liblzma5 (>= 5.1.1alpha+20120614), libmpdec2, libncursesw5 (>= 6), libreadline7 (>= 7.0~beta), libsqlite3-0 (>= 3.7.15), libtinfo5 (>= 6)
+Description: python3.7.5 for ascend

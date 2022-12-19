@@ -1,0 +1,14 @@
+Source: ascend-torch
+Section: devel
+Priority: optional
+Maintainer: unknown <liuyuncheng@huawei.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://ascend.huawei.com
+#Vcs-Git: https://anonscm.debian.org/git/collab-maint/ascend-torch.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/ascend-torch.git
+
+Package: ascend-torch
+Architecture: any
+Depends: ascend-python3.7
+Description: pytorch for ascend
