@@ -1,9 +1,6 @@
 - name: include vars
   include_vars: ../os_map.yml
 
-- name: get npu scene
-  import_tasks: task_get_npu_scene.yml
-
 - name: message
   debug:
     msg:
@@ -13,18 +10,24 @@
 
 - set_fact: normalize910_dir={{ scene_dict['normalize910'] }}
 
+- set_fact: normalize310p_dir={{ scene_dict['normalize310p'] }}
+
 - set_fact: train_dir={{ scene_dict['train'] }}
-
-- set_fact: run_dir={{ scene_dict[npu_scene] }}
-  when: old_cann == "after-5.1"
-
-- set_fact: run_dir={{ old_scene_dict[npu_scene] }}
-  when: old_cann == "before-5.1"
 
 - name: stat normalize910_dir
   stat:
     path: "{{ normalize910_dir[0] }}"
   register: normalize910_dir_stat
+
+- name: stat normalize310p_dir
+  stat:
+    path: "{{ normalize310p_dir[0] }}"
+  register: normalize310p_dir_stat
+
+- name: get npu scene
+  import_tasks: task_get_npu_scene.yml
+
+- set_fact: run_dir={{ scene_dict[npu_scene] }}
 
 - name: stat run_dir
   stat:
@@ -69,11 +72,11 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pro_pkg
-  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and cus_npu_info is defined and cus_npu_info == '300t-pro' and ansible_local.npu_info.scene == 'train'
+  when: (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and ansible_local.npu_info.scene == 'train'
 
 - set_fact: firmware_pro_run={{firmware_pro_pkg.files[0].path}}
   when:
-    - cus_npu_info is defined and cus_npu_info == '300t-pro'
+    - ansible_local.npu_info.scene == 'train'
     - (not run_dir_stat.stat.exists and train_dir_stat.stat.exists) and firmware_pro_pkg.matched > 0
 
 - name: find firmware package only zip second
@@ -89,7 +92,7 @@
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
   when: run_dir_stat.stat.exists and firmware_pkg.matched > 0
 
-- name: find driver package linux only zip third
+- name: find normalize910 firmware package
   find:
     paths: "{{ normalize910_dir }}"
     recurse: no
@@ -97,10 +100,23 @@
     use_regex: yes
     patterns: ".*npu-firmware.*.run"
   register: firmware_pkg
-  when: normalize910_dir_stat.stat.exists and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists
 
 - set_fact: firmware_run={{firmware_pkg.files[0].path}}
-  when: normalize910_dir_stat.stat.exists and firmware_pkg.matched > 0 and ansible_local.npu_info.scene == 'train'
+  when: ansible_local.npu_info.scene == 'train' and normalize910_dir_stat.stat.exists and firmware_pkg.matched > 0
+
+- name: find normalize310p firmware package
+  find:
+    paths: "{{ normalize310p_dir }}"
+    recurse: no
+    file_type: file
+    use_regex: yes
+    patterns: ".*npu-firmware.*.run"
+  register: firmware_pkg
+  when: (ansible_local.npu_info.scene == 'a300i' or ansible_local.npu_info.scene == 'a300iduo') and normalize310p_dir_stat.stat.exists
+
+- set_fact: firmware_run={{firmware_pkg.files[0].path}}
+  when: (ansible_local.npu_info.scene == 'a300i' or ansible_local.npu_info.scene == 'a300iduo') and normalize310p_dir_stat.stat.exists and firmware_pkg.matched > 0
 
 - name: find firmware package
   find:
