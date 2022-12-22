@@ -1,13 +1,6 @@
 - name: include vars
   include_vars: ../os_map.yml
 
-- name: message
-  debug:
-    msg:
-      - "can not find npu card, please check!"
-  failed_when: true
-  when: ansible_local.npu_info.scene == "" and npu_scene == ""
-
 - set_fact: normalize910_dir={{ scene_dict['normalize910'] }}
 
 - set_fact: normalize310p_dir={{ scene_dict['normalize310p'] }}
@@ -26,6 +19,13 @@
 
 - name: get npu scene
   import_tasks: task_get_npu_scene.yml
+
+- name: message
+  debug:
+    msg:
+      - "can not find npu card, please check!"
+  failed_when: true
+  when: ansible_local.npu_info.scene == "" and npu_scene == ""
 
 - set_fact: run_dir={{ scene_dict[npu_scene] }}
 
