@@ -252,9 +252,7 @@ Precautions
 -  Atlas 300I Pro,Atlas 300V Pro,Atlas 300V,A300T-9000 and Atlas 300T
    Pro must be set variable **cus_npu_info** in inventory_file, Atlas
    300I pro should be **300i-pro**, Atlas 300V Pro should be
-   **300v-pro**,Atlas 300V shoud be **300V**.1U SOC must be set
-   varialble **chip_name** in inventory_file.The value of chip_name is
-   310p.Edit inventory_file in the following format:
+   **300v-pro**,Atlas 300V shoud be **300V**.Edit inventory_file in the following format:
 
    ::
 
@@ -264,7 +262,6 @@ Precautions
        ip_address_2 ansible_ssh_user='root' cus_npu_info='300v'      # Atlas 300V
        ip_address_3 ansible_ssh_user='root' cus_npu_info='300t'      # A300T-9000
        ip_address_4 ansible_ssh_user='root' cus_npu_info='300t-pro'  # Atlas 300T Pro
-       ip_address_5 ansible_ssh_user='root' chip_name='310P'         # 1U SOC
 
 -  The hardware configurations of the Atlas200 EP and A300 card
    (A300-3000, A300-3010, A800-3000, and A800-3010) cannot be

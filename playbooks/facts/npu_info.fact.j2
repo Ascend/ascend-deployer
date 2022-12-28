@@ -46,6 +46,7 @@ CHIPS_DICT = {
 }
 FIND_METADATA = 'grep 0x1200 /sys/bus/pci/devices/*/class | awk -F \/ \'{print $6}\''
 FIND_PRODUCT_CMD = 'dmidecode -t 1'
+FIND_SOC_PRODUCT_CMD = 'dmidecode -t 2'
 FIND_PRODUCT = 'dmidecode -t 1 | grep Product | awk -F: \'{print $2}\''
 
 
@@ -156,6 +157,27 @@ def get_model():
         model = _get_model(bdf_file_path, DEVNULL)
         if model != '--':
             return model
+    try:
+        cp = subprocess.Popen(args=shlex.split(FIND_SOC_PRODUCT_CMD),
+                              shell=False,
+                              universal_newlines=True,
+                              stdin=subprocess.PIPE,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+    except Exception:
+        return '--'
+    dmi_info_lines = cp.stdout.readlines()
+    raw_product = ""
+    for i in dmi_info_lines:
+        if 'Product' in i:
+            product_infos = i.split(':')
+            if len(product_infos) < 2:
+                return '--'
+            raw_product = product_infos[1]
+            break
+    product = raw_product.replace('\t', '').replace('\n', '').strip()
+    if product == 'Atlas 200I SoC A1':
+        return product
     return '--'
 
 def _get_model(bdf_file_path, DEVNULL):
