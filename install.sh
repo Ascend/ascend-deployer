@@ -996,6 +996,7 @@ function process_scene()
 
 function process_patch()
 {
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
     verify_zip_redirect
     local verify_zip_redirect_status_2=$?
     if [[ ${verify_zip_redirect_status_2} != 0 ]];then
@@ -1026,6 +1027,7 @@ function process_patch()
 
 function process_patch_rollback()
 {
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
     verify_zip_redirect
     local verify_zip_redirect_status=$?
     if [[ ${verify_zip_redirect_status} != 0 ]];then
