@@ -3,14 +3,12 @@
 简介
 =======
 
-离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。tools目录额外放置了Device
-IP配置脚本，使用方法可参考\ `Device
-IP配置 <https://gitee.com/ascend/ascend-deployer/blob/master/docs/Device_IP_Configuration.md>`__\ 。
+离线安装工具提供系统组件、python第三方依赖自动下载以及一键式安装的功能，并支持驱动、固件以及CANN软件包的安装。
 
 快速指南
 ===========
 
-本工具主要支持开局场景（环境仅安装了OS），其他场景如果遇到问题，请参考\ `ascend-deployer用户指南 <https://www.hiascend.com/document/detail/zh/ascend-deployer/30rc3/ascenddeployer/deployer_000002.html>`__\。
+本工具主要支持开局场景（环境仅安装了OS），其他场景如果遇到问题，请参考\ `ascend-deployer用户指南 <https://www.hiascend.com/document/detail/zh/ascend-deployer>`__\。
 
 安装内容
 -------------
@@ -85,4 +83,4 @@ pytorch_run     sys_pkg、python、npu、nnae、pytorch                        p
       source /usr/local/ascendrc                # 配置python环境变量
       source /usr/local/Ascend/nnae/set_env.sh  # 配置nnae的环境变量
 
-8. 详细指南请参考\ `ascend-deployer用户指南 <https://www.hiascend.com/document/detail/zh/ascend-deployer/30rc3/ascenddeployer/deployer_000002.html>`__\
+8. 详细指南请参考\ `ascend-deployer用户指南 <https://www.hiascend.com/document/detail/zh/ascend-deployer>`__\
