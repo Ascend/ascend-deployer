@@ -1,5 +1,6 @@
 [
     { "name": "gcc" },
+    { "name": "xz-utils" },
     { "name": "cpp" },
     { "name": "g++" },
     { "name": "libgcc1" },
