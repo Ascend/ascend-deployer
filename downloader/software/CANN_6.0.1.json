@@ -1,7 +1,7 @@
 {
     "name": "CANN",
     "version": "6.0.1",
-    "default": false,
+    "default": true,
     "other": [
         {
             "filename": "Ascend-cann-toolkit_6.0.1_linux-aarch64.zip",
