@@ -35,3 +35,6 @@
 
 - name: install mindspore
   import_playbook: ../install/install_mindspore.yml
+
+- name: install mxvision
+  import_playbook: ../install/install_mxvision.yml
