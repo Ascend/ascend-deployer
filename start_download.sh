@@ -324,7 +324,7 @@ function check_script_args()
     for package in ${PKG_LIST}
     do
         case "${package}" in
-        CANN|MindStudio|MindSpore|SDK)
+        CANN|MindStudio|MindSpore)
             continue
             ;;
         *)
