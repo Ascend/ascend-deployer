@@ -12,11 +12,12 @@ readonly kernel_version=$(uname -r)
 readonly arch=$(uname -m)
 readonly BASE_DIR=$(cd "$(dirname $0)" > /dev/null 2>&1; pwd -P)
 readonly PYLIB_PATH=${BASE_DIR}/resources/pylibs
-readonly A310P_SOC_PRODUCT_LIST="Ascend-hdk-310p-npu-soc"
+readonly A310P_SOC_PRODUCT_LIST="Ascend-hdk-310p-npu-soc,Ascend-hdk-310p-npu-driver-soc,Ascend-hdk-310p-npu-firmware-soc"
 readonly A300I_PRODUCT_LIST="A300i-pro,Atlas-300i-pro"
-readonly A300V_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
+readonly A300V_PRO_PRODUCT_LIST="A300v-pro,Atlas-300v-pro"
+readonly A300V_PRODUCT_LIST="Atlas-300v"
 readonly A300IDUO_PRODOUCT_LIST="A300i-duo,Atlas-300i-duo"
-readonly A310P_PRODUCT_LIST="Ascend-hdk-310p,Ascend310P,Atlas-300v"
+readonly A310P_PRODUCT_LIST="Ascend-hdk-310p,Ascend310P"
 readonly INFER_PRODUCT_LIST="Ascend-hdk-310,Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly NORMALIZE_910_PRODUCT_LSIT="Ascend-hdk-910,Ascend910"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
@@ -715,7 +716,7 @@ function compare_crl()
 
 OLD_CANN="after-5.1"
 OLD_CANN_VERSION="5.0,20,2.0"
-OLD_NPU_VERSION="20,21,22"
+
 function check_file_version()
 {
     local file_version=$(basename $2 | cut -d '_' -f2)
@@ -744,26 +745,13 @@ function zip_extract()
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${zip_file})) == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
-            else
-                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300i_zip
+        elif [[ $(check_npu_scene ${A300V_PRO_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300v_pro_zip
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
-            else
-                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300v_zip
         elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${zip_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
-            else
-                local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_from_zip=${BASE_DIR}/resources/run_from_a300iduo_zip
         elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -905,26 +893,13 @@ function check_run_pkg()
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${run_file})) == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300i_zip
-            else
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_a300i_zip
+        elif [[ $(check_npu_scene ${A300V_PRO_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_a300v_pro_zip
         elif [[ $(check_npu_scene ${A300V_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300v_zip
-            else
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_a300v_zip
         elif [[ $(check_npu_scene ${A300IDUO_PRODOUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            if [[ $(check_file_version ${OLD_NPU_VERSION} ${run_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a300iduo_zip
-            else
-                local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
-            fi
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_a300iduo_zip
         elif [[ $(check_npu_scene ${A310P_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
@@ -1021,6 +996,7 @@ function process_scene()
 
 function process_patch()
 {
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
     verify_zip_redirect
     local verify_zip_redirect_status_2=$?
     if [[ ${verify_zip_redirect_status_2} != 0 ]];then
@@ -1051,6 +1027,7 @@ function process_patch()
 
 function process_patch_rollback()
 {
+    rm -rf ${BASE_DIR}/resources/run_from_*_zip
     verify_zip_redirect
     local verify_zip_redirect_status=$?
     if [[ ${verify_zip_redirect_status} != 0 ]];then

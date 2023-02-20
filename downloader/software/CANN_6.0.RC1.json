@@ -82,6 +82,16 @@
             "filename":"Atlas-300t-pro-npu_6.0.rc1_linux-x86_64.zip",
             "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.RC3.1/Atlas-300t-pro-npu_6.0.rc1_linux-x86_64.zip",
             "sha256": "f94e47a268f832f74267279fce0857e923264d2320e0d3b6bcd640bf06b94b35"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.RC3_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.RC3/Ascend-mindx-toolbox_3.0.RC3_linux-x86_64.zip",
+            "sha256": "52fdd8d7a962fbb88aba28cfb48739f287575e7240d571498dd1d5882e3fceda"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.RC3_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.RC3/Ascend-mindx-toolbox_3.0.RC3_linux-aarch64.zip",
+            "sha256": "cece55824c23c60a2cd5365803a24d7fa60b806634c74ea2bcfebef94230f9a0"
         }
     ]
 }

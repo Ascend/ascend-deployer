@@ -1,0 +1,87 @@
+{
+    "name": "CANN",
+    "version": "6.0.1",
+    "default": true,
+    "other": [
+        {
+            "filename": "Ascend-cann-toolkit_6.0.1_linux-aarch64.zip",
+            "url" : "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-toolkit_6.0.1_linux-aarch64.zip",
+            "sha256": "500db9fbe8b6848b464e667483d4b6864ae5a991fa718f60433ad37a38c0edec"
+        },
+        {
+            "filename": "Ascend-cann-toolkit_6.0.1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-toolkit_6.0.1_linux-x86_64.zip",
+            "sha256":"dacbde718f94155329370635ef60354288f7f72938496f834fd0ed59ff65bafc"
+        },
+        {
+            "filename": "Ascend-cann-nnae_6.0.1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-nnae_6.0.1_linux-aarch64.zip",
+            "sha256": "2ecd13bc1fd2df48de26f50ea7577e413bbbf73028d0b3ffcdcf09b3ae3bd158"
+        },
+        {
+            "filename": "Ascend-cann-nnae_6.0.1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-nnae_6.0.1_linux-x86_64.zip",
+            "sha256": "29ac639fd1614a7b027b99eb609f08e44a16c4348f88532a0fce7bb1734c3d22"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_6.0.1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-nnrt_6.0.1_linux-aarch64.zip",
+            "sha256":"2eb6701230551d58704bd9201958f819c58e3096e61bfa4a0362d99c6660bedb"
+        },
+        {
+            "filename": "Ascend-cann-nnrt_6.0.1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-nnrt_6.0.1_linux-x86_64.zip",
+            "sha256":"0ae2b4894e93b01d541a5b390befa0954509bb8fcf45e3c7619c0e9e776d060a"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_6.0.1_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-tfplugin_6.0.1_linux-aarch64.zip",
+            "sha256": "234550a7401e063d578e8f8256527f3a4c35bcaa73d4eb5e2d861089e78b3117"
+        },
+        {
+            "filename": "Ascend-cann-tfplugin_6.0.1_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-tfplugin_6.0.1_linux-x86_64.zip",
+            "sha256": "db7b3c283badb512688775d37d8a4d650529ff5440c25593277268bbb080eabc"
+        },
+        {
+            "filename": "A300-3010-npu_6.0.0_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/A300-3010-npu_6.0.0_linux-aarch64.zip",
+            "sha256":"54b0aa0ef0ed3a9a590a37501612f9144db9470401ee4dfb73ec26e0473fa484"
+        },
+        {
+            "filename": "A300-3010-npu_6.0.0_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/A300-3010-npu_6.0.0_linux-x86_64.zip",
+            "sha256":"bbe942cf149a27fe3e5162de78d61672522e9ad4831473ba6df2684a3f23a8ca"
+        },
+        {   
+            "filename":"Ascend-hdk-310p-npu_6.0.0_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-aarch64.zip",
+            "sha256": "7d881af4802ee426aefa8d3a52e45ad7571cb85b7227276284559e7377961bb5"
+        },
+        {
+            "filename":"Ascend-hdk-310p-npu_6.0.0_linux-x86-64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-x86-64.zip",
+            "sha256": "a72764be304f1deb00d078f5278d3b9ad05eec5449eec2a98e2cadbc7fe2e99e"
+        },
+        {
+            "filename":"Ascend-hdk-910-npu_6.0.0_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-910-npu_6.0.0_linux-aarch64.zip",
+            "sha256": "6548d59b30464ea909581df28e6ba61c5cf2922faa7436b76353d3c8157a2cd7"
+        },
+        {
+            "filename":"Ascend-hdk-910-npu_6.0.0_linux-x86-64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-910-npu_6.0.0_linux-x86-64.zip",
+            "sha256": "4796c0700b0da0c2301246e9f3408b88de55ed7146c790b2484ef0231b17ce46"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.0_linux-x86_64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindx-toolbox_3.0.0_linux-x86_64.zip",
+            "sha256": "a577d6a28168f547112cc455c60ccf36053a1b220eeb21fa55e6bbe030d17b2b"
+        },
+        {
+            "filename": "Ascend-mindx-toolbox_3.0.0_linux-aarch64.zip",
+            "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindx-toolbox_3.0.0_linux-aarch64.zip",
+            "sha256": "826f315dd2f59fc0cd3dba3b801467520e6b57793ce0ae4492c22cbd284ed3a7"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{"name": "SDK",
+    "version":"3.0.0",
+    "default":true,
+    "other": [
+            {
+                "filename": "Ascend-mindxsdk-mxvision_3.0.0_linux-aarch64.run",
+                "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindxsdk-mxvision_3.0.0_linux-aarch64.run",
+                "sha256": "aec7f10493e57e8c4529e0be8de49c1484291ff60ce90b6f2b60f05417a00088"
+            },
+            {
+                "filename": "Ascend-mindxsdk-mxvision_3.0.0_linux-x86_64.run",
+                "url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindxsdk-mxvision_3.0.0_linux-x86_64.run",
+                "sha256": "642543c0d575f7d7bb33af6495d60e19a3b4d8044fb51ecdcc4c59dc9fb01344"
+            }
+    ]
+}
+

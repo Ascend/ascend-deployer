@@ -39,30 +39,23 @@ code_name_dict:
     "LTS": "LTS"
 code_name: ""
 scene_dict:
-  a300i:
+  normalize310p:
     - "{{ resources_dir }}/run_from_a310p_zip"
-  a300v:
-    - "{{ resources_dir }}/run_from_a310p_zip"
-  infer:
-    - "{{ resources_dir }}/run_from_infer_zip"
-  train:
-    - "{{ resources_dir }}/run_from_train_zip"
-  trainpro:
-    - "{{ resources_dir }}/run_from_train_pro_zip"
   normalize910:
     - "{{ resources_dir }}/run_from_910_zip"
-  a300iduo:
-    - "{{ resources_dir }}/run_from_a310p_zip"
   soc:
     - "{{ resources_dir }}/run_from_soc_zip"
-old_scene_dict:
+  infer:
+    - "{{ resources_dir }}/run_from_infer_zip"
   a300i:
     - "{{ resources_dir }}/run_from_a300i_zip"
   a300v:
     - "{{ resources_dir }}/run_from_a300v_zip"
-  infer:
-    - "{{ resources_dir }}/run_from_infer_zip"
-  train:
-    - "{{ resources_dir }}/run_from_train_zip"
+  a300v_pro:
+    - "{{ resources_dir }}/run_from_a300v_pro_zip"
   a300iduo:
     - "{{ resources_dir }}/run_from_a300iduo_zip"
+  train:
+    - "{{ resources_dir }}/run_from_train_zip"
+  trainpro:
+    - "{{ resources_dir }}/run_from_train_pro_zip"

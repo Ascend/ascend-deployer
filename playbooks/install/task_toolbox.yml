@@ -30,26 +30,26 @@
 - name: install toolbox for a200i soc
   shell: "export TOOLBOX_SOC=A200ISoC && bash {{ toolbox.files[0].path }} {{ log_path }}"
   register: toolbox_result
-  when: old_cann == "after-5.1" and toolbox.matched > 0 and chip_name is defined
+  when: old_cann == "after-5.1" and toolbox.matched > 0 and ansible_local.npu_info.model == "Atlas 200I SoC A1"
   failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
 
 - name: message
   debug:
     msg:
       - "{{ toolbox_result | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and toolbox_result.changed and chip_name is defined
+  when: old_cann == "after-5.1" and toolbox_result.changed and ansible_local.npu_info.model == "Atlas 200I SoC A1"
 
 - name: install toolbox
   shell: "bash {{ toolbox.files[0].path }} {{ log_path }}"
   register: toolbox_result
-  when: old_cann == "after-5.1" and toolbox.matched > 0 and chip_name is undefined
+  when: old_cann == "after-5.1" and toolbox.matched > 0 and ansible_local.npu_info.model != "Atlas 200I SoC A1"
   failed_when: "toolbox_result.rc != 0 and 'already installed' not in toolbox_result.stdout"
 
 - name: message
   debug:
     msg:
       - "{{ toolbox_result | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and toolbox_result.changed and chip_name is undefined
+  when: old_cann == "after-5.1" and toolbox_result.changed and ansible_local.npu_info.model != "Atlas 200I SoC A1"
 
 - name: check ascend cann install info
   stat:

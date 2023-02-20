@@ -426,6 +426,7 @@ class Yum(object):
             if pkg is not None:
                 pkg.repo_url = repo_url
                 dep_list = self.get_dependencies(conn, name, repo_name) if dep else None
+                conn.close()
                 return pkg, dep_list
             conn.close()
 

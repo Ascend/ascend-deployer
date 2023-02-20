@@ -57,7 +57,7 @@
   when: makefile_stat.stat.exists
 
 - name: install gcc 7.3.0 configure
-  shell: "./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix={{ local_path }}/gcc7.3.0"
+  shell: "./configure --enable-languages=c,c++ --disable-multilib --with-system-zlib --prefix={{ local_path }}/gcc7.3.0 --disable-stage1-checking --disable-libgcj"
   args:
     chdir: "{{ build_dir }}/gcc-7.3.0"
   register: configure_result
