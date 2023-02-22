@@ -43,6 +43,8 @@ scene_dict:
     - "{{ resources_dir }}/run_from_a310p_zip"
   normalize910:
     - "{{ resources_dir }}/run_from_910_zip"
+  a910b:
+    - "{{ resources_dir }}/run_from_910b_zip"
   soc:
     - "{{ resources_dir }}/run_from_soc_zip"
   infer:
