@@ -1,0 +1,45 @@
+[
+    { "name": "tar",                           "autodependency":"true" },
+    { "name": "python3-libselinux",            "autodependency":"true" },
+    { "name": "gcc",                           "autodependency":"true" },
+    { "name": "gcc-c++",                       "autodependency":"true" },
+    { "name": "cmake",                         "autodependency":"true" },
+    { "name": "gnutls",                        "autodependency":"true", "info": "need upgrade to match the new openssl form repo"},
+    { "name": "openssh",                       "autodependency":"true", "info": "need upgrade to match the new openssl form repo"},
+    { "name": "pciutils",                      "autodependency":"true" },
+    { "name": "net-tools",                     "autodependency":"true" },
+    { "name": "libffi-devel",                  "autodependency":"true", "info": "python cffi"},
+    { "name": "zlib-devel",                    "autodependency":"true", "info": "python zlib" },
+    { "name": "xz-devel",                      "autodependency":"true", "info": "python lzma" },
+    { "name": "bzip2-devel",                   "autodependency":"true", "info": "python bz2" },
+    { "name": "sqlite-devel",                  "autodependency":"true", "info": "python sqlite" },
+    { "name": "openssl-devel",                 "autodependency":"true", "info": "python ssl" },
+    { "name": "hdf5",                          "autodependency":"true", "info": "tensorflow use" },
+    { "name": "hdf5-devel",                    "autodependency":"true", "info": "tensorflow use" },
+    { "name": "libaec",                        "autodependency":"true", "info": "hdf5 need" },
+    { "name": "gmp-c++",                       "autodependency":"true", "info": "used for mindspore" },
+    { "name": "sshpass",
+      "url":"https://repo.openeuler.org/openEuler-22.03-LTS/everything/aarch64/Packages/sshpass-1.09-1.oe2203.aarch64.rpm",
+      "sha256": "cbab3b56cd6ba1cc6608fd5a4fb15360be879602fc8c6d79cac195c752c95188"
+    },
+    {
+        "name": "docker-ce-cli",
+        "version": "20.10.8",
+        "release": "3.el7"
+    },
+    {
+        "name": "containerd.io",
+        "version": "1.4.9",
+        "release": "3.1.el7"
+    },
+    {
+        "name": "docker-ce",
+        "version": "20.10.8",
+        "release": "3.el7"
+    },
+    {
+        "name": "docker-ce-rootless-extras",
+        "version": "20.10.8",
+        "release": "3.el7"
+    }
+]

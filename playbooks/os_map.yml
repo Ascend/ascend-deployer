@@ -37,12 +37,15 @@ code_name_dict:
     "LTS-SP1": "LTS"
     "LTS-SP3": "LTS"
     "LTS": "LTS"
+    "": "LTS"
 code_name: ""
 scene_dict:
   normalize310p:
     - "{{ resources_dir }}/run_from_a310p_zip"
   normalize910:
     - "{{ resources_dir }}/run_from_910_zip"
+  a910b:
+    - "{{ resources_dir }}/run_from_910b_zip"
   soc:
     - "{{ resources_dir }}/run_from_soc_zip"
   infer:

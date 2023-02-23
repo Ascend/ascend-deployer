@@ -20,6 +20,7 @@ readonly A300IDUO_PRODOUCT_LIST="A300i-duo,Atlas-300i-duo"
 readonly A310P_PRODUCT_LIST="Ascend-hdk-310p,Ascend310P"
 readonly INFER_PRODUCT_LIST="Ascend-hdk-310,Ascend310,A300-3000,A300-3010,Atlas-200"
 readonly NORMALIZE_910_PRODUCT_LSIT="Ascend-hdk-910,Ascend910"
+readonly TRAIN_910B_PRODUCT_LIST="Ascend-hdk-910B,Ascend910B-hdk"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly TRAIN_PRO_PRODUCT_LIST="Atlas-300t-pro"
 readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
@@ -326,7 +327,7 @@ function get_os_version()
 
     # OpenEuler
     if [ "${id}" == "OpenEuler" ];then
-        if [[ "${codename}" =~ "LTS" ]];then
+        if [[ "${codename}" =~ "LTS" ]] || [[ "${codename}" == "" ]];then
             codename="LTS"
         fi
         version=${ver}${codename}
@@ -756,6 +757,8 @@ function zip_extract()
             local run_from_zip=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_infer_zip
+        elif [[ $(check_npu_scene ${TRAIN_910B_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
+            local run_from_zip=${BASE_DIR}/resources/run_from_910b_zip
         elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_train_zip
         elif [[ $(check_npu_scene ${TRAIN_PRO_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -904,6 +907,8 @@ function check_run_pkg()
             local run_pkg_dir=${BASE_DIR}/resources/run_from_a310p_zip
         elif [[ $(check_npu_scene ${INFER_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_infer_zip
+        elif [[ $(check_npu_scene ${TRAIN_910B_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
+            local run_pkg_dir=${BASE_DIR}/resources/run_from_910b_zip
         elif [[ $(check_npu_scene ${TRAIN_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_train_zip
         elif [[ $(check_npu_scene ${TRAIN_PRO_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
