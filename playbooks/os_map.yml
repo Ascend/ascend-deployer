@@ -37,6 +37,7 @@ code_name_dict:
     "LTS-SP1": "LTS"
     "LTS-SP3": "LTS"
     "LTS": "LTS"
+    "": "LTS"
 code_name: ""
 scene_dict:
   normalize310p:
