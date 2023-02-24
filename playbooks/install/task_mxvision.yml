@@ -32,7 +32,7 @@
   when: ansible_user_uid != 0
 
 - name: install mxvision for root
-  shell: "source /usr/local/Ascend/ascend-toolkit/set_env.sh && bash {{ mxvision_run.files[0].path }} --nox11 --install --install-path=/usr/local/Ascend"
+  shell: ". /usr/local/Ascend/ascend-toolkit/set_env.sh && bash {{ mxvision_run.files[0].path }} --nox11 --install --install-path=/usr/local/Ascend"
   register: mxvision_result
   when: mxvision_run.matched > 0 and ansible_user_uid == 0 and (not mxvision_info.stat.exists)
   failed_when: "mxvision_result.rc != 0 and 'The installation is successfully' not in mxvision_result.stdout"
@@ -44,7 +44,7 @@
   when: mxvision_result.changed
 
 - name: install mxvision for non-root
-  shell: "source ${HOME}/Ascend/ascend-toolkit/set_env.sh && bash {{ mxvision_run.files[0].path }} --nox11 --install --install-path=${HOME}/Ascend"
+  shell: ". ${HOME}/Ascend/ascend-toolkit/set_env.sh && bash {{ mxvision_run.files[0].path }} --nox11 --install --install-path=${HOME}/Ascend"
   register: mxvision_result
   when: mxvision_run.matched > 0 and ansible_user_uid != 0 and (not mxvision_info_non_root.stat.exists)
   failed_when: "mxvision_result.rc != 0 and 'The installation is successfully' not in mxvision_result.stdout"
