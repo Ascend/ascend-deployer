@@ -1,0 +1,4 @@
+deb https://mirrors.huaweicloud.com/ubuntu/ jammy main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/ubuntu/ jammy-updates main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/ubuntu/ jammy-security main multiverse restricted universe
+deb https://mirrors.huaweicloud.com/docker-ce/linux/ubuntu/ jammy stable
