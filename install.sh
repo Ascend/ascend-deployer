@@ -23,8 +23,7 @@ readonly NORMALIZE_910_PRODUCT_LSIT="Ascend-hdk-910,Ascend910"
 readonly TRAIN_910B_PRODUCT_LIST="Ascend-hdk-910B,Ascend910B-hdk"
 readonly TRAIN_PRODUCT_LIST="A300t-9000,A800-9000,A800-9010,A900-9000"
 readonly TRAIN_PRO_PRODUCT_LIST="Atlas-300t-pro"
-readonly CANN_PRODUCT_LIST="Ascend-cann"
-readonly TOOLBOX_PRODUCT_LIST="Ascend-mindx"
+readonly CANN_PRODUCT_LIST="Ascend-cann,Ascend-mindx"
 readonly APP_NAME_LIST=(all npu driver firmware nnrt nnae tfplugin toolbox toolkit atlasedge ha)
 
 readonly ROOT_CA=$(cat << EOF
@@ -202,11 +201,11 @@ function safe_dir()
 
 function check_exec_file()
 {
-    local exec_files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch pwd uname sort stat cut realpath rpm dpkg python3 python)
+    local exec_files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch which pwd uname sort stat cut realpath rpm dpkg python3 python)
     for j in ${exec_files[@]};do
-    command -v $j &> /dev/null
+    which $j &> /dev/null
     if [ $? -eq 0 ];then
-        safe_file $(command -v $j)
+        safe_file $(which $j)
     fi
     done
 }
@@ -933,10 +932,6 @@ function process_install()
     if [[ ${verify_zip_redirect_status} != 0 ]];then
         return ${verify_zip_redirect_status}
     fi
-    if [ $OLD_CANN != $OLD_TOOLBOX ];then
-        echo "Please ensure that the version of CANN and toolbox match" >> ${BASE_DIR}/install.log
-        return 1
-    fi
     local tmp_install_play=${BASE_DIR}/playbooks/tmp_install.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_install_play}
     if [ "x${nocopy_flag}" != "xy" ];then
@@ -976,10 +971,6 @@ function process_scene()
     local verify_zip_redirect_status_1=$?
     if [[ ${verify_zip_redirect_status_1} != 0 ]];then
         return ${verify_zip_redirect_status_1}
-    fi
-    if [ $OLD_CANN != $OLD_TOOLBOX ];then
-        echo "Please ensure that the version of CANN and toolbox match" >> ${BASE_DIR}/install.log
-        return 1
     fi
     local tmp_scene_play=${BASE_DIR}/playbooks/tmp_scene.yml
     echo "- import_playbook: gather_npu_fact.yml" > ${tmp_scene_play}

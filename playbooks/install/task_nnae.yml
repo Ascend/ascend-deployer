@@ -73,10 +73,10 @@
   debug:
     msg:
       - "{{ nnae_result | default('NOT DEFINED') }}"
-  when: nnae.matched == 0 and nnae_result.changed
+  when: nnae.matched == 0 and nnae_result.changed and nnae_status.stdout == '0'
 
 - name: upgrade nnae
-  shell: "bash {{ nnae_run.files[0].path }} --nox11 {{ cann_upgrade_params }} {{ ins_path_cmd }}"
+  shell: "bash {{ nnae_run.files[0].path }} --nox11 --upgrade"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"

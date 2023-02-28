@@ -6,7 +6,6 @@
     use_regex: yes
     patterns: ".*nnrt.*{{ ansible_architecture }}.sh"
   register: nnrt
-  when: old_cann == "after-5.1"
 
 - name: find nnrt run package
   find:
@@ -20,12 +19,12 @@
 - name: set log_path for root
   set_fact:
     log_path: /var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid == 0
+  when: ansible_user_uid == 0
 
 - name: set log_path for non-root
   set_fact:
     log_path: ~/var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid != 0
+  when: ansible_user_uid != 0
 
 - name: install nnrt
   shell: "bash {{ nnrt.files[0].path }} {{ log_path }}"
@@ -33,14 +32,14 @@
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: nnrt_result
-  when: old_cann == "after-5.1" and nnrt.matched > 0
+  when: nnrt.matched > 0
   failed_when: "nnrt_result.rc != 0 and 'already installed' not in nnrt_result.stdout"
 
 - name: message
   debug:
     msg:
       - "{{ nnrt_result | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and nnrt_result.changed
+  when: nnrt_result.changed
 
 - name: check ascend cann install info
   stat:
@@ -57,23 +56,42 @@
     ins_path_cmd: ""
   when: install_info.stat.exists or ansible_user_uid != 0
 
+- name: check nnrt exists
+  shell: ls {{ ascend_install_path }}/nnrt/*/*/ascend_nnrt_install.info 2>/dev/null | wc -l
+  register: nnrt_status
+
 - name: install nnrt
   shell: "bash {{ nnrt_run.files[0].path }} --nox11 {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: nnrt_result
-  when: (old_cann == "after-5.1" and nnrt.matched == 0 or old_cann == "before-5.1") and nnrt_run.matched > 0
+  when: nnrt.matched == 0 and nnrt_run.matched > 0 and nnrt_status.stdout == '0'
   failed_when: "nnrt_result.rc != 0 and 'already installed' not in nnrt_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnrt_result | default('NOT DEFINED') }}"
+  when: nnrt.matched == 0 and nnrt_result.changed and nnrt_status.stdout == '0'
+
+- name: upgrade nnrt
+  shell: "bash {{ nnrt_run.files[0].path }} --nox11 --upgrade"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  register: nnrt_result
+  when: nnrt.matched == 0 and nnrt_run.matched > 0 and nnrt_status.stdout != '0'
+  failed_when: "nnrt_result.rc != 0 and 'already installed' not in nnrt_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnrt_result | default('NOT DEFINED') }}"
+  when: nnrt.matched == 0 and nnrt_result.changed and nnrt_status.stdout != '0'
 
 - name: message
   debug:
     msg:
       - "can not find nnrt package, nnrt install skipped"
   when: nnrt_run.matched == 0
-
-- name: message
-  debug:
-    msg:
-      - "{{ nnrt_result | default('NOT DEFINED') }}"
-  when: (old_cann == "after-5.1" and nnrt.matched == 0 or old_cann == "before-5.1") and nnrt_result.changed

@@ -183,8 +183,3 @@
   set_fact:
      cann_install_params: "--install --quiet"
      cacheable: yes
-
-- name: set cann upgrade params
-  set_fact:
-     cann_upgrade_params: "--upgrade --quiet"
-     cacheable: yes
