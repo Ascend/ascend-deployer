@@ -202,11 +202,11 @@ function safe_dir()
 
 function check_exec_file()
 {
-    local exec_files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch which pwd uname sort stat cut realpath rpm dpkg python3 python)
+    local exec_files=(cat date whoami who awk sed grep bash ls mkdir tar chmod make find unzip openssl cp rm basename dirname mv touch pwd uname sort stat cut realpath rpm dpkg python3 python)
     for j in ${exec_files[@]};do
-    which $j &> /dev/null
+    command -v $j &> /dev/null
     if [ $? -eq 0 ];then
-        safe_file $(which $j)
+        safe_file $(command -v $j)
     fi
     done
 }
@@ -716,11 +716,6 @@ function compare_crl()
     return 0
 }
 
-OLD_CANN="after-5.1"
-OLD_TOOLBOX="after-5.1"
-OLD_CANN_VERSION="5.0,20,2.0"
-OLD_TOOLBOX_VERSION="20,2.0"
-
 function check_file_version()
 {
     local file_version=$(basename $2 | cut -d '_' -f2)
@@ -743,14 +738,6 @@ function zip_extract()
     if [[ "$(basename ${zip_file})" =~ zip ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_file_version ${OLD_CANN_VERSION} ${zip_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-            fi
-        elif [[ $(check_npu_scene ${TOOLBOX_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
-            local run_from_zip=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_file_version ${OLD_TOOLBOX_VERSION} ${zip_file}) == 1 ]];then
-                OLD_TOOLBOX="before-5.1"
-            fi
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${zip_file})) == 1 ]];then
             local run_from_zip=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${zip_file}))  == 1 ]];then
@@ -898,14 +885,6 @@ function check_run_pkg()
     if [[ "$(basename ${run_file})" =~ run ]];then
         if [[ $(check_npu_scene ${CANN_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_file_version ${OLD_CANN_VERSION} ${run_file}) == 1 ]];then
-                OLD_CANN="before-5.1"
-            fi
-        elif [[ $(check_npu_scene ${TOOLBOX_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
-            local run_pkg_dir=${BASE_DIR}/resources/run_from_cann_zip
-            if [[ $(check_file_version ${OLD_TOOLBOX_VERSION} ${run_file}) == 1 ]];then
-                OLD_TOOLBOX="before-5.1"
-            fi
         elif [[ $(check_npu_scene ${A310P_SOC_PRODUCT_LIST} $(basename ${run_file})) == 1 ]];then
             local run_pkg_dir=${BASE_DIR}/resources/run_from_soc_zip
         elif [[ $(check_npu_scene ${A300I_PRODUCT_LIST} $(basename ${run_file}))  == 1 ]];then
@@ -978,9 +957,9 @@ function process_install()
         echo "- import_playbook: install/install_${new_target}.yml" >> ${tmp_install_play}
     done
     unset IFS
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_install_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_install_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_install_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_install_ansible_playbook_status=$?
     if [ -f ${tmp_install_play} ];then
         rm -f ${tmp_install_play}
@@ -1008,9 +987,9 @@ function process_scene()
         echo "- import_playbook: distribution.yml" >> ${tmp_scene_play}
     fi
     echo "- import_playbook: scene/scene_${install_scene}.yml" >> ${tmp_scene_play}
-    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann=${OLD_CANN} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
+    echo "ansible-playbook -i ./inventory_file $(basename ${tmp_scene_play}) -e hosts_name=ascend -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}"
     cat ${tmp_scene_play}
-    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e old_cann="${OLD_CANN}" -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
+    ansible_playbook -i ${BASE_DIR}/inventory_file ${tmp_scene_play} -e "hosts_name=ascend" -e python_tar=${PYTHON_TAR} -e python_version=${PYTHON_VERSION} -e tensorflow_version=${TENSORFLOW_VERSION} -e kernels_type=${KERNELS_TYPE} -e force_upgrade_npu=${FORCE_UPGRADE_NPU} ${DEBUG_CMD}
     local process_scene_ansible_playbook_status=$?
     if [ -f ${tmp_scene_play} ];then
         rm -f ${tmp_scene_play}
