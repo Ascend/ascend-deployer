@@ -6,7 +6,6 @@
     use_regex: yes
     patterns: ".*nnae.*{{ ansible_architecture }}.sh"
   register: nnae
-  when: old_cann == "after-5.1"
 
 - name: find nnae run package
   find:
@@ -20,12 +19,12 @@
 - name: set log_path for root
   set_fact:
     log_path: /var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid == 0
+  when: ansible_user_uid == 0
 
 - name: set log_path for non-root
   set_fact:
     log_path: ~/var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid != 0
+  when: ansible_user_uid != 0
 
 - name: install nnae
   shell: "bash {{ nnae.files[0].path }} {{ log_path }}"
@@ -33,14 +32,14 @@
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: nnae_result
-  when: old_cann == "after-5.1" and nnae.matched > 0
+  when: nnae.matched > 0
   failed_when: "nnae_result.rc != 0 and 'already installed' not in nnae_result.stdout"
 
 - name: message
   debug:
     msg:
       - "{{ nnae_result | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and nnae_result.changed
+  when: nnae_result.changed
 
 - name: check ascend cann install info
   stat:
@@ -57,23 +56,42 @@
     ins_path_cmd: ""
   when: install_info.stat.exists or ansible_user_uid != 0
 
+- name: check nnae exists
+  shell: ls {{ ascend_install_path }}/nnae/*/ascend_nnae_install.info 2>/dev/null | wc -l
+  register: nnae_status
+
 - name: install nnae
   shell: "bash {{ nnae_run.files[0].path }} --nox11 {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
   register: nnae_result
-  when: (old_cann == "after-5.1" and nnae.matched == 0 or old_cann == "before-5.1") and nnae_run.matched > 0
+  when: nnae.matched == 0 and nnae_run.matched > 0 and nnae_status.stdout == '0'
   failed_when: "nnae_result.rc != 0 and 'already installed' not in nnae_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnae_result | default('NOT DEFINED') }}"
+  when: nnae.matched == 0 and nnae_result.changed and nnae_status.stdout == '0'
+
+- name: upgrade nnae
+  shell: "bash {{ nnae_run.files[0].path }} --nox11 --upgrade"
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ansible_env.PATH}}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+  register: nnae_result
+  when: nnae.matched == 0 and nnae_run.matched > 0 and nnae_status.stdout != '0'
+  failed_when: "nnae_result.rc != 0 and 'already installed' not in nnae_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ nnae_result | default('NOT DEFINED') }}"
+  when: nnae.matched == 0 and nnae_result.changed and nnae_status.stdout != '0'
 
 - name: message
   debug:
     msg:
       - "can not find nnae package, nnae install skipped"
   when: nnae_run.matched == 0
-
-- name: message
-  debug:
-    msg:
-      - "{{ nnae_result | default('NOT DEFINED') }}"
-  when: (old_cann == "after-5.1" and nnae.matched == 0 or old_cann == "before-5.1") and nnae_result.changed

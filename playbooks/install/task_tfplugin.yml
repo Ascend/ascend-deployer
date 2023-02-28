@@ -6,7 +6,6 @@
     use_regex: yes
     patterns: ".*tfplugin.*{{ansible_architecture}}.sh"
   register: tfplugin
-  when: old_cann == "after-5.1"
 
 - name: find tfplugin run package
   find:
@@ -20,12 +19,12 @@
 - name: set log_path for root
   set_fact:
     log_path: /var/log/ascend_seclog/
-  when: ansible_user_uid == 0 and old_cann == "after-5.1"
+  when: ansible_user_uid == 0
 
 - name: set log_path for non-root
   set_fact:
     log_path: ~/var/log/ascend_seclog/
-  when: ansible_user_uid != 0 and old_cann == "after-5.1"
+  when: ansible_user_uid != 0
 
 - name: install tfplugin
   shell: "bash {{ tfplugin.files[0].path }} {{ log_path }}"
@@ -33,14 +32,14 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: tfplugin_result
-  when: old_cann == "after-5.1" and tfplugin.matched > 0
+  when: tfplugin.matched > 0
   failed_when: "tfplugin_result.rc !=0 and 'already installed' not in tfplugin_result.stdout"
 
 - name: message
   debug:
     msg:
       - "{{ tfplugin_result | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and tfplugin_result.changed
+  when: tfplugin_result.changed
 
 - name: check ascend cann install info
   stat:
@@ -57,23 +56,42 @@
     ins_path_cmd: ""
   when: install_info.stat.exists or ansible_user_uid != 0
 
+- name: check tfplugin exists
+  shell: ls {{ ascend_install_path }}/tfplugin/*/ascend_tfplugin_install.info 2>/dev/null | wc -l
+  register: tfplugin_status
+
 - name: install tfplugin
   shell: "bash {{ tfplugin_run.files[0].path }} --nox11 {{ cann_install_params }} {{ ins_path_cmd }}"
   environment:
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: tfplugin_result
-  when: (old_cann == "after-5.1" and tfplugin.matched == 0 or old_cann == "before-5.1") and tfplugin_run.matched > 0
+  when: tfplugin.matched == 0 and tfplugin_run.matched > 0 and tfplugin_status.stdout == '0'
   failed_when: "tfplugin_result.rc !=0 and 'already installed' not in tfplugin_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ tfplugin_result | default('NOT DEFINED') }}"
+  when: tfplugin.matched == 0 and tfplugin_result.changed and tfplugin_status.stdout == '0'
+
+- name: upgrade tfplugin
+  shell: "bash {{ tfplugin_run.files[0].path }} --nox11 --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: tfplugin_result
+  when: tfplugin.matched == 0 and tfplugin_run.matched > 0 and tfplugin_status.stdout != '0'
+  failed_when: "tfplugin_result.rc !=0 and 'already installed' not in tfplugin_result.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ tfplugin_result | default('NOT DEFINED') }}"
+  when: tfplugin.matched == 0 and tfplugin_result.changed and tfplugin_status.stdout != '0'
 
 - name: message
   debug:
     msg:
       - "can not find tfplugin package, tfplugin install skipped"
   when: tfplugin_run.matched == 0
-
-- name: message
-  debug:
-    msg:
-      - "{{ tfplugin_result | default('NOT DEFINED') }}"
-  when: (old_cann == "after-5.1" and tfplugin.matched == 0 or old_cann == "before-5.1") and tfplugin_result.changed

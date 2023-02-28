@@ -6,7 +6,6 @@
     use_regex: yes
     patterns: ".*toolkit.*{{ ansible_architecture }}.sh"
   register: toolkit
-  when: old_cann == "after-5.1"
 
 - name: find toolkit run package
   find:
@@ -20,12 +19,12 @@
 - name: set log_path for root
   set_fact:
     log_path: /var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid == 0
+  when: ansible_user_uid == 0
 
 - name: set log_path for non-root
   set_fact:
     log_path: ~/var/log/ascend_seclog/
-  when: old_cann == "after-5.1" and ansible_user_uid != 0
+  when: ansible_user_uid != 0
 
 - name: install toolkit
   shell: "bash {{ toolkit.files[0].path }} {{ log_path }}"
@@ -33,7 +32,7 @@
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result
-  when: old_cann == "after-5.1" and toolkit.matched > 0
+  when: toolkit.matched > 0
   failed_when: "toolkit_result.rc != 0 and 'already installed' not in toolkit_result.stdout"
 
 - name: find toolkit aarch64 script
@@ -44,7 +43,7 @@
     use_regex: yes
     patterns: ".*toolkit.*aarch64.sh"
   register: toolkit_aarch64
-  when: old_cann == "after-5.1" and (os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64')
+  when: os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'
 
 - name: find toolkit aarch64 run package
   find:
@@ -63,7 +62,7 @@
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result_ubuntu
   when:
-    - old_cann == "after-5.1" and (os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64')
+    - os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64'
     - toolkit_aarch64.matched is defined and toolkit_aarch64.matched > 0
   failed_when: "toolkit_result_ubuntu.rc != 0 and 'already installed' not in toolkit_result_ubuntu.stdout"
 
@@ -72,7 +71,7 @@
     msg:
       - "{{ toolkit_result | default('NOT DEFINED') }}"
       - "{{ toolkit_result_ubuntu | default('NOT DEFINED') }}"
-  when: old_cann == "after-5.1" and (toolkit_result.changed or toolkit_result_ubuntu.changed)
+  when: toolkit_result.changed or toolkit_result_ubuntu.changed
 
 - name: check ascend cann install info
   stat:
@@ -89,13 +88,17 @@
     ins_path_cmd: ""
   when: install_info.stat.exists or ansible_user_uid != 0
 
+- name: check toolkit exists
+  shell: ls {{ ascend_install_path }}/ascend-toolkit/*/*/ascend_toolkit_install.info 2>/dev/null | wc -l
+  register: toolkit_status
+
 - name: install toolkit
   shell: "bash {{ toolkit_run.files[0].path }} --nox11 {{ cann_install_params }} {{ins_path_cmd}}"
   environment:
     LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result
-  when: (old_cann == "after-5.1" and toolkit.matched == 0 or old_cann == "before-5.1") and toolkit_run.matched > 0
+  when: toolkit.matched == 0 and toolkit_run.matched > 0 and toolkit_status.stdout == '0'
   failed_when: "toolkit_result.rc != 0 and 'already installed' not in toolkit_result.stdout"
 
 - name: install toolkit aarch64 for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
@@ -105,19 +108,46 @@
     PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
   register: toolkit_result_ubuntu
   when:
-    - toolkit_aarch64_run.matched is defined and toolkit_aarch64_run.matched > 0
-    - (old_cann == "after-5.1" and toolkit_aarch64.matched == 0 or old_cann == "before-5.1") and (os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64')
+    - toolkit_aarch64_run.matched is defined and toolkit_aarch64_run.matched > 0 and toolkit_status.stdout == '0'
+    - toolkit_aarch64.matched == 0 and (os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64')
   failed_when: "toolkit_result_ubuntu.rc != 0 and 'already installed' not in toolkit_result_ubuntu.stdout"
-
-- name: message
-  debug:
-    msg:
-      - "can not find toolkit package, toolkit install skipped"
-  when: toolkit_run.matched == 0
 
 - name: message
   debug:
     msg:
       - "{{ toolkit_result | default('NOT DEFINED') }}"
       - "{{ toolkit_result_ubuntu | default('NOT DEFINED') }}"
-  when: (old_cann == "after-5.1" and toolkit.matched == 0 or old_cann == "before-5.1") and (toolkit_result.changed or toolkit_result_ubuntu.changed)
+  when: toolkit.matched == 0 and (toolkit_result.changed or toolkit_result_ubuntu.changed) and toolkit_status.stdout == '0'
+
+- name: upgrade toolkit
+  shell: "bash {{ toolkit_run.files[0].path }} --nox11 --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: toolkit_result
+  when: toolkit.matched == 0 and toolkit_run.matched > 0 and toolkit_status.stdout != '0'
+  failed_when: "toolkit_result.rc != 0 and 'already installed' not in toolkit_result.stdout"
+
+- name: upgrade toolkit aarch64 for Ubuntu_18.04_x86_64 or Ubuntu_20.04_x86_64
+  shell: "bash {{ toolkit_aarch64_run.files[0].path }} --nox11 --upgrade"
+  environment:
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib"
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ansible_env.PATH }}"
+  register: toolkit_result_ubuntu
+  when:
+    - toolkit_aarch64_run.matched is defined and toolkit_aarch64_run.matched > 0 and toolkit_status.stdout != '0'
+    - toolkit_aarch64.matched == 0 and (os_and_arch == 'Ubuntu_18.04_x86_64' or os_and_arch == 'Ubuntu_20.04_x86_64')
+  failed_when: "toolkit_result_ubuntu.rc != 0 and 'already installed' not in toolkit_result_ubuntu.stdout"
+
+- name: message
+  debug:
+    msg:
+      - "{{ toolkit_result | default('NOT DEFINED') }}"
+      - "{{ toolkit_result_ubuntu | default('NOT DEFINED') }}"
+  when: toolkit.matched == 0 and (toolkit_result.changed or toolkit_result_ubuntu.changed) and toolkit_status.stdout != '0'
+
+- name: message
+  debug:
+    msg:
+      - "can not find toolkit package, toolkit install skipped"
+  when: toolkit_run.matched == 0
