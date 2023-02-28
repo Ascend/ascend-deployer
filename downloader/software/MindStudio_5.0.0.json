@@ -1,6 +1,6 @@
 {"name": "MindStudio",
-    "version":"5.0.RC3",
-    "default":false,
+    "version":"5.0.0",
+    "default":true,
     "systems": [
         {"system":"Ubuntu_18.04_x86_64",
         "sys":[{ "name":"ca-certificates-java"},
@@ -487,8 +487,8 @@
         }
     ],
     "other": [
-        {"filename":"MindStudio_5.0.RC3_linux.tar.gz",
-         "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindStudio/MindStudio%205.0.RC3/MindStudio_5.0.RC3_linux.tar.gz",
-         "sha256": "e74ecb6affda99144bdd1c8d2bbc26e42bd32dbe9defa8044f5dc286e97cb756"}
+        {"filename":"MindStudio_5.0.0_linux.tar.gz",
+         "url":"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindStudio/MindStudio%205.0.0/MindStudio_5.0.0_linux.tar.gz",
+         "sha256": "6958f7b26bab65d9552c8cc6fb4d89b80c46d78a3743887343c40477aae9cc46"}
     ]
     }
