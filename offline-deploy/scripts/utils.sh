@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-current_dir=$(cd $(dirname $0); pwd)
-inventory_file_dir=$(cd $current_dir/..; pwd)
+CUR_DIR=$(dirname "$(readlink -f "$0")")
+inventory_file_dir="${CUR_DIR}/../"
 inventory_file_path="$inventory_file_dir/inventory_file"
 inventory_content="$(cat $inventory_file_path)"
 
@@ -62,7 +62,7 @@ extra_cpt="$(echo "$inventory_content" | grep -E '^EXTRA_COMPONENT' | awk -F'=' 
 extra_array=(`echo $extra_cpt | tr ',' ' ' | tr '\"' ' '` )
 forbidden_cpt_2=("docker" "k8s")
 forbidden_cpt_3=("docker" "k8s" "hccl-controller" "volcano" "noded")
-master_num=$(grep -A 100 '\[master\]' inventory_file  | grep -B 200 '\[worker\]' | grep -vE "^#|^\[" | grep -E "^[0-9]" | wc -l)
+master_num=$(grep -A 100 '\[master\]' $inventory_file_path  | grep -B 200 '\[worker\]' | grep -vE "^#|^\[" | grep -E "^[0-9]" | wc -l)
 
 # 安装K8s时，如果master数量为偶数，报错
 if [[ $scene_num == "1" ]] && [[ $(($master_num % 2)) == 0 ]]
