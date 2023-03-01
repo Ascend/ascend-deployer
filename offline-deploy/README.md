@@ -216,14 +216,37 @@
 选择其中一种方式准备离线安装包
 
  - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.tar.gz包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令
+ - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令。注:请注意网络波动影响下载
 ```bash
 # resources.tar.gz解压出的内容必须放置在/root目录下
 cd /root
 wget https://example
 tar -xf resources.tar.gz
 ```
+解压后的目录结构如下:
 
+```
+root/
+├── offline-deploy
+│   ├── group_vars
+│   ├── inventory_file
+│   ├── playbooks
+│   ├── README.md
+│   ├── scripts
+│   ├── tools
+│   └── yamls
+└── resources
+    ├── ansible
+    ├── basic
+    ├── docker
+    ├── do-not-change
+    ├── k8s
+    ├── kubeedge
+    ├── mindxdl
+    ├── npu
+    └── tool          
+
+```
 ## 步骤3：安装Ansible
 如果已经安装过Ansible，也需要执行下面的命令，不会覆盖已有的Ansible，仅修改Ansible部分配置。
 ```bash
