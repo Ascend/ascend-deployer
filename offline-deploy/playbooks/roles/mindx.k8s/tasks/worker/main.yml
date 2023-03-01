@@ -1,0 +1,39 @@
+- name: message
+  debug:
+    msg: "******************************start join k8s on worker******************************"
+
+- name: get token
+  shell: kubeadm token create --print-join-command
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  register: register_cmd
+
+- name: join cluster
+  shell: "{{ register_cmd.stdout }} --node-name={{NODE_NAME}}"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: create kube directory
+  file:
+    path: "/root/.kube"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+
+- name: set cluster config
+  copy:
+    src: /etc/kubernetes/kubelet.conf
+    dest: "/root/.kube/config"
+    mode: "0640"
+    owner: "root"
+    group: "root"
+    remote_src: yes

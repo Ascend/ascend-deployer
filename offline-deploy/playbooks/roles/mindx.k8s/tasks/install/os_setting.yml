@@ -1,0 +1,41 @@
+- name: disable swap
+  shell: swapoff -a
+
+- name: set swap in fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    state: absent
+    regexp: '.*?swap.*?'
+
+- name: start bridge nf call iptables
+  shell: sysctl -w net.bridge.bridge-nf-call-iptables=1 && sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+
+# 关闭ufw服务并禁止开机启动
+- name: stop ufw systemd
+  systemd:
+    name: "ufw"
+    enabled: no
+    state: stopped
+  ignore_errors: true
+  when: not use_rpm_command
+
+# 关闭ufw服务
+- name: stop ufw service
+  shell: ufw disable
+  ignore_errors: true
+  when: not use_rpm_command
+
+# 关闭firewalld服务并禁止开机启动
+- name: stop firewalld systemd
+  systemd:
+    name: "firewalld"
+    enabled: no
+    state: stopped
+  ignore_errors: true
+  when: use_rpm_command
+
+# 关闭SELinux
+- name: close SELinux
+  shell: setenforce 0
+  ignore_errors: true
+  when: use_rpm_command

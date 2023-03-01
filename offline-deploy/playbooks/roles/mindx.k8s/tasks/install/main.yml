@@ -1,0 +1,44 @@
+# 当场景为二、三时，不允许装K8s
+- name: check scenario
+  fail:
+    msg: "k8s installation is not allowed in Scenario 2 and Scenario 3"
+  when:
+    - SCENE_NUM in NO_DOCKER_K8S_SCENES
+    - "K8S_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+
+- name: message
+  debug:
+    msg: "*************************start install k8s***************************"
+  when:
+    - inventory_hostname != "localhost"
+    - not k8s_installed
+
+- name: include copy software task
+  include_tasks: copy_software.yml
+  when:
+    - inventory_hostname != "localhost"
+    - not k8s_installed
+
+# 复制离线镜像到各节点
+- name: include copy image task
+  include_tasks: copy_image.yml
+  when:
+    - inventory_hostname != "localhost"
+    - not k8s_initialized
+    - not use_harbor
+
+# 推送镜像到harbor
+- name: include push image task
+  include_tasks: push_image.yml
+  when:
+    - inventory_hostname == "localhost"
+    - use_harbor
+
+- name: create /etc/resolv.conf
+  shell:
+    cmd:
+      ls /etc/resolv.conf 2>/dev/null || touch /etc/resolv.conf && chmod 644 /etc/resolv.conf
+  changed_when: false
+  when:
+    - inventory_hostname != "localhost"
+    - not k8s_initialized
