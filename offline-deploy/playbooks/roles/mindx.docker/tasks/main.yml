@@ -1,0 +1,34 @@
+# 当场景为二、三时，不允许装docker
+- name: check scenario
+  fail:
+    msg: "Docker installation is not allowed in Scenario 2 and Scenario 3"
+  when:
+    - SCENE_NUM in NO_DOCKER_K8S_SCENES
+    - "DOCKER_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+
+- name: check docker service
+  shell: docker info 2>/dev/null | wc -l
+  register: docker_status
+  changed_when: false
+
+- name: set docker service status
+  set_fact:
+    docker_installed: "{{ docker_status.stdout != '0' }}"
+  changed_when: false
+
+- name: message
+  debug:
+    msg: "docker is running already. The script won't install docker."
+  when: docker_installed
+  changed_when: false
+
+- name: message
+  debug:
+    msg: "*************************start install docker***************************"
+  when: not docker_installed
+
+- name: include copy task
+  include_tasks: copy.yml
+  when: not docker_installed
+
+
