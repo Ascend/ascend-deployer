@@ -1,0 +1,68 @@
+resource_dir: "/root/resources"
+npu_basic_pkg_dir: "{{ resource_dir }}/npu/basic"
+npu_pkg_dir: "{{ resource_dir }}/npu/"
+os_dict:
+  centos: "CentOS"
+  ubuntu: "Ubuntu"
+  euleros: "EulerOS"
+  debian: "Debian"
+  sles: "SLES"
+  kylin: "Kylin"
+  bclinux: "BCLinux"
+  Linx: "Linx"
+  UOS: "UOS"
+  uos: "UOS"
+  tlinux: "Tlinux"
+  openEuler: "OpenEuler"
+os_version_dict:
+  euleros:
+    "2.0": "2"
+  centos:
+    "7": "7.6"
+    "8": "8.2"
+  debian:
+    "9": "9.9"
+    "10": "10.0"
+  kylin:
+    "V10": "V10"
+    "v10": "v10"
+  Linx:
+    "9": "6"
+code_name_dict:
+  euleros:
+    "SP8": ".8"
+    "SP9": ".9"
+    "SP9x86": ".9"
+  kylin:
+    "Tercel": "Tercel"
+    "juniper": "juniper"
+  openEuler:
+    "LTS-SP1": "LTS"
+    "LTS-SP3": "LTS"
+    "LTS": "LTS"
+    "": "LTS"
+code_name: ""
+zip_dict:
+  infer:
+    - "{{ npu_pkg_dir }}/zip/run_from_310_zip"
+  a300i:
+    - "{{ npu_pkg_dir }}/zip/run_from_310p_zip"
+  a300iduo:
+    - "{{ npu_pkg_dir }}/zip/run_from_310p_zip"
+  train:
+    - "{{ npu_pkg_dir }}/zip/run_from_910_zip"
+  a910b:
+    - "{{ npu_pkg_dir }}/zip/run_from_910b_zip"
+run_dict:
+  infer:
+    - "{{ npu_pkg_dir }}/run/run_from_310"
+  a300i:
+    - "{{ npu_pkg_dir }}/run/run_from_310p"
+  a300iduo:
+    - "{{ npu_pkg_dir }}/run/run_from_310p"
+  train:
+    - "{{ npu_pkg_dir}}/run/run_from_910"
+  a910b:
+    - "{{ npu_pkg_dir}}/run/run_from_910b_zip"
+  
+  

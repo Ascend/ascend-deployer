@@ -1,0 +1,51 @@
+- name: is install tool
+  shell: command -v npu-smi | wc -l
+  register: isInstalledTool
+  when: ansible_user_uid == 0
+
+- name: check health
+  shell: npu-smi info|grep -E '910|710|310P|310'|awk -F' ' '{print $5}'|grep -v '|'
+  register: result_info
+  when: 
+    - ansible_user_uid == 0
+    - isInstalledTool.stdout != "0"
+
+- name: is everychip ok
+  set_fact: NPUIssue=true
+  when:
+    - ansible_user_uid == 0
+    - isInstalledTool.stdout != "0"
+    - result_info is defined
+    - item != 'OK'
+  loop: "{{result_info.stdout_lines}}"
+
+- name: message
+  debug:
+    msg:
+      - "critical issue with NPU, please check it"
+  failed_when: true
+  when:
+    - NPUIssue is defined
+    - force_upgrade_npu == 'false'
+
+- name: install deps
+  import_tasks: task_sys_pkg.yaml
+  when: ansible_user_uid == 0
+
+- name: import firmware task
+  import_tasks: task_firmware.yaml
+  when: ansible_user_uid == 0 and isInstalledTool.stdout != "0"
+
+- name: import all driver task
+  import_tasks: task_driver.yaml
+  when: ansible_user_uid == 0
+
+- name: import firmware task
+  import_tasks: task_firmware.yaml
+  when: ansible_user_uid == 0 and isInstalledTool.stdout == "0"
+
+- name: message
+  debug:
+    msg:
+    - "not support installing npu by non-root user, please switch to root user"
+  when: ansible_user_uid != 0
