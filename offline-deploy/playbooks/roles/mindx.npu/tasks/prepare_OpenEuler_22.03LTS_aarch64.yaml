@@ -12,14 +12,14 @@
   when: have_selinux.rc != 0
 
 - name: scp libselinux-python to remote
-  shell: scp ../resources/{{os_and_arch}}/*libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
+  shell: scp {{npu_basic_pkg_dir}}/{{os_and_arch}}/*libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
   delegate_to: localhost
   when:
     - inventory_hostname != "localhost"
     - have_selinux.rc != 0
 
 - name: cp libselinux-python to localhost
-  shell: cp -f ../resources/{{os_and_arch}}/*libselinux*.rpm ~/libselinux
+  shell: cp -f {{npu_basic_pkg_dir}}/{{os_and_arch}}/*libselinux*.rpm ~/libselinux
   delegate_to: localhost
   when:
     - inventory_hostname == "localhost"

@@ -19,7 +19,7 @@
     - have_selinux.rc != 0
 
 - name: cp libselinux-python to localhost
-  shell: cp -f ../resources/{{os_and_arch}}/libselinux*.rpm ~/libselinux
+  shell: cp -f ../resources/{{os_and_arch}}/*libselinux*.rpm ~/libselinux
   delegate_to: localhost
   when:
     - inventory_hostname == "localhost"
