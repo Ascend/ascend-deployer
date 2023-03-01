@@ -1,0 +1,17 @@
+- name: create k8s pkg directory
+  file:
+    path: "{{ k8s_pkg_dir }}"
+    state: directory
+    mode: 0750
+  when:
+    - no_copy_flag != "true"
+
+# 复制k8s软件包到远端并解压
+- name: unarchive k8s software on remote
+  ansible.builtin.unarchive:
+    src: "{{ k8s_pkg_dir }}/{{ ansible_architecture }}.tar.gz"
+    dest: "{{ k8s_pkg_dir }}"
+    mode: 0750
+    remote_src: no
+  when:
+    - no_copy_flag != "true"

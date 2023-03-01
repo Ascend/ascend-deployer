@@ -1,0 +1,39 @@
+- name: message
+  debug:
+    msg: "*************************start set harbor config***************************"
+
+- name: config daemon.json
+  include_tasks: ../../mindx.docker/tasks/post_install.yml
+
+- name: login harbor use http
+  include_tasks: http.yml
+  when:
+    - harbor_use_http or (HARBOR_CA_FILE == "" and not harbor_use_http )
+
+- name: login harbor use https
+  include_tasks: https.yml
+  when:
+    - HARBOR_CA_FILE != "" and not harbor_use_http
+
+# 配置完登录harbor的方式之后，重启docker
+# 安装完docker之后不用重启，这里会重启
+- name: "restart docker"
+  systemd:
+    name: "docker"
+    enabled: true
+    state: restarted
+
+- name: login to harbor
+  shell: "docker login {{ HARBOR_SERVER }} --username={{ HARBOR_ADMIN_USER }} --password={{ HARBOR_ADMIN_PASSWORD }} 2>/dev/null | grep 'Login Succeeded' | wc -l"
+  register: login_msg
+  no_log: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: faild to login
+  fail:
+    msg: "login harbor failed, please check whether docker proxy is set"
+  when: login_msg.stdout == "0"

@@ -1,0 +1,8 @@
+# defaults file for mindx.k8s.master
+
+calico_version: v3.20.2
+
+CALICO_YAML_DIR: "/root/calico_yaml"
+ORIGIN_KUBE_VIP_IMAGE: ghcr.io/kube-vip/kube-vip
+KUBE_VIP_IMAGE: ghcr.io/kube-vip
+KVVERSION: v0.4.4

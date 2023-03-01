@@ -1,0 +1,12 @@
+---
+- hosts:
+    - master
+    - worker
+  become: yes
+  tasks:
+    - name: reset k8s
+      shell:
+        cmd:
+          kubeadm reset -f && rm -rf $HOME/.kube /etc/cni/net.d || true
+      ignore_errors: true
+      changed_when: false

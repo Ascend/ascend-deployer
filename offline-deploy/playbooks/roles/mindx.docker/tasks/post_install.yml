@@ -1,0 +1,43 @@
+- name: config docker
+  shell:
+    cmd:
+      ls /etc/docker/daemon.json 2>/dev/null | wc -l
+  register: docker_config
+  changed_when: false
+
+- name: create docker directory
+  file:
+    path: /etc/docker
+    mode: 0750
+    owner: root
+    group: root
+    state: directory
+
+- name: create /etc/docker/daemon.json - rpm
+  shell:
+    cmd: |
+      cat <<EOF >/etc/docker/daemon.json
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "live-restore": true
+      }
+      EOF
+  when:
+    - not use_rpm_command
+    - docker_config.stdout == '0'
+
+- name: create /etc/docker/daemon.json - dpkg
+  shell:
+    cmd: |
+      cat <<EOF >/etc/docker/daemon.json
+      {
+      }
+      EOF
+  when:
+    - use_rpm_command
+    - docker_config.stdout == '0'
+
+- name: docker load config and restart
+  shell: systemctl daemon-reload && systemctl restart docker
+  when:
+    - docker_config.stdout == '0'

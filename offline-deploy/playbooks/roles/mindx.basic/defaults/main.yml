@@ -1,0 +1,14 @@
+# defaults file for mindx.basic
+base_dir: "{{ resource_dir }}/basic/{{ os_package_name }}"
+
+min_space: 30
+
+max_k8s_version: 21
+
+match: "ok"
+
+not_match: "bad"
+
+os_support: ["CentOS_7.6","Ubuntu_18.04","Ubuntu_20.04", "OpenEuler_20.03_LTS", "OpenEuler_22.03_LTS"]
+
+STDOUT_KEY: "stdout"

@@ -1,0 +1,107 @@
+- name: message
+  debug:
+    msg: "******************************start init k8s on master******************************"
+
+- name: not apiserver_advertise_address
+  set_fact:
+    addr_cmd: ""
+    image_repository: ""
+    control_plane_cmd: ""
+
+- name: get kubernets version
+  shell: kubelet --version | awk '{print $2}'
+  register: k8s_version
+
+- name: set apiserver_advertise_address
+  set_fact:
+    addr_cmd: "--apiserver-advertise-address={{ k8s_api_server_ip }}"
+  when:
+    - k8s_api_server_ip != ""
+
+- name: set control-plane-endpoint
+  set_fact:
+    control_plane_cmd: '--control-plane-endpoint "{{ KUBE_VIP }}:6443" --upload-certs'
+  when:
+    - groups['master'] | length > 2
+
+- name: set k8s image repository
+  set_fact:
+    image_repository: "--image-repository={{ HARBOR_SERVER }}/{{ k8s_repo_name }}"
+  when:
+    - use_harbor
+
+- name: init cluster by kubeadm init
+  shell: >
+    kubeadm init
+    --kubernetes-version={{ k8s_version.stdout }}
+    --node-name={{ NODE_NAME }}
+    --pod-network-cidr={{ POD_NETWORK_CIDR }}
+    {{ addr_cmd }} {{ image_repository }} {{ control_plane_cmd }}
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: create home kube directory with root
+  file:
+    path: "/root/.kube"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+
+- name: set cluster config with root
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/root/.kube/config"
+    mode: "0640"
+    owner: "root"
+    group: "root"
+    remote_src: yes
+
+- name: remove coredns loop param
+  shell: "kubectl get cm -n kube-system coredns -oyaml | sed '/loop/d' | kubectl apply -f -"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: create calico image pull secret
+  shell: "kubectl create secret generic {{ KUBE_SYSTEM_SECRET_NAME }} --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson -n kube-system"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - use_harbor
+
+- name: create deploy directory on host
+  file:
+    path: "{{ CALICO_YAML_DIR }}"
+    state: directory
+    mode: 0750
+
+- name: set calico yaml
+  template:
+    src: "../../templates/calico_{{calico_version}}.yaml"
+    dest: "{{ CALICO_YAML_DIR }}/calico_{{calico_version}}.yaml"
+    mode: 0640
+
+- name: apply calico
+  shell: "kubectl apply -f {{ CALICO_YAML_DIR }}/calico_{{calico_version}}.yaml"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: taint nodes
+  shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""

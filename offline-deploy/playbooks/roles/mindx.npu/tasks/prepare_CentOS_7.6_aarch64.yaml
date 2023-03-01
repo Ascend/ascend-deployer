@@ -1,0 +1,36 @@
+- name: check if python have selinux module
+  shell: "{{ discovered_interpreter_python }} -c \"import selinux\""
+  register: have_selinux
+  failed_when: false
+  changed_when: have_selinux.rc != 0
+
+- name: create libselinux directory
+  file:
+    path: ~/libselinux
+    state: directory
+    recurse: yes
+  when: have_selinux.rc != 0
+
+- name: scp libselinux-python to remote
+  shell: scp {{npu_basic_pkg_dir}}/{{os_and_arch}}/libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
+  delegate_to: localhost
+  when:
+    - inventory_hostname != "localhost"
+    - have_selinux.rc != 0
+
+- name: cp libselinux-python to localhost
+  shell: cp -f {{npu_basic_pkg_dir}}/{{os_and_arch}}/libselinux*.rpm ~/libselinux
+  delegate_to: localhost
+  when:
+    - inventory_hostname == "localhost"
+    - have_selinux.rc != 0
+
+# Usually the libselinux in the repository is newer than system
+# so here add --replacepkgs
+- name: install libselinux-python
+  shell: rpm -ivh --force --replacepkgs --nodeps ~/libselinux/libselinux*.rpm
+  when: have_selinux.rc != 0 and ansible_user_uid == 0
+
+- name: clean libselinux-python
+  shell: rm -rf ~/libselinux/
+  when: have_selinux.rc != 0 and ansible_user_uid == 0

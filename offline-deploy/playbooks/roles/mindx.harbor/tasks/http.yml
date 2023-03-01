@@ -1,0 +1,33 @@
+- name: get daemon.json content
+  shell: cat {{ docker_daemonfile_path }} 2>/dev/null
+  register: daemon_content
+
+- name: convert to dict
+  set_fact:
+    daemon_dict: "{{ '{}' if daemon_content.stdout == '' else daemon_content.stdout | from_json }}"
+    daemon_dict_new: ""
+
+# 如果不包含insecure-registries字段，则增加
+- name: add insecure registries key
+  set_fact:
+    daemon_dict: "{{ daemon_dict|combine({insecure_registries : []}) }}"
+  when: insecure_registries not in daemon_dict
+
+# 设置daemon_dict_new的值
+- name: set daemon_dict_new content
+  set_fact:
+    daemon_dict_new: "{{ daemon_dict }}"
+
+# 增加harbor仓库地址到insecure-registries，并且生成新的daemon.json内容
+- name: add harbor server to new daemon_dict_new
+  set_fact:
+    daemon_dict_new: "{{ daemon_dict.get(insecure_registries).append(HARBOR_SERVER) }}{{ daemon_dict }}"
+  when: HARBOR_SERVER not in daemon_dict.get(insecure_registries)
+
+- name: set new daemon.json content
+  shell:
+    cmd: |
+      cat <<EOF >{{ docker_daemonfile_path }}
+      {{ daemon_dict_new | to_nice_json}}
+      EOF
+  when: HARBOR_SERVER not in daemon_dict.get(insecure_registries)

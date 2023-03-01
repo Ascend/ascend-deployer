@@ -1,0 +1,15 @@
+# defaults file for mindx.k8s.install
+# k8s软件目录
+k8s_pkg_dir: "{{ resource_dir }}/k8s/{{ os_package_name }}"
+# k8s镜像所在路径
+k8s_image_dir: "{{resource_dir}}/k8s/image"
+
+NODE_NAME: "{{ set_hostname if set_hostname is defined else ansible_hostname }}"
+
+k8s_repo_name: "k8s.gcr.io"
+
+KUBE_SYSTEM_SECRET_NAME: "kube-system-secret-for-harbor"
+
+docker_20_bin_dir: "{{ resource_dir }}/do-not-change"
+
+KUBEADM_CONFIG_FILE: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"

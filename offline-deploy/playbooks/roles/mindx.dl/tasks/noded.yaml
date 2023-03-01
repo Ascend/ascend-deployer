@@ -1,0 +1,184 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+- name: include vars
+  include_tasks: create_user.yaml
+
+# 在远端创建mindxdl镜像目录
+- name: create mindxdl images directory on remote
+  file:
+    path: "{{ mindxdl_images_dir }}/{{ ansible_architecture }}"
+    state: directory
+    mode: 0750
+  when:
+    - not use_harbor
+
+- name: list noded images
+  shell: "ls {{mindxdl_images_dir}}/{{ansible_architecture}} | grep {{NODED_COMPONENT}}"
+  delegate_to: localhost
+  delegate_facts: true
+  register: noded_images
+  when:
+    - not use_harbor
+
+# 复制noded镜像到worker
+- name: copy noded images to remote worker
+  copy:
+    src: "{{mindxdl_images_dir}}/{{ ansible_architecture }}/{{item}}"
+    dest: "{{mindxdl_images_dir}}/{{ ansible_architecture }}/"
+    mode: 0640
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{noded_images.stdout_lines}}"
+  when:
+    - not use_harbor
+
+# 在worker节点加载noded镜像
+- name: load noded images
+  shell: "docker load -i {{mindxdl_images_dir}}/{{ansible_architecture}}/{{item}}"
+  loop: "{{noded_images.stdout_lines}}"
+  when:
+    - not use_harbor
+
+- name: list noded yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell: "ls {{mindxdl_yaml_dir}} | grep {{NODED_COMPONENT}} | grep -v 'without'"
+  register: yaml_file
+
+- name: modify noded yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell: |
+    sed -i 's/image: /image: {{ HARBOR_SERVER }}\/{{ HARBOR_MINDX_PROJECT }}\//' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i 's/imagePullPolicy: Never/imagePullPolicy: IfNotPresent/' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\      imagePullSecrets:' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\        - name: {{MINDX_DL_SECRET_FOR_HARBOR}}' {{ mindxdl_yaml_dir }}/{{ item }};
+  loop: "{{ yaml_file.stdout_lines }}"
+  when:
+    - use_harbor
+
+- name: get noded image name when use harbor
+  delegate_to: localhost
+  run_once: true
+  shell:
+    cmd:
+      cd {{mindxdl_yaml_dir}};
+      cat $(find . -name "{{ NODED_COMPONENT }}*.yaml" -type f  | grep -v "without" | head -n 1) | grep 'image:' | awk '{print $2}'
+  register: image_name
+  when:
+    - do_upgrade is defined
+    - use_harbor
+
+- name: set fact noded image name
+  delegate_to: localhost
+  run_once: true
+  set_fact:
+    noded_image_name: "{{ image_name['stdout_lines'] | unique  }}"
+    cacheable: yes
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - image_name is defined and STDOUT_LINES_KEY in image_name and image_name[STDOUT_LINES_KEY] | length > 0
+
+- name: pull noded image
+  shell:
+    cmd:
+      docker pull "{{ item }}"
+  loop: "{{ hostvars['localhost'].noded_image_name }}"
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - "'noded_image_name' in hostvars['localhost']"
+    - HARBOR_SERVER in item
+
+- name: label worker
+  shell: |
+    kubectl label --overwrite node {{ NODE_NAME }} node-role.kubernetes.io/worker=worker
+    kubectl label --overwrite node {{ NODE_NAME }} workerselector=dls-worker-node
+    kubectl label --overwrite node {{ NODE_NAME }} nodeDEnable=on
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+
+- name: create log directories
+  file:
+    path: /var/log/mindx-dl
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create log directories for "{{DL_USR}}"
+  file:
+    path: "/var/log/mindx-dl/noded"
+    state: directory
+    owner: "{{DL_USR}}"
+    group: "{{DL_GRP}}"
+    mode: 0750
+
+- name: create mindx-dl image pull secret
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell: |
+    kubectl create namespace {{ MINDXDL_NAMESPACE }} >/dev/null 2>&1 || echo 0;
+    kubectl create secret generic {{ MINDX_DL_SECRET_FOR_HARBOR }} --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson -n mindx-dl >/dev/null 2>&1 || echo 0;
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  ignore_errors: true
+  when:
+    - use_harbor
+
+# 清理default空间下的noded信息
+- name: clear default namespace noded component
+  shell:
+    cmd:
+      kubectl delete clusterrolebinding pods-noded-rolebinding || true;
+      kubectl delete sa noded-sa || true;
+      kubectl delete clusterrole pods-noded-role || true;
+      kubectl delete ds noded || true;
+  delegate_to: "{{ groups['master'][0] }}"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+# 部署noded应用
+- name: apply noded component
+  shell:
+    cmd:
+      kubectl apply -f {{mindxdl_yaml_dir}}/{{ item }}
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  run_once: true
+  loop: "{{ yaml_file.stdout_lines }}"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+# 检查并更新noded应用
+- name: upgrade noded component
+  shell:
+    cmd:
+      noded_info="$(kubectl get pods -n {{ MINDXDL_NAMESPACE }} -o wide 2>/dev/null | grep 'noded-')";
+      noded_status=$(echo "$noded_info" | grep "noded-.*Running" | wc -l);
+      if [ $noded_status = 0 ]; then exit 0; fi;
+      for i in $(seq $noded_status);do eval "$(echo "$noded_info" | grep -w "{{ NODE_NAME }}" | awk '{print "kubectl delete pod -n {{ MINDXDL_NAMESPACE }} "$1}')" || true; done
+  delegate_to: "{{ groups['master'][0] }}"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - do_upgrade is defined

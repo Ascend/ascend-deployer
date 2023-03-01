@@ -1,0 +1,8 @@
+Ascend-docker-version:
+{{ docker_result.stdout | default("UNKNOWN") }}
+
+Ascend-driver-info:
+{{ npu_result.stdout | default("UNKNOWN") }}
+
+Hccn-info:
+{{ hccn_result.stdout | default("UNKNOWN") }}

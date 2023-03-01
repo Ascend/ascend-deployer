@@ -1,0 +1,53 @@
+- name: message
+  debug:
+    msg: "******************************start create kubevip on master******************************"
+
+- name: check kube_vip and kube_interface
+  debug:
+    msg: "kube_vip and kube_interface can not be empty in inventory_file, please check"
+  failed_when: true
+  when:
+    - KUBE_VIP is not defined or kube_interface is not defined or KUBE_VIP | length == 0 or kube_interface | length == 0
+
+
+- name: create /etc/kubernetes/manifests/
+  file:
+    path: /etc/kubernetes/manifests/
+    state: directory
+    mode: 0700
+  ignore_errors: true
+
+- name: load kube-vip images on master
+  shell: "docker load -i {{ k8s_image_dir }}/{{ ansible_architecture }}/kube-vip*.tar.gz"
+  when:
+    - not use_harbor
+
+- name: pull kube-vip images on master
+  shell: "docker pull {{ HARBOR_SERVER }}/{{ KUBE_VIP_IMAGE }}:{{ KVVERSION }}"
+  when:
+    - use_harbor
+
+- name: generate kube-vip.yaml
+  shell: |
+    docker run --network host --rm {{ HARBOR_SERVER+'/' if use_harbor else '' }}{{ KUBE_VIP_IMAGE }}:{{ KVVERSION }} manifest pod \
+    --interface {{ kube_interface }} \
+    --address {{ KUBE_VIP }} \
+    --controlplane \
+    --services \
+    --enableLoadBalancer \
+    --arp \
+    --leaderElection | tee /etc/kubernetes/manifests/kube-vip.yaml
+
+- name: modify kube-vip.yaml
+  ansible.builtin.lineinfile:
+    path: /etc/kubernetes/manifests/kube-vip.yaml
+    regexp: "^    image: {{ ORIGIN_KUBE_VIP_IMAGE }}:{{ KVVERSION }}$"
+    line: "    image: {{ HARBOR_SERVER+'/' if use_harbor else '' }}{{ KUBE_VIP_IMAGE }}:{{ KVVERSION }}"
+    state: present
+
+- name: modify kube-vip.yaml image pull policy
+  ansible.builtin.lineinfile:
+    path: /etc/kubernetes/manifests/kube-vip.yaml
+    regexp: "^    imagePullPolicy: Always"
+    line: "    imagePullPolicy: IfNotPresent"
+    state: present

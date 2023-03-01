@@ -1,0 +1,133 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+#删除目录
+- name: Recursively remove directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+    mode: 0750
+  loop:
+    - "{{mindxdl_deploy_package_dir}}"
+    - "{{mindxdl_images_dir}}"
+    - "{{mindxdl_yaml_dir}}"
+  changed_when: false
+  ignore_errors: true
+
+- name: create directory in local
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  connection: local
+  loop:
+    - "{{mindxdl_deploy_package_dir}}/{{hostvars[groups['master'][0]].ansible_architecture}}"
+    - "{{mindxdl_images_dir}}/{{hostvars[groups['master'][0]].ansible_architecture}}"
+    - "{{mindxdl_yaml_dir}}"
+  when:
+    - inventory_hostname == "localhost"
+
+- name: create heterogeneous directory in local
+  delegate_to: localhost
+  delegate_facts: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  loop:
+    - "{{mindxdl_deploy_package_dir}}/{{HETEROGENEOUS_DIR}}"
+    - "{{mindxdl_images_dir}}/{{HETEROGENEOUS_DIR}}"
+  when:
+    - inventory_hostname in groups['other_build_image']
+
+- name: create directory in other build host
+  ansible.builtin.file:
+    path: "{{mindxdl_yaml_dir}}"
+    state: directory
+    mode: 0750
+  loop:
+    - "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}"
+    - "{{mindxdl_images_dir}}/{{ansible_architecture}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+- name: list dl zip package
+  delegate_to: localhost
+  delegate_facts: False
+  command: "ls {{mindxdl_package_dir}}/{{ansible_architecture}}"
+  register: all_package
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+# 制作 检查mindxdl的安装包是否齐全，并拷贝到dlDeployPackage目录下
+- name: copy package to localhost dlDeployPackage
+  delegate_to: localhost
+  delegate_facts: False
+  shell:
+    cmd:
+      cp {{mindxdl_package_dir}}/{{ansible_architecture}}/{{item}} {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}
+  loop: "{{all_package.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.replace('Ascend-mindxdl-', '').replace('Ascend-', '').split("_")[0] in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))
+    - ansible_architecture in item
+
+- name: copy dl deploy package to remote
+  copy:
+    src: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/"
+    dest: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/"
+    mode: 0750
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+- name: list dl deploy zip package
+  command: "ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}"
+  register: dl_package
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+- name: create mindxdl component package dir
+  file:
+    path: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}"
+    state: directory
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+    mode: 0750
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.endswith("zip")
+
+# 复制mindxdl包到远端并解压软件安装包
+- name: unarchive mindxdl package on remote
+  ansible.builtin.unarchive:
+    src: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}}"
+    dest: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/"
+    remote_src: yes
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.endswith("zip")
+
+  # 复制基础镜像到远程
+- name: copy base image to remote
+  copy:
+    src: "{{mindxdl_base_images_dir}}/{{ansible_architecture}}/"
+    dest: "{{mindxdl_base_images_dir}}/{{ansible_architecture}}/"
+    mode: 0750
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+# 在制作镜像各节点复制npu-exporter的Dockerfile和yaml到组件解压目录
+- name: modify npu-exporter yaml
+  shell:
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
+      sed -i "{:begin;  /\/etc\/mindx-dl\/npu-exporter/! { $! { N; b begin }; }; s/- name: kmckeystore.*\/etc\/mindx-dl\/npu-exporter/REMOVE_TAG/; };" $npu_exporter_yaml_PATH;
+      sed -i '/REMOVE_TAG/d' $npu_exporter_yaml_PATH
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.endswith("zip")
+    - NPU_EXPORTER_COMPONENT in item

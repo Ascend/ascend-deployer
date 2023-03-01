@@ -1,0 +1,90 @@
+---
+# 检查K8s是否初始化了
+# 分发软件包
+# 基础设置
+- hosts:
+    - localhost
+    - master
+    - worker
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/install/main.yml
+
+# 安装K8s
+- hosts:
+    - master
+    - worker
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/install/install.yml
+      when:
+        - not k8s_installed
+    - include_tasks: roles/mindx.k8s/tasks/install/os_setting.yml
+      when:
+        - not k8s_installed
+
+# init kubevip
+- hosts:
+    - master[0]
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/defaults/main.yml
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/kubevip/main.yml
+      when:
+        - groups['master'] | length > 2
+        - not k8s_initialized
+
+# k8s master init
+- hosts:
+    - master[0]
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/defaults/main.yml
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/master/main.yml
+      when:
+        - not k8s_initialized
+
+# master join k8s
+- hosts:
+    - master
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/defaults/main.yml
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/master_backup/main.yml
+      when:
+        - groups['master'] | length > 2
+        - inventory_hostname != groups['master'][0]
+        - not k8s_initialized
+    - include_tasks: roles/mindx.k8s/tasks/kubevip/main.yml
+      when:
+        - groups['master'] | length > 2
+        - inventory_hostname != groups['master'][0]
+        - not k8s_initialized
+
+# worker join k8s
+- hosts: worker
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.k8s/defaults/main.yml
+    - roles/mindx.k8s/vars/main.yml
+  tasks:
+    - include_tasks: roles/mindx.k8s/tasks/worker/main.yml
+      when:
+        - inventory_hostname not in groups['master']
+        - not k8s_initialized

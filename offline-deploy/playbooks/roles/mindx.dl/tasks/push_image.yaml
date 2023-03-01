@@ -1,0 +1,122 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+- name: get master architecture
+  set_fact:
+    master_arch: "{{ hostvars[groups['master'][0]].ansible_architecture }}"
+
+# 如果系统存在异构节点
+- name: get heterogeneous architecture
+  set_fact:
+    heterogeneous_arch: "{{ hostvars[groups['other_build_image'][0]].ansible_architecture }}"
+  when:
+    - "groups['other_build_image'] | length != 0"
+
+# 查看master节点架构下的k8s镜像
+- name: list master architecture mindxdl images dir
+  command: "ls {{mindxdl_images_dir}}/{{ master_arch }}"
+  register: master_arch_image
+
+# 镜像名保存格式：xxxx_架构:tag，带"架构"方便后续处理
+- name: load master node arch offline mindxdl image
+  shell:
+    cmd:
+      image="$(cd {{mindxdl_images_dir}}/{{ master_arch }} && docker load -i {{ item }} | grep "Loaded image" | awk '{print $3}')";
+      imageName="$(echo ${image} | awk -F ":" '{print $1}')";
+      imageTag="$(echo ${image} | awk -F ":" '{print $2}')";
+      docker tag "${image}" "{{ HARBOR_MINDX_PREFIX }}/${imageName}_{{ master_arch }}:${imageTag}";
+      echo "${imageName}_{{ master_arch }}:${imageTag}";
+  loop: "{{ master_arch_image.stdout_lines }}"
+  register: master_dl_images
+
+# 如果系统存在异构节点，查看异构节点架构下的k8s镜像
+- name: list heterogeneous architecture mindxdl images dir
+  command: "ls {{mindxdl_images_dir}}/{{ heterogeneous_arch }}"
+  register: heterogeneous_arch_image
+  when:
+    - "groups['other_build_image'] | length != 0"
+
+- name: load heterogeneous architecture mindxdl images dir
+  shell:
+    cmd:
+      image="$(cd {{mindxdl_images_dir}}/{{ heterogeneous_arch }} && docker load -i {{ item }} | grep "Loaded image" | awk '{print $3}')";
+      imageName="$(echo ${image} | awk -F ":" '{print $1}')";
+      imageTag="$(echo ${image} | awk -F ":" '{print $2}')";
+      docker tag "${image}" "{{ HARBOR_MINDX_PREFIX }}/${imageName}_{{ heterogeneous_arch }}:${imageTag}";
+  loop: "{{ heterogeneous_arch_image.stdout_lines }}"
+  when:
+    - "groups['other_build_image'] | length != 0"
+
+# 根据导入mindxdl镜像，创建对应的project
+- name: create mindxdl harbor project
+  uri:
+    url: "{{'http://' if HARBOR_HTTP == 'true' else 'https://'}}{{ HARBOR_SERVER }}/api/v2.0/projects"
+    method: POST
+    validate_certs: false
+    return_content: yes
+    user: "{{ HARBOR_ADMIN_USER }}"
+    password: "{{ HARBOR_ADMIN_PASSWORD }}"
+    force_basic_auth: yes
+    status_code: [200, 201, 409]
+    body: '{"project_name": "{{ HARBOR_MINDX_PROJECT }}", "metadata": {"public": "{{ HARBOR_PUBLIC_PROJECT }}"}, "storage_limit": -1}'
+    body_format: json
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  no_log: true
+  ignore_errors: true
+  when:
+    - master_dl_images is defined and 'results' in master_dl_images and master_dl_images['results'] | length > 0
+
+- name: clean mindxdl old manifest
+  shell:
+    cmd:
+      manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest rm "${manifest_name}" > /dev/null 2>&1 || true;
+  loop: "{{ master_dl_images['results'] }}"
+  environment:
+    DOCKER_CLI_EXPERIMENTAL: enabled
+  ignore_errors: true
+  when:
+    - master_dl_images is defined and 'results' in master_dl_images and master_dl_images['results'] | length > 0
+
+# 开启实验特性再使用manifest
+# 先将原始镜像推送到harbor，再创建manifest
+# item.stdout格式 xxxxx_架构:tag
+# 一定要用annotate，不然推送导入的arm镜像在x86服务器上会被标记为x86架构
+- name: create mindxdl manifest master node arch
+  shell:
+    cmd:
+      manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      master_image="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout }}";
+      docker push "${master_image}";
+      docker manifest create --insecure "${manifest_name}"  --amend "${master_image}";
+      docker manifest annotate --arch "{{ 'arm64' if master_arch == 'aarch64' else 'amd64' }}" "${manifest_name}" "${master_image}";
+  loop: "{{ master_dl_images['results'] }}"
+  environment:
+    DOCKER_CLI_EXPERIMENTAL: enabled
+
+- name: create mindxdl manifest heterogeneous node arch
+  shell:
+    cmd:
+      manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      heterogeneous_image="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', '_'+heterogeneous_arch+':') }}";
+      docker push "${heterogeneous_image}";
+      docker manifest create --insecure "${manifest_name}"  --amend "${heterogeneous_image}";
+      docker manifest annotate --arch "{{ 'amd64' if master_arch == 'aarch64' else 'arm64' }}" "${manifest_name}" "${heterogeneous_image}";
+  loop: "{{ master_dl_images['results'] }}"
+  environment:
+    DOCKER_CLI_EXPERIMENTAL: enabled
+  when:
+    - "groups['other_build_image'] | length != 0"
+
+- name: push mindxdl manifest
+  shell:
+    cmd:
+      manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest push -p --insecure "${manifest_name}";
+  loop: "{{ master_dl_images['results'] }}"
+  environment:
+    DOCKER_CLI_EXPERIMENTAL: enabled

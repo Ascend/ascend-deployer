@@ -1,0 +1,22 @@
+- hosts:
+    - localhost
+    - master
+    - worker
+  gather_facts: false
+  become: yes
+  vars_files:
+    - roles/mindx.basic/defaults/main.yml
+  tasks:
+  - include_tasks: roles/mindx.basic/tasks/check.yml
+
+- hosts:
+    - localhost
+    - master
+    - worker
+  become: yes
+  vars_files:
+    - roles/mindx.basic/defaults/main.yml
+  tasks:
+  - include_tasks: roles/mindx.basic/tasks/k8s_check.yml
+    when:
+      - "K8S_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"

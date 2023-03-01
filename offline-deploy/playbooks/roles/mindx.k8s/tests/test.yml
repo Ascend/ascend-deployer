@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - { "role":../.., "resource_dir": "../../../../resources" }

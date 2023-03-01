@@ -1,0 +1,50 @@
+- name: create base package directory
+  file:
+    path: "{{ base_dir }}"
+    state: directory
+    mode: 0750
+  when:
+    - inventory_hostname != "localhost"
+    - no_copy_flag != "true"
+
+# 复制工具包软件包到远端并解压
+- name: unarchive unzip software on remote - dpkg
+  ansible.builtin.unarchive:
+    src: "{{ base_dir }}/{{ ansible_architecture }}.tar.gz"
+    dest: "{{ base_dir }}"
+    remote_src: no
+  when:
+    - not use_rpm_command
+    - inventory_hostname != "localhost"
+    - no_copy_flag != "true"
+
+- name: install tools on remote - dpkg
+  shell: dpkg --force-all -i {{ base_dir }}/{{ ansible_architecture }}/*.deb
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+    DEBIAN_PRIORITY: critical
+  when:
+    - not use_rpm_command
+    - inventory_hostname != "localhost"
+  ignore_errors: true
+
+# 复制工具包软件包到远端并解压
+- name: unarchive tools software on remote - rpm
+  ansible.builtin.unarchive:
+    src: "{{ base_dir }}/{{ ansible_architecture }}.tar.gz"
+    dest: "{{ base_dir }}"
+    remote_src: no
+  when:
+    - use_rpm_command
+    - inventory_hostname != "localhost"
+    - no_copy_flag != "true"
+
+- name: install tools on remote - rpm
+  shell: rpm -iUv {{ base_dir }}/{{ ansible_architecture }}/*.rpm --nodeps --force
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+    DEBIAN_PRIORITY: critical
+  when:
+    - use_rpm_command
+    - inventory_hostname != "localhost"
+  ignore_errors: true

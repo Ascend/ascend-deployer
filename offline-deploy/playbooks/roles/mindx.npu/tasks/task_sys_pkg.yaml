@@ -1,0 +1,35 @@
+- name: apt install system packages
+  shell: export DEBIAN_FRONTEND=noninteractive && export DEBIAN_PRIORITY=critical; dpkg --force-all -i {{ npu_pkg_dir }}/deps/{{ os_and_arch }}/*.deb
+  when: ansible_pkg_mgr == 'apt'
+  register: sys_result
+
+- name: message
+  debug:
+    msg:
+      - "{{ sys_result | default('NOT DEFINED') }}"
+      - "{{ sys_result_linx | default('NOT DEFINED') }}"
+  when:
+    - ansible_pkg_mgr == 'apt'
+    - sys_result.changed or sys_result_linx.changed
+
+- name: yum install system packages
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ npu_pkg_dir }}/deps/{{ os_and_arch }}/*.rpm
+  register: sys_result
+  when: ansible_pkg_mgr == 'yum'
+
+- name: message
+  debug: var=sys_result
+  when:
+    - ansible_pkg_mgr == 'yum'
+    - sys_result.changed
+
+- name: dnf install system packages
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ npu_pkg_dir }}/deps/{{ os_and_arch }}/*.rpm
+  register: sys_result
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: message
+  debug: var=sys_result
+  when:
+    - ansible_pkg_mgr == 'dnf'
+    - sys_result.changed

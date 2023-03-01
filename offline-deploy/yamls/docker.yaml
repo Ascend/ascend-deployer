@@ -1,0 +1,4 @@
+---
+- import_playbook: ../playbooks/docker.yaml
+  when:
+    - "DOCKER_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"

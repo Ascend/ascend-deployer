@@ -1,0 +1,64 @@
+- name: message
+  debug:
+    msg: "******************************start join k8s on other master******************************"
+
+- name: get token
+  shell: kubeadm token create --print-join-command
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  register: token_cmd
+
+- name: get certificate-key
+  shell: kubeadm init phase upload-certs --upload-certs
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  register: cert_cmd
+
+- name: set other master apiserver_advertise_address
+  set_fact:
+    addr_cmd: "--apiserver-advertise-address={{ k8s_api_server_ip }}"
+  when:
+    - k8s_api_server_ip != ""
+
+- name: join cluster
+  shell: "{{ token_cmd.stdout }} {{ addr_cmd }} --control-plane --certificate-key {{ cert_cmd.stdout.split('key:\n')[-1] }} --node-name={{NODE_NAME}}"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: create home kube directory with root
+  file:
+    path: "/root/.kube"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+
+- name: set cluster config with root
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/root/.kube/config"
+    mode: "0640"
+    owner: "root"
+    group: "root"
+    remote_src: yes
+
+- name: taint nodes
+  shell: kubectl taint nodes {{NODE_NAME}} node-role.kubernetes.io/master-
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""

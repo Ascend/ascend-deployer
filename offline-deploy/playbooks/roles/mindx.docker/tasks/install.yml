@@ -1,0 +1,12 @@
+# 使用dpkg作为包管理器
+- name: install docker-ce
+  shell: dpkg --force-all -i {{ docker_pkg_dir }}/{{ ansible_architecture }}/*.deb
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+    DEBIAN_PRIORITY: critical
+  when: not use_rpm_command
+
+# 使用rpm作为包管理器
+- name: install docker-ce
+  shell: rpm -iUv {{ docker_pkg_dir }}/{{ ansible_architecture }}/*.rpm --nodeps --force
+  when: use_rpm_command
