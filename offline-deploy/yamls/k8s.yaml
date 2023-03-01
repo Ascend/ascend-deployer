@@ -1,0 +1,4 @@
+---
+- import_playbook: ../playbooks/k8s.yaml
+  when:
+    - "K8S_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"

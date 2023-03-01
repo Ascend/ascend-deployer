@@ -1,0 +1,2 @@
+---
+- import_playbook: ../playbooks/gather_facts.yaml
