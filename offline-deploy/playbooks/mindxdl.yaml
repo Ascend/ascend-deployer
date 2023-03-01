@@ -1,0 +1,63 @@
+---
+# dl基础操作
+- hosts:
+    - master
+    - worker
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/dl_common.yaml
+
+# 分发mindxdl安装包，并制作镜像
+- hosts:
+    - localhost
+    - master[0]
+    - other_build_image
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/distribute_soft_package.yaml
+    - include_tasks: roles/mindx.dl/tasks/build_collect_images.yaml
+
+- hosts:
+    - master
+    - worker
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/volcano.yaml
+      when:
+        - "VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+
+- hosts:
+    - master
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/hccl.yaml
+      when:
+        - "HCCL_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+
+- hosts:
+    - worker
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/deviceplugin.yaml
+      when:
+        - "DEVICE_PLUGIN_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+    - include_tasks: roles/mindx.dl/tasks/noded.yaml
+      when:
+       - "NODED_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+    - include_tasks: roles/mindx.dl/tasks/npu-exporter.yaml
+      when:
+        - "NPU_EXPORTER_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"
+
+- hosts:
+    - worker
+  gather_facts: false
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.dl/tasks/docker-runtime.yaml
+      when:
+        - "DOCKER_RUNTIME_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))"

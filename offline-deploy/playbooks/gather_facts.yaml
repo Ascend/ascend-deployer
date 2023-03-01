@@ -1,0 +1,86 @@
+---
+- hosts:
+    - localhost
+    - master
+    - worker
+  become: yes
+  tasks:
+    - name: include vars
+      include_vars: os_map.yaml
+
+    - name: get OS ID
+      shell: grep -oP "^ID=\"?\K\w+" /etc/os-release
+      changed_when: false
+      register: os_id
+
+    - name: get OS VERSION
+      shell: grep -oP "^VERSION_ID=\"?\K\w+\.?\w*" /etc/os-release
+      changed_when: false
+      register: os_ver
+
+    - name: get OS code name
+      shell: grep -oP "^VERSION=(.*?)(\(|\s)\K[\w\.\ -]+" /etc/os-release | awk -F_ '{print $1}'
+      changed_when: false
+      register: os_codename
+      failed_when: false
+      ignore_errors: yes
+
+    - name: set os_name
+      set_fact:
+        os_name: "{{ os_dict[os_id.stdout] }}"
+        cacheable: yes
+      when: os_id.stdout in os_dict
+
+    - name: message
+      debug:
+        msg: "os {{ os_id.stdout}} is not supportted"
+      failed_when: true
+      when: os_id.stdout not in os_dict
+
+    - name: set os_version first
+      set_fact:
+        os_version: "{{ os_ver.stdout }}"
+        cacheable: yes
+
+    - name: set os_version second
+      set_fact:
+        os_version: "{{ os_version_dict[os_id.stdout][os_ver.stdout] }}"
+        cacheable: yes
+      when: os_id.stdout in os_version_dict
+
+    - name: set os code name
+      set_fact:
+        code_name: "{{ code_name_dict[os_id.stdout][os_codename.stdout] }}"
+        cacheable: yes
+      when: os_id.stdout in code_name_dict
+
+    - name: set os package dir name
+      set_fact:
+        os_package_name: "{{ os_name }}_{{ os_version }}_{{ code_name }}"
+        cacheable: yes
+      when: os_id.stdout in code_name_dict
+
+    - name: set os package dir name
+      set_fact:
+        os_package_name: "{{ os_name }}_{{ os_version }}"
+        cacheable: yes
+      when: os_id.stdout not in code_name_dict
+
+    # 如果不是是用dpkg作为包管理器，输出一行command not found
+    - name: check package manager
+      shell: dpkg --help 2>&1 | wc -l
+      register: msg
+      changed_when: false
+
+    - name: set os package manager
+      set_fact:
+        use_rpm_command: "{{ msg.stdout | length == 1 }}"
+        cacheable: yes
+      changed_when: false
+
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: set facts_cache dir permission
+      shell: chmod -R 640 /etc/ansible/facts-cache/*
+      failed_when: false

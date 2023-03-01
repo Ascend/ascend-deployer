@@ -1,0 +1,6 @@
+- hosts:
+    - worker
+  gather_facts: true
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.rep/tasks/rep.yaml

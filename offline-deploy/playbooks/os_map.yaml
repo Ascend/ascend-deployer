@@ -1,0 +1,10 @@
+os_dict:
+  centos: "CentOS"
+  ubuntu: "Ubuntu"
+  openEuler: "OpenEuler"
+os_version_dict:
+  centos:
+    "7": "7.6"
+code_name_dict:
+  openEuler:
+    "LTS": "LTS"
