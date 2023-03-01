@@ -73,12 +73,14 @@ function run_extract() {
 }
 
 type=zip
+FORCE_UPGRADE_NPU=false
 
 function print_usage() {
     echo "Usage: ./install_npu.sh [options]"
     echo " Options:"
     echo "--help  -h                     show this help message and exit"
     echo "--type=<zip/run>               Specify to use zip package or run package to install driver and firmware, default is zip"
+    echo "--force_upgrade_npu            can force upgrade NPU when not all devices have exception"
 }
 
 function parse_script_args() {
@@ -97,6 +99,10 @@ function parse_script_args() {
             fi
             shift
             ;;
+        --force_upgrade_npu)
+            FORCE_UPGRADE_NPU=true
+            shift
+            ;;
         *)
             if [ "x$1" != "x" ]; then
                 echo "[ERROR] Unsupported parameters: $1"
@@ -111,7 +117,7 @@ function parse_script_args() {
 
 function process_install() {
     ansible -i $inventory_file_path all -m ping
-    ansible-playbook -i $inventory_file_path $yamls_dir/yamls/npu.yaml -e type=$type -v
+    ansible-playbook -i $inventory_file_path $yamls_dir/yamls/npu.yaml -e type=$type -e force_upgrade_npu=${FORCE_UPGRADE_NPU} -v
 }
 
 function main() {
