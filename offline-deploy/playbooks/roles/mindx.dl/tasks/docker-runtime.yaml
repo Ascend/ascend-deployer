@@ -1,0 +1,42 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+# 在远端创建mindxdl镜像目录
+- name: create mindxdl dlDeployPackage directory on remote
+  file:
+    path: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/"
+    state: directory
+    mode: 0750
+
+- name: list toolbox package
+  shell: "ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} | grep {{DOCKER_RUNTIME_COMPONENT}} | grep run"
+  delegate_to: localhost
+  delegate_facts: true
+  register: toolbox_package
+
+# 复制docker-runtime镜像到worker
+- name: copy toolbox to remote
+  copy:
+    src: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}}"
+    dest: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/"
+    mode: 0640
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{toolbox_package.stdout_lines}}"
+
+- name: create log directories
+  file:
+    path: "/var/log/ascend-docker-runtime"
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+# 安装docker-runtime
+- name: install docker-runtime
+  shell:
+    cmd:
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/ && bash $(ls | grep {{DOCKER_RUNTIME_COMPONENT}} | grep run) --uninstall;
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/ && bash $(ls | grep {{DOCKER_RUNTIME_COMPONENT}} | grep run) --install;
+      systemctl daemon-reload;
+      systemctl restart docker

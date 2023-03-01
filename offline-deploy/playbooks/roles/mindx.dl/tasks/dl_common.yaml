@@ -1,0 +1,14 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+# 创建mindx-dl命名空间
+- name: create mindx-dl namespace
+  shell: "kubectl create namespace {{ MINDXDL_NAMESPACE }} || true"
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  changed_when: false
+  when:
+    - inventory_hostname in groups['master'][0]

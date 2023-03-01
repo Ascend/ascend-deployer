@@ -1,0 +1,136 @@
+# 检查节点K8s版本
+- name: get kubeadm version
+  shell:
+    cmd:
+      kubeadm version 2>/dev/null | grep -Po "GitVersion(.*?)," | grep -Po "v[0-9.]*" || true
+  register: kubeadm_version
+  changed_when: false
+
+- name: get kubectl version
+  shell:
+    cmd:
+      kubectl version 2>/dev/null | grep "Client" | grep -Po "GitVersion(.*?)," | grep -Po "v[0-9.]*" || true
+  register: kubectl_version
+  changed_when: false
+
+- name: get kubelet version
+  shell:
+    cmd:
+      kubelet --version 2>/dev/null | grep -Po "v[0-9.]*" || true
+  register: kubelet_version
+  changed_when: false
+
+- name: check whether k8s is installed
+  shell:
+    cmd:
+      if [ "{{ kubeadm_version.stdout }}" != "" ] || [ "{{ kubectl_version.stdout }}" != "" ] || [ "{{ kubelet_version.stdout }}" != "" ]; then echo "k8s on this node has installed"; else echo ""; fi;
+  register: node_k8s_installed
+  changed_when: false
+
+- name: check k8s component version consistency
+  shell:
+    cmd:
+      if [ "{{ kubeadm_version.stdout }}" != "{{ kubelet_version.stdout }}" ] || [ "{{ kubeadm_version.stdout }}" != "{{ kubectl_version.stdout }}" ] || [ "{{ kubelet_version.stdout }}" != "{{ kubectl_version.stdout }}" ]; then echo "k8s on this node has diffenrent version"; else echo ""; fi;
+  register: node_k8s_consistency
+  changed_when: false
+
+- name: print if k8s is installed
+  debug:
+    msg: "kubeadm version:{{ kubeadm_version.stdout }}; kubectl version:{{ kubectl_version.stdout }}; kubelet version:{{ kubelet_version.stdout }}"
+  when:
+    - node_k8s_installed.stdout != ""
+
+- name: set k8s_installed facts
+  set_fact:
+    k8s_installed: "{{ true if node_k8s_installed.stdout != '' else false }}"
+    cacheable: yes
+  changed_when: false
+
+- name: print if k8s version is not consistency
+  fail:
+    msg: "{{ node_k8s_consistency.stdout }}"
+  when:
+    - node_k8s_consistency.stdout != ""
+
+- name: get k8s cluster info
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: False
+  shell: "kubectl get node -o wide 2>/dev/null | grep -w {{ k8s_api_server_ip if k8s_api_server_ip is defined else inventory_hostname }} | wc -l"
+  register: k8s_cluster_info
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+    KUBECONFIG: "/etc/kubernetes/admin.conf"
+
+- name: set k8s init status
+  set_fact:
+    k8s_initialized: "{{ false if k8s_cluster_info.stdout == '0' else true }}"
+    cacheable: yes
+  changed_when: false
+
+- name: get other k8s cluster info
+  shell: "kubectl get node -o wide 2>/dev/null | grep -w {{ k8s_api_server_ip if k8s_api_server_ip is defined else inventory_hostname }} | wc -l"
+  register: other_cluster_info
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+    KUBECONFIG: "/etc/kubernetes/kubelet.conf"
+  when:
+    - not k8s_initialized
+
+- name: node join another k8s cluster
+  fail:
+    msg: "node join another k8s cluster, if you want to join this k8s cluster, please excute reset command 'kubeadm reset -f && rm -rf $HOME/.kube /etc/cni/net.d' manually on node"
+  when:
+    - other_cluster_info is defined and STDOUT_KEY in other_cluster_info and other_cluster_info.stdout != '0'
+
+- name: master[0] cluster info
+  shell:
+    cmd:
+      kubectl cluster-info 2>/dev/null | grep -w "{{ KUBE_VIP }}" | wc -l
+  register: master_use_vip
+  when:
+    - inventory_hostname == groups['master'][0]
+    - "KUBE_VIP is defined and KUBE_VIP != ''"
+
+- name: set k8s master[0] vip
+  set_fact:
+    multi_k8s_cluster: "{{ false if master_use_vip is not defined or STDOUT_KEY not in master_use_vip or master_use_vip.stdout == '0' else true }}"
+    cacheable: yes
+  changed_when: false
+
+- name: need reset master[0]
+  fail:
+    msg: "Please confirm whether it is necessary to use all nodes under [master] in the inventory_file to form a multi master cluster.
+     If you need to form a multi master cluster, execute the reset command kubeadm reset -f && rm -rf $HOME/.kube /etc/cni/net.d' manually on the
+     first node under [master] to facilitate the establishment of a multi master cluster"
+  when:
+    - inventory_hostname in groups['master']
+    - inventory_hostname != groups['master'][0]
+    - not k8s_initialized
+    - hostvars[groups['master'][0]].k8s_initialized
+    - "'multi_k8s_cluster' in hostvars[groups['master'][0]] and not hostvars[groups['master'][0]].multi_k8s_cluster"
+
+- name: reset node
+  shell:
+    cmd:
+        kubeadm reset -f 2>/dev/null && rm -rf $HOME/.kube /etc/cni/net.d || true
+  changed_when: false
+  when:
+    - not k8s_initialized
+
+- name: remove kube vip
+  shell:
+    cmd:
+        ip addr delete {{ KUBE_VIP }} dev {{ kube_interface }} || true
+  changed_when: false
+  when:
+    - not k8s_initialized
+    - inventory_hostname in groups['master']
+    - groups['master'] | length > 2
+    - "KUBE_VIP is defined and KUBE_VIP != ''"
+    - "kube_interface is defined and kube_interface != ''"

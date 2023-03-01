@@ -1,0 +1,104 @@
+# 列出基础镜像
+- name: list base images
+  shell: "ls {{mindxdl_base_images_dir}}/{{ansible_architecture}}"
+  register: base_image
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+# 加载基础镜像
+- name: load base images
+  shell:
+    cmd:
+      docker load -i {{mindxdl_base_images_dir}}/{{ansible_architecture}}/{{ item }};
+  loop: "{{ base_image.stdout_lines }}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+- name: list mindxdl component dir
+  shell: "ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} | grep -vE 'zip|run' "
+  register: component_list
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+# 制作 noded npu-exporter deviceplugin hccl-controller镜像
+- name: build mindxdl image
+  shell:
+    cmd:
+      img="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && cat $(find . -name "*.yaml" -type f | grep -v "without" | grep -v "1usoc" | head -n 1) |grep 'image:')";
+      img_tag="$(echo "${img#*image:}" | sed 's/[ \t\r]*//g')";
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && docker build -t "$img_tag" .;
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} && docker save -o "$(echo "$img_tag" | awk -F":" '{print $1}')_{{ansible_architecture}}.tar" "$img_tag";
+  loop: "{{component_list.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - not item.endswith("tar")
+    - item.count('volcano') == 0
+
+
+# 制作volcano镜像
+- name: build volcano image
+  shell:
+    cmd:
+      sche_img="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && cat $(find . -name "*.yaml" -type f | grep -v "without" | head -n 1) |grep 'image:' | grep "scheduler")";
+      sche_img_tag="$(echo "${sche_img#*image:}" | sed 's/[ \s\t]*//')";
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && docker build -t "$sche_img_tag" -f Dockerfile-scheduler .;
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} && docker save -o "{{VOLCANO_SCHEDULER_PREFIX}}_{{ansible_architecture}}.tar" "$sche_img_tag";
+
+      ctr_img="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && cat $(find . -name "*.yaml" -type f | grep -v "without" | head -n 1) |grep 'image:' | grep "controller")";
+      ctr_img_tag="$(echo "${ctr_img#*image:}" | sed 's/[ \s\t]*//')";
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && docker build -t "$ctr_img_tag" -f Dockerfile-controller .;
+      cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} && docker save -o "{{VOLCANO_CONTROLLER_PREFIX}}_{{ansible_architecture}}.tar" "$ctr_img_tag";
+  loop: "{{component_list.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - not item.endswith("tar")
+    - item.count('volcano') != 0
+
+# 拷贝所有的yaml到固定目录下
+- name: copy mindxdl images
+  shell: "cp {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}}/*.yaml {{mindxdl_yaml_dir}}"
+  loop: "{{component_list.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['master'][0]
+    - not item.endswith("tar")
+
+- name: list mindxdl component dir
+  shell: "ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} | grep tar"
+  register: images_list
+  when:
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+
+- name: fetch master dl images
+  fetch:
+    src: "{{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}}"
+    dest: "{{mindxdl_images_dir}}/{{ansible_architecture}}/"
+    mode: "0640"
+    flat: true
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{images_list.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['master'][0]
+    - item.endswith("tar")
+
+# 从异构服务器上拷贝mindx dl镜像到master节点
+- name: fetch heterogeneous mindxdl images
+  fetch:
+    src: "{{mindxdl_deploy_package_dir}}/{{ ansible_architecture }}/{{item}}"
+    dest: "{{mindxdl_images_dir}}/{{HETEROGENEOUS_DIR}}/"
+    mode: 0640
+    flat: true
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{images_list.stdout_lines}}"
+  when:
+    - inventory_hostname in groups['other_build_image']
+    - item.endswith("tar")
+
+# 推送镜像到harbor
+- name: include push image task
+  include_tasks: push_image.yaml
+  when:
+    - inventory_hostname == "localhost"
+    - use_harbor
+

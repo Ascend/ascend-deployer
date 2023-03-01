@@ -1,0 +1,339 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+- name: include vars
+  include_tasks: create_user.yaml
+
+# 在远端创建mindxdl镜像目录
+- name: create mindxdl images directory on remote
+  file:
+    path: "{{mindxdl_images_dir}}/{{ansible_architecture}}"
+    state: directory
+    mode: 0750
+  when:
+    - not use_harbor
+
+- name: list device_plugin images
+  shell: "ls {{mindxdl_images_dir}}/{{ansible_architecture}} | grep {{DEVICE_PLUGIN_IMAGE}}"
+  delegate_to: localhost
+  delegate_facts: true
+  register: device_plugin_images
+  when:
+    - not use_harbor
+
+# 复制deviceplugin镜像到worker
+- name: copy deviceplugin images to remote worker
+  copy:
+    src: "{{mindxdl_images_dir}}/{{ ansible_architecture }}/{{item}}"
+    dest: "{{mindxdl_images_dir}}/{{ ansible_architecture }}/"
+    mode: 0640
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{device_plugin_images.stdout_lines}}"
+  when:
+    - not use_harbor
+
+# 在worker节点加载noded镜像
+- name: load deviceplugin images
+  shell: "docker load -i {{mindxdl_images_dir}}/{{ansible_architecture}}/{{item}}"
+  loop: "{{device_plugin_images.stdout_lines}}"
+  when:
+    - not use_harbor
+
+- name: label worker
+  shell: |
+    kubectl label --overwrite node {{ NODE_NAME }} node-role.kubernetes.io/worker=worker
+    kubectl label --overwrite node {{ NODE_NAME }} workerselector=dls-worker-node
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+
+- name: check product name
+  shell: dmidecode -t 1 | grep "Product Name"
+  register: product_name
+  ignore_errors: yes
+
+- name: check device
+  shell: lspci | grep "Processing accelerators"
+  register: processing_accelerator
+  ignore_errors: yes
+
+- name: message
+  debug:
+    msg: "can not find npu card, please check"
+  when: processing_accelerator.rc != 0
+
+- name: label ascend310
+  shell: kubectl label --overwrite node {{ NODE_NAME }} accelerator=huawei-Ascend310
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when: "'Device d100' in processing_accelerator.stdout"
+
+- name: label ascend310P
+  shell: kubectl label --overwrite node {{ NODE_NAME }} accelerator=huawei-Ascend310P
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when: "'Device d500' in processing_accelerator.stdout"
+
+- name: label ascend910
+  shell: kubectl label --overwrite node {{ NODE_NAME }} accelerator=huawei-Ascend910
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when: "'Device d801' in processing_accelerator.stdout"
+
+- name: label 300T
+  shell: kubectl label --overwrite node {{ NODE_NAME }} accelerator-type=card
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - "'Device d801' in processing_accelerator.stdout"
+    - "'Atlas' not in product_name.stdout"
+
+- name: register label info
+  shell:
+    cmd:
+      kubectl get nodes --show-labels 2>/dev/null || true
+  register: node_labels
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+
+- name: check label info
+  fail:
+    msg: "cannot get node label info"
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  when:
+    - node_labels is not defined or node_labels.stdout == ""
+
+- name: 310 card delete pod when the volcano scene is different
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  shell:
+    cmd:
+      deviceplugin_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep "\-310\-" | wc -l)";
+      deviceplugin_no_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep -v "\-310\-" | wc -l)";
+      use_volcano_flag={{ "true" if VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(',')) else "false" }};
+      if [ $deviceplugin_no_volcano_num != "0" ]; then if [ $use_volcano_flag = "true" ];
+      then ls {{mindxdl_yaml_dir}}/*310-*yaml | grep -v volcano | head -n 1 | xargs -n 1 kubectl delete -f || true; fi;
+      elif [ $deviceplugin_volcano_num != "0" -a $use_volcano_flag = "false" ];
+      then ls {{mindxdl_yaml_dir}}/*310-*yaml | grep volcano | head -n 1 | xargs -n 1 kubectl delete -f || true;
+      fi;
+  when:
+    - do_upgrade is defined
+    - "'Device d100' in processing_accelerator.stdout"
+
+- name: 310P card delete pod when the volcano scene is different
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  shell:
+    cmd:
+      deviceplugin_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep "\-310p\-" | wc -l)";
+      deviceplugin_no_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep -v "\-310p\-" | wc -l)";
+      use_volcano_flag={{ "true" if VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(',')) else "false" }};
+      if [ $deviceplugin_no_volcano_num != "0" ]; then if [ $use_volcano_flag = "true" ];
+      then ls {{mindxdl_yaml_dir}}/*310P-*yaml | grep -v volcano | grep -v '1usoc' | head -n 1 | xargs -n 1 kubectl delete -f || true; fi;
+      elif [ $deviceplugin_volcano_num != "0" -a $use_volcano_flag = "false" ];
+      then ls {{mindxdl_yaml_dir}}/*310P-*yaml | grep volcano | grep -v '1usoc' | head -n 1 | xargs -n 1 kubectl delete -f || true;
+      fi;
+  when:
+    - do_upgrade is defined
+    - "'Device d500' in processing_accelerator.stdout"
+
+- name: 910 card delete pod when the volcano scene is different
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  shell:
+    cmd:
+      deviceplugin_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep "\-910\-" | wc -l)";
+      deviceplugin_no_volcano_num="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin' | awk '{print $1}' | grep -v "\-910\-" | wc -l)";
+      use_volcano_flag={{ "true" if VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(',')) else "false" }};
+      if [ $deviceplugin_no_volcano_num != "0" ]; then if [ $use_volcano_flag = "true" ];
+      then ls {{mindxdl_yaml_dir}}/device-plugin-910*yaml | head -n 1 | xargs -n 1 kubectl delete -f || true; fi;
+      elif [ $deviceplugin_volcano_num != "0" -a $use_volcano_flag = "false" ];
+      then ls {{mindxdl_yaml_dir}}/device-plugin-volcano*yaml | head -n 1 | xargs -n 1 kubectl delete -f || true;
+      fi;
+  when:
+    - do_upgrade is defined
+    - "'Device d801' in processing_accelerator.stdout"
+
+- name: list device-plugin yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  shell: "ls {{mindxdl_yaml_dir}} | grep {{DEVICE_PLUGIN_COMPONENT}} | grep -v 'without'"
+  register: yaml_file
+
+- name: modify device-plugin yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell: |
+    sed -i 's/image: /image: {{ HARBOR_SERVER }}\/{{ HARBOR_MINDX_PROJECT }}\//' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i 's/imagePullPolicy: Never/imagePullPolicy: IfNotPresent/' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\      imagePullSecrets:' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\        - name: {{KUBE_SYSTEM_SECRET_NAME}}' {{ mindxdl_yaml_dir }}/{{ item }};
+  loop: "{{ yaml_file.stdout_lines }}"
+  when:
+    - use_harbor
+
+- name: get deviceplugin image name when use harbor
+  delegate_to: localhost
+  run_once: true
+  shell:
+    cmd:
+      cd {{mindxdl_yaml_dir}};
+      cat $(find . -name "{{ DEVICE_PLUGIN_COMPONENT }}*.yaml" -type f  | grep -v "1usoc" | head -n 1) | grep 'image:' | awk '{print $3}'
+  register: image_name
+  when:
+    - do_upgrade is defined
+    - use_harbor
+
+- name: set fact deviceplugin image name
+  delegate_to: localhost
+  run_once: true
+  set_fact:
+    deviceplugin_image_name: "{{ image_name['stdout_lines'] | unique }}"
+    cacheable: yes
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - image_name is defined and STDOUT_LINES_KEY in image_name and image_name[STDOUT_LINES_KEY] | length > 0
+
+- name: pull deviceplugin image
+  shell:
+    cmd:
+      docker pull "{{ item }}"
+  loop: "{{ hostvars['localhost'].deviceplugin_image_name }}"
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - "'deviceplugin_image_name' in hostvars['localhost']"
+    - HARBOR_SERVER in item
+
+- name: create log directories
+  file:
+    path: /var/log/mindx-dl
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create log directories for root
+  file:
+    path: "/var/log/mindx-dl/devicePlugin"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+
+- name: create mindx-dl image pull secret
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell: |
+    kubectl create secret generic {{ KUBE_SYSTEM_SECRET_NAME }} --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson -n kube-system >/dev/null 2>&1 || echo 0;
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  ignore_errors: true
+  when:
+    - use_harbor
+
+# 执行device plugin的yaml
+- name: apply device plugin 310P yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell:
+    cmd:
+      (( echo "{{ node_labels.stdout }}" | grep "huawei-Ascend310P" 1>/dev/null) && (ls {{mindxdl_yaml_dir}}/*310P-*yaml | grep {{ '' if VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(',')) else '-v' }} volcano | grep -v '1usoc' | head -n 1 | xargs -n 1 kubectl apply -f)) || true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - yaml_file.stdout_lines | length > 0
+
+- name: apply device plugin 310 yaml
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell:
+    cmd:
+      ((echo "{{ node_labels.stdout }}" | grep -w "huawei-Ascend310" 1>/dev/null) && (ls {{mindxdl_yaml_dir}}/*310-*yaml | grep {{ '' if VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(',')) else '-v' }} volcano | head -n 1 | xargs -n 1 kubectl apply -f)) || true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - yaml_file.stdout_lines | length > 0
+
+- name: apply device plugin 910 yaml with volcano
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell:
+    cmd:
+      ((echo "{{ node_labels.stdout }}" | grep "huawei-Ascend910" 1>/dev/null) && (ls {{mindxdl_yaml_dir}}/device-plugin-volcano*yaml | head -n 1 | xargs -n 1 kubectl apply -f)) || true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - yaml_file.stdout_lines | length > 0
+    - VOLCANO_COMPONENT in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))
+
+- name: apply device plugin 910 yaml withnot volcano
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  shell:
+    cmd:
+      ((echo "{{ node_labels.stdout }}" | grep "huawei-Ascend910" 1>/dev/null) && (ls {{mindxdl_yaml_dir}}/device-plugin-910*yaml | head -n 1 | xargs -n 1 kubectl apply -f)) || true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - yaml_file.stdout_lines | length > 0
+    - VOLCANO_COMPONENT not in (SCENES[SCENE_NUM] + EXTRA_COMPONENT.split(','))
+
+# 检查并更新deviceplugin应用
+- name: upgrade deviceplugin component
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  shell:
+    cmd:
+      deviceplugin_info="$(kubectl get pods -n kube-system -o wide 2>/dev/null | grep 'ascend-device-plugin')";
+      deviceplugin_status=$(echo "$deviceplugin_info" | grep "ascend-device-plugin.*Running" | wc -l);
+      if [ $deviceplugin_status = 0 ]; then exit 0; fi;
+      for i in $(seq $deviceplugin_status);do eval "$(echo "$deviceplugin_info" | grep "{{ NODE_NAME }}" | awk '{print "kubectl delete pod -n kube-system "$1}')" || true; done
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - do_upgrade is defined

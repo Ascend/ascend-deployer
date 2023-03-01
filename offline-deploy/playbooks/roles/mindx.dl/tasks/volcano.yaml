@@ -1,0 +1,234 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+- name: create user
+  include_tasks: create_user.yaml
+  when:
+    - inventory_hostname in groups['master']
+
+# 在远端创建mindxdl镜像目录
+- name: create mindxdl images directory on remote
+  file:
+    path: "{{mindxdl_images_dir}}/{{ansible_architecture}}"
+    state: directory
+    mode: 0750
+  when:
+    - not use_harbor
+    - inventory_hostname in groups['master']
+
+- name: list volcano images
+  shell: "ls {{mindxdl_images_dir}}/{{ansible_architecture}} | grep {{VOLCANO_COMPONENT}}"
+  delegate_to: localhost
+  delegate_facts: true
+  register: volcano_images
+  when:
+    - not use_harbor
+    - inventory_hostname in groups['master']
+
+# 复制volcano镜像到master和master_backup
+- name: copy volcano images to master
+  copy:
+    src: "{{mindxdl_images_dir}}/{{ansible_architecture}}/{{item}}"
+    dest: "{{mindxdl_images_dir}}/{{ansible_architecture}}/"
+    mode: 0640
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+  loop: "{{volcano_images.stdout_lines}}"
+  when:
+    - not use_harbor
+    - inventory_hostname in groups['master']
+
+# 在控制节点加载volcano
+- name: load volcano images
+  shell: "docker load -i {{mindxdl_images_dir}}/{{ansible_architecture}}/{{item}}"
+  loop: "{{volcano_images.stdout_lines}}"
+  when:
+    - not use_harbor
+    - inventory_hostname in groups['master']
+
+- name: list volcano yaml
+  shell: "ls {{mindxdl_yaml_dir}} | grep {{VOLCANO_COMPONENT}} | grep -v 'device-plugin'"
+  register: yaml_file
+  when:
+    - inventory_hostname == groups['master'][0]
+
+- name: modify volcano yaml
+  shell: |
+    sed -i 's/image: /image: {{ HARBOR_SERVER }}\/{{ HARBOR_MINDX_PROJECT }}\//' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i 's/imagePullPolicy: Never]]/imagePullPolicy: IfNotPresent/' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\      imagePullSecrets:' {{ mindxdl_yaml_dir }}/{{ item }};
+    sed -i '/      containers:/i\        - name: {{ VOLCANO_SECRET_FOR_HARBOR }}' {{ mindxdl_yaml_dir }}/{{ item }}
+  loop: "{{ yaml_file.stdout_lines }}"
+  when:
+    - use_harbor
+    - inventory_hostname == groups['master'][0]
+
+- name: get volcano image name when use harbor
+  delegate_to: localhost
+  run_once: true
+  shell:
+    cmd:
+      cd {{mindxdl_yaml_dir}};
+      cat $(find . -name "{{ VOLCANO_COMPONENT }}*.yaml" -type f  | grep -v 'device-plugin' | head -n 1) | grep 'image:' | awk '{print $2}'
+  register: image_name
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - inventory_hostname == groups['master'][0]
+
+- name: set fact volcano image name
+  delegate_to: localhost
+  run_once: true
+  set_fact:
+    volcano_image_name: "{{ image_name['stdout_lines'] | unique  }}"
+    cacheable: yes
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - image_name is defined and STDOUT_LINES_KEY in image_name and image_name[STDOUT_LINES_KEY] | length > 0
+
+- name: pull volcano image
+  shell:
+    cmd:
+      docker pull "{{ item }}"
+  loop: "{{ hostvars['localhost'].volcano_image_name }}"
+  when:
+    - do_upgrade is defined
+    - use_harbor
+    - "'volcano_image_name' in hostvars['localhost']"
+    - inventory_hostname in groups['master']
+    - HARBOR_SERVER in item
+
+# 给集群增加volcano标签
+- name: label dl master
+  shell: |
+    kubectl label --overwrite node {{ NODE_NAME }} masterselector=dls-master-node
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - inventory_hostname in groups['master']
+
+- name: label huawei-x86
+  shell: kubectl label --overwrite node {{ NODE_NAME }} host-arch=huawei-x86
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - ansible_architecture == "x86_64"
+    - inventory_hostname in groups['worker']
+
+- name: label huawei-arm
+  shell: kubectl label --overwrite node {{ NODE_NAME }} host-arch=huawei-arm
+  delegate_to: "{{ groups['master'][0] }}"
+  delegate_facts: true
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - ansible_architecture == "aarch64"
+    - inventory_hostname in groups['worker']
+
+- name: create log directories
+  file:
+    path: /var/log/mindx-dl
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - inventory_hostname in groups['master']
+
+- name: create log directories for "{{DL_USR}}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{DL_USR}}"
+    group: "{{DL_GRP}}"
+    mode: 0750
+  loop:
+    - /var/log/mindx-dl/volcano-controller
+    - /var/log/mindx-dl/volcano-scheduler
+  when:
+    - inventory_hostname in groups['master']
+
+- name: create volcano logrotate file
+  blockinfile:
+    path: /etc/logrotate.d/volcano
+    block: |
+      /var/log/mindx-dl/volcano-*/*.log{
+           daily
+           rotate 8
+           size 50M
+           compress
+           dateext
+           missingok
+           notifempty
+           copytruncate
+           create 0640 hwMindX hwMindX
+           sharedscripts
+           postrotate
+               chmod 640 /var/log/mindx-dl/volcano-*/*.log
+               chmod 440 /var/log/mindx-dl/volcano-*/*.log-*
+           endscript
+      }
+    state: present
+    create: yes
+    mode: 640
+    owner: root
+    group: root
+  when:
+    - inventory_hostname in groups['master']
+
+- name: create volcano pull secret
+  shell: |
+    kubectl create namespace volcano-system >/dev/null 2>&1 || echo 0;
+    kubectl create secret generic {{ VOLCANO_SECRET_FOR_HARBOR }} --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson -n volcano-system >/dev/null 2>&1 || echo 0
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - use_harbor
+    - inventory_hostname == groups['master'][0]
+
+# 部署volcano应用
+- name: apply volcano component
+  shell:
+    cmd:
+      kubectl apply -f {{ mindxdl_yaml_dir }}/{{ item }};
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  loop: "{{ yaml_file.stdout_lines }}"
+  when:
+    - inventory_hostname == groups['master'][0]
+
+# 检查并更新volcano应用
+- name: upgrade volcano component
+  shell:
+    cmd:
+      volcano_info="$(kubectl get pods -n volcano-system)";
+      ctr_status=$(echo "$volcano_info" | grep "volcano-controllers-.*Running" | wc -l);
+      sche_status=$(echo "$volcano_info" | grep "volcano-scheduler-.*Running" | wc -l);
+      if [ $ctr_status != 0 ]; then eval "$(echo "$volcano_info" | grep "volcano-controllers-.*Running" | awk '{print "kubectl delete pod -n volcano-system "$1}')" || true; fi;
+      if [ $sche_status != 0 ]; then eval "$(echo "$volcano_info" | grep "volcano-scheduler-.*Running" | awk '{print "kubectl delete pod -n volcano-system "$1}')" || true; fi
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  when:
+    - inventory_hostname == groups['master'][0]
+    - do_upgrade is defined

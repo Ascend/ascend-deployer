@@ -1,0 +1,37 @@
+host_count: "{{ ansible_play_hosts_all | length }}"
+first_host: "{{ ansible_play_hosts_all[0] }}"
+
+mindxdl_dir: "{{resource_dir}}/mindxdl"
+mindxdl_base_images_dir: "{{ mindxdl_dir }}/baseImages"
+mindxdl_package_dir: "{{ mindxdl_dir }}/dlPackage"
+mindxdl_deploy_package_dir: "{{ mindxdl_dir }}/dlDeployPackage"
+mindxdl_images_dir: "{{ mindxdl_dir }}/dlImages"
+mindxdl_yaml_dir: "{{ mindxdl_dir }}/yaml"
+mindxdl_build_file: "{{ mindxdl_dir }}/build_file"
+
+no_copy_flag: "{{ NO_COPY | default('false') }}"
+
+DL_USR: "{{ MINDX_USER }}"
+DL_GRP: "{{ MINDX_GROUP }}"
+DL_UID: "{{ MINDX_USER_ID }}"
+DL_GID: "{{ MINDX_GROUP_ID }}"
+
+VOLCANO_SCHEDULER_PREFIX: "volcano_scheduler"
+VOLCANO_CONTROLLER_PREFIX: "volcano_controller"
+DEVICE_PLUGIN_IMAGE: "ascend-k8sdeviceplugin"
+
+HETEROGENEOUS_DIR: "{{ 'aarch64' if hostvars[groups['master'][0]].ansible_architecture == 'x86_64' else 'x86_64' }}"
+
+NODE_NAME: "{{ set_hostname if set_hostname is defined else ansible_hostname }}"
+
+KUBE_SYSTEM_SECRET_NAME: "kube-system-secret-for-harbor"
+MINDX_DL_SECRET_FOR_HARBOR: "mindx-dl-secret-for-harbor"
+NPU_EXPORTER_SECRET_FOR_HARBOR: "npu-exporter-secret-for-harbor"
+VOLCANO_SECRET_FOR_HARBOR: "volcano-system-secret-for-harbor"
+
+HARBOR_MINDX_PROJECT: "mindx"
+HARBOR_MINDX_PREFIX: "{{ HARBOR_SERVER }}/{{ HARBOR_MINDX_PROJECT }}"
+
+docker_20_bin_dir: "{{ resource_dir }}/do-not-change"
+
+STDOUT_LINES_KEY: "stdout_lines"

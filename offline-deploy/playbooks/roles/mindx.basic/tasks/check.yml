@@ -1,0 +1,113 @@
+- name: check os
+  fail:
+    msg: "Unsupported OS, OS is {{ os_package_name }}"
+  when:
+    - os_package_name not in os_support
+
+# 检查所有节点磁盘空间
+- name: copy check space shell to remote
+  copy:
+    src: /root/offline-deploy/playbooks/roles/mindx.basic/files/space.sh
+    dest: /root
+    mode: 0500
+    owner: root
+    group: root
+    force: yes
+    remote_src: no
+  when:
+    - inventory_hostname != "localhost"
+
+- name: excute space check
+  command: "/root/space.sh"
+  register: image_space
+  changed_when: false
+  when:
+    - inventory_hostname != "localhost"
+
+- name: image space
+  fail:
+    msg: "the remaining space is less than {{ min_space }}G, please ensure that this node has enough space for the Docker image"
+  when:
+    - inventory_hostname != "localhost"
+    - "image_space.stdout == not_match"
+
+- name: clean space check shell
+  file:
+    path: /root/space.sh
+    state: absent
+  changed_when: false
+  ignore_errors: true
+  when:
+    - inventory_hostname != "localhost"
+
+# 如果不装k8s，检查所有节点K8s版本
+- name: check k8s version
+  shell:
+    cmd:
+      max_version="{{ max_k8s_version }}";
+      k8s_mid_version=$(echo $(kubelet --version 2>/dev/null || echo '') | awk '{print $2}' | sed  "s/v//" | awk -F"." '{print $2}');
+      if [ "$k8s_mid_version" = '' ]; then echo "{{ match }}"; else if [ $k8s_mid_version -gt $max_version ]; then echo "{{ not_match }}"; else echo "{{ match }}";fi; fi
+  register: k8s_version
+  changed_when: false
+  when:
+    - inventory_hostname in groups['master']
+
+- name: k8s version
+  fail:
+    msg: "node k8s version should be <= 1.{{ max_k8s_version }}"
+  when:
+    - inventory_hostname in groups['master']
+    - "k8s_version.stdout == not_match"
+
+# 检查异构节点的架构是否与master一致
+- name: check heterogeneous arch
+  fail:
+    msg: "in inventory_file, the node architecture configured at parameter [other_build_image] should be different from the first node at [master]"
+  when:
+    - "groups['other_build_image'] | length > 0"
+    - "hostvars[groups['master'][0]].ansible_architecture == hostvars[groups['other_build_image'][0]].ansible_architecture"
+
+# 检查worker节点驱动情况
+- name: check if the driver is installed
+  shell: "npu-smi info 2>/dev/null || echo ''"
+  register: driver_status
+  changed_when: false
+  when:
+    - inventory_hostname in groups['worker']
+
+- name: check driver failed
+  fail:
+    msg: "please check that this node has the driver installed."
+  when:
+    - inventory_hostname in groups['worker']
+    - driver_status is defined and driver_status.stdout == ""
+
+# 检查训练的worker节点的device ip
+- name: check device type
+  shell: lspci | grep "Processing accelerators"
+  register: processing_accelerator
+  ignore_errors: yes
+  when:
+    - inventory_hostname in groups["worker"]
+    - driver_status is defined and driver_status.stdout != ""
+
+- name: get worker device IP info
+  shell:
+    cmd:
+      if [ $(ls /dev/davinci[0-9]* 2>/dev/null | wc -l) -eq 0 ]; then echo "no davinci device"; exit 0; fi;
+      for i in $(ls /dev/davinci[0-9]*); do dev_id=$(echo $i | grep -Po "[0-9]{1}");exists=$(hccn_tool -i $dev_id -ip -g 2>/dev/null | grep ipaddr | wc -l);if [ $exists -eq 0 ]; then echo "$i has no device IP"; exit 0; fi; done;
+      echo  "{{ match }}";
+  register: device_ip_info
+  when:
+    - inventory_hostname in groups["worker"]
+    - driver_status is defined and driver_status.stdout != ""
+    - "processing_accelerator is defined and 'Device d801' in processing_accelerator.stdout"
+
+- name: check worker device IP
+  fail:
+    msg: "{{ device_ip_info.stdout }}"
+  when:
+    - inventory_hostname in groups["worker"]
+    - driver_status is defined and driver_status.stdout != ""
+    - "processing_accelerator is defined and 'Device d801' in processing_accelerator.stdout"
+    - "device_ip_info is defined and device_ip_info.stdout != match"

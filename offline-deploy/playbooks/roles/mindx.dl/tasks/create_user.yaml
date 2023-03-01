@@ -1,0 +1,27 @@
+- name: include vars
+  include_vars: ../defaults/main.yml
+
+- name: create group {{ DL_GRP }}
+  ansible.builtin.group:
+    name: "{{ DL_GRP }}"
+    state: present
+    gid: "{{ DL_GID }}"
+  ignore_errors: true
+
+- name: create group {{ HIAI_GROUP }}
+  ansible.builtin.group:
+    name: "{{ HIAI_GROUP }}"
+    state: present
+  ignore_errors: true
+
+- name: create user {{ DL_USR }}
+  ansible.builtin.user:
+    name: "{{ DL_USR }}"
+    comment: "{{  DL_USR }}"
+    uid: "{{ DL_UID }}"
+    group: "{{ DL_GRP }}"
+    groups: "{{ MINDX_GROUP }}"
+    append: yes
+    state: present
+    shell: "{{ '/usr/sbin/nologin' if os_name == 'Ubuntu' else '/sbin/nologin' }}"
+  ignore_errors: true
