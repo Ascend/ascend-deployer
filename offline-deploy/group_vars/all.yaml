@@ -1,0 +1,40 @@
+# mindxdl组件在k8s中使用的命名空间，请勿修改
+MINDXDL_NAMESPACE: "mindx-dl"
+
+# mindx user请勿修改
+MINDX_USER: hwMindX
+MINDX_USER_ID: 9000
+MINDX_GROUP: hwMindX
+MINDX_GROUP_ID: 9000
+
+# HwHiAiUser group请勿修改
+HIAI_GROUP: HwHiAiUser
+
+# 离线资源包路径
+resource_dir: "/root/resources"
+host_count: "{{ ansible_play_hosts_all | length }}"
+first_host: "{{ ansible_play_hosts_all[0] }}"
+no_copy_flag: "{{ NO_COPY | default('false') }}"
+use_harbor: "{{ HARBOR_SERVER | length != 0 }}"
+HARBOR_HTTP: "true"
+harbor_use_http: "{{ HARBOR_HTTP == 'true' }}"
+
+docker_daemonfile_path: "/etc/docker/daemon.json"
+
+# 安装组件名称列表
+DOCKER_COMPONENT: "docker"
+K8S_COMPONENT: "k8s"
+DOCKER_RUNTIME_COMPONENT: "docker-runtime"
+DEVICE_PLUGIN_COMPONENT: "device-plugin"
+HCCL_COMPONENT: "hccl-controller"
+VOLCANO_COMPONENT: "volcano"
+NODED_COMPONENT: "noded"
+NPU_EXPORTER_COMPONENT: "npu-exporter"
+
+SCENES: {
+          1: ["{{DOCKER_COMPONENT}}", "{{K8S_COMPONENT}}", "{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}", "{{HCCL_COMPONENT}}", "{{VOLCANO_COMPONENT}}", "{{NODED_COMPONENT}}", "{{NPU_EXPORTER_COMPONENT}}"],
+          2: ["{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}", "{{VOLCANO_COMPONENT}}"],
+          3: ["{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}"]
+}
+
+NO_DOCKER_K8S_SCENES: [2, 3]
