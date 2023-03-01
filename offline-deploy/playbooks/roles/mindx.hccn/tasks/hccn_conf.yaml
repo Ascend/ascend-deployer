@@ -1,0 +1,37 @@
+- name: find npu-smi command
+  shell: command -v npu-smi
+  register: npu_smi_exists
+  failed_when: false
+
+- name: find hccn_tool command
+  shell: command -v hccn_tool
+  register: hccn_tool_exists
+  failed_when: false
+
+- name: copy hccn-aarch64 to remote hosts
+  copy:
+    src: "/root/resources/tool/hccn-aarch64"
+    dest: "{{ ansible_env.HOME }}/"
+    mode: 0700
+    force: yes
+
+- name: copy hccn-x86_64 to remote hosts
+  copy:
+    src: "/root/resources/tool/hccn-x86_64"
+    dest: "{{ ansible_env.HOME }}/"
+    mode: 0700
+    force: yes
+
+- name: hccn_tool configures IP address
+  shell: "{{ ansible_env.HOME }}/hccn-{{ ansible_architecture }} '{{ action }}' -mode '{{ mode }}' -ip '{{ ip }}' -detectip '{{ detectip }}' -netmask '{{ netmask }}'"
+  register: hccn_result
+
+- name: print lossing parts
+  debug:
+    msg: "[WARNING]: Can not find npu-smi, maybe driver not installed, or env not right"
+  when: npu_smi_exists.rc != 0
+
+- debug:
+    msg: "[WARNING]: Can not find hccn_tool, maybe driver not installed or supported, or env not right"
+  when: hccn_result.rc != 0 or hccn_tool_exists.rc != 0
+  name: print lossing parts

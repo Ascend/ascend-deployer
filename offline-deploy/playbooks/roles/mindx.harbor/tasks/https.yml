@@ -1,0 +1,15 @@
+# 创建harbor的证书目录
+- name: create docker cert dir
+  file:
+    path: "/etc/docker/certs.d/{{ HARBOR_SERVER }}"
+    state: directory
+    recurse: true
+    mode: 0755
+
+- name: copy harbor ca dir
+  copy:
+    src: "{{ HARBOR_CA_FILE }}"
+    dest: "/etc/docker/certs.d/{{ HARBOR_SERVER }}/"
+    mode: 0600
+    owner: "root"
+    group: "root"
