@@ -15,7 +15,13 @@
       when: not (host_count == "1" and first_host == "localhost") and type == 'run'
 
 - hosts: tools
+  gather_facts: false
+  vars_files:
+    - roles/mindx.npu/vars/main.yaml
   tasks:
+    - include_tasks: roles/mindx.npu/tasks/create_user.yaml
+    - include_tasks: roles/mindx.npu/tasks/gather_npu_fact.yaml
+
     - name: copy to remote hosts
       copy:
         src: ~/resources.tar
@@ -32,11 +38,4 @@
       shell: tar -xf ~/resources.tar --strip-components=1 -C /root
       when: ansible_connection != "local"
 
-- hosts: tools
-  gather_facts: false
-  vars_files:
-    - roles/mindx.npu/vars/main.yaml
-  tasks:
-    - include_tasks: roles/mindx.npu/tasks/create_user.yaml
-    - include_tasks: roles/mindx.npu/tasks/gather_npu_fact.yaml
     - include_tasks: roles/mindx.npu/tasks/main.yaml
