@@ -226,9 +226,25 @@ tar -xf resources.tar.gz
 解压后的目录结构如下:
 
 ```
-├─root                  
-   ├─offline-deploy                  
-   └─resources             
+root/
+├── offline-deploy
+│   ├── group_vars
+│   ├── inventory_file
+│   ├── playbooks
+│   ├── README.md
+│   ├── scripts
+│   ├── tools
+│   └── yamls
+└── resources
+    ├── ansible
+    ├── basic
+    ├── docker
+    ├── do-not-change
+    ├── k8s
+    ├── kubeedge
+    ├── mindxdl
+    ├── npu
+    └── tool          
 
 ```
 ## 步骤3：安装Ansible
