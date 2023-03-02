@@ -129,8 +129,8 @@
 
 - name: install MEF
   shell: |
-    unzip -o {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter*.zip -d {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter &&
+    unzip -o {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.zip -d {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter &&
     cd {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter && mkdir -p Ascend-mindxedge-mefcenter &&
-    tar -C ${PWD}/Ascend-mindxedge-mefcenter -xzvf {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter*.tar.gz &&
+    tar -C ${PWD}/Ascend-mindxedge-mefcenter -xzvf {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.tar.gz &&
     cd  {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter/installer &&
     bash install.sh && bash /usr/local/MEF-Center/mef-center/run.sh start all
