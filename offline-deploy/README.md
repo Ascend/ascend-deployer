@@ -216,37 +216,14 @@
 选择其中一种方式准备离线安装包
 
  - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.tar.gz包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令。注:请注意网络波动影响下载
+ - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令
 ```bash
 # resources.tar.gz解压出的内容必须放置在/root目录下
 cd /root
 wget https://example
 tar -xf resources.tar.gz
 ```
-解压后的目录结构如下:
 
-```
-root/
-├── offline-deploy
-│   ├── group_vars
-│   ├── inventory_file
-│   ├── playbooks
-│   ├── README.md
-│   ├── scripts
-│   ├── tools
-│   └── yamls
-└── resources
-    ├── ansible
-    ├── basic
-    ├── docker
-    ├── do-not-change
-    ├── k8s
-    ├── kubeedge
-    ├── mindxdl
-    ├── npu
-    └── tool          
-
-```
 ## 步骤3：安装Ansible
 如果已经安装过Ansible，也需要执行下面的命令，不会覆盖已有的Ansible，仅修改Ansible部分配置。
 ```bash
@@ -423,21 +400,34 @@ bash scripts/upgrade.sh
         <1>输入一个ip，工具自行生成后续ip，例如ip=10.0.0.1，工具会内部自行生成八个ip，10.0.0.1、10.0.1.1、10.0.2.1、10.0.3.1、10.0.0.2、10.0.1.2、10.0.2.2、10.0.3.2（该方法仅限于八卡环境）；
         <2>按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
     4、inventory_file其他配置可直接参考inventory_file中的样例;
- 7. DL离线安装组件报告查看工具
+ 7. DL离线安装组件报告查看工具, 如下以x86_64为示例，请用户根据实际情况进行替换
     ```
-    cd ${HOME}/offline-deploy/tools/report
-    go build main.go
-    # 进入${HOME}/offline-deploy/tools/main/report，执行go build编译生成二进制文件main
-    
-    ./main -h 
-    # 运行以上命令查看帮助命令
-    ./main -inventoryFilePath ${INVENTORY_FILE_PATH}
-    # 其中INVENTORY_FILE_PATH代表离线安装inventory_file文件路径，默认路径为${HOME}/offline-deploy/inventory_file
-    运行以上命令后，即可在本目录下生成nodeData.csv文件，可以查看相关节点和pod，容器等信息
+     cd ${HOME}/offline-deploy/tools/report
+     ./k8s_status_report_x86_64 -h #查看帮助说明
+     ./k8s_status_report_x86_64 -inventoryFilePath /root/inventory -path /root -format csv   # 运行样例
+     # 其中INVENTORY_FILE_PATH代表离线安装inventory_file文件路径，默认路径为${HOME}/offline-deploy/inventory_file
+     运行以上命令后，即可在本目录下生成nodeData.csv文件，可以查看相关节点和pod，容器等信息,将上述命令中的format改为json，
+     会在本地生成master.json与work.json节点对应信息
+     查看hccn,driver,docker等相关系统描述信息，可以执行scripts/machine_report.sh，会在/root目录下生成report_temp.txt文件
+     运行命令如下
+     cd ${HOME}/offline-deploy/scripts
+     bash machine_report.sh
+     cat /root/report_temp.txt # 查看docker, driver, hccn等相关信息
     ```
-
 
 8. kubeedge安装说明
+   注意：安装kubeedge组件会同时安装MEF,MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请联系相关人员获取，我们已经提供MEF相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar) 
+   获取到如上两个压缩文件后，下载至自定义文件夹并进入，如下以x86_64为示例，请用户根据实际情况进行替换
+   ```
+   mkdir -p root/resources/mef
+   cp mef.tar root/resources/mef 
+   cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动ef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
+   至resource目录下的mef目录
+   cd root/resources/mef
+   tar xvf mef.tar 
+   docker load -i ubuntu_2204_x86_64.tar
+   docker load -i openresty_buster_x86_64.tar
+   ```
    ```
    cd /root/offline-deploy/scripts
    bash install_kubeedge.sh              # 安装kubeedge
@@ -445,15 +435,7 @@ bash scripts/upgrade.sh
    ```
    注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
 
-
-9. MEF安裝提示
-    ```
-    MEF会在第8步安装kubeedge是同时安装，安装前请同步导入resource.tar.gz下的
-    ubuntu_22.04_${arch}.tar和openresty_buster_${arch}.tar镜像，以确保
-    MEF可以成功安装
-    ```
-
-10. 驱动、固件安装说明
+9. 驱动、固件安装说明
    ```
    cd /root/offline-deploy/scripts
    批量安装驱动、固件需编辑当前目录的inventory_file文件，格式如下：
