@@ -45,7 +45,7 @@ def download_software(software, dst, arch):
     results = []
     if formal_name == "CANN":
         if arch == "x86_64" or arch == "aarch64":
-            others = (item for item in others if arch in item['filename'])
+            others = (item for item in others if arch in item['filename'].replace('-','_'))
         try:
             for item in others:
                 dest_file = os.path.join(download_dir, item['filename'])
