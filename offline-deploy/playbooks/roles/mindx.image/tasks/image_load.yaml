@@ -1,0 +1,25 @@
+- name: find docker command
+  shell: command -v docker
+  register: docker_exists
+  failed_when: false
+
+- name: copy images to remote hosts
+  copy:
+    src: "/root/image.tar"
+    dest: "/root/"
+    mode: 0700
+    force: yes
+
+- name: load docker iamges
+  shell: "docker load -i /root/image.tar"
+  register: docker_result
+
+- name: print lossing parts
+  debug:
+    msg: "[WARNING]: Can not find docker, maybe docker not installed, or env not right"
+  when: docker_exists.rc !=0
+
+- debug:
+    msg: "[WARNING]: Can not find images, please check it"
+  when: docker_result.rc != 0 
+  name: print lossing parts
