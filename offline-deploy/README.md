@@ -540,7 +540,8 @@ bash scripts/upgrade.sh
     1. 先排查K8s节点之间网络是否连通，是否因为网络代理原因的影响。
     2. 根据安装部署脚本回显的日志信息，在对应节点手动执行日志中出现的命令，看是否成功；如果执行失败，可先在[常见问题](#常见问题)中寻找错误处理方案。
     3. 解决错误之后，可再次执行安装部署命令。
- 7. 安装部署脚本执行时，master或者worker节点加入K8s集群，或者执行kubectl命令时出现类似如下错误信息
+ 7. 使用本工具部署时，如果/etc/ansible/facts-cache/ 目录存在，请先删除后再开始部署。
+ 8. 安装部署脚本执行时，master或者worker节点加入K8s集群，或者执行kubectl命令时出现类似如下错误信息
  	```
     read: connection reset by peer\nerror: unexpected error when reading response body. Please retry.
     ```
