@@ -16,6 +16,7 @@ host_count: "{{ ansible_play_hosts_all | length }}"
 first_host: "{{ ansible_play_hosts_all[0] }}"
 no_copy_flag: "{{ NO_COPY | default('false') }}"
 use_harbor: "{{ HARBOR_SERVER | length != 0 }}"
+use_harbor: "{{ SCENE_NUM != 4 }}"
 HARBOR_HTTP: "true"
 harbor_use_http: "{{ HARBOR_HTTP == 'true' }}"
 
@@ -34,7 +35,8 @@ NPU_EXPORTER_COMPONENT: "npu-exporter"
 SCENES: {
           1: ["{{DOCKER_COMPONENT}}", "{{K8S_COMPONENT}}", "{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}", "{{HCCL_COMPONENT}}", "{{VOLCANO_COMPONENT}}", "{{NODED_COMPONENT}}", "{{NPU_EXPORTER_COMPONENT}}"],
           2: ["{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}", "{{VOLCANO_COMPONENT}}"],
-          3: ["{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}"]
+          3: ["{{DOCKER_RUNTIME_COMPONENT}}", "{{DEVICE_PLUGIN_COMPONENT}}"],
+          4: ["{{DOCKER_COMPONENT}}", "{{K8S_COMPONENT}}"]
 }
 
 NO_DOCKER_K8S_SCENES: [2, 3]
