@@ -1,2 +1,4 @@
 ---
 - import_playbook: ../playbooks/mindxdl.yaml
+  when:
+    - use_mindxdl
