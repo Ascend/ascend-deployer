@@ -10,14 +10,14 @@
 
 - name: copy hccn-aarch64 to remote hosts
   copy:
-    src: "/root/resources/tool/hccn-aarch64"
+    src: "/root/resources/tool/hccn/hccn-aarch64"
     dest: "{{ ansible_env.HOME }}/"
     mode: 0700
     force: yes
 
 - name: copy hccn-x86_64 to remote hosts
   copy:
-    src: "/root/resources/tool/hccn-x86_64"
+    src: "/root/resources/tool/hccn/hccn-x86_64"
     dest: "{{ ansible_env.HOME }}/"
     mode: 0700
     force: yes
