@@ -4,29 +4,37 @@
   failed_when: false
   changed_when: have_selinux.rc != 0
 
+- name: check if have tar
+  shell: command -v tar | wc -l
+  register: have_tar
+
 - name: create libselinux directory
   file:
     path: ~/libselinux
     state: directory
     recurse: yes
-  when: have_selinux.rc != 0
+  when: have_selinux.rc != 0 or have_tar.stdout == '0'
 
-- name: scp libselinux-python to remote
-  shell: scp {{npu_basic_pkg_dir}}/{{os_and_arch}}/*libselinux*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
+- name: scp deps to remote
+  shell: scp {{npu_basic_pkg_dir}}/{{os_and_arch}}/*.rpm {{ansible_ssh_user}}@{{ansible_default_ipv4.address}}:~/libselinux
   delegate_to: localhost
   when:
     - inventory_hostname != "localhost"
-    - have_selinux.rc != 0
+    - have_selinux.rc != 0 or have_tar.stdout == '0'
 
-- name: cp libselinux-python to localhost
-  shell: cp -f {{npu_basic_pkg_dir}}/{{os_and_arch}}/*libselinux*.rpm ~/libselinux
+- name: cp deps to localhost
+  shell: cp -f {{npu_basic_pkg_dir}}/{{os_and_arch}}/*.rpm ~/libselinux
   delegate_to: localhost
   when:
     - inventory_hostname == "localhost"
-    - have_selinux.rc != 0
+    - have_selinux.rc != 0 or have_tar.stdout == '0'
 
 # Usually the libselinux in the repository is newer than system
 # so here add --replacepkgs
-- name: install libselinux-python
-  shell: rpm -ivh --force --replacepkgs --nodeps ~/libselinux/*libselinux*.rpm
-  when: have_selinux.rc != 0 and ansible_user_uid == 0
+- name: install deps
+  shell: rpm -ivh --force --replacepkgs --nodeps ~/libselinux/*.rpm
+  when: (have_selinux.rc != 0 or have_tar.stdout == '0') and ansible_user_uid == 0
+
+- name: clean deps
+  shell: rm -rf ~/libselinux/
+  when: (have_selinux.rc != 0 or have_tar.stdout == '0') and ansible_user_uid == 0
