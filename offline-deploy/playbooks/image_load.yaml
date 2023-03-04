@@ -1,0 +1,6 @@
+- hosts:
+    - tools
+  gather_facts: true
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.images/tasks/image_load.yaml
