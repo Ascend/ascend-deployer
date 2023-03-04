@@ -474,6 +474,21 @@ bash scripts/upgrade.sh
    1. 环境已安装驱动、固件安装时所需依赖。
    2. 若执行批量配置，需提前配置免密登录。
   
+11. 导入镜像
+ 	```
+    将镜像下载后放到/root目录下并更名为image.tar
+    cd ${HOME}/offline-deploy/scripts
+    vi inventory_file
+    # 进入offline-deploy/scripts目录，编辑inventory_file文件（该文件为offline-deploy/scripts下的，与offline-deploy目录下的inventory_file不同）。格式参考inventory_file。
+
+    bash image_load.sh
+    # 在offline-deploy/scripts目录下执行bash image_load.sh，完成镜像的导入。
+    ```
+
+    注意事项: 
+
+    1、若未更名为image.tar镜像导入会失败
+    2、inventory_file其他配置可直接参考inventory_file中的样例;
 
 # 常见问题
 ## 常见安装问题
