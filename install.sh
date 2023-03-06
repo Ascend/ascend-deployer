@@ -323,6 +323,9 @@ function get_os_version()
         if [ "${ver}" == "9" ];then
             version="6"
         fi
+        if [ "${ver}" == "10" ];then
+            version="6.0.100"
+        fi
     fi
 
     # OpenEuler
