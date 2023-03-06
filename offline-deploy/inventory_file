@@ -2,8 +2,7 @@
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
 # 10.10.10.10:服务器的ip地址。
-# ansible_ssh_user:ssh登录远程服务器的账号，该账号可以是普通账号，也可以是root账号，账号必须有sudo权限，且权限与root相近；如果配置了免密登录且root用户可以登录，则无需配置ansible_ssh_pass和ansible_become_password变量。ansible_ssh_user
-仍需配置。
+# ansible_ssh_user:ssh登录远程服务器的账号，该账号可以是普通账号，也可以是root账号，账号必须有sudo权限，且权限与root相近；如果配置了免密登录且root用户可以登录，则无需配置ansible_ssh_pass和ansible_become_password变量。ansible_ssh_user仍需配置。
 # ansible_ssh_pass:ssh登录远程服务器账号的密码
 # ansible_ssh_port:ssh连接的端口，如果使用了非默认的22端口，则需要增加该变量
 # ansible_become_password:账号执行sudo命令时输入的密码，该变量与账号ssh登录时输入的密码一致。root账号可不设置该变量，如果ansible_ssh_user中配置的是普通账号且/etc/sudoers中账号配置了NOPASSWD选项，则该变量可不设置，否则必须设置
