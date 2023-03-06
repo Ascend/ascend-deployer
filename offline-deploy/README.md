@@ -22,7 +22,8 @@
 - [CHANGELOG](#changelog)
 
 # 功能简介
-使用基于Ansible的脚本安装MindX DL的集群调度组件、以及运行集群调度组件依赖的软件（Docker、kubernetes）。
+使用基于Ansible的脚本安装MindX DL的集群调度组件、以及运行集群调度组件依赖的软件（Docker、kubernetes），同时该工具同时支持MEF-Center组件的离线安装。
+
 
 # 环境依赖
 ## 运行环境要求
@@ -142,7 +143,7 @@
 
 
 
-# 安装场景
+# DL离线安装场景
 可选组件默认不安装
 <table>
 <thead>
@@ -198,6 +199,36 @@
   </tr>
 </tbody>
 </table>
+
+
+# MEF-Center离线安装场景
+<table>
+<thead>
+  <tr>
+    <th align="left">场景</th>
+    <th align="left">安装组件</th>
+    <th align="left">说明</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="8">MEF-Center管理节点场景</td>
+    <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
+    <td rowspan="8">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+</tbody>
+</table>
+
 
 # 安装步骤
 
@@ -263,6 +294,10 @@ bash scripts/install.sh
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
 
+注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
+
+# 安装后状态查看
+```
 # 安装后状态查看
 
 使用命令`kubectl get nodes`检查kubernetes节点，如下所示表示正常
@@ -276,25 +311,52 @@ worker-1         Ready    worker   60s   v1.19.16
 使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
 
 ```
-NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
-kube-system      ascend-device-plugin-daemonset-910-lq     1/1     Running            0          21h
-kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
-kube-system      calico-node-4zfjp                         1/1     Running            0          21h
-kube-system      calico-node-jsdws                         1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
-kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
-kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
-kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
-kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
-kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
-kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
-mindx-dl         hccl-controller-8ff6fd684-9pgxm           1/1     Running            0          19h
-mindx-dl         noded-c2h7r                               1/1     Running            0          19h
-npu-exporter     npu-exporter-7kt25                        1/1     Running            0          19h
-volcano-system   volcano-controllers-56cbbb9c6-9trf7       1/1     Running            0          19h
-volcano-system   volcano-scheduler-66f75bf89f-94jkx        1/1     Running            0          19h
+   NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
+   kube-system      ascend-device-plugin-daemonset-910-lq     1/1     Running            0          21h
+   kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
+   kube-system      calico-node-4zfjp                         1/1     Running            0          21h
+   kube-system      calico-node-jsdws                         1/1     Running            0          21h
+   kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
+   kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
+   kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
+   kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
+   kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
+   kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
+   kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
+   kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
+   mindx-dl         hccl-controller-8ff6fd684-9pgxm           1/1     Running            0          19h
+   mindx-dl         noded-c2h7r                               1/1     Running            0          19h
+   npu-exporter     npu-exporter-7kt25                        1/1     Running            0          19h
+   volcano-system   volcano-controllers-56cbbb9c6-9trf7       1/1     Running            0          19h
+   volcano-system   volcano-scheduler-66f75bf89f-94jkx        1/1     Running            0          19h
 ```
+
+# MEF-Center离线安装场景
+
+注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+如下以x86_64为示例，请用户根据实际情况进行替换，根据以下步骤离线安装MEF-Center
+## 步骤1：导入MEF-Center依赖镜像
+  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+```bash
+  mkdir -p root/resources/mef
+  cp mef.tar root/resources/mef
+  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
+  至resource目录下的mef目录
+  cd root/resources/mef # 移动下载的mef.tar文件至该目录
+  tar xvf mef.tar 
+  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
+  docker load -i openresty_buster_x86_64.tar
+   ```
+
+## 步骤2：安装MEF-Center
+注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
+```
+cd /root/offline-deploy/scripts
+bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
+bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+```
+
+
 
 # 组件升级
 目前**仅支持MindX DL集群调度组件升级**，**不支持**Docker和Kubernetes的升级，并且升级时会按照之前`/root/offline-deploy/inventory_file`中配置的**节点**、**节点类型**、**场景包含的组件**进行升级。
@@ -400,6 +462,8 @@ bash scripts/upgrade.sh
         <1>输入一个ip，工具自行生成后续ip，例如ip=10.0.0.1，工具会内部自行生成八个ip，10.0.0.1、10.0.1.1、10.0.2.1、10.0.3.1、10.0.0.2、10.0.1.2、10.0.2.2、10.0.3.2（该方法仅限于八卡环境）；
         <2>按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
     4、inventory_file其他配置可直接参考inventory_file中的样例;
+
+
  7. DL离线安装组件报告查看工具, 如下以x86_64为示例，请用户根据实际情况进行替换
     ```
      cd ${HOME}/offline-deploy/tools/report
@@ -415,46 +479,27 @@ bash scripts/upgrade.sh
      cat /root/report_temp.txt # 查看docker, driver, hccn等相关信息
     ```
 
-8. kubeedge安装说明
-   注意：安装kubeedge组件会同时安装MEF,MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请联系相关人员获取，我们已经提供MEF相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar) 
-   获取到如上两个压缩文件后，下载至自定义文件夹并进入，如下以x86_64为示例，请用户根据实际情况进行替换
-   ```
-   mkdir -p root/resources/mef
-   cp mef.tar root/resources/mef 
-   cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动ef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
-   至resource目录下的mef目录
-   cd root/resources/mef
-   tar xvf mef.tar 
-   docker load -i ubuntu_2204_x86_64.tar
-   docker load -i openresty_buster_x86_64.tar
-   ```
-   ```
-   cd /root/offline-deploy/scripts
-   bash install_kubeedge.sh              # 安装kubeedge
-   bash install_kubeedge.sh --uninstall  # 卸载kubeedge
-   ```
-   注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
 
-9. 驱动、固件安装说明
-   ```
-   cd /root/offline-deploy/scripts
-   批量安装驱动、固件需编辑当前目录的inventory_file文件，格式如下：
-   [tools]
-   localhost ansible_connection='local'
-   ip_address_1
-   ip_address_2
+ 8. 驱动、固件安装说明
+    ```
+    cd /root/offline-deploy/scripts
+    批量安装驱动、固件需编辑当前目录的inventory_file文件，格式如下：
+    [tools]
+    localhost ansible_connection='local'
+    ip_address_1
+    ip_address_2
 
-   [tools:vars]
-   user=HwHiAiUser
-   group=HwHiAiUser
-   ansible_ssh_user='root'
+    [tools:vars]
+    user=HwHiAiUser
+    group=HwHiAiUser
+    ansible_ssh_user='root'
    
-   bash install_npu.sh                   # 安装驱动、固件
-   bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
+    bash install_npu.sh                   # 安装驱动、固件
+    bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
    ``` 
-   注意事项：
-   1. 环境已安装驱动、固件安装时所需依赖。
-   2. 若执行批量配置，需提前配置免密登录。
+    注意事项：
+    1. 环境已安装驱动、固件安装时所需依赖。
+    2. 若执行批量配置，需提前配置免密登录。
   
 
 # 常见问题
