@@ -6,12 +6,12 @@
 - name: copy images to remote hosts
   copy:
     src: "{{ image_file }}"
-    dest: "/root/image.tar"
+    dest: "{{ ansible_env.HOME }}/image.tar"
     mode: 0700
     force: yes
 
 - name: load docker images
-  shell: "docker load -i /root/image.tar"
+  shell: "docker load -i {{ ansible_env.HOME }}/image.tar"
   register: docker_result
 
 - name: print lossing parts
