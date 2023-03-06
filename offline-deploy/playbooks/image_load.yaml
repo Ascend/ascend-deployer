@@ -1,5 +1,5 @@
 - hosts:
-    - worker
+    - "{{ node }}"
   gather_facts: true
   become: yes
   tasks:
