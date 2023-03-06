@@ -481,14 +481,16 @@ bash scripts/upgrade.sh
     vi inventory_file
     # 进入offline-deploy目录，编辑inventory_file文件（该文件为offline-deploy下的，与offline-deploy/scripts目录下的inventory_file不同）。格式参考inventory_file。
 
-    bash image_load.sh ${absolute path to image file}
-    # 在offline-deploy/scripts目录下执行bash image_load.sh ${absolute path to image file}，完成镜像的导入。
+    bash image_load.sh ${absolute path to image file} ${host} 
+    # 在offline-deploy/scripts目录下执行bash image_load.sh ${absolute path to image file} ${host} ，完成镜像的导入。
+    # 可执行bash image_load.sh或bash image_load.sh -h查看help信息
     ```
 
     注意事项: 
 
     1、镜像路径需为绝对路径
     2、inventory_file其他配置可直接参考inventory_file中的样例;
+    3、host只能为master,worker或all。
 
 # 常见问题
 ## 常见安装问题
