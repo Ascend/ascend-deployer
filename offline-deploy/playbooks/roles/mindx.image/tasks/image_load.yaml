@@ -5,12 +5,12 @@
 
 - name: copy images to remote hosts
   copy:
-    src: "/root/image.tar"
-    dest: "/root/"
+    src: "{{ image_file }}"
+    dest: "/root/image.tar"
     mode: 0700
     force: yes
 
-- name: load docker iamges
+- name: load docker images
   shell: "docker load -i /root/image.tar"
   register: docker_result
 
@@ -21,5 +21,5 @@
 
 - debug:
     msg: "[WARNING]: Can not find images, please check it"
-  when: docker_result.rc != 0 
+  when: docker_result.rc != 0
   name: print lossing parts
