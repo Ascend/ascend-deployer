@@ -5,7 +5,7 @@ Ascend-driver-info:
 {{ npu_result.stdout | default("UNKNOWN") }}
 
 Hccn-info:
-{%set std = hccn_result.stdout%}
+{%set std = hccn_result.stdout | default("")%}
 {%if "exit status" in std%}
 {{ "Maybe infer system or hccn tool wrong" }}
 {%else%}
