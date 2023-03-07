@@ -16,7 +16,7 @@ host_count: "{{ ansible_play_hosts_all | length }}"
 first_host: "{{ ansible_play_hosts_all[0] }}"
 no_copy_flag: "{{ NO_COPY | default('false') }}"
 use_harbor: "{{ HARBOR_SERVER | length != 0 }}"
-use_harbor: "{{ SCENE_NUM != 4 }}"
+use_mindxdl: "{{ SCENE_NUM != 4 }}"
 HARBOR_HTTP: "true"
 harbor_use_http: "{{ HARBOR_HTTP == 'true' }}"
 
