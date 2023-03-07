@@ -1,8 +1,8 @@
 ---
 - hosts: localhost
   vars:
-    host_count: "{{ groups['tools'] | length }}"
-    first_host: "{{ groups['tools'][0] }}"
+    host_count: "{{ groups['worker'] | length }}"
+    first_host: "{{ groups['worker'][0] }}"
   vars_files:
     - roles/mindx.npu/vars/main.yaml
   tasks:
@@ -14,7 +14,7 @@
       shell: tar -cf ~/resources.tar {{npu_pkg_dir}}/
       when: not (host_count == "1" and first_host == "localhost") and type == 'run'
 
-- hosts: tools
+- hosts: worker
   gather_facts: false
   vars_files:
     - roles/mindx.npu/vars/main.yaml

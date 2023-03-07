@@ -443,9 +443,9 @@ bash scripts/upgrade.sh
  	```
     下载文档中历史版本中最新的resources包，解压后将resources目录放置于root下
 
-    cd ${HOME}/offline-deploy/scripts
-    vi inventory_file
-    # 进入offline-deploy/scripts目录，编辑inventory_file文件（该文件为offline-deploy/scripts下的，与offline-deploy目录下的inventory_file不同），新增待配置设备的ip地址、用户名、action（执行配置<config>或者查看当前设备配置信息<view>）、mode（工作模式<SMP>、<AMP>）、ip（npu卡所配ip）、detectip（对端检测ip）、netmask（子网掩码）。格式参考inventory_file。
+    cd ${HOME}/offline-deploy
+    vi hccn_inventory_file
+    # 进入offline-deploy目录，编辑hccn_inventory_file文件,新增待配置设备的ip地址、用户名、action（执行配置<config>或者查看当前设备配置信息<view>）、mode（工作模式<SMP>、<AMP>）、ip（npu卡所配ip）、detectip（对端检测ip）、netmask（子网掩码）。格式参考inventory_file。
 
     bash hccn_set.sh
     # 在offline-deploy/scripts目录下执行bash hccn_set.sh，完成指定设备的npu卡的ip网络配置。
@@ -457,11 +457,11 @@ bash scripts/upgrade.sh
 
     2、若执行批量配置时，需提前配置免密登录；
 
-    3、inventory_file中ip、detectip配置格式有两种：
+    3、hccn_inventory_file中ip、detectip配置格式有两种：
 
         <1>输入一个ip，工具自行生成后续ip，例如ip=10.0.0.1，工具会内部自行生成八个ip，10.0.0.1、10.0.1.1、10.0.2.1、10.0.3.1、10.0.0.2、10.0.1.2、10.0.2.2、10.0.3.2（该方法仅限于八卡环境）；
         <2>按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
-    4、inventory_file其他配置可直接参考inventory_file中的样例;
+    4、hccn_inventory_file其他配置可直接参考hccn_inventory_file中的样例;
 
 
  7. DL离线安装组件报告查看工具, 如下以x86_64为示例，请用户根据实际情况进行替换
@@ -482,14 +482,14 @@ bash scripts/upgrade.sh
 
  8. 驱动、固件安装说明
     ```
-    cd /root/offline-deploy/scripts
+    cd /root/offline-deploy
     批量安装驱动、固件需编辑当前目录的inventory_file文件，格式如下：
-    [tools]
+    [worker]
     localhost ansible_connection='local'
     ip_address_1
     ip_address_2
 
-    [tools:vars]
+    [worker:vars]
     user=HwHiAiUser
     group=HwHiAiUser
     ansible_ssh_user='root'
@@ -504,9 +504,9 @@ bash scripts/upgrade.sh
 11. 导入镜像
  	```
     
-    cd ${HOME}/offline-deploy/scripts
+    cd ${HOME}/offline-deploy
     vi inventory_file
-    # 进入offline-deploy目录，编辑inventory_file文件（该文件为offline-deploy下的，与offline-deploy/scripts目录下的inventory_file不同）。格式参考inventory_file。
+    # 进入offline-deploy目录，编辑inventory_file文件。格式参考inventory_file。
 
     bash image_load.sh ${absolute path to image file} ${host} 
     # 在offline-deploy/scripts目录下执行bash image_load.sh ${absolute path to image file} ${host} ，完成镜像的导入。

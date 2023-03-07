@@ -8,7 +8,7 @@ readonly NPU_ZIP_DIR="/root/resources/npu/zip"
 readonly NPU_RUN_DIR="/root/resources/npu/run"
 CUR_DIR=$(dirname "$(readlink -f $0)")
 readonly CUR_DIR
-readonly inventory_file_path=${CUR_DIR}/inventory_file
+readonly inventory_file_path=${CUR_DIR}/../inventory_file
 yamls_dir=$(
     cd $CUR_DIR/..
     pwd
