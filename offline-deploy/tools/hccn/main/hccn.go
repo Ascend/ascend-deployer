@@ -27,8 +27,8 @@ var (
 	detectIP string
 	ip       string
 	netMask  string
-	mode string
-	action string
+	mode     string
+	action   string
 )
 
 type IP struct {
@@ -157,7 +157,9 @@ func getIDArrayAndCount() ([]string, int, error) {
 	}
 	npuIDArray := strings.Split(npuID, string('\n'))
 	npuNumArray := strings.Split(npuNum, string('\n'))
-
+	if npuNumArray[0] == "failed." || npuNumArray[0] == "" {
+		return nil, 0, errors.New("get npu array failed")
+	}
 	count, err := strconv.Atoi(npuNumArray[0])
 	if err != nil {
 		return nil, 0, err
@@ -186,10 +188,7 @@ func config(npuIDArray []string, count int) (err error) {
 		detectIPArray = strings.Split(detectIP, ",")
 		for i := 0; i < count; i++ {
 			// 配置之前查看npu卡之前是否配置ip
-			err := checkNpuIP(npuIDArray[i])
-			if err != nil {
-				return err
-			}
+			err = checkNpuIP(npuIDArray[i])
 			// 配置npu卡ip
 			if err := npuIPConf(npuIDArray[i], ipArray[i], netMask); err != nil {
 				return err
@@ -210,10 +209,7 @@ func config(npuIDArray []string, count int) (err error) {
 		}
 		for i := 0; i < count; i++ {
 			// 配置之前查看npu卡之前是否配置ip
-			err := checkNpuIP(npuIDArray[i])
-			if err != nil {
-				return err
-			}
+			err = checkNpuIP(npuIDArray[i])
 			// 配置npu卡ip
 			if err := npuIPConf(npuIDArray[i], ipArray[i], netMask); err != nil {
 				return err
@@ -242,10 +238,10 @@ func config(npuIDArray []string, count int) (err error) {
 
 func usage() {
 	fmt.Printf("Usage of hccn: \n \n" +
-        "-mode       \"working mode\" \n \n" +
-	    "-ip         \"IP address of the NPU in the environment\" \n \n" +
-	    "-detectip   \"Detect IP address of the NPU in the environment\" \n \n" +
-	    "-netmask    \"subnet mask\" \n \n")
+		"-mode       \"working mode\" \n \n" +
+		"-ip         \"IP address of the NPU in the environment\" \n \n" +
+		"-detectip   \"Detect IP address of the NPU in the environment\" \n \n" +
+		"-netmask    \"subnet mask\" \n \n")
 }
 
 func parse(npuIDArray []string, count int) error {
