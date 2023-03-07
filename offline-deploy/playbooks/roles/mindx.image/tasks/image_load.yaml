@@ -1,0 +1,25 @@
+- name: find docker command
+  shell: command -v docker
+  register: docker_exists
+  failed_when: false
+
+- name: copy images to remote hosts
+  copy:
+    src: "{{ image_file }}"
+    dest: "{{ ansible_env.HOME }}/image.tar"
+    mode: 0700
+    force: yes
+
+- name: load docker images
+  shell: "docker load -i {{ ansible_env.HOME }}/image.tar"
+  register: docker_result
+
+- name: print lossing parts
+  debug:
+    msg: "[WARNING]: Can not find docker, maybe docker not installed, or env not right"
+  when: docker_exists.rc !=0
+
+- debug:
+    msg: "[WARNING]: Can not find images, please check it"
+  when: docker_result.rc != 0
+  name: print lossing parts
