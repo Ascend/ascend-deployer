@@ -30,7 +30,11 @@
 # k8s集群中存在与master节点架构不一致的服务器时，并且该节点(或多个异构节点)会部署MindX DL，任选其中一台异构节点配置到如下主机组即可，配置参考注释
 [other_build_image]
 #10.10.10.11 ansible_ssh_user="test" ansible_ssh_pass="test1234" ansible_become_password="test1234" ansible_ssh_port=9090
-
+#           *********************以下为worker变量配置区域**************************
+[worker:vars]
+user=HwHiAiUser
+group=HwHiAiUser
+ansible_ssh_user='root'
 #           *********************以下为全局变量配置区域**************************
 [all:vars]
 # 场景1安装组件: Docker, Kubernetes, Ascend Docker Runtime, Ascend Device Plugin, Volcano, HCCL-Controller, NodeD, NPU-Exporter
