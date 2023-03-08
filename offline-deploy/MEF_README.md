@@ -132,6 +132,29 @@ vi inventory_file
 bash scripts/install.sh
 ```
 
+## 步骤6：导入MEF-Center依赖镜像
+  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+```bash
+  mkdir -p root/resources/mef
+  cp mef.tar root/resources/mef
+  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
+  至resource目录下的mef目录
+  cd root/resources/mef # 移动下载的mef.tar文件至该目录
+  tar xvf mef.tar 
+  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
+  docker load -i openresty_buster_x86_64.tar
+   ```
+
+## 步骤7：安装MEF-Center
+注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
+```
+cd /root/offline-deploy/scripts
+bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
+bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+```
+
+MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+
 # 安装后状态查看
 
 使用命令`kubectl get nodes`检查kubernetes节点，如下所示表示正常
@@ -159,28 +182,12 @@ kube-system      kube-proxy-w9lw9                          1/1     Running      
 kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
 ```
 
-## 步骤6：导入MEF-Center依赖镜像
-  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+使用命令`ps aux|grep cloudcore`显示相应进程信息，使用命令`docker images|grep ascend`检查组件镜像，如下所示表示正常
 ```bash
-  mkdir -p root/resources/mef
-  cp mef.tar root/resources/mef
-  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
-  至resource目录下的mef目录
-  cd root/resources/mef # 移动下载的mef.tar文件至该目录
-  tar xvf mef.tar 
-  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
-  docker load -i openresty_buster_x86_64.tar
-   ```
-
-## 步骤7：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
+ascend-ngnix-manager         v1    63cfb0bc00f    44 hours ago   125MB
+ascend-cert-manager          v1    b22274t5609    44 hours ago   105MB
+ascend-edge-manager          v1    456f438bac6    44 hours ago   158MB
 ```
-cd /root/offline-deploy/scripts
-bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-bash install_kubeedge.sh --uninstall  # 卸载kubeedge
-```
-
-MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
 
 
 # 安装脚本对系统的修改
