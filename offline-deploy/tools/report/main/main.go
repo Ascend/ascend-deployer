@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/docker/docker/client"
 	"github.com/go-ini/ini"
 	"io"
 	"io/ioutil"
@@ -25,11 +24,13 @@ import (
 )
 
 const (
-	masterNode      = "MASTER"
-	workerNode      = "WORKER"
-	csvFileName     = "nodesData.csv"
-	csvFileMode     = 0600
-	maxStringLength = 999
+	masterNode            = "MASTER"
+	workerNode            = "WORKER"
+	csvFileName           = "nodesData.csv"
+	FileMode              = 0644
+	maxStringLength       = 999
+	jsonFileNameForMaster = "master.json"
+	jsonFileNameForWorker = "worker.json"
 )
 
 var (
@@ -52,7 +53,7 @@ var (
 		"volcano-controllers",
 	}
 	sceneOneWorker = []string{
-		"ascend-device-plugin-daemonset",
+		"ascend-device-plugin",
 		"calico-node",
 		"kube-proxy",
 		"noded",
@@ -65,7 +66,7 @@ var (
 		"volcano-controllers",
 	}
 	sceneTwoWorker = []string{
-		"ascend-device-plugin-daemonset",
+		"ascend-device-plugin",
 		"calico-node",
 		"kube-proxy",
 	}
@@ -81,12 +82,13 @@ var (
 		"kube-scheduler",
 	}
 	sceneThreeWorker = []string{
-		"ascend-device-plugin-daemonset",
+		"ascend-device-plugin",
 		"calico-node",
 		"kube-proxy",
 	}
 	workerExtraComponent = []string{"npu-exporter", "noded"}
-	path2saveJsonFile    string
+	output               string
+	format               string
 )
 
 type nodeSummary struct {
@@ -98,15 +100,6 @@ type nodeSummary struct {
 	Npu         string
 	Components  []string
 	NodeType    string
-}
-
-type dockerInfo struct {
-	Version       string
-	APIVersion    string
-	Os            string
-	Arch          string
-	KernelVersion string
-	BuildTime     string
 }
 
 var totalMasterNodesSummary = map[string]*nodeSummary{}
@@ -204,7 +197,7 @@ func addInfo2Node(nodes *v1.NodeList) {
 			target := totalMasterNodesSummary[ip]
 			tmpComponents := strings.Split(imageNames, " ")
 			sort.Sort(sort.StringSlice(tmpComponents))
-			target.Components = tmpComponents
+			target.Components = tmpComponents[1:]
 			target.Npu = npus
 		}
 		for ip, summary := range totalWorkerNodesSummary {
@@ -214,7 +207,7 @@ func addInfo2Node(nodes *v1.NodeList) {
 			target := totalWorkerNodesSummary[ip]
 			tmpComponents := strings.Split(imageNames, " ")
 			sort.Sort(sort.StringSlice(tmpComponents))
-			target.Components = tmpComponents
+			target.Components = tmpComponents[1:]
 			target.Npu = npus
 		}
 	}
@@ -487,17 +480,52 @@ func nodeCheck(configs map[string][]string, client *kubernetes.Clientset) bool {
 	return true
 }
 
-func saveRes2CSV(jsonPath string) bool {
-	file, err := os.OpenFile(csvFileName, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, csvFileMode)
+func saveRes2File(saveFilePath string, isJson string) bool {
+	switch isJson {
+	case "csv":
+		if err := savRes2Csv(saveFilePath); err != nil {
+			fmt.Println("save result to cvs failed")
+			return false
+		}
+	case "json":
+		if err := saveRes2Json(saveFilePath); err != nil {
+			fmt.Println("save result to json failed")
+			return false
+		}
+	default:
+		fmt.Println("invalid format")
+		return false
+	}
+	return true
+}
+
+func saveRes2Json(saveFilePath string) error {
+	data, _ := json.MarshalIndent(&totalMasterNodesSummary, "", "  ")
+	err := ioutil.WriteFile(path.Join(saveFilePath, jsonFileNameForMaster), data, FileMode)
+	if err != nil {
+		fmt.Println("save master to json failed")
+		return err
+	}
+	data, _ = json.MarshalIndent(&totalWorkerNodesSummary, "", "  ")
+	err = ioutil.WriteFile(path.Join(saveFilePath, jsonFileNameForWorker), data, FileMode)
+	if err != nil {
+		fmt.Println("save worker to json failed")
+		return err
+	}
+	return nil
+}
+
+func savRes2Csv(saveFilePath string) error {
+	file, err := os.OpenFile(path.Join(saveFilePath, csvFileName), syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, FileMode)
 	defer file.Close()
 	if err != nil {
-		return false
+		return err
 	}
 	w := csv.NewWriter(file)
 	defer w.Flush()
 	row := []string{"IP", "nodeName", "status", "OK pods", "Missing pods", "Failed pods", "NPU", "Component", "NodeType"}
 	if err := w.Write(row); err != nil {
-		return false
+		return err
 	}
 	for key, value := range totalMasterNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
@@ -506,13 +534,8 @@ func saveRes2CSV(jsonPath string) bool {
 		components := strings.Join(value.Components, "\n")
 		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
-			return false
+			return err
 		}
-	}
-	data, _ := json.Marshal(totalMasterNodesSummary)
-	err = ioutil.WriteFile(path.Join(jsonPath, "masterNode.json"), data, 0644)
-	if err != nil {
-		return false
 	}
 	for key, value := range totalWorkerNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
@@ -521,62 +544,17 @@ func saveRes2CSV(jsonPath string) bool {
 		components := strings.Join(value.Components, "\n")
 		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
-			return false
+			return err
 		}
 	}
-	data, _ = json.Marshal(totalWorkerNodesSummary)
-	err = ioutil.WriteFile(path.Join(jsonPath, "masterNode.json"), data, 0644)
-	if err != nil {
-		return false
-	}
-	return true
-}
-
-func getDockerInfo() (error, *dockerInfo) {
-	checkDockerInfo := dockerInfo{}
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		fmt.Println("init docker client failed")
-		return err, nil
-	}
-	dockerInfos, err := cli.ServerVersion(ctx)
-	if err != nil {
-		fmt.Println("get server version failed")
-		return err, nil
-	}
-	checkDockerInfo.Version = dockerInfos.Version
-	checkDockerInfo.APIVersion = dockerInfos.APIVersion
-	checkDockerInfo.Arch = dockerInfos.Arch
-	checkDockerInfo.Os = dockerInfos.Os
-	checkDockerInfo.KernelVersion = dockerInfos.KernelVersion
-	checkDockerInfo.BuildTime = dockerInfos.BuildTime
-	return nil, &checkDockerInfo
-}
-
-func writeDockerInfo(jsonPath string) bool {
-	err, dockerInfos := getDockerInfo()
-	if err != nil {
-		fmt.Println("get docker info failed")
-		return false
-	}
-	jsonByte, _ := json.Marshal(dockerInfos)
-	err = ioutil.WriteFile(path.Join(jsonPath, "docker.json"), jsonByte, 0644)
-	if err != nil {
-		fmt.Println("write docker info failed")
-		return false
-	}
-	return true
+	return nil
 }
 
 func main() {
 	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path")
-	flag.StringVar(&path2saveJsonFile, "path2saveJsonFile", "", "path to save json file")
+	flag.StringVar(&output, "path", "", "path to save json file")
+	flag.StringVar(&format, "format", "csv", "format, csv or json")
 	flag.Parse()
-	if !writeDockerInfo(path2saveJsonFile) {
-		fmt.Println("write docker info to json file failed")
-		return
-	}
 	client := initkubeConfig()
 	if client == nil {
 		fmt.Println("init kube config failed.")
@@ -587,7 +565,7 @@ func main() {
 		fmt.Println("check node failed")
 		return
 	}
-	if saveChecker := saveRes2CSV(path2saveJsonFile); !saveChecker {
+	if saveChecker := saveRes2File(output, format); !saveChecker {
 		fmt.Println("save nodes data to csv failed")
 		return
 	}
