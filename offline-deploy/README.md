@@ -206,7 +206,8 @@
   <tr>
     <td rowspan="3">MEF-Center离线安装场景</td>
     <td rowspan="4"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
-    <td rowspan="3">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四，相关操作请查看[MEF_README](https://gitee.com/youleatherman/ascend-deployer/blob/master/offline-deploy/MEF_README.md)</td>
+    <td rowspan="3">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四，相关操作请查看[MEF_README]
+(https://gitee.com/youleatherman/ascend-deployer/blob/master/offline-deploy/MEF_README.md)</td>
   </tr>
   <tr>
   </tr>
