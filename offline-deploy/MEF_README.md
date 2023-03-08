@@ -135,11 +135,11 @@ bash scripts/install.sh
 ## 步骤6：导入MEF-Center依赖镜像
   MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
 ```bash
-  mkdir -p root/resources/mef
-  cp mef.tar root/resources/mef
-  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
+  mkdir -p /root/resources/mef
+  cp mef.tar /root/resources/mef
+  cp Ascend-mindxedge-mefcenter_x86_64.zip /root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
   至resource目录下的mef目录
-  cd root/resources/mef # 移动下载的mef.tar文件至该目录
+  cd /root/resources/mef # 移动下载的mef.tar文件至该目录
   tar xvf mef.tar 
   docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
   docker load -i openresty_buster_x86_64.tar
