@@ -197,30 +197,16 @@
   </tr>
   <tr>
   </tr>
-</tbody>
-</table>
-
-
-# MEF-Center离线安装场景
-<table>
-<thead>
   <tr>
-    <th align="left">场景</th>
-    <th align="left">安装组件</th>
-    <th align="left">说明</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td rowspan="8">MEF-Center管理节点场景</td>
-    <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
-    <td rowspan="8">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。</td>
   </tr>
   <tr>
   </tr>
   <tr>
   </tr>
   <tr>
+    <td rowspan="3">MEF-Center离线安装场景</td>
+    <td rowspan="4"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
+    <td rowspan="3">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四，相关操作请查看MEF_README</td>
   </tr>
   <tr>
   </tr>
@@ -228,6 +214,7 @@
   </tr>
 </tbody>
 </table>
+
 
 
 # 安装步骤
@@ -329,31 +316,6 @@ worker-1         Ready    worker   60s   v1.19.16
    npu-exporter     npu-exporter-7kt25                        1/1     Running            0          19h
    volcano-system   volcano-controllers-56cbbb9c6-9trf7       1/1     Running            0          19h
    volcano-system   volcano-scheduler-66f75bf89f-94jkx        1/1     Running            0          19h
-```
-
-# MEF-Center离线安装场景
-
-注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
-如下以x86_64为示例，请用户根据实际情况进行替换，根据以下步骤离线安装MEF-Center
-## 步骤1：导入MEF-Center依赖镜像
-  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
-```bash
-  mkdir -p root/resources/mef
-  cp mef.tar root/resources/mef
-  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
-  至resource目录下的mef目录
-  cd root/resources/mef # 移动下载的mef.tar文件至该目录
-  tar xvf mef.tar 
-  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
-  docker load -i openresty_buster_x86_64.tar
-   ```
-
-## 步骤2：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
-```
-cd /root/offline-deploy/scripts
-bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-bash install_kubeedge.sh --uninstall  # 卸载kubeedge
 ```
 
 
