@@ -40,7 +40,8 @@ ansible_ssh_user='root'
 # 场景1安装组件: Docker, Kubernetes, Ascend Docker Runtime, Ascend Device Plugin, Volcano, HCCL-Controller, NodeD, NPU-Exporter
 # 场景2安装组件: Ascend Docker Runtime, Ascend Device Plugin, Volcano，HCCL-Controller(可选), NodeD(可选), NPU-Exporter(可选)
 # 场景3安装组件: Ascend Docker Runtime, Ascend Device Plugin, NPU-Exporter(可选)
-# SCENE_NUM:安装场景选择，可选1，2，3场景,默认场景1
+# 场景4安装组件: Docker, Kubernetes
+# SCENE_NUM:安装场景选择，可选1，2，3，4场景,默认场景1
 SCENE_NUM=1
 
 # EXTRA_COMPONENT: 为可选组件，组件间逗号隔开，可选值如下；
