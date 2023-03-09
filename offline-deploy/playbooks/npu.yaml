@@ -6,13 +6,8 @@
   vars_files:
     - roles/mindx.npu/vars/main.yaml
   tasks:
-    - name: make npu zip package for remote
+    - name: make npu package for remote
       shell: tar -cf ~/resources.tar {{npu_pkg_dir}}/
-      when: not (host_count == "1" and first_host == "localhost") and type == 'zip'
-    
-    - name: make npu run package for remote
-      shell: tar -cf ~/resources.tar {{npu_pkg_dir}}/
-      when: not (host_count == "1" and first_host == "localhost") and type == 'run'
 
 - hosts: worker
   gather_facts: false
