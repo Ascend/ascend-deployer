@@ -27,8 +27,8 @@ if [[ "$image_file" != /* ]]; then
        exit 1
 fi
 ansible_node=$2
-if [[ "$ansible_node" != "master" && "$ansible_node" != "all" && "$ansible_node" != "worker" ]]; then
-   echo "ansible node must be one of master, all, worker"
+if [[ "$ansible_node" != "master" && "$ansible_node" != "all" && "$ansible_node" != "worker" && "$ansible_node" != "mef" ]]; then
+   echo "ansible node must be one of master, all, worker, mef"
        exit 1
 fi
 ansible-playbook -i $inventory_file_path --extra-vars "image_file=$image_file" --extra-vars "node=$ansible_node" $yamls_dir/yamls/image_load.yaml -vv

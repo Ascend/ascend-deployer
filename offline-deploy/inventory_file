@@ -11,21 +11,26 @@
 # kube_interface:对应服务器ip地址网卡名字，单master场景下可以不设置
 # [master]下配置控制节点信息,第一行信息为k8s主控节点信息，配置参考注释
 # [master]下面给出几个配置示例
-# 第一行 root账号配置了免密登录，使用root账号登录，且ssh使用的9090端口，单master场景
+# 第一行 root账号配置了免密登录，使用root账号登录，且ssh使用22端口，单master场景
 # 第二行 test账号配置了免密登录，使用test账号登录，ssh使用默认22端口，未配置NOPASSWD，多master场景
 # 第三行 未配置免密登录，使用普通账号登录，ssh使用默认22端口，配置了NOPASSWD，多master场景
 # 第四行 未配置免密登录，使用普通账号登录，ssh使用默认22端口，未配置了NOPASSWD，多master场景
 [master]
-#10.10.10.10 ansible_ssh_user="root" ansible_ssh_port=9090 set_hostname=master-1 k8s_api_server_ip=10.10.10.10
+#10.10.10.10 ansible_ssh_user="root" ansible_ssh_port=22 set_hostname=master-1 k8s_api_server_ip=10.10.10.10
 #10.10.10.11 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-2 k8s_api_server_ip=10.10.10.11 kube_interface=enp125s0f0
 #10.10.10.12 ansible_ssh_user="test" ansible_ssh_pass="test1234" set_hostname=master-3 k8s_api_server_ip=10.10.10.12 kube_interface=enp125s0f0
 #10.10.10.13 ansible_ssh_user="test" ansible_ssh_pass="test1234" ansible_become_password="test1234" set_hostname=master-4 k8s_api_server_ip=10.10.10.13 kube_interface=enp125s0f0
 
 # worker,工作节点信息，可以配置多个工作节点，每个节点信息占据一行，配置参考注释
-# 已在[master]中的节点并且设置了set_hostname，则[worker]中不需要再配置set_hostname，如下面[worker]配置的第一行
+# 已在[master]中的节点并且设置了set_hostname，则[worker]中不需要再配置set_hostname，如下面[worker]配置的第一行, 如有驱动安装, ansible_ssh_user需配置为root
 [worker]
+#10.10.10.12 ansible_ssh_user="root" ansible_ssh_port=22
 #10.10.10.13 ansible_ssh_user="test" ansible_ssh_pass="test1234" ansible_become_password="test1234" ansible_ssh_port=9090
 #10.10.10.14 ansible_ssh_user="test" ansible_ssh_pass="test1234" ansible_become_password="test1234" ansible_ssh_port=9090 set_hostname=worker-1
+
+# mef,待安装的mef节点，配置参考注释
+[mef]
+#10.10.10.12 ansible_ssh_user="root" ansible_ssh_port=22
 
 # k8s集群中存在与master节点架构不一致的服务器时，并且该节点(或多个异构节点)会部署MindX DL，任选其中一台异构节点配置到如下主机组即可，配置参考注释
 [other_build_image]
@@ -34,13 +39,14 @@
 [worker:vars]
 user=HwHiAiUser
 group=HwHiAiUser
-ansible_ssh_user='root'
+
 #           *********************以下为全局变量配置区域**************************
 [all:vars]
 # 场景1安装组件: Docker, Kubernetes, Ascend Docker Runtime, Ascend Device Plugin, Volcano, HCCL-Controller, NodeD, NPU-Exporter
 # 场景2安装组件: Ascend Docker Runtime, Ascend Device Plugin, Volcano，HCCL-Controller(可选), NodeD(可选), NPU-Exporter(可选)
 # 场景3安装组件: Ascend Docker Runtime, Ascend Device Plugin, NPU-Exporter(可选)
-# SCENE_NUM:安装场景选择，可选1，2，3场景,默认场景1
+# 场景4安装组件: Docker, Kubernetes
+# SCENE_NUM:安装场景选择，可选1，2，3，4场景,默认场景1
 SCENE_NUM=1
 
 # EXTRA_COMPONENT: 为可选组件，组件间逗号隔开，可选值如下；

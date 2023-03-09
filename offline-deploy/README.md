@@ -7,10 +7,10 @@
 - [安装步骤](#安装步骤)
   - [步骤1：准备登录各台服务器的账号](#步骤1准备登录各台服务器的账号)
   - [步骤2：下载离线软件包](#步骤2下载离线软件包)
-  - [步骤3：安装Ansible](#步骤3安装ansible)
-  - [步骤4：配置安装信息](#步骤4配置安装信息)
-  - [步骤5：执行安装](#步骤5执行安装)
+  - [步骤3：配置安装信息](#步骤3配置安装信息)
+  - [步骤4：执行安装](#步骤4执行安装)
 - [安装后状态查看](#安装后状态查看)
+- [MEF-Center离线安装场景](#mef-center离线安装场景)
 - [组件升级](#组件升级)
 - [安装脚本对系统的修改](#安装脚本对系统的修改)
 - [常用操作](#常用操作)
@@ -22,14 +22,24 @@
 - [CHANGELOG](#changelog)
 
 # 功能简介
-使用基于Ansible的脚本安装MindX DL的集群调度组件、以及运行集群调度组件依赖的软件（Docker、kubernetes），同时该工具同时支持MEF-Center组件的离线安装。
+本软件使用基于Ansible的脚本， 进行批量安装。 简要来说， 具有如下功能：
 
+1. MindX DL全栈安装, 包括集群调度组件、以及运行集群调度组件依赖的软件（Docker、kubernetes）（对应的SCENE_NUM为1）。
+2. K8s集群扩容 (纳管工作节点, 对应的SCENE_NUM为2和3， 具体区别请参考[安装场景](#安装场景)）。
+3. 纯k8s集群安装 (目前仅用于MEF-Center场景的前置k8s安装, 对应的SCENE_NUM为4）。
+4. MEF-Center场景的安装(具体请参考[MEF-Center离线安装场景](#mef-center离线安装场景) )。
+5. 配置HCCN网络(具体请参考[常用操作6](#常用操作)).
+6. K8s集群状态查询(具体请参考[常用操作7](#常用操作)).
+
+不同的场景应安装不同的组件，具体请参考[安装场景](#安装场景)中的说明， 并通过设置配置文件`inventory_file`中的SCENE_NUM参数生效。 安装前请阅读[环境依赖](#环境依赖)确认环境符合预期；
+
+请按照[安装步骤](#安装步骤)逐步执行。
 
 # 环境依赖
 ## 运行环境要求
 
  1. 存放镜像目录的磁盘空间利用率**高于85%**会触发Kubelet的镜像垃圾回收机制，**将导致服务不可用**。请确保每台服务器上存放镜像的目录有足够的磁盘空间，建议≥**1 TB**。
- 2. **执行安装命令前，需要提前在服务器安装好昇腾NPU的驱动和固件，并[配置训练服务器NPU的device IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html)**。
+ 2. **执行安装K8s和DL组件命令前，需要确认服务器上已经安装好昇腾NPU的驱动和固件，并[配置训练服务器NPU的device IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html)**。
  3. 执行安装脚本前，保证安装Kubernetes的服务器的时间一致，可参考[常用操作1](#常用操作)快速设置各节点时间。
  4. 所有节点需要**已安装Python2.7以上**
  5. 安装部署脚本会在节点创建一个uid和gid为9000的用户hwMindX，请保证各节点上该uid和gid未被占用。
@@ -38,7 +48,7 @@
  8. 不支持多操作系统混合部署。
  9. 请保证节点的IP与K8s默认集群网段（192.168.0.0/16）没有冲突，如果冲突，请用户修改inventory_file中的`POD_NETWORK_CIRD`参数为其他私有网段，如：10.0.0.0/16。
  10. 如果用户已经安装了Kubernetes，其版本不能高于1.21
- 5. 安装脚本支持在下表的操作系统运行，脚本支持在如下操作系统上安装MindX DL的集群调度组件、Docker、Kubernetes软件。
+ 11. 安装脚本支持在下表的操作系统运行，脚本支持在如下操作系统上安装MindX DL的集群调度组件、Docker、Kubernetes软件, 可将安装脚本的执行放到待安装节点(特别是master节点)其中之一上执行, 并在安装完成后删除安装脚本, 安装过程中使用的密钥等。
 	<table>
     <thead>
       <tr>
@@ -143,7 +153,7 @@
 
 
 
-# DL离线安装场景
+# 安装场景
 可选组件默认不安装
 <table>
 <thead>
@@ -155,7 +165,7 @@
 </thead>
 <tbody>
   <tr>
-    <td rowspan="8">集群调度场景（全栈）</td>
+    <td rowspan="8">MindX DL全栈安装(集群调度场景, 全栈）</td>
     <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>Volcano</li><br /><li>NodeD</li><br /><li>HCCL-Controller</li><br /><li>NPU-Exporter</li></td>
     <td rowspan="8">该场景适用于你有一台或者多台NPU服务器，需要使用Kubernetes管理。使用该场景会完成NPU服务器的Docker、Kubernetes和NPU集群调度组件的安装。在inventory_file中对应场景一</td>
   </tr>
@@ -174,7 +184,7 @@
   <tr>
   </tr>
   <tr>
-    <td rowspan="6">集群调度场景</td>
+    <td rowspan="6">K8s集群扩容(集群调度场景)</td>
     <td rowspan="6"><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>Volcano</li><br /><li>NodeD(可选)</li><br /><li>HCCL-Controller(可选)</li><br /><li>NPU-Exporter(可选)</li></td>
     <td rowspan="6">该场景适用于你已经有一个部署好的Kubernetes集群，需要纳管新的NPU服务器。使用该场景时，需要在已有的Kubernetes集群的master节点部署NPU管理组件，新接入的NPU机器上部署worker节点的NPU管理组件。在inventory_file中对应场景二</td>
   </tr>
@@ -189,7 +199,7 @@
   <tr>
   </tr>
   <tr>
-    <td rowspan="3">设备纳管场景</td>
+    <td rowspan="3">K8s集群扩容(设备纳管场景)</td>
     <td rowspan="3"><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>NPU-Exporter(可选)</li></td>
     <td rowspan="3">该场景适用于你已经有一个部署好的Kubernetes集群，希望使用自己的调度器部署NPU任务。使用该场景时，需要在新接入的NPU服务器上部署worker节点的NPU管理组件。在inventory_file中对应场景三</td>
   </tr>
@@ -197,24 +207,10 @@
   </tr>
   <tr>
   </tr>
-</tbody>
-</table>
-
-
-# MEF-Center离线安装场景
-<table>
-<thead>
   <tr>
-    <th align="left">场景</th>
-    <th align="left">安装组件</th>
-    <th align="left">说明</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td rowspan="8">MEF-Center管理节点场景</td>
-    <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
-    <td rowspan="8">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。</td>
+    <td rowspan="8">纯k8s集群安装场景</td>
+    <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /></td>
+    <td rowspan="8">该场景目前仅用于MEF-Center的前置(k8s)安装, MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四</td>
   </tr>
   <tr>
   </tr>
@@ -236,7 +232,7 @@
 
 安装部署脚本需要通过ssh登录各台服务器执行命令，支持的ssh登录方式有如下两种：
 - 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。
-- 使用ssh账号、密码登录的方式
+- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
 
 支持ssh登录的账号有如下两种：
 - root账号
@@ -244,60 +240,67 @@
 
 
 ## 步骤2：下载离线软件包
-选择其中一种方式准备离线安装包
+选择其中一种方式准备离线安装包, 请确保包下载完整, 注意网络波动.
 
- - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.tar.gz包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令
+ - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.zip包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
+ - 登录执行安装命令服务器，将下面`wget`命令后的url替换成[历史版本](#历史版本)中所需版本的resources.zip的地址，然后执行如下命令
 ```bash
-# resources.tar.gz解压出的内容必须放置在/root目录下
-cd /root
-wget https://example
-tar -xf resources.tar.gz
+# resources.zip解压出的内容必须放置在家目录下
+cd
+wget https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/3.0.0/resources.zip
 ```
 
-## 步骤3：安装Ansible
-如果已经安装过Ansible，也需要执行下面的命令，不会覆盖已有的Ansible，仅修改Ansible部分配置。
+然后执行解压操作
 ```bash
-cd /root/offline-deploy
-bash scripts/install_ansible.sh
-```
-出现类似下面的回显，表示ansible安装成功
-```
-[INFO]	2022-07-28 22:53:09	 start install ansible...
-...
-[INFO]	2022-07-28 22:53:24	 successfully installed ansible
+cd
+mv resources ~"/resources.$(date +%s)" 2>/dev/null
+unzip resources.zip
+mv ~/offline-deploy ~"/offline-deploy.$(date +%s)" 2>/dev/null
+cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 
-ansible 2.9.27
-  config file = /etc/ansible/ansible.cfg
-  configured module search path = [u'/root/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python2.7/dist-packages/ansible
-  executable location = /usr/bin/ansible
-  python version = 2.7.17 (default, Jul  1 2022, 15:56:32) [GCC 7.5.0]
 ```
+在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 并上传到执行安装命令服务器上的家目录， 并采用如下指令完成相应resource包的解压
+```
+cd
+mv resources ~"/resources.$(date +%s)" 2>/dev/null
+chmod 700 unzip 
+mkdir -p resources && ./unzip resources.zip .
+mv ~/offline-deploy ~"/offline-deploy.$(date +%s)" 2>/dev/null
+cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 
-## 步骤4：配置安装信息
+````
 
-修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。
+## 步骤3：配置安装信息
+cla
+修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
+
+配置项的具体含义请参考`inventory_file`文件中的注释;
 
 ```bash
-cd /root/offline-deploy
+cd ~/offline-deploy
 vi inventory_file
+
 ```
 
-## 步骤5：执行安装
+## 步骤4：执行安装
 
-在[步骤4](#步骤4配置安装信息)同级目录中执行下面的安装命令。如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理，手动处理完毕后再执行如下命令进行安装。
+运行如下指令进行安装, 请提前将指令中的时间设置为当前时间:
+
+```bash
+cd ~/offline-deploy
+ansible -i invetory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
+bash scripts/run_install.sh
+
 ```
-bash scripts/install.sh
-```
+如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理.
+
 说明：
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
+- 用户也可以通过执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
+- 安装kubeedge须在执行完`bash scripts/run_install.sh`操作后, 根据[MEF-Center离线安装场景](#mef-center离线安装场景)离线安装MEF-Center。注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取.
 
-注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
-
-# 安装后状态查看
-```
+  
 # 安装后状态查看
 
 使用命令`kubectl get nodes`检查kubernetes节点，如下所示表示正常
@@ -333,29 +336,54 @@ worker-1         Ready    worker   60s   v1.19.16
 
 # MEF-Center离线安装场景
 
-注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
-如下以x86_64为示例，请用户根据实际情况进行替换，根据以下步骤离线安装MEF-Center
-## 步骤1：导入MEF-Center依赖镜像
-  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
+前置条件:
+
+用户需要确保已有能正常运行的K8s系统 (如在相应服务器上完成了场景1或者4的所有[安装步骤](#安装步骤));
+
+## 步骤1：配置安装节点信息
+用户需配置`~/offline-deploy/inventory_file`, 将计划安装MEF-Center的节点设置在mef项下, 建议按mef的样例1为模板, 逐项填入; 
+
+并且, 用户需选择如下两种方式之一配置登陆:
+
+- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。
+- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
+
+## 步骤2：导入MEF-Center软件包
+  请从昇腾社区提前获取 `Ascend-mindxedge-mefcenter_x86_64.zip` 或 `Ascend-mindxedge-mefcenter_aarch64.zip`, 并放入用户家目录; 然后执行:
 ```bash
-  mkdir -p root/resources/mef
-  cp mef.tar root/resources/mef
-  cp Ascend-mindxedge-mefcenter_x86_64.zip root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
-  至resource目录下的mef目录
-  cd root/resources/mef # 移动下载的mef.tar文件至该目录
-  tar xvf mef.tar 
-  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
-  docker load -i openresty_buster_x86_64.tar
+  cd
+  cp Ascend-mindxedge-mefcenter_x86_64.zip ~/resources/mef
+  cp Ascend-mindxedge-mefcenter_aarch64.zip ~/resources/mef
+  
    ```
 
-## 步骤2：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
+## 步骤3：安装MEF-Center
+注意：当前MEF-Center安装脚本已集成至`install_kubeedge.sh`中，运行该脚本会同步安装MEF-Center
 ```
-cd /root/offline-deploy/scripts
+cd ~/offline-deploy/scripts
 bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+
 ```
 
+用户也可以采用 `cd ~/offline-deploy/scripts; bash install_kubeedge.sh --uninstall` 来卸载kubeedge.
+
+## 确认安装成功
+使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
+
+```
+NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
+kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
+kube-system      calico-node-4zfjp                         1/1     Running            0          21h
+kube-system      calico-node-jsdws                         1/1     Running            0          21h
+kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
+kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
+kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
+kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
+kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
+kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
+kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
+kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
+```
 
 
 # 组件升级
@@ -363,17 +391,17 @@ bash install_kubeedge.sh --uninstall  # 卸载kubeedge
 
 升级会先卸载旧的MindX DL集群调度组件再重新安装，请选择空闲时间进行，避免影响训练或者推理任务。同时，升级时请一次性升级安装了MindX DL集群调度组件中的某个组件的所有节点，避免部分组件未升级影响正常功能。
 
-升级MindX DL集群调度组件时需要获取[历史版本](#历史版本)中的resources.tar.gz包，上传到脚本执行节点**非/root目录**(如/root/upgrade)下，执行如下命令先备份旧的resources.tar.gz中的内容。
+升级MindX DL集群调度组件时需要获取[历史版本](#历史版本)中的resources.zip包，上传到脚本执行节点**非/root目录**(如/root/upgrade)下，执行如下命令先备份旧的resources包中的内容。
 ```
-# 解压新的resources.tar.gz
+# 解压新的resources
 cd /root/upgrade
-tar -xf resources.tar.gz
+unzip resources.zip
 
-# 备份旧的resources.tar.gz解压出的内容
+# 备份旧的resources解压出的内容
 cd /root/upgrade/offline-deploy
 bash scripts/backup.sh
 ```
-然后执行更新命令，如果在更新过程出现错误，请根据打印信息处理错误，然后再次执行下面的命令进行升级（不需要再执行上面的备份命令，除非更换了resources.tar.gz包）。
+然后执行更新命令，如果在更新过程出现错误，请根据打印信息处理错误，然后再次执行下面的命令进行升级（不需要再执行上面的备份命令，除非更换了resources包）。
 ```
 # 如需修改inventory_file，可在执行下一条命令之前自行修改/root/offline-deploy/inventory_file
 cd /root/offline-deploy
@@ -391,18 +419,15 @@ bash scripts/upgrade.sh
  3. 如果安装时选择了使用Harbor仓库，以下情况会修改`/etc/docker/daemon.json`文件，在“insecure-registries”字段中增加Harbor的地址，以保证能够使用Harbor。
      1. Harbor使用HTTPS服务，但inventory_file中未配置Harbor的CA证书路径
      2. Harbor使用HTTP服务
- 4. 安装脚本会在操作系统上安装如下软件，以方便使用`unzip` `lspci` `bc` `ip` `ifconfig`命令
- 	```
-    pcituils,bc,net-tools,unzip,iproute
-    ```
+ 4. 安装脚本会在操作系统上安装开源依赖软件，以方便安装驱动及使用`unzip` `lspci` `bc` `ip` `ifconfig`等命令
 
 
 # 常用操作
  1. 保证安装Kubernetes的各节点的时间一致，避免因为时间问题导致kubernetes集群出现问题。
 
     **前提条件**：
-    1. [安装Ansible](#步骤3安装ansible)
-    2. [配置inventory\_file](#步骤4配置安装信息)
+    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd ~/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
+    2. [配置inventory\_file](#步骤3配置安装信息)
     3. 节点已连通，可参考[常用操作2](#常用操作)
 
     将下面命令中的***2022-06-01 08:00:00***替换成用户需要的时间后，再执行
@@ -414,8 +439,8 @@ bash scripts/upgrade.sh
  2. 查看安装脚本执行节点能否访问inventory_file中的其他节点，即检查连通性。
 
     **前提条件**：
-    1. [安装Ansible](#步骤3安装ansible)
-    2. [配置inventory\_file](#步骤4配置安装信息)
+    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd ~/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
+    2. [配置inventory\_file](#步骤3配置安装信息)
 
     **执行命令**：
     ```
@@ -435,8 +460,12 @@ bash scripts/upgrade.sh
     ```
  5. 配置免密登录
  	```
-    ssh-keygen # 生成公钥，出现提示消息后一直按回车
+    ssh-keygen # 生成公钥，请按提示进行，在要求输入加密口令时输入复杂度符合所在组织安全规定的口令
     ssh-copy-id <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上(包括本机)，<user>替换成要登录的账号，<ip>替换成要拷贝到的对应节点的ip。
+    # 在完成所有节点的免密配置后， 使用ssh-agent做口令缓存, 下面的  ~/.ssh/id_rsa  请根据ssh-keygen时的实际情况替换
+    ssh-agent bash
+    ssh-add ~/.ssh/id_rsa  
+     
     ```
 	注意事项: 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险,安装完成后请删除控制节点~/.ssh/目录下的id_rsa和id_rsa_pub文件，和其他节点~/.ssh目录下的authorized_keys文件。
  6. hccn_tool网络配置（仅支持训练环境使用，详情可参考[配置device的网卡IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html)）
@@ -463,53 +492,41 @@ bash scripts/upgrade.sh
         <2>按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
     4、hccn_inventory_file其他配置可直接参考hccn_inventory_file中的样例;
 
-
- 7. DL离线安装组件报告查看工具, 如下以x86_64为示例，请用户根据实际情况进行替换
+ 7. DL离线安装组件报告查看工具查看集群状态, 注意该功能仅能在master节点上运行;
     ```
+     export current_arch=$(arch)
      cd ${HOME}/offline-deploy/tools/report
-     ./k8s_status_report_x86_64 -h #查看帮助说明
-     ./k8s_status_report_x86_64 -inventoryFilePath /root/inventory -path /root -format csv   # 运行样例
-     # 其中INVENTORY_FILE_PATH代表离线安装inventory_file文件路径，默认路径为${HOME}/offline-deploy/inventory_file
-     运行以上命令后，即可在本目录下生成nodeData.csv文件，可以查看相关节点和pod，容器等信息,将上述命令中的format改为json，
-     会在本地生成master.json与work.json节点对应信息
-     查看hccn,driver,docker等相关系统描述信息，可以执行scripts/machine_report.sh，会在/root目录下生成report_temp.txt文件
-     运行命令如下
+     ./k8s_status_report_$current_arch -h #查看帮助说明
+     ./k8s_status_report_$current_arch -inventoryFilePath ${HOME}/offline-deploy/inventory_file -path /root -format csv   # 运行样例
+     # 运行以上命令后，即可在本目录下生成nodeData.csv文件，可以查看相关节点和pod，容器等信息,将上述命令中的format改为json，
+     # 会在本地生成master.json与work.json节点对应信息
+     # 查看hccn,driver,docker等相关系统描述信息，可以执行scripts/machine_report.sh，会在/root目录下生成report_temp.txt文件, 运行命令如下
      cd ${HOME}/offline-deploy/scripts
      bash machine_report.sh
      cat /root/report_temp.txt # 查看docker, driver, hccn等相关信息
+    
     ```
-
 
  8. 驱动、固件安装说明
     ```
     cd /root/offline-deploy
-    批量安装驱动、固件需编辑当前目录的inventory_file文件，格式如下：
-    [worker]
-    localhost ansible_connection='local'
-    ip_address_1
-    ip_address_2
-
-    [worker:vars]
-    user=HwHiAiUser
-    group=HwHiAiUser
-    ansible_ssh_user='root'
-   
+    # 批量安装驱动、固件需编辑当前目录的inventory_file文件中的worker节点, 将需要安装驱动设备加入，建议以worker其下的示例一为模板, 逐项填写, 并提前配置好免密登陆
     bash install_npu.sh                   # 安装驱动、固件
-    bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
-   ``` 
+    # bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
+    ```
+
     注意事项：
-    1. 环境已安装驱动、固件安装时所需依赖。
-    2. 若执行批量配置，需提前配置免密登录。
+    1. 若执行批量配置，需提前配置免密登录。
   
-11. 导入镜像
+9. 导入镜像
  	```
     
     cd ${HOME}/offline-deploy
     vi inventory_file
     # 进入offline-deploy目录，编辑inventory_file文件。格式参考inventory_file。
 
-    bash image_load.sh ${absolute path to image file} ${host} 
-    # 在offline-deploy/scripts目录下执行bash image_load.sh ${absolute path to image file} ${host} ，完成镜像的导入。
+    bash image_load.sh <镜像路径> <待安装节点> 
+    # 在~/offline-deploy/scripts目录下执行image_load.sh <镜像路径> <待安装节点> ，提供的镜像应为docker save导出的tar格式镜像, 待安装节点取值范围为master/worker/all/mef, 对应inventory_file中对应项, 完成镜像的导入。
     # 可执行bash image_load.sh或bash image_load.sh -h查看help信息
     ```
 
@@ -682,7 +699,7 @@ bash scripts/upgrade.sh
 <tbody>
   <tr>
     <td>5.0.RC1</td>
-    <td><a href="https://ascend-repo-modelzoo.obs.myhuaweicloud.com/MindXDL/5.0.RC1/resources.tar.gz">https://ascend-repo-modelzoo.obs.myhuaweicloud.com/MindXDL/5.0.RC1/resources.tar.gz</a></td>
+    <td><a href="https://ascend-repo-modelzoo.obs.myhuaweicloud.com/MindXDL/5.0.RC1/resources.zip">https://ascend-repo-modelzoo.obs.myhuaweicloud.com/MindXDL/5.0.RC1/resources.zip</a></td>
     <td>2022.12.30</td>
   </tr>
   <tr>
