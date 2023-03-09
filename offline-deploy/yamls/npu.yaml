@@ -1,2 +1,3 @@
 ---
 - import_playbook: ../playbooks/npu.yaml
+  when: SCENE_NUM != 4

@@ -51,13 +51,13 @@
 - name: upgrade firmware
   shell: "bash {{ firmware_run }} --nox11 --upgrade --quiet"
   register: firmware_up_result
-  when:  firmware_pkg.matched > 0 and up_firm.matched > 0 and SCENE_NUM != 4
+  when:  firmware_pkg.matched > 0 and up_firm.matched > 0
   failed_when: firmware_up_result.rc != 0 and firmware_up_result.rc != 2
 
 - name: install firmware
   shell: "bash {{ firmware_run }} --nox11 --full --quiet"
   register: firmware_result
-  when: firmware_pkg.matched > 0  and up_firm.matched == 0 and SCENE_NUM != 4
+  when: firmware_pkg.matched > 0  and up_firm.matched == 0
   failed_when: firmware_result.rc != 0 and firmware_result.rc != 2
 
 - name: message

@@ -46,7 +46,7 @@
   shell: "bash {{driver_run}} --nox11 --upgrade --quiet"
   register: driver_up_result
   failed_when: driver_up_result.rc == 1
-  when: driver_pkg.matched > 0 and up_tool.matched > 0 and SCENE_NUM != 4
+  when: driver_pkg.matched > 0 and up_tool.matched > 0
 
 - name: install driver
   shell: "bash {{driver_run}} --nox11 --full --quiet --install-username={{user}} --install-usergroup={{group}}"
@@ -54,7 +54,7 @@
     PATH: /opt/rh/devtoolset-8/root/usr/bin/:/usr/sbin/:/sbin:{{ ansible_env.PATH }}
   register: driver_result
   failed_when: driver_result.rc == 1
-  when: driver_pkg.matched > 0 and up_tool.matched == 0 and SCENE_NUM != 4
+  when: driver_pkg.matched > 0 and up_tool.matched == 0
 
 - name: message
   debug:
