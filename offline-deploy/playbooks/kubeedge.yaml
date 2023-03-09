@@ -1,5 +1,5 @@
 ---
 # master install kubeedge
-- hosts: worker
+- hosts: mef
   roles:
     - role: mindx.kubeedge
