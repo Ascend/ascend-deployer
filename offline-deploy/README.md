@@ -39,7 +39,8 @@
 ## 运行环境要求
 
  1. 存放镜像目录的磁盘空间利用率**高于85%**会触发Kubelet的镜像垃圾回收机制，**将导致服务不可用**。请确保每台服务器上存放镜像的目录有足够的磁盘空间，建议≥**1 TB**。
- 2. **执行安装K8s和DL组件命令前，需要确认服务器上已经安装好昇腾NPU的驱动和固件，并[配置训练服务器NPU的device IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html)**。
+ 2. **执行安装K8s和DL组件命令前，需要确认服务器上已经安装好昇腾NPU的驱动和固件**
+ 3. 如果计划执行集群训练, 需要执行[配置训练服务器NPU的device IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html), 或在集群安装完毕后, 按[常用操作6](#常用操作)完成device IP配置操作。
  3. 执行安装脚本前，保证安装Kubernetes的服务器的时间一致，可参考[常用操作1](#常用操作)快速设置各节点时间。
  4. 所有节点需要**已安装Python2.7以上**
  5. 安装部署脚本会在节点创建一个uid和gid为9000的用户hwMindX，请保证各节点上该uid和gid未被占用。
@@ -49,41 +50,42 @@
  9. 请保证节点的IP与K8s默认集群网段（192.168.0.0/16）没有冲突，如果冲突，请用户修改inventory_file中的`POD_NETWORK_CIRD`参数为其他私有网段，如：10.0.0.0/16。
  10. 如果用户已经安装了Kubernetes，其版本不能高于1.21
  11. 安装脚本支持在下表的操作系统运行，脚本支持在如下操作系统上安装MindX DL的集群调度组件、Docker、Kubernetes软件, 可将安装脚本的执行放到待安装节点(特别是master节点)其中之一上执行, 并在安装完成后删除安装脚本, 安装过程中使用的密钥等。
-	<table>
-    <thead>
-      <tr>
-        <th align="left">操作系统</th>
-        <th align="left">版本</th>
-        <th align="left">架构</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td rowspan="2">Ubuntu </td>
-        <td rowspan="2">18.04、20.04</td>
-        <td>aarch64</td>
-      </tr>
-      <tr>
-        <td>x86_64</td>
-      </tr>
-      <tr>
-        <td rowspan="2">OpenEuler</td>
-        <td rowspan="2">20.03LTS、22.03LTS</td>
-        <td>aarch64</td>
-      </tr>
-      <tr>
-        <td>x86_64</td>
-      </tr>
-      <tr>
-        <td rowspan="2">CentOS</td>
-        <td rowspan="2">7.6</td>
-        <td>aarch64</td>
-      </tr>
-      <tr>
-        <td>x86_64</td>
-      </tr>
-    </tbody>
-    </table>
+
+<table>
+  <thead>
+    <tr>
+      <th align="left">操作系统</th>
+      <th align="left">版本</th>
+      <th align="left">架构</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">Ubuntu </td>
+      <td rowspan="2">18.04、20.04</td>
+      <td>aarch64</td>
+    </tr>
+    <tr>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td rowspan="2">OpenEuler</td>
+      <td rowspan="2">20.03LTS、22.03LTS</td>
+      <td>aarch64</td>
+    </tr>
+    <tr>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td rowspan="2">CentOS</td>
+      <td rowspan="2">7.6</td>
+      <td>aarch64</td>
+    </tr>
+    <tr>
+      <td>x86_64</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 软件支持列表
 <table>
@@ -254,19 +256,19 @@ wget https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/3.0.0/
 然后执行解压操作
 ```bash
 cd
-mv resources ~"/resources.$(date +%s)" 2>/dev/null
+mv resources ~/resources.$(date +%s) 2>/dev/null
 unzip resources.zip
-mv ~/offline-deploy ~"/offline-deploy.$(date +%s)" 2>/dev/null
+mv ~/offline-deploy ~/offline-deploy.$(date +%s) 2>/dev/null
 cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 
 ```
-在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 并上传到执行安装命令服务器上的家目录， 并采用如下指令完成相应resource包的解压
+在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/x86_64/unzip) 并上传到执行安装命令服务器上的家目录， 并采用如下指令完成相应resource包的解压
 ```
 cd
-mv resources ~"/resources.$(date +%s)" 2>/dev/null
+mv resources ~/resources.$(date +%s) 2>/dev/null
 chmod 700 unzip 
 mkdir -p resources && ./unzip resources.zip .
-mv ~/offline-deploy ~"/offline-deploy.$(date +%s)" 2>/dev/null
+mv ~/offline-deploy ~/offline-deploy.$(date +%s) 2>/dev/null
 cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 
 ````
@@ -285,7 +287,7 @@ vi inventory_file
 
 ## 步骤4：执行安装
 
-运行如下指令进行安装, 请提前将指令中的时间设置为当前时间:
+运行如下指令进行安装, 请提前将指令中的示例时间设置为当前时间:
 
 ```bash
 cd ~/offline-deploy
@@ -298,7 +300,7 @@ bash scripts/run_install.sh
 说明：
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
-- 用户也可以通过执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
+- 用户也可以通过在`~/offline-deploy`目录下执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
 - 安装kubeedge须在执行完`bash scripts/run_install.sh`操作后, 根据[MEF-Center离线安装场景](#mef-center离线安装场景)离线安装MEF-Center。注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取.
 
   
@@ -335,6 +337,58 @@ worker-1         Ready    worker   60s   v1.19.16
    volcano-system   volcano-scheduler-66f75bf89f-94jkx        1/1     Running            0          19h
 ```
 
+用户也可通过集群状态报告[常用操作7](#常用操作)确认安装结果;
+
+# MEF-Center离线安装场景
+
+前置条件:
+
+用户需要确保已有能正常运行的K8s系统 (如在相应服务器上完成了场景1或者4的所有[安装步骤](#安装步骤));
+
+## 步骤1：配置安装节点信息
+用户需配置`~/offline-deploy/inventory_file`, 将计划安装MEF-Center的节点设置在mef项下, 建议按mef的样例1为模板, 逐项填入; 
+
+并且, 用户需选择如下两种方式之一配置登陆:
+
+- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。
+- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
+
+## 步骤2：导入MEF-Center软件包
+  请从昇腾社区提前获取 `Ascend-mindxedge-mefcenter_x86_64.zip` 或 `Ascend-mindxedge-mefcenter_aarch64.zip`, 并放入用户家目录; 然后执行:
+```bash
+  cd
+  cp Ascend-mindxedge-mefcenter_x86_64.zip ~/resources/mef
+  cp Ascend-mindxedge-mefcenter_aarch64.zip ~/resources/mef
+  
+   ```
+
+## 步骤3：安装MEF-Center
+注意：当前MEF-Center安装脚本已集成至`install_kubeedge.sh`中，运行该脚本会同步安装MEF-Center
+```
+cd ~/offline-deploy/scripts
+bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
+
+```
+
+用户也可以采用 `cd ~/offline-deploy/scripts; bash install_kubeedge.sh --uninstall` 来卸载kubeedge.
+
+## 确认安装成功
+使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
+
+```
+NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
+kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
+kube-system      calico-node-4zfjp                         1/1     Running            0          21h
+kube-system      calico-node-jsdws                         1/1     Running            0          21h
+kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
+kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
+kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
+kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
+kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
+kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
+kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
+kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
+```
 
 
 # 组件升级
