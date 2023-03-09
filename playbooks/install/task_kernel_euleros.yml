@@ -9,7 +9,7 @@
   when: kh_cnt.stdout == "0"
 
 - name: install kernel headers rpm
-  shell: rpm -ivh --force --nodeps --replacepkgs {{ kh_rpm.stdout }}
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/kernel/kernel-headers*
   when: kh_cnt.stdout == "0" and kh_rpm.stdout != "0"
   failed_when: false
   register: kernel_headers_result
@@ -25,7 +25,7 @@
   when: kd_cnt.stdout == "0"
 
 - name: install kernel devel rpm
-  shell: rpm -ivh --force --nodeps --replacepkgs {{ kd_rpm.stdout }}
+  shell: rpm -ivh --force --nodeps --replacepkgs {{ resources_dir }}/kernel/kernel-devel*
   when: kd_cnt.stdout == "0" and kd_rpm.stdout != "0"
   failed_when: false
   register: kernel_devel_result

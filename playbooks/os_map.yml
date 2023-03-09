@@ -25,6 +25,7 @@ os_version_dict:
     "v10": "v10"
   Linx:
     "9": "6"
+    "10": "6.0.100"
 code_name_dict:
   euleros:
     "SP8": ".8"

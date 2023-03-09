@@ -1,0 +1,2 @@
+deb https://repo.huaweicloud.com/debian/ buster main
+deb https://mirrors.huaweicloud.com/docker-ce/linux/debian/ buster stable
