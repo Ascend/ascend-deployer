@@ -14,6 +14,7 @@ os_dict:
   uos: "UOS"
   tlinux: "Tlinux"
   openEuler: "OpenEuler"
+  ctyunos: "ctyunos"
 os_version_dict:
   euleros:
     "2.0": "2"

@@ -2,6 +2,7 @@ os_dict:
   centos: "CentOS"
   ubuntu: "Ubuntu"
   openEuler: "OpenEuler"
+  ctyunos: "ctyunos"
 os_version_dict:
   centos:
     "7": "7.6"
