@@ -15,7 +15,7 @@ fi
 
 if [ $# -eq 0 ]; then
     if command -v kubectl >/dev/null; then
-        ansible-playbook -i ../inventory_file ../playbooks/kubeedge.yaml
+        ansible-playbook -i ${HOME}/ascend-deployer*/offline-deploy/inventory_file ${HOME}/ascend-deployer*/offline-deploy/playbooks/kubeedge.yaml
     else
         echo "please install kubernetes first"
         exit 1
