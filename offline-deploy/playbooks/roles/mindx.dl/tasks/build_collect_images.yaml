@@ -24,7 +24,9 @@
 - name: build mindxdl image
   shell:
     cmd:
-      img="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && cat $(find . -name "*.yaml" -type f | grep -v "without" | grep -v "1usoc" | head -n 1) |grep 'image:')";
+      img_txt="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && (find . -name "*.yaml" -type f | grep -v "without" | grep -v "1usoc" | head -n 1))";
+      if [ "$img_txt" = "" ]; then echo can not find "*.yaml" in {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && exit 1; fi;
+      img="$(cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && cat $img_txt |grep 'image:')";
       img_tag="$(echo "${img#*image:}" | sed 's/[ \t\r]*//g')";
       cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item}} && docker build -t "$img_tag" .;
       cd {{mindxdl_deploy_package_dir}}/{{ansible_architecture}} && docker save -o "$(echo "$img_tag" | awk -F":" '{print $1}')_{{ansible_architecture}}.tar" "$img_tag";
@@ -33,7 +35,6 @@
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
     - not item.endswith("tar")
     - item.count('volcano') == 0
-
 
 # 制作volcano镜像
 - name: build volcano image
