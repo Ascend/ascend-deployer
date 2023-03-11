@@ -634,7 +634,7 @@ func main() {
 		return
 	}
 	if !checkNode() {
-		fmt.Println("nodes status is abnormal, please check the output file for detail.")
+		fmt.Println("some of pod's status is abnormal, please check the output file for detail.")
 		return
 	}
 	fmt.Println("All nodes running normally, for detail please check output file.")

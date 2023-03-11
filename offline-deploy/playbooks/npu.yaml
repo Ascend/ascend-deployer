@@ -7,7 +7,7 @@
     - roles/mindx.npu/vars/main.yaml
   tasks:
     - name: make npu package for remote
-      shell: tar -cf ~/resources.tar {{npu_pkg_dir}}/
+      shell: tar -cf ~/resources.tar {{resource_dir}}/npu
 
 - hosts: worker
   gather_facts: false
@@ -26,11 +26,12 @@
     - name: clean remote resources
       file:
         state: absent
-        path: ~/resources
-      when: ansible_connection != "local"
+        path: ~/npu_resources
+    
+    - name: create npu_resources dir
+      shell: mkdir -p ~/npu_resources
 
     - name: uncompress on remote
-      shell: tar -xf ~/resources.tar --strip-components=1 -C /root
-      when: ansible_connection != "local"
+      shell: tar -xf ~/resources.tar --strip-components=1 -C /root/npu_resources
 
     - include_tasks: roles/mindx.npu/tasks/main.yaml
