@@ -108,7 +108,7 @@
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
     - item.endswith("zip")
 
-  # 复制基础镜像到远程
+# 复制基础镜像到远程
 - name: copy base image to remote
   copy:
     src: "{{mindxdl_base_images_dir}}/{{ansible_architecture}}/"
@@ -117,13 +117,44 @@
   when:
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
 
+- name: get version
+  shell: cat /root/resources/version.json | sed 's/,/\n/g' | grep "version" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g'
+  register: resource_version
+
+- name: execute_sed
+  shell: 
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+     - resource_version.stdout == "" or resource_version.stdout == "3.0.0"
+     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+     - item.endswith("zip")
+     - NPU_EXPORTER_COMPONENT in item
+
+
+- name: execute_sed_no300
+  shell: 
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 /" $npu_exporter_yaml_PATH;
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+    - resource_version.stdout != "" and resource_version.stdout != "3.0.0"
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.endswith("zip")
+    - NPU_EXPORTER_COMPONENT in item
+
+
 # 在制作镜像各节点复制npu-exporter的Dockerfile和yaml到组件解压目录
 - name: modify npu-exporter yaml
   shell:
     cmd: |
       npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
       npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
-      sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
       sed -i "{:begin;  /\/etc\/mindx-dl\/npu-exporter/! { $! { N; b begin }; }; s/- name: kmckeystore.*\/etc\/mindx-dl\/npu-exporter/REMOVE_TAG/; };" $npu_exporter_yaml_PATH;
       sed -i '/REMOVE_TAG/d' $npu_exporter_yaml_PATH
   loop: "{{dl_package.stdout_lines}}"

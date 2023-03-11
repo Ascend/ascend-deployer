@@ -1,6 +1,7 @@
 resource_dir: "/root/resources"
+npu_resource_dir: "/root/npu_resources/resources"
 npu_basic_pkg_dir: "{{ resource_dir }}/npu/basic"
-npu_pkg_dir: "{{ resource_dir }}/npu"
+npu_pkg_dir: "{{ npu_resource_dir }}/npu"
 os_dict:
   centos: "CentOS"
   ubuntu: "Ubuntu"
