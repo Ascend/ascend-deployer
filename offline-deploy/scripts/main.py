@@ -188,7 +188,10 @@ if __name__ == '__main__':
         filename = 'Inventory_Template.CSV'
     else:
         filename = sys.argv[1]
-    f = open(filename, mode="r", encoding="GBK")
+    try:
+        f = open(filename, mode="r", encoding="GBK")
+    except Exception:
+        print("CANNOT READ THE FILE!")
 
     reader = csv.reader(f)
     top = next(reader)
