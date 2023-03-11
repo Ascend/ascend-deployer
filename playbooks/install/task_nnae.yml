@@ -1,10 +1,20 @@
+- name: set cann tag when scene is a910b
+  set_fact:
+    cann_tag: ".*6.1.*"
+  when: ansible_local.npu_info.scene == 'a910b'
+
+- name: set cann tag when scene is not a910b
+  set_fact:
+    cann_tag: "((?!6.1).)*"
+  when: ansible_local.npu_info.scene != 'a910b'
+
 - name: find nnae script
   find:
     paths: "{{ cann_dirs }}"
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: ".*nnae.*{{ ansible_architecture }}.sh"
+    patterns: ".*nnae{{cann_tag}}{{ ansible_architecture }}.sh"
   register: nnae
 
 - name: find nnae run package
@@ -13,7 +23,7 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: ".*nnae.*{{ ansible_architecture }}.run"
+    patterns: ".*nnae{{cann_tag}}{{ ansible_architecture }}.run"
   register: nnae_run
 
 - name: set log_path for root
