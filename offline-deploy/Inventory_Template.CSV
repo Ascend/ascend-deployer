@@ -1,0 +1,4 @@
+SCENE_NUM安装场景，范围1-4,4,EXTRA,NPU-Exporter,,,
+*Character,*DeviceIP,*ssh_user,ssh_pass,HostName,*k8s_api_server_ip,kube_interface
+master,51.38.68.175,root,Ops@9981,,51.38.68.175,ebf=asd
+mef,51.31.11.45,user1,Ops222,,51.7.14.45,
