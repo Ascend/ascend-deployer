@@ -108,7 +108,7 @@
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
     - item.endswith("zip")
 
-  # 复制基础镜像到远程
+# 复制基础镜像到远程
 - name: copy base image to remote
   copy:
     src: "{{mindxdl_base_images_dir}}/{{ansible_architecture}}/"
@@ -117,20 +117,18 @@
   when:
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
 
-  set_default_extra_command:
-    - extra_command: "-enableHTTP=true"
-
 - name: get version
   shell: cat /root/resources/version.json | sed 's/,/\n/g' | grep "version" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g'
   register: resource_version
 
 - name: execute_sed
-  shell: |
-         npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
-         npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
-         sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
-   loop: "{{dl_package.stdout_lines}}"
-   when:
+  shell: 
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
+  loop: "{{dl_package.stdout_lines}}"
+  when:
      - resource_version.stdout == "" or resource_version.stdout == "3.0.0"
      - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
      - item.endswith("zip")
@@ -138,12 +136,13 @@
 
 
 - name: execute_sed_no300
-  shell: |
-    npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
-    npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
-    sed -i "s/updateTime=5\s*$/updateTime=5 /" $npu_exporter_yaml_PATH;
-    loop: "{{dl_package.stdout_lines}}"
-    when:
+  shell: 
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 /" $npu_exporter_yaml_PATH;
+  loop: "{{dl_package.stdout_lines}}"
+  when:
     - resource_version.stdout != "" and resource_version.stdout != "3.0.0"
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
     - item.endswith("zip")
