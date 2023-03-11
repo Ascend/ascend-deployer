@@ -332,16 +332,40 @@ func initkubeConfig() *kubernetes.Clientset {
 	return client
 }
 
+func GetPodStatus(pod *v1.Pod) string {
+	for _, cond := range pod.Status.Conditions {
+		if string(cond.Type) == ContainersReady {
+			if string(cond.Status) != ConditionTrue {
+				return "Unavailable"
+			}
+		} else if string(cond.Type) == PodInitialized && string(cond.Status) != ConditionTrue {
+			return "Initializing"
+		} else if string(cond.Type) == PodReady {
+			if string(cond.Status) != ConditionTrue {
+				return "Unavailable"
+			}
+			for _, containerState := range pod.Status.ContainerStatuses {
+				if !containerState.Ready {
+					return "Unavailable"
+				}
+			}
+		} else if string(cond.Type) == PodScheduled && string(cond.Status) != ConditionTrue {
+			return "Scheduling"
+		}
+	}
+	return string(pod.Status.Phase)
+}
+
 func updatePodsSummary(pods *v1.PodList, summary map[string]*nodeSummary) {
 	for _, pod := range pods.Items {
 		podName := pod.ObjectMeta.Name
 		nodeName := pod.Spec.NodeName
-		podStatus := string(pod.Status.Phase)
+		podIsReady := GetPodStatus(&pod)
 		for key, vaule := range summary {
 			if vaule.Name != nodeName {
 				continue
 			}
-			if strings.Compare(podStatus, "Running") == 0 {
+			if podIsReady == "Running" {
 				runningPods := summary[key]
 				runningPods.RunningPods = append(runningPods.RunningPods, podName)
 				continue
@@ -568,13 +592,31 @@ func isDirExists(path string) bool {
 	return true
 }
 
+func checkNode() bool {
+	allNodeNormal := true
+	for _, value := range totalMasterNodesSummary {
+		if value.Status == "Failed" {
+			allNodeNormal = false
+		}
+	}
+	if !allNodeNormal {
+		return allNodeNormal
+	}
+	for _, value := range totalWorkerNodesSummary {
+		if value.Status == "Failed" {
+			allNodeNormal = false
+		}
+	}
+	return allNodeNormal
+}
+
 func main() {
 	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path")
 	flag.StringVar(&output, "filePath", "", "path to save report output")
 	flag.StringVar(&format, "format", "csv", "format, csv or json")
 	flag.Parse()
-	if isDir(output) || !isDirExists(output) {
-		fmt.Println("filePath is dir or not inventory file format, please check it")
+	if isDir(output) || !isDirExists(output) || isDir(inventoryFilePath) {
+		fmt.Println("filePath or inventoryFilePath is invalid, please check it")
 		return
 	}
 	client := initkubeConfig()
@@ -591,4 +633,10 @@ func main() {
 		fmt.Println("save nodes data to csv failed")
 		return
 	}
+	if !checkNode() {
+		fmt.Println("some of pod's status is abnormal, please check the output file for detail.")
+		return
+	}
+	fmt.Println("All nodes running normally, for detail please check output file.")
+
 }
