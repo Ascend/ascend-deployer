@@ -291,7 +291,7 @@ vi inventory_file
 
 ```bash
 cd ~/offline-deploy
-ansible -i invetory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
+ansible -i inventory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
 bash scripts/run_install.sh
 
 ```
