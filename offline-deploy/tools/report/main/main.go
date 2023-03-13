@@ -84,7 +84,7 @@ var (
 		"kube-proxy",
 	}
 	workerExtraComponent = []string{"npu-exporter", "noded"}
-	output               string
+	outputFilePath       string
 	format               string
 )
 
@@ -514,7 +514,7 @@ func saveRes2File(saveFilePath string, isJson string) bool {
 	switch isJson {
 	case "csv":
 		if err := savRes2Csv(saveFilePath); err != nil {
-			fmt.Println("save result to cvs failed")
+			fmt.Println("save result to csv failed")
 			return false
 		}
 	case "json":
@@ -612,10 +612,10 @@ func checkNode() bool {
 
 func main() {
 	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path")
-	flag.StringVar(&output, "filePath", "", "path to save report output")
+	flag.StringVar(&outputFilePath, "outputFilePath", "", "path to save report output")
 	flag.StringVar(&format, "format", "csv", "format, csv or json")
 	flag.Parse()
-	if isDir(output) || !isDirExists(output) || isDir(inventoryFilePath) {
+	if isDir(outputFilePath) || !isDir(inventoryFilePath) {
 		fmt.Println("filePath or inventoryFilePath is invalid, please check it")
 		return
 	}
