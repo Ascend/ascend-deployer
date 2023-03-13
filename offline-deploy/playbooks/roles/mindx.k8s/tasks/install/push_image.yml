@@ -86,6 +86,7 @@
   shell:
     cmd:
       manifest_name="{{ HARBOR_SERVER }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      chmod 755 {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }};
       {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest rm "${manifest_name}" > /dev/null 2>&1 || true
   loop: "{{ k8s_base_images['results'] }}"
   environment:
