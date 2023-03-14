@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-ini/ini"
+	"gitlab.com/tingshuo/go-diskstate/diskstate"
 	"io"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,6 +29,12 @@ const (
 	FileMode        = 0644
 	maxStringLength = 999
 	jsonFileSuffix  = ".json"
+	ContainersReady = "ContainersReady"
+	PodInitialized  = "Initialized"
+	PodReady        = "Ready"
+	PodScheduled    = "PodScheduled"
+	ConditionTrue   = "True"
+	minSpaceForSave = 1 // min space for save output 1MB
 )
 
 var (
@@ -84,7 +91,7 @@ var (
 		"kube-proxy",
 	}
 	workerExtraComponent = []string{"npu-exporter", "noded"}
-	outputFilePath       string
+	outputFileName       string
 	format               string
 )
 
@@ -611,12 +618,19 @@ func checkNode() bool {
 }
 
 func main() {
-	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path")
-	flag.StringVar(&outputFilePath, "outputFilePath", "", "path to save report output")
-	flag.StringVar(&format, "format", "csv", "format, csv or json")
+	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path, should not be a directory")
+	flag.StringVar(&outputFileName, "outputFileName", "", "output file name, example: -outputFileName nodeRes -format json, will generate a result nodeRes.json")
+	flag.StringVar(&format, "format", "csv", "output file format, csv or json")
 	flag.Parse()
-	if isDir(outputFilePath) || !isDir(inventoryFilePath) {
-		fmt.Println("filePath or inventoryFilePath is invalid, please check it")
+	if isDir(outputFileName) || isDir(inventoryFilePath) {
+		fmt.Println("filePath or inventoryFilePath is directory, please check it")
+		return
+	}
+	subDir := filepath.Dir(outputFileName)
+	diskState := diskstate.DiskUsage(subDir)
+	availableSpace := diskState.Available / diskstate.MB
+	if availableSpace < minSpaceForSave {
+		fmt.Println("space size is small than 1MB, please check")
 		return
 	}
 	client := initkubeConfig()
@@ -629,7 +643,7 @@ func main() {
 		fmt.Println("check node failed")
 		return
 	}
-	if saveChecker := saveRes2File(output, format); !saveChecker {
+	if saveChecker := saveRes2File(outputFileName, format); !saveChecker {
 		fmt.Println("save nodes data to csv failed")
 		return
 	}
