@@ -1,16 +1,16 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
 import csv
 import os
+import stat
+import subprocess
 import sys
 
-CHARACTER_LINE = 0
-IP_LINE = 1
-USER_LINE = 2
-PWD_LINE = 3
-HOSTNAME_LINE = 4
-K8S_API_LINE = 5
-INTERFACE_LINE = 6
+PARAMETER_DICT = {'character': 0, 'ip': 1, 'user': 2, 'pwd': 3, 'become': 4, 'host': 5, 'api': 6, 'interface': 7}
+CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
+CHARACTER_DICT = {'master': 0, 'worker': 1, 'mef': 2}
 RAW_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
@@ -97,6 +97,7 @@ class InventoryDTO:
         self.ip = ""
         self.user = ""
         self.pwd = ""
+        self.become = ""
         self.hostName = ""
         self.api = ""
         self.interface = ""
@@ -104,52 +105,68 @@ class InventoryDTO:
         self.worker = ""
         self.mef = ""
 
+    def solve_device(self):
+        if self.character == 'master':
+            self.append_node(CHARACTER_DICT['master'])
+        elif self.character == 'worker':
+            self.append_node(CHARACTER_DICT['worker'])
+        elif self.character == 'mef':
+            self.append_node(CHARACTER_DICT['mef'])
+        self.character = ''
+        self.ip = ''
+        self.user = ''
+        self.pwd = ''
+        self.become = ''
+        self.hostName = ''
+        self.api = ''
+        self.interface = ''
 
-def append_mef(obj):
-    if obj.ip == "" or obj.user == "":
-        pass
-    str_user = "ansible_ssh_user=" + obj.user
-    str_pwd = "ansible_ssh_pass=" + obj.pwd
-    str_host = "set_hostname=" + obj.hostName
-    new_line = " ".join(
-        [obj.ip, str_user, str_pwd, str_host,
-         "\n"])
-    obj.worker += new_line
+    def append_node(self, num):
+        attr_str = ''
+        if self.ip == '':
+            return
+        attr_str += self.ip
+        attr_name = 'ansible_ssh_user'
+        attr_value = self.user
+        attr_str += render_if_exist(attr_name, attr_value)
+        attr_name = 'ansible_ssh_pass'
+        attr_value = self.pwd
+        attr_str += render_if_exist(attr_name, attr_value)
+        attr_name = 'ansible_ssh_become'
+        attr_value = self.become
+        attr_str += render_if_exist(attr_name, attr_value)
+        attr_name = 'set_hostname'
+        attr_value = self.become
+        attr_str += render_if_exist(attr_name, attr_value)
+        if num == 0:
+            attr_name = 'k8s_api_server_ip'
+            attr_value = self.api
+            attr_str += render_if_exist(attr_name, attr_value)
+            attr_name = 'kube_interface'
+            attr_value = self.interface
+            attr_str += render_if_exist(attr_name, attr_value) + '\n'
+            self.master += attr_str
+        if num == 1:
+            attr_str += '\n'
+            self.worker += attr_str
+        if num == 2:
+            attr_str += '\n'
+            self.mef += attr_str
 
 
-def append_worker(obj):
-    if obj.ip == '':
-        pass
-    str_user = "ansible_ssh_user=" + obj.user
-    str_pwd = "ansible_ssh_pass=" + obj.pwd
-    str_host = "set_hostname=" + obj.hostName
-    new_line = " ".join(
-        [obj.ip, str_user, str_pwd, str_host,
-         "\n"])
-    obj.worker += new_line
+class ConvertError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
 
 
-def append_master(obj):
-    if obj.ip == "" or obj.user == "":
-        pass
-    str_user = "ansible_ssh_user=" + obj.user
-    str_pwd = "ansible_ssh_pass=" + obj.pwd
-    str_host = "set_hostname=" + obj.hostName
-    str_api = "k8s_api_server_ip=" + obj.api
-    str_interface = " kube_interface=" + obj.interface
-    new_line = " ".join(
-        [obj.ip, str_user, str_pwd, str_host, str_api, str_interface,
-         "\n"])
-    obj.master += new_line
-
-
-def solve_device(obj):
-    if obj.character == "worker":
-        append_worker(obj)
-    elif obj.character == "master":
-        append_master(obj)
-    elif obj.character == "mef":
-        append_mef(obj)
+def render_if_exist(attr_name, attr_value):
+    if attr_value.strip() == '':
+        return ''
+    new_append = ' {}="{}"'.format(attr_name, attr_value)
+    return new_append
 
 
 def verify_parameter(num, tools, obj):
@@ -158,11 +175,11 @@ def verify_parameter(num, tools, obj):
     toollist = tools.split(',')
     for tool in toollist:
         tool = tool.lower()
-        if tool not in TOOLS_LIST:
+        if tool not in TOOLS_LIST and tool != '':
             return 'tool name incorrect !'
     master = obj.master
     mlist = master.split('\n')
-    if len(mlist) % 2 == 0:
+    if len(mlist) % 2 == 1:
         return 'master num not illegal !'
     return ''
 
@@ -177,10 +194,24 @@ def append_inventory(num, tools, obj):
 
 def do_append_inventory(num, tools, obj):
     raw_file = RAW_FILE.format(master=obj.master, worker=obj.worker, mef=obj.mef, sn=num, extra=tools)
-    inventory = open("inventory_file", mode="w", encoding="UTF-8")
-    for line in raw_file:
-        print(line)
-        inventory.write(line)
+    with open("../inventory_file", mode="w") as inventory:
+        for line in raw_file:
+            inventory.write(line)
+
+
+def safe_open(file, mode='r', encoding=None, errors=None, newline=None, closefd=True):
+    file_real_path = os.path.realpath(file)
+    file_stream = open(file=file_real_path, mode=mode, encoding=encoding,
+                       errors=errors, newline=newline, closefd=closefd)
+    file_info = os.stat(file_stream.fileno())
+    if stat.S_ISLNK(file_info.st_mode):
+        file_stream.close()
+        raise ConvertError(f'{os.path.basename(file)} should not be a symbolic link file.')
+    if file_info.st_size > CSV_SIZE:
+        file_stream.close()
+        raise ConvertError(
+            f'the size of {os.path.basename(file)} should be less than {CSV_SIZE} Bytes')
+    return file_stream
 
 
 if __name__ == '__main__':
@@ -188,28 +219,24 @@ if __name__ == '__main__':
         filename = 'Inventory_Template.CSV'
     else:
         filename = sys.argv[1]
-    try:
-        f = open(filename, mode="r", encoding="GBK")
-    except Exception:
-        print("CANNOT READ THE FILE!")
+    with safe_open(filename) as f:
+        reader = csv.reader(f)
+        top = next(reader)
+        scene_num = top[1]
+        extra = top[3]
 
-    reader = csv.reader(f)
-    top = next(reader)
-    scene_num = top[1]
-    extra = top[3]
-
-    title = next(reader)
-    dto = InventoryDTO()
-    for row in reader:
-        dto.character = row[CHARACTER_LINE]
-        dto.ip = row[IP_LINE]
-        dto.user = row[USER_LINE]
-        dto.pwd = row[PWD_LINE]
-        dto.hostName = row[HOSTNAME_LINE]
-        dto.api = row[K8S_API_LINE]
-        dto.interface = row[INTERFACE_LINE]
-        solve_device(dto)
+        title = next(reader)
+        dto = InventoryDTO()
+        for row in reader:
+            dto.character = row[PARAMETER_DICT['character']]
+            dto.ip = row[PARAMETER_DICT['ip']]
+            dto.user = row[PARAMETER_DICT['user']]
+            dto.pwd = row[PARAMETER_DICT['pwd']]
+            dto.become = row[PARAMETER_DICT['become']]
+            dto.hostName = row[PARAMETER_DICT['host']]
+            dto.api = row[PARAMETER_DICT['api']]
+            dto.interface = row[PARAMETER_DICT['interface']]
+            dto.solve_device()
     append_inventory(scene_num, extra, dto)
 
-    command = './run_install.sh'
-    ret = os.popen(command)
+    subprocess.Popen("./run_install.sh", shell=True)
