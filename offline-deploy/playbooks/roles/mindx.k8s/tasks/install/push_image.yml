@@ -129,6 +129,7 @@
   shell:
     cmd:
       manifest_name="{{ HARBOR_SERVER }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      chmod 755 {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }};
       {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest push -p --insecure "${manifest_name}";
   loop: "{{ k8s_base_images['results'] }}"
   environment:
