@@ -1,12 +1,13 @@
-#! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 import csv
-import os
-import stat
+import logging
+import os.path
 import subprocess
 import sys
+import time
 
-PARAMETER_DICT = {'character': 0, 'ip': 1, 'user': 2, 'pwd': 3, 'become': 4, 'host': 5, 'api': 6, 'interface': 7}
+PARAMETER_DICT = {'character': 0, 'ip': 1, 'user': 2, 'pwd': 3, 'become_pwd': 4, 'host': 5, 'api': 6, 'interface': 7}
+
 CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
@@ -97,7 +98,7 @@ class InventoryDTO:
         self.ip = ""
         self.user = ""
         self.pwd = ""
-        self.become = ""
+        self.become_pwd = ""
         self.hostName = ""
         self.api = ""
         self.interface = ""
@@ -116,7 +117,7 @@ class InventoryDTO:
         self.ip = ''
         self.user = ''
         self.pwd = ''
-        self.become = ''
+        self.become_pwd = ''
         self.hostName = ''
         self.api = ''
         self.interface = ''
@@ -126,25 +127,13 @@ class InventoryDTO:
         if self.ip == '':
             return
         attr_str += self.ip
-        attr_name = 'ansible_ssh_user'
-        attr_value = self.user
-        attr_str += render_if_exist(attr_name, attr_value)
-        attr_name = 'ansible_ssh_pass'
-        attr_value = self.pwd
-        attr_str += render_if_exist(attr_name, attr_value)
-        attr_name = 'ansible_ssh_become'
-        attr_value = self.become
-        attr_str += render_if_exist(attr_name, attr_value)
-        attr_name = 'set_hostname'
-        attr_value = self.become
-        attr_str += render_if_exist(attr_name, attr_value)
+        attr_str += self.get_item("ansible_ssh_user", self.user)
+        attr_str += self.get_item("ansible_ssh_pass", self.pwd)
+        attr_str += self.get_item("ansible_ssh_become", self.become_pwd)
+        attr_str += self.get_item("set_hostname", self.hostName)
         if num == 0:
-            attr_name = 'k8s_api_server_ip'
-            attr_value = self.api
-            attr_str += render_if_exist(attr_name, attr_value)
-            attr_name = 'kube_interface'
-            attr_value = self.interface
-            attr_str += render_if_exist(attr_name, attr_value) + '\n'
+            attr_str += self.get_item("k8s_api_server_ip", self.api)
+            attr_str += self.get_item("kube_interface", self.interface) + '\n'
             self.master += attr_str
         if num == 1:
             attr_str += '\n'
@@ -153,33 +142,25 @@ class InventoryDTO:
             attr_str += '\n'
             self.mef += attr_str
 
-
-class ConvertError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-    def __str__(self):
-        return self.msg
-
-
-def render_if_exist(attr_name, attr_value):
-    if attr_value.strip() == '':
-        return ''
-    new_append = ' {}="{}"'.format(attr_name, attr_value)
-    return new_append
+    @staticmethod
+    def get_item(item_name, item_value):
+        if item_value.strip() != "":
+            item = ' {}="{}"'.format(item_name, item_value)
+        else:
+            return ""
+        return item
 
 
 def verify_parameter(num, tools, obj):
     if num not in SCENE_LIST:
         return 'scene_num invalid !'
-    toollist = tools.split(',')
-    for tool in toollist:
+    tool_list = tools.split(',')
+    for tool in tool_list:
         tool = tool.lower()
-        if tool not in TOOLS_LIST and tool != '':
-            return 'tool name incorrect !'
+        if tool not in TOOLS_LIST and tool != "":
+            return 'EXTRA_COMPONENT name incorrect !'
     master = obj.master
-    mlist = master.split('\n')
-    if len(mlist) % 2 == 1:
+    if len(master.split('\n')) % 2 == 1:
         return 'master num not illegal !'
     return ''
 
@@ -187,56 +168,131 @@ def verify_parameter(num, tools, obj):
 def append_inventory(num, tools, obj):
     result = verify_parameter(num, tools, obj)
     if result != '':
-        print(result)
+        hwlog.error(result)
         sys.exit(1)
     do_append_inventory(num, tools, obj)
 
 
 def do_append_inventory(num, tools, obj):
     raw_file = RAW_FILE.format(master=obj.master, worker=obj.worker, mef=obj.mef, sn=num, extra=tools)
-    with open("../inventory_file", mode="w") as inventory:
+    with open("../inventory_file", mode="w") as file:
         for line in raw_file:
-            inventory.write(line)
+            file.write(line)
 
 
-def safe_open(file, mode='r', encoding=None, errors=None, newline=None, closefd=True):
-    file_real_path = os.path.realpath(file)
-    file_stream = open(file=file_real_path, mode=mode, encoding=encoding,
-                       errors=errors, newline=newline, closefd=closefd)
-    file_info = os.stat(file_stream.fileno())
-    if stat.S_ISLNK(file_info.st_mode):
-        file_stream.close()
-        raise ConvertError(f'{os.path.basename(file)} should not be a symbolic link file.')
-    if file_info.st_size > CSV_SIZE:
-        file_stream.close()
-        raise ConvertError(
-            f'the size of {os.path.basename(file)} should be less than {CSV_SIZE} Bytes')
-    return file_stream
+def file_check(file):
+    path = os.path.expanduser(file)
+    abs_path = os.path.abspath(path)
+    real_path = os.path.realpath(path)
+    if abs_path != real_path:
+        raise Exception("Not a safe_realpath, not allow symbolic link file")
+    if not os.path.realpath(real_path):
+        raise Exception("{} not a file or not exists".format(os.path.basename(real_path)))
+    return real_path
 
 
-if __name__ == '__main__':
-    if len(sys.argv) <= 1:
-        filename = 'Inventory_Template.CSV'
-    else:
-        filename = sys.argv[1]
-    with safe_open(filename) as f:
+class HWLog:
+    @staticmethod
+    def hwlog(msg, level):
+
+        logger = logging.getLogger("hw_log")
+        logger.setLevel('DEBUG')
+
+        formatter = logging.Formatter('%(levelname)s:%(asctime)s-%(filename)s:%(message)s')
+
+        ch = logging.StreamHandler()
+        ch.setLevel('DEBUG')
+        ch.setFormatter(formatter)
+
+        now = time.strftime('%Y-%m-%d')
+
+        path = "ascend_deploy_" + now + ".log"
+        fh = logging.FileHandler(path, encoding='UTF-8')
+        fh.setLevel('DEBUG')
+        fh.setFormatter(formatter)
+
+        logger.addHandler(ch)
+        logger.addHandler(fh)
+
+        if level == 'DEBUG':
+            logger.debug(msg)
+        elif level == 'INFO':
+            logger.info(msg)
+        elif level == 'WARNING':
+            logger.warning(msg)
+        elif level == 'ERROR':
+            logger.error(msg)
+        elif level == 'CRITICAL':
+            logger.critical(msg)
+        logger.removeHandler(ch)
+        logger.removeHandler(fh)
+
+    def debug(self, msg):
+        self.hwlog(msg, 'DEBUG')
+
+    def info(self, msg):
+        self.hwlog(msg, 'INFO')
+
+    def warning(self, msg):
+        self.hwlog(msg, 'WARNING')
+
+    def error(self, msg):
+        self.hwlog(msg, 'ERROR')
+
+    def critical(self, msg):
+        self.hwlog(msg, 'CRITICAL')
+
+
+def run_install():
+    working_env = os.environ.copy()
+    log_path = "{}/.log/ascend-deployer-dl.log".format(working_env.get("HOME", "/root"))
+    folder = os.path.exists(os.path.dirname(log_path))
+    if not folder:
+        os.makedirs(os.path.dirname(log_path))
+    script_path = os.path.dirname(os.path.abspath(__file__)) + "/run_install.sh"
+    cmd = "bash " + script_path
+
+    hwlog.info("starting run install script")
+    working_env['ANSIBLE_LOG_PATH'] = log_path
+    working_env['ANSIBLE_CALLBACK_PLUGINS'] = "/root/offline-deploy/scripts"
+    working_env['ANSIBLE_STDOUT_CALLBACK'] = "common_log"
+    _ = subprocess.Popen(cmd, shell=True, env=working_env)
+
+
+def main(inv_file):
+    hwlog.info("starting parse csv file")
+    with open(inv_file) as f:
         reader = csv.reader(f)
         top = next(reader)
         scene_num = top[1]
-        extra = top[3]
+        extra_component = top[3]
 
-        title = next(reader)
+        next(reader)
         dto = InventoryDTO()
         for row in reader:
             dto.character = row[PARAMETER_DICT['character']]
             dto.ip = row[PARAMETER_DICT['ip']]
             dto.user = row[PARAMETER_DICT['user']]
             dto.pwd = row[PARAMETER_DICT['pwd']]
-            dto.become = row[PARAMETER_DICT['become']]
+            dto.become = row[PARAMETER_DICT['become_pwd']]
             dto.hostName = row[PARAMETER_DICT['host']]
             dto.api = row[PARAMETER_DICT['api']]
             dto.interface = row[PARAMETER_DICT['interface']]
             dto.solve_device()
-    append_inventory(scene_num, extra, dto)
+        hwlog.info("starting gen inventory file")
+        append_inventory(scene_num, extra_component, dto)
+    run_install()
 
-    subprocess.Popen("./run_install.sh", shell=True)
+
+if __name__ == '__main__':
+    hwlog = HWLog()
+    if len(sys.argv) != 2:
+        hwlog.error("csv file path need to be add to argv")
+    else:
+        inventory_file = sys.argv[1]
+        try:
+            inv_file_path = file_check(inventory_file)
+        except Exception as err:
+            hwlog.error(err)
+        else:
+            main(inv_file_path)
