@@ -3,10 +3,6 @@ state: 'present'
 resource_dir: "~/resources"
 MASTER_IP: "{{ ansible_default_ipv4.address }}"
 
-MINDX_USER: hwMindX
-MINDX_USER_ID: 9000
-MINDX_GROUP: hwMindX
-MINDX_GROUP_ID: 9000
 DL_USR: "{{ MINDX_USER }}"
 DL_GRP: "{{ MINDX_GROUP }}"
 DL_UID: "{{ MINDX_USER_ID }}"
