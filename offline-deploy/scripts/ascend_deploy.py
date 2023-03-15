@@ -12,7 +12,7 @@ CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
 CHARACTER_DICT = {'master': 0, 'worker': 1, 'mef': 2}
-MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef+k8s": 2}
+MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef-all": 2}
 RAW_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:

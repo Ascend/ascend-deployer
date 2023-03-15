@@ -13,7 +13,7 @@
     group: root
     state: directory
 
-- name: create /etc/docker/daemon.json - rpm
+- name: create /etc/docker/daemon.json - dpkg
   shell:
     cmd: |
       cat <<EOF >/etc/docker/daemon.json
@@ -26,7 +26,7 @@
     - not use_rpm_command
     - docker_config.stdout == '0'
 
-- name: create /etc/docker/daemon.json - dpkg
+- name: create /etc/docker/daemon.json - rpm
   shell:
     cmd: |
       cat <<EOF >/etc/docker/daemon.json
@@ -36,6 +36,7 @@
       EOF
   when:
     - use_rpm_command
+    - os_name != "OpenEuler"
     - docker_config.stdout == '0'
 
 - name: docker load config and restart
