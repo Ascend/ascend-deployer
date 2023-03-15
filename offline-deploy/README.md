@@ -278,8 +278,7 @@ cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 ````
 
 ## 步骤3：配置安装信息
-cla
-修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
+ **方法1** ：通过修改inventory_file的方式修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
 
 配置项的具体含义请参考`inventory_file`文件中的注释;
 
@@ -288,6 +287,16 @@ cd ~/offline-deploy
 vi inventory_file
 
 ```
+ **方法2** ：通过修改csv文件的方式，csv的模板参照文件Inventory_Template.CSV进行配置，相应项与inventory_file一一对应
+第一行：SCENE_NUM 后填需要的#安装场景，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller
+第二行是接下来的节点所需的属性，带*的为必填项
+如
+```
+*Character *DeviceIP    *ssh_user  ssh_pass ssh_become_pass  HostName  *k8s_api_server_ip  kube_interface
+master     xx.xx.xx.xx  root       111111                    master    xx.xx.xx.xx         
+
+```
+
 
 ## 步骤4：执行安装
 
@@ -296,7 +305,7 @@ vi inventory_file
 ```bash
 cd ~/offline-deploy
 ansible -i inventory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
-bash scripts/run_install.sh
+python scripts/ascend-deploy.py <相应的csv位置，如/root/Inventory_Template.CSV>
 
 ```
 如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理.
@@ -305,7 +314,6 @@ bash scripts/run_install.sh
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
 - 用户也可以通过在`~/offline-deploy`目录下执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
-- 安装kubeedge须在执行完`bash scripts/run_install.sh`操作后, 根据[MEF-Center离线安装场景](#mef-center离线安装场景)离线安装MEF-Center。注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取.
 
   
 # 安装后状态查看
