@@ -12,6 +12,7 @@ CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
 CHARACTER_DICT = {'master': 0, 'worker': 1, 'mef': 2}
+MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef+k8s": 2}
 RAW_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
@@ -166,10 +167,11 @@ def verify_parameter(num, tools, obj):
 
 
 def append_inventory(num, tools, obj):
-    result = verify_parameter(num, tools, obj)
-    if result != '':
-        hwlog.error(result)
-        sys.exit(1)
+    if num != '4':
+        result = verify_parameter(num, tools, obj)
+        if result != '':
+            hwlog.error(result)
+            sys.exit(1)
     do_append_inventory(num, tools, obj)
 
 
@@ -243,20 +245,40 @@ class HWLog:
         self.hwlog(msg, 'CRITICAL')
 
 
-def run_install():
+def run_install(scene_num, mef_option):
     working_env = os.environ.copy()
     log_path = "{}/.log/ascend-deployer-dl.log".format(working_env.get("HOME", "/root"))
     folder = os.path.exists(os.path.dirname(log_path))
     if not folder:
         os.makedirs(os.path.dirname(log_path))
-    script_path = os.path.dirname(os.path.abspath(__file__)) + "/run_install.sh"
-    cmd = "bash " + script_path
+    script_path = os.path.dirname(os.path.abspath(__file__)) + "/"
+    cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install_npu.sh && bash " \
+          + script_path + "install.sh && bash " + script_path + "hccn_set.sh"
+    if scene_num == '4':
+        if mef_option == 1:
+            cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install_kubeedge.sh"
+        if mef_option == 2:
+            cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install.sh && bash " + \
+                  script_path + "install_kubeedge.sh"
 
     hwlog.info("starting run install script")
     working_env['ANSIBLE_LOG_PATH'] = log_path
     working_env['ANSIBLE_CALLBACK_PLUGINS'] = "/root/offline-deploy/scripts"
     working_env['ANSIBLE_STDOUT_CALLBACK'] = "common_log"
     _ = subprocess.Popen(cmd, shell=True, env=working_env)
+
+
+def mef_check(scene_num, mef_option):
+    mef_key = mef_option.strip().lower()
+    if MEF_OPTIONS.get(mef_key) is None and mef_option != '':
+        hwlog.error("mef option not valid !")
+        sys.exit(1)
+    if scene_num != '4' and MEF_OPTIONS[mef_key] != 0 and mef_key != '':
+        hwlog.error("mef option not fit !")
+        sys.exit(1)
+    if scene_num == '4' and (MEF_OPTIONS[mef_key] == 0 or mef_key == ''):
+        hwlog.error("mef option missing !")
+        sys.exit(1)
 
 
 def main(inv_file):
@@ -266,6 +288,8 @@ def main(inv_file):
         top = next(reader)
         scene_num = top[1]
         extra_component = top[3]
+        mef_option = top[5]
+        mef_check(scene_num, mef_option)
 
         next(reader)
         dto = InventoryDTO()
@@ -281,7 +305,7 @@ def main(inv_file):
             dto.solve_device()
         hwlog.info("starting gen inventory file")
         append_inventory(scene_num, extra_component, dto)
-    run_install()
+    run_install(scene_num, MEF_OPTIONS[mef_option.strip().lower()])
 
 
 if __name__ == '__main__':
