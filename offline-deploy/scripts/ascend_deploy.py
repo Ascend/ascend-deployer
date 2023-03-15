@@ -270,15 +270,15 @@ def run_install(scene_num, mef_option):
 
 def mef_check(scene_num, mef_option):
     mef_key = mef_option.strip().lower()
-    if MEF_OPTIONS.get(mef_key) is None and mef_option != '':
+    if MEF_OPTIONS.get(mef_key) is None:
         hwlog.error("mef option not valid !")
         sys.exit(1)
-    if scene_num != '4' and MEF_OPTIONS[mef_key] != 0 and mef_key != '':
+    if scene_num != '4' and MEF_OPTIONS[mef_key] != 0:
         hwlog.error("mef option not fit !")
         sys.exit(1)
-    if scene_num == '4' and (MEF_OPTIONS[mef_key] == 0 or mef_key == ''):
-        hwlog.error("mef option missing !")
-        sys.exit(1)
+    if scene_num == '4':
+        mef_key = 'no'
+    return mef_key
 
 
 def main(inv_file):
@@ -286,10 +286,12 @@ def main(inv_file):
     with open(inv_file) as f:
         reader = csv.reader(f)
         top = next(reader)
+        if len(top) < 6:
+            raise Exception("missing parameter !")
         scene_num = top[1]
         extra_component = top[3]
         mef_option = top[5]
-        mef_check(scene_num, mef_option)
+        mef_option = mef_check(scene_num, mef_option)
 
         next(reader)
         dto = InventoryDTO()
@@ -305,7 +307,7 @@ def main(inv_file):
             dto.solve_device()
         hwlog.info("starting gen inventory file")
         append_inventory(scene_num, extra_component, dto)
-    run_install(scene_num, MEF_OPTIONS[mef_option.strip().lower()])
+    run_install(scene_num, MEF_OPTIONS[mef_option])
 
 
 if __name__ == '__main__':
