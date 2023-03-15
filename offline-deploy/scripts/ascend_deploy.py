@@ -273,10 +273,10 @@ def mef_check(scene_num, mef_option):
     if MEF_OPTIONS.get(mef_key) is None:
         hwlog.error("mef option not valid !")
         sys.exit(1)
-    if scene_num != '4' and MEF_OPTIONS[mef_key] != 0:
+    if scene_num == '4' and MEF_OPTIONS[mef_key] == 0:
         hwlog.error("mef option not fit !")
         sys.exit(1)
-    if scene_num == '4':
+    if scene_num != '4':
         mef_key = 'no'
     return mef_key
 
