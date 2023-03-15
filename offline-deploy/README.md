@@ -351,57 +351,6 @@ worker-1         Ready    worker   60s   v1.19.16
 
 用户也可通过集群状态报告[常用操作7](#常用操作)确认安装结果;
 
-# MEF-Center离线安装场景
-
-前置条件:
-
-用户需要确保已有能正常运行的K8s系统 (如在相应服务器上完成了场景1或者4的所有[安装步骤](#安装步骤));
-
-## 步骤1：配置安装节点信息
-用户需配置`~/offline-deploy/inventory_file`, 将计划安装MEF-Center的节点设置在mef项下, 建议按mef的样例1为模板, 逐项填入; 
-
-并且, 用户需选择如下两种方式之一配置登陆:
-
-- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。
-- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
-
-## 步骤2：导入MEF-Center软件包
-  请从昇腾社区提前获取 `Ascend-mindxedge-mefcenter_x86_64.zip` 或 `Ascend-mindxedge-mefcenter_aarch64.zip`, 并放入用户家目录; 然后执行:
-```bash
-  cd
-  cp Ascend-mindxedge-mefcenter_x86_64.zip ~/resources/mef
-  cp Ascend-mindxedge-mefcenter_aarch64.zip ~/resources/mef
-  
-   ```
-
-## 步骤3：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至`install_kubeedge.sh`中，运行该脚本会同步安装MEF-Center
-```
-cd ~/offline-deploy/scripts
-bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-
-```
-
-用户也可以采用 `cd ~/offline-deploy/scripts; bash install_kubeedge.sh --uninstall` 来卸载kubeedge.
-
-## 确认安装成功
-使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
-
-```
-NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
-kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
-kube-system      calico-node-4zfjp                         1/1     Running            0          21h
-kube-system      calico-node-jsdws                         1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
-kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
-kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
-kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
-kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
-kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
-kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
-```
-
 
 # 组件升级
 目前**仅支持MindX DL集群调度组件升级**，**不支持**Docker和Kubernetes的升级，并且升级时会按照之前`/root/offline-deploy/inventory_file`中配置的**节点**、**节点类型**、**场景包含的组件**进行升级。
