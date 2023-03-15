@@ -1,5 +1,17 @@
 [
     {
+        "name": "pkgconf-m4", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "libpkgconf", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pkgconf", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "pkgconf-pkg-config", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "kernel-devel-4.18.0-193.el8.x86_64.rpm",
         "url": "https://mirrors.bfsu.edu.cn/centos-vault/8.2.2004/BaseOS/x86_64/os/Packages/kernel-devel-4.18.0-193.el8.x86_64.rpm",
         "sha256": "699c8a39829dbc651837a6d8f198f2d0db377c1bba764fe8420a98704e4ac302"
