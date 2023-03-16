@@ -26,6 +26,9 @@ class BasicLogConfig(object):
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
     working_env = os.environ.copy()
     LOG_FILE = "{}/.log/mindx-dl-install.log".format(working_env.get("HOME", "/root"))
+    LOG_PATH = "{}/.log".format(working_env.get("HOME", "/root"))
+    if not os.path.exists(LOG_PATH):
+        os.makedirs(LOG_PATH)
     if not os.path.exists(LOG_FILE):
         os.close(os.open(LOG_FILE, os.O_CREAT, stat.S_IRUSR | stat.S_IWUSR))
     else:

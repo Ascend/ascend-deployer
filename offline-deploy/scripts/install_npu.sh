@@ -116,6 +116,7 @@ function parse_script_args() {
 }
 
 function process_install() {
+    echo -e "\n[INFO]\t$(date +"%Y-%m-%d %H:%M:%S")\t ping host ...\n"
     ansible -i $inventory_file_path all -m ping
     ansible-playbook -i $inventory_file_path $yamls_dir/yamls/npu.yaml -e type=$type -e force_upgrade_npu=${FORCE_UPGRADE_NPU} -v
 }
