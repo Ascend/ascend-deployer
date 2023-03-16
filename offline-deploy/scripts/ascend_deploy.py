@@ -222,15 +222,18 @@ def run_install(scene_num, mef_option):
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
     err_flag = False
     for line in iter(process.stdout.readline, ''):
+        line = line.decode('utf-8')
         stdout_line = str(line).strip()
         if stdout_line.find("ansible [ERROR]"):
             err_flag = True
-        print(stdout_line)
+        if stdout_line != "":
+            print(stdout_line)
         sys.stdout.flush()
     if err_flag:
         hwlog.error("Seems like something went wrong, please check the logs")
     else:
         hwlog.info("Ascend deploy install success")
+
 
 def mef_check(scene_num, mef_option):
     mef_key = mef_option.strip().lower()
@@ -243,7 +246,6 @@ def mef_check(scene_num, mef_option):
     if scene_num != '4':
         mef_key = 'no'
     return mef_key
-
 
 
 def main(inv_file):
