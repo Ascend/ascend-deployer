@@ -1,4 +1,3 @@
-SCENE_NUM,4,EXTRA,NPU-Exporter,,,
+SCENE_NUM,4,EXTRA,,MEF,MEF-only,,
 *Character,*DeviceIP,*ssh_user,ssh_pass,ssh_become_pass,HostName,*k8s_api_server_ip,kube_interface
-master,51.38.68.175,root,pass,,,51.38.68.175,ebf=asd
-mef,51.31.11.45,user1,Ops222,,,51.7.14.45,
+mef,xx.xx.xx.xx,root,AAA@1111,,master-1,xx.xx.xx.xx,ebf=asd

@@ -2,6 +2,25 @@
   debug:
     msg: "******************************start install kubeedge******************************"
 
+- name: create group {{ DL_GRP }}
+  ansible.builtin.group:
+    name: "{{ DL_GRP }}"
+    state: present
+    gid: "{{ DL_GID }}"
+  ignore_errors: true
+
+- name: create user {{ DL_USR }}
+  ansible.builtin.user:
+    name: "{{ DL_USR }}"
+    comment: "{{  DL_USR }}"
+    uid: "{{ DL_UID }}"
+    group: "{{ DL_GRP }}"
+    groups: "{{ MINDX_GROUP }}"
+    append: yes
+    state: present
+    shell: "{{ '/usr/sbin/nologin' if os_name == 'Ubuntu' else '/sbin/nologin' }}"
+  ignore_errors: true
+
 - name: copy cloudcore
   copy:
     src: "{{resource_dir}}/kubeedge/{{ansible_architecture}}/{{ item }}"
@@ -47,6 +66,32 @@
   with_items:
     - /etc/kubeedge/config
     - /etc/kubeedge/yamls
+
+- name: find docker command
+  shell: command -v docker
+  register: docker_exists
+  failed_when: false
+
+- name: failed when no docker
+  fail:
+    msg: "Can not find docker, maybe docker not installed, or env not right"
+  when: docker_exists.rc !=0
+
+- name: copy files to remote hosts
+  copy:
+    src: "{{ ansible_env.HOME }}/resources/mef/"
+    dest: "{{ ansible_env.HOME }}/resources/mef-pushing"
+    mode: 0700
+    force: yes
+
+- name: load mef center images
+  shell: "docker load -i {{ ansible_env.HOME }}/resources/mef-pushing/openresty_buster_{{ ansible_architecture }}.tar && docker load -i {{ ansible_env.HOME }}/resources/mef-pushing/ubuntu_2204_{{ ansible_architecture }}.tar"
+  register: docker_result
+
+- fail:
+    msg: "[WARNING]: Can not find images, please check it"
+  when: docker_result.rc != 0
+  name: print lossing parts
 
 - name: copy k8s yamls
   copy:
@@ -129,8 +174,8 @@
 
 - name: install MEF
   shell: |
-    unzip -o {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.zip -d {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter &&
-    cd {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter && mkdir -p Ascend-mindxedge-mefcenter &&
-    tar -C ${PWD}/Ascend-mindxedge-mefcenter -xzvf {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.tar.gz &&
-    cd  {{ansible_env.HOME}}/resources/mef/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter/installer &&
+    unzip -o {{ansible_env.HOME}}/resources/mef-pushing/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.zip -d {{ansible_env.HOME}}/resources/mef-pushing/Ascend-mindxedge-mefcenter &&
+    cd {{ansible_env.HOME}}/resources/mef-pushing/Ascend-mindxedge-mefcenter && mkdir -p Ascend-mindxedge-mefcenter &&
+    tar -C ${PWD}/Ascend-mindxedge-mefcenter -xzvf {{ansible_env.HOME}}/resources/mef-pushing/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter*{{ansible_architecture}}.tar.gz &&
+    cd  {{ansible_env.HOME}}/resources/mef-pushing/Ascend-mindxedge-mefcenter/Ascend-mindxedge-mefcenter/installer &&
     bash install.sh && bash /usr/local/MEF-Center/mef-center/run.sh start all

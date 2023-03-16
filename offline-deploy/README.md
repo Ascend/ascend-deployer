@@ -278,8 +278,7 @@ cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 ````
 
 ## 步骤3：配置安装信息
-cla
-修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
+ **方法1** ：通过修改inventory_file的方式修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
 
 配置项的具体含义请参考`inventory_file`文件中的注释;
 
@@ -288,6 +287,16 @@ cd ~/offline-deploy
 vi inventory_file
 
 ```
+ **方法2** ：通过修改csv文件的方式，csv的模板参照文件Inventory_Template.CSV进行配置，相应项与inventory_file一一对应
+第一行：SCENE_NUM 后填需要的#安装场景，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller
+第二行是接下来的节点所需的属性，带*的为必填项
+如
+```
+*Character *DeviceIP    *ssh_user  ssh_pass ssh_become_pass  HostName  *k8s_api_server_ip  kube_interface
+master     xx.xx.xx.xx  root       111111                    master    xx.xx.xx.xx         
+
+```
+
 
 ## 步骤4：执行安装
 
@@ -296,7 +305,7 @@ vi inventory_file
 ```bash
 cd ~/offline-deploy
 ansible -i inventory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
-bash scripts/run_install.sh
+python scripts/ascend-deploy.py <相应的csv位置，如/root/Inventory_Template.CSV>
 
 ```
 如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理.
@@ -305,7 +314,6 @@ bash scripts/run_install.sh
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
 - 用户也可以通过在`~/offline-deploy`目录下执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
-- 安装kubeedge须在执行完`bash scripts/run_install.sh`操作后, 根据[MEF-Center离线安装场景](#mef-center离线安装场景)离线安装MEF-Center。注意：MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取.
 
   
 # 安装后状态查看
@@ -342,57 +350,6 @@ worker-1         Ready    worker   60s   v1.19.16
 ```
 
 用户也可通过集群状态报告[常用操作7](#常用操作)确认安装结果;
-
-# MEF-Center离线安装场景
-
-前置条件:
-
-用户需要确保已有能正常运行的K8s系统 (如在相应服务器上完成了场景1或者4的所有[安装步骤](#安装步骤));
-
-## 步骤1：配置安装节点信息
-用户需配置`~/offline-deploy/inventory_file`, 将计划安装MEF-Center的节点设置在mef项下, 建议按mef的样例1为模板, 逐项填入; 
-
-并且, 用户需选择如下两种方式之一配置登陆:
-
-- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。
-- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
-
-## 步骤2：导入MEF-Center软件包
-  请从昇腾社区提前获取 `Ascend-mindxedge-mefcenter_x86_64.zip` 或 `Ascend-mindxedge-mefcenter_aarch64.zip`, 并放入用户家目录; 然后执行:
-```bash
-  cd
-  cp Ascend-mindxedge-mefcenter_x86_64.zip ~/resources/mef
-  cp Ascend-mindxedge-mefcenter_aarch64.zip ~/resources/mef
-  
-   ```
-
-## 步骤3：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至`install_kubeedge.sh`中，运行该脚本会同步安装MEF-Center
-```
-cd ~/offline-deploy/scripts
-bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-
-```
-
-用户也可以采用 `cd ~/offline-deploy/scripts; bash install_kubeedge.sh --uninstall` 来卸载kubeedge.
-
-## 确认安装成功
-使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
-
-```
-NAMESPACE        NAME                                      READY   STATUS             RESTARTS   AGE
-kube-system      calico-kube-controllers-68c855c64-4fn2k   1/1     Running            1          21h
-kube-system      calico-node-4zfjp                         1/1     Running            0          21h
-kube-system      calico-node-jsdws                         1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-84xd2                   1/1     Running            0          21h
-kube-system      coredns-f9fd979d6-8fld7                   1/1     Running            0          21h
-kube-system      etcd-ubuntu-1                             1/1     Running            0          21h
-kube-system      kube-apiserver-ubuntu-1                   1/1     Running            0          21h
-kube-system      kube-controller-manager-ubuntu-1          1/1     Running            8          21h
-kube-system      kube-proxy-6zr9j                          1/1     Running            0          21h
-kube-system      kube-proxy-w9lw9                          1/1     Running            0          21h
-kube-system      kube-scheduler-ubuntu-1                   1/1     Running            6          21h
-```
 
 
 # 组件升级
