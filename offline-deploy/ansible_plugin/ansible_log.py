@@ -63,7 +63,7 @@ class CallbackModule(default):
         log_write.error("unreachable: [%s -> %s]" % (result._host.get_name(), self._dump_results(result._result)))
 
     def v2_playbook_on_no_hosts_matched(self):
-        log_write.info("skipping: no hosts matched", color=C.COLOR_SKIP)
+        log_write.info("skipping: no hosts matched")
 
     def v2_playbook_on_no_hosts_remaining(self):
         log_write.info("NO MORE HOSTS LEFT")
@@ -116,7 +116,7 @@ class CallbackModule(default):
         if self._display.verbosity >= 2:
             path = task.get_path()
             if path:
-                log_write.info(u"task path: %s" % path, color=C.COLOR_DEBUG)
+                log_write.info(u"task path: %s" % path)
 
         self._last_task_banner = task._uuid
 
