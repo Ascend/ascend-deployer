@@ -1,10 +1,9 @@
 # -*- coding:utf-8 -*-
 import csv
-import logging
 import os.path
 import subprocess
 import sys
-import time
+import common_log
 
 PARAMETER_DICT = {'character': 0, 'ip': 1, 'user': 2, 'pwd': 3, 'become_pwd': 4, 'host': 5, 'api': 6, 'interface': 7}
 
@@ -12,7 +11,13 @@ CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
 CHARACTER_DICT = {'master': 0, 'worker': 1, 'mef': 2}
-MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef-all": 2}
+MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef+k8s": 2}
+ANSIBLE_SHELL = "install_ansible.sh && bash "
+BASH_SHELL = "bash "
+HCCN_SHELL = "hccn_set.sh"
+NPU_SHELL = "install_npu.sh && bash "
+INSTALL_SHELL = "install.sh && bash "
+KUBEEDGE_SHELL = "install_kubeedge.sh"
 RAW_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
@@ -193,58 +198,6 @@ def file_check(file):
     return real_path
 
 
-class HWLog:
-    @staticmethod
-    def hwlog(msg, level):
-
-        logger = logging.getLogger("hw_log")
-        logger.setLevel('DEBUG')
-
-        formatter = logging.Formatter('%(levelname)s:%(asctime)s-%(filename)s:%(message)s')
-
-        ch = logging.StreamHandler()
-        ch.setLevel('DEBUG')
-        ch.setFormatter(formatter)
-
-        now = time.strftime('%Y-%m-%d')
-
-        path = "ascend_deploy_" + now + ".log"
-        fh = logging.FileHandler(path, encoding='UTF-8')
-        fh.setLevel('DEBUG')
-        fh.setFormatter(formatter)
-
-        logger.addHandler(ch)
-        logger.addHandler(fh)
-
-        if level == 'DEBUG':
-            logger.debug(msg)
-        elif level == 'INFO':
-            logger.info(msg)
-        elif level == 'WARNING':
-            logger.warning(msg)
-        elif level == 'ERROR':
-            logger.error(msg)
-        elif level == 'CRITICAL':
-            logger.critical(msg)
-        logger.removeHandler(ch)
-        logger.removeHandler(fh)
-
-    def debug(self, msg):
-        self.hwlog(msg, 'DEBUG')
-
-    def info(self, msg):
-        self.hwlog(msg, 'INFO')
-
-    def warning(self, msg):
-        self.hwlog(msg, 'WARNING')
-
-    def error(self, msg):
-        self.hwlog(msg, 'ERROR')
-
-    def critical(self, msg):
-        self.hwlog(msg, 'CRITICAL')
-
-
 def run_install(scene_num, mef_option):
     working_env = os.environ.copy()
     log_path = "{}/.log/ascend-deployer-dl.log".format(working_env.get("HOME", "/root"))
@@ -252,21 +205,32 @@ def run_install(scene_num, mef_option):
     if not folder:
         os.makedirs(os.path.dirname(log_path))
     script_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-    cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install_npu.sh && bash " \
-          + script_path + "install.sh && bash " + script_path + "hccn_set.sh"
+    cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, NPU_SHELL
+                       , script_path, INSTALL_SHELL, script_path, HCCN_SHELL)
     if scene_num == '4':
         if mef_option == 1:
-            cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install_kubeedge.sh"
+            cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, KUBEEDGE_SHELL)
         if mef_option == 2:
-            cmd = "bash " + script_path + "install_ansible.sh && bash " + script_path + "install.sh && bash " + \
-                  script_path + "install_kubeedge.sh"
+            cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, INSTALL_SHELL,
+                               script_path, KUBEEDGE_SHELL)
 
     hwlog.info("starting run install script")
     working_env['ANSIBLE_LOG_PATH'] = log_path
-    working_env['ANSIBLE_CALLBACK_PLUGINS'] = "/root/offline-deploy/scripts"
-    working_env['ANSIBLE_STDOUT_CALLBACK'] = "common_log"
-    _ = subprocess.Popen(cmd, shell=True, env=working_env)
-
+    ansible_plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/../ansible_plugin"
+    working_env['ANSIBLE_CALLBACK_PLUGINS'] = ansible_plugin_path
+    working_env['ANSIBLE_STDOUT_CALLBACK'] = "ansible_log"
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
+    err_flag = False
+    for line in iter(process.stdout.readline, ''):
+        stdout_line = str(line).strip()
+        if stdout_line.find("ansible [ERROR]"):
+            err_flag = True
+        print(stdout_line)
+        sys.stdout.flush()
+    if err_flag:
+        hwlog.error("Seems like something went wrong, please check the logs")
+    else:
+        hwlog.info("Ascend deploy install success")
 
 def mef_check(scene_num, mef_option):
     mef_key = mef_option.strip().lower()
@@ -281,18 +245,19 @@ def mef_check(scene_num, mef_option):
     return mef_key
 
 
+
 def main(inv_file):
     hwlog.info("starting parse csv file")
     with open(inv_file) as f:
         reader = csv.reader(f)
         top = next(reader)
         if len(top) < 6:
-            raise Exception("missing parameter !")
+            hwlog.error("missing parameter !")
+            sys.exit(1)
         scene_num = top[1]
         extra_component = top[3]
         mef_option = top[5]
         mef_option = mef_check(scene_num, mef_option)
-
         next(reader)
         dto = InventoryDTO()
         for row in reader:
@@ -311,7 +276,7 @@ def main(inv_file):
 
 
 if __name__ == '__main__':
-    hwlog = HWLog()
+    hwlog = common_log.Get_logger_deploy("ascend_deploy")
     if len(sys.argv) != 2:
         hwlog.error("csv file path need to be add to argv")
     else:
