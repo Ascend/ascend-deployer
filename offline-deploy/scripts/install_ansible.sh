@@ -46,7 +46,7 @@ function install_ansible()
     sed -i "s?#fact_caching_connection=/tmp?fact_caching_connection=/etc/ansible/facts-cache?" /etc/ansible/ansible.cfg
     sed -i "s?#host_key_checking = False?host_key_checking = False?" /etc/ansible/ansible.cfg
 
-    ansible --version
+    ansible --version >/dev/null 2>&1
 }
 
 function checkAnsible() {

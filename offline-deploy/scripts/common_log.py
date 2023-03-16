@@ -1,18 +1,82 @@
-from ansible.plugins.callback.default import CallbackModule as default
-from ansible import constants as C
+import logging
+import logging.handlers
+import os
+import stat
 
 
-class CallbackModule(default):
+class RotatingFileHandler(logging.handlers.RotatingFileHandler):
     """
-    This callback module tells you how long your plays ran for.
+    rewrite RotatingFileHandler, chmod 600 downloader.log and chmod 400 downloader.log.*
     """
-    CALLBACK_VERSION = 2.0
-    CALLBACK_TYPE = 'stdout'
-    CALLBACK_NAME = 'common_log'
 
-    def __init__(self):
-        super(CallbackModule, self).__init__()
+    def doRollover(self):
+        self.baseFilename = os.path.abspath(__file__)
+        largest_backfile = "{}.{}".format(self.baseFilename, 5)
+        if os.path.exists(largest_backfile):
+            os.chmod(largest_backfile, mode=0o600)
+        os.chmod(self.baseFilename, mode=0o400)
+        logging.handlers.RotatingFileHandler.doRollover(self)
+        os.chmod(self.baseFilename, mode=0o600)
 
-    def v2_runner_on_failed(self, result, ignore_errors=False):
-        print("fatal: [%s]: FAILED! => %s" % (result._host.get_name(), self._dump_results(result._result)))
-        super(CallbackModule, self).v2_runner_on_failed(result, ignore_errors)
+
+class BasicLogConfig(object):
+    """
+    basic logger configuration
+    """
+    CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+    working_env = os.environ.copy()
+    LOG_FILE = "{}/.log/mindx-dl-install.log".format(working_env.get("HOME", "/root"))
+    if not os.path.exists(LOG_FILE):
+        os.close(os.open(LOG_FILE, os.O_CREAT, stat.S_IRUSR | stat.S_IWUSR))
+    else:
+        os.chmod(LOG_FILE, stat.S_IRUSR | stat.S_IWUSR)
+    LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    LOG_FORMAT_STRING_ANSIBLE = \
+        "%(asctime)s ansible [%(levelname)s] " \
+        "[%(filename)s:%(lineno)d] %(message)s"
+    LOG_FORMAT_STRING_DEPLOYER = \
+        "%(asctime)s ascend_deployer [%(levelname)s] " \
+        "[%(filename)s:%(lineno)d] %(message)s"
+    LOG_LEVEL = logging.INFO
+
+    ROTATING_CONF = dict(
+        mode='a',
+        maxBytes=20 * 1024 * 1024,
+        backupCount=5,
+        encoding="UTF-8")
+
+
+def Get_logger_ansible(name):
+    """
+    get_logger
+    """
+    log_conf = BasicLogConfig()
+    logger = logging.getLogger(name)
+    rotating_handler = RotatingFileHandler(
+        filename=log_conf.LOG_FILE, **log_conf.ROTATING_CONF)
+    log_formatter = logging.Formatter(
+        log_conf.LOG_FORMAT_STRING_ANSIBLE, log_conf.LOG_DATE_FORMAT)
+    rotating_handler.setFormatter(log_formatter)
+    logger.addHandler(rotating_handler)
+    logger.setLevel(log_conf.LOG_LEVEL)
+    return logger
+
+
+def Get_logger_deploy(name):
+    """
+    get_logger
+    """
+    log_conf = BasicLogConfig()
+    logger = logging.getLogger(name)
+    rotating_handler = RotatingFileHandler(
+        filename=log_conf.LOG_FILE, **log_conf.ROTATING_CONF)
+    log_formatter = logging.Formatter(
+        log_conf.LOG_FORMAT_STRING_DEPLOYER, log_conf.LOG_DATE_FORMAT)
+    rotating_handler.setFormatter(log_formatter)
+    ch = logging.StreamHandler()
+    ch.setLevel('INFO')
+    ch.setFormatter(log_formatter)
+    logger.addHandler(rotating_handler)
+    logger.addHandler(ch)
+    logger.setLevel(log_conf.LOG_LEVEL)
+    return logger
