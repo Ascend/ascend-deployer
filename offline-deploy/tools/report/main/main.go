@@ -96,14 +96,14 @@ var (
 )
 
 type nodeSummary struct {
-	Name        string
-	Status      string
-	RunningPods []string
-	FailingPods []string
-	MissingPods []string
-	Npu         string
-	Components  []string
-	NodeType    string
+	Name                  string
+	Status                string
+	RunningPods           []string
+	CompleteOrFailingPods []string
+	MissingPods           []string
+	Npu                   string
+	Components            []string
+	NodeType              string
 }
 
 var totalMasterNodesSummary = map[string]*nodeSummary{}
@@ -378,7 +378,7 @@ func updatePodsSummary(pods *v1.PodList, summary map[string]*nodeSummary) {
 				continue
 			}
 			failingPods := summary[key]
-			failingPods.FailingPods = append(failingPods.FailingPods, podName)
+			failingPods.CompleteOrFailingPods = append(failingPods.CompleteOrFailingPods, podName)
 		}
 	}
 
@@ -564,16 +564,16 @@ func savRes2Csv(saveFilePath string) error {
 	}
 	w := csv.NewWriter(file)
 	defer w.Flush()
-	row := []string{"IP", "nodeName", "status", "OK pods", "Missing pods", "Failed pods", "NPU", "Component", "NodeType"}
+	row := []string{"IP", "nodeName", "status", "OK pods", "Missing pods", "Completed or Failed pods", "NPU", "Component", "NodeType"}
 	if err := w.Write(row); err != nil {
 		return err
 	}
 	for key, value := range totalMasterNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
 		missingPods := strings.Join(value.MissingPods, "\n")
-		failingPods := strings.Join(value.FailingPods, "\n")
+		completeOrFailingPods := strings.Join(value.CompleteOrFailingPods, "\n")
 		components := strings.Join(value.Components, "\n")
-		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
+		row := []string{key, value.Name, value.Status, runningPods, missingPods, completeOrFailingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
 			return err
 		}
@@ -581,22 +581,14 @@ func savRes2Csv(saveFilePath string) error {
 	for key, value := range totalWorkerNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
 		missingPods := strings.Join(value.MissingPods, "\n")
-		failingPods := strings.Join(value.FailingPods, "\n")
+		completeOrFailingPods := strings.Join(value.CompleteOrFailingPods, "\n")
 		components := strings.Join(value.Components, "\n")
-		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
+		row := []string{key, value.Name, value.Status, runningPods, missingPods, completeOrFailingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func isDirExists(path string) bool {
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
 }
 
 func checkNode() bool {

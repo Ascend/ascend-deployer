@@ -123,6 +123,7 @@
     dest: "{{ item }}"
     owner: "{{DL_USR}}"
     group: "{{DL_GRP}}"
+    remote_src: yes
     mode: 0600
   loop:
     - /etc/mindx-dl/edge-manager
@@ -133,6 +134,7 @@
     dest: /etc/mindx-dl/image-manager
     owner: root
     group: root
+    remote_src: yes
     mode: 0600
 
 - name: apply kubeedge yamls

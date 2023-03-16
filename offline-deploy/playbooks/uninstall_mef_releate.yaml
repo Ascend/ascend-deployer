@@ -1,0 +1,6 @@
+- hosts:
+    - mef
+  gather_facts: true
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.uninstall_mef_relate/task/mindx.uninstall_mef_relate.yaml
