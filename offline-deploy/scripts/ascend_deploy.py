@@ -12,12 +12,14 @@ SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
 CHARACTER_DICT = {'master': 0, 'worker': 1, 'mef': 2}
 MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef-all": 2}
-ANSIBLE_SHELL = "install_ansible.sh && bash "
-BASH_SHELL = "bash "
-HCCN_SHELL = "hccn_set.sh"
-NPU_SHELL = "install_npu.sh && bash "
-INSTALL_SHELL = "install.sh && bash "
-KUBEEDGE_SHELL = "install_kubeedge.sh"
+SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+ANSIBLE_PATH = os.path.join(SCRIPT_PATH, "install_ansible.sh")
+BASH = " bash "
+AND = " && "
+HCCN_PATH = os.path.join(SCRIPT_PATH, "hccn_set.sh")
+NPU_PATH = os.path.join(SCRIPT_PATH, "install_npu.sh")
+INSTALL_PATH = os.path.join(SCRIPT_PATH, "install.sh")
+KUBEEDGE_PATH = os.path.join(SCRIPT_PATH, "install_kubeedge.sh")
 RAW_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
@@ -204,15 +206,12 @@ def run_install(scene_num, mef_option):
     folder = os.path.exists(os.path.dirname(log_path))
     if not folder:
         os.makedirs(os.path.dirname(log_path))
-    script_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-    cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, NPU_SHELL
-                       , script_path, INSTALL_SHELL, script_path, HCCN_SHELL)
+    cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + HCCN_PATH + AND + BASH + INSTALL_PATH
     if scene_num == '4':
         if mef_option == 1:
-            cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, KUBEEDGE_SHELL)
+            cmd = BASH + ANSIBLE_PATH + AND + BASH + KUBEEDGE_PATH
         if mef_option == 2:
-            cmd = os.path.join(BASH_SHELL, script_path, ANSIBLE_SHELL, script_path, INSTALL_SHELL,
-                               script_path, KUBEEDGE_SHELL)
+            cmd = BASH + ANSIBLE_PATH + AND + BASH + INSTALL_PATH + AND + BASH + KUBEEDGE_PATH
 
     hwlog.info("starting run install script")
     working_env['ANSIBLE_LOG_PATH'] = log_path
@@ -222,15 +221,18 @@ def run_install(scene_num, mef_option):
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
     err_flag = False
     for line in iter(process.stdout.readline, ''):
+        line = line.decode('utf-8')
         stdout_line = str(line).strip()
         if stdout_line.find("ansible [ERROR]"):
             err_flag = True
-        print(stdout_line)
+        if stdout_line != "":
+            print(stdout_line)
         sys.stdout.flush()
     if err_flag:
         hwlog.error("Seems like something went wrong, please check the logs")
     else:
         hwlog.info("Ascend deploy install success")
+
 
 def mef_check(scene_num, mef_option):
     mef_key = mef_option.strip().lower()
@@ -243,7 +245,6 @@ def mef_check(scene_num, mef_option):
     if scene_num != '4':
         mef_key = 'no'
     return mef_key
-
 
 
 def main(inv_file):
