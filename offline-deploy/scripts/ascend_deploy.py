@@ -220,13 +220,17 @@ def run_install(scene_num, mef_option):
     working_env['ANSIBLE_STDOUT_CALLBACK'] = "ansible_log"
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
     err_flag = False
+    log_list = ['CRITICAL', 'FATAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']
     for line in iter(process.stdout.readline, ''):
         line = line.decode('utf-8')
         stdout_line = str(line).strip()
-        if stdout_line.find("ansible [ERROR]"):
+        if stdout_line.find("ascend_deployer [ERROR]") != -1:
             err_flag = True
         if stdout_line != "":
-            print(stdout_line)
+            for str_list in log_list:
+                if stdout_line.find(str_list) != -1:
+                    print(stdout_line)
+                    break
         sys.stdout.flush()
     if err_flag:
         hwlog.error("Seems like something went wrong, please check the logs")
