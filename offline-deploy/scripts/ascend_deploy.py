@@ -5,7 +5,7 @@ import subprocess
 import sys
 import common_log
 
-PARAMETER_DICT = {'character': 0, 'ip': 1, 'user': 2, 'pwd': 3, 'become_pwd': 4, 'host': 5, 'api': 6, 'interface': 7,
+PARAMETER_DICT = {'group': 0, 'ssh_host': 1, 'user': 2, 'pwd': 3, 'become_pwd': 4, 'host': 5, 'api': 6, 'interface': 7,
                   'hccn_mode': 8, 'device_netmask': 9, 'detect_ip': 10, 'device_ips': 11}
 
 CSV_SIZE = 1024 * 1024
@@ -114,7 +114,7 @@ ansible_ssh_user='root'
 
 class InventoryDTO:
     def __init__(self):
-        self.inventory_param = {"character": "", "ip": "", "user": "", "pwd": "", "become_pwd": "", "host_name": "",
+        self.inventory_param = {"group": "", "ssh_host": "", "user": "", "pwd": "", "become_pwd": "", "host_name": "",
                                 "api": "", "interface": ""}
         self.hccn_inventory_param = {"mode": "", "device_netmask": "", "detect_ip": "", "device_ips": ""}
 
@@ -124,14 +124,14 @@ class InventoryDTO:
         self.hccn_tool = ""
 
     def solve_device(self):
-        if self.inventory_param["character"] == 'master':
+        if self.inventory_param["group"] == 'master':
             self.append_node('master')
-        elif self.inventory_param["character"] == 'worker':
+        elif self.inventory_param["group"] == 'worker':
             self.append_node('worker')
-        elif self.inventory_param["character"] == 'mef':
+        elif self.inventory_param["group"] == 'mef':
             self.append_node('mef')
         else:
-            hwlog.error("character must be one of master,worker,mef")
+            hwlog.error("group must be one of master,worker,mef")
             sys.exit(1)
         self.clear_inventory_param()
 
@@ -141,23 +141,23 @@ class InventoryDTO:
         for k, _ in self.hccn_inventory_param.items():
             self.hccn_inventory_param[k] = ''
 
-    def append_node(self, character):
+    def append_node(self, group):
         attr_str = ''
-        if self.inventory_param["ip"] == '':
+        if self.inventory_param["ssh_host"] == '':
             return
-        attr_str += self.inventory_param["ip"]
+        attr_str += self.inventory_param["ssh_host"]
         attr_str += self.get_item("ansible_ssh_user", self.inventory_param["user"])
         attr_str += self.get_item("ansible_ssh_pass", self.inventory_param["pwd"])
         attr_str += self.get_item("ansible_ssh_become", self.inventory_param["become_pwd"])
         attr_str += self.get_item("set_hostname", self.inventory_param["host_name"])
-        if character == 'master':
+        if group == 'master':
             attr_str += self.get_item("k8s_api_server_ip", self.inventory_param["api"])
             attr_str += self.get_item("kube_interface", self.inventory_param["interface"]) + '\n'
             self.master += attr_str
-        if character == 'worker':
+        if group == 'worker':
             if self.verify_hccn_param(self.hccn_inventory_param):
                 hccn_str = ''
-                hccn_str += self.inventory_param["ip"]
+                hccn_str += self.inventory_param["ssh_host"]
                 hccn_str += self.get_item("ansible_ssh_user", self.inventory_param["user"])
                 hccn_str += " action=config"
                 hccn_str += self.get_item("mode", self.hccn_inventory_param["mode"])
@@ -168,7 +168,7 @@ class InventoryDTO:
                 self.hccn_tool += hccn_str
             attr_str += '\n'
             self.worker += attr_str
-        if character == 'mef':
+        if group == 'mef':
             attr_str += '\n'
             self.mef += attr_str
 
@@ -289,8 +289,8 @@ def mef_check(scene_num, mef_option):
 
 
 def parse_row_into_dto(row, dto):
-    dto.inventory_param["character"] = row[PARAMETER_DICT['character']]
-    dto.inventory_param["ip"] = row[PARAMETER_DICT['ip']]
+    dto.inventory_param["group"] = row[PARAMETER_DICT['group']]
+    dto.inventory_param["ssh_host"] = row[PARAMETER_DICT['ssh_host']]
     dto.inventory_param["user"] = row[PARAMETER_DICT['user']]
     dto.inventory_param["pwd"] = row[PARAMETER_DICT['pwd']]
     dto.inventory_param["become_pwd"] = row[PARAMETER_DICT['become_pwd']]
