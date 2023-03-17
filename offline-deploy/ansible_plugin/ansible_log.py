@@ -1,9 +1,10 @@
-from ansible.plugins.callback.default import CallbackModule as default
-from ansible import constants as C
+import os.path
 import sys
 
-sys.path.append("..")
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from scripts import common_log
+from ansible.plugins.callback.default import CallbackModule as default
+from ansible import constants as C
 
 COMPAT_OPTIONS = (('display_skipped_hosts', C.DISPLAY_SKIPPED_HOSTS),
                   ('display_ok_hosts', True),
