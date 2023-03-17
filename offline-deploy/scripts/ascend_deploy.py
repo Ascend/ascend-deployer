@@ -216,12 +216,13 @@ def append_inventory(num, tools, obj):
 
 
 def do_append_inventory(num, tools, obj):
+    offline_deploy_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     raw_inventory_file = INVENTORY_FILE.format(master=obj.master, worker=obj.worker, mef=obj.mef, sn=num, extra=tools)
-    with open("../inventory_file", mode="w") as file:
+    with open(offline_deploy_path+"/inventory_file", mode="w") as file:
         for line in raw_inventory_file:
             file.write(line)
     raw_hccn_inventory_file = HCCN_INVENTORY_FILE.format(hccn_tools=obj.hccn_tool)
-    with open("../hccn_inventory_file", mode="w") as file:
+    with open(offline_deploy_path+"/hccn_inventory_file", mode="w") as file:
         for line in raw_hccn_inventory_file:
             file.write(line)
 
