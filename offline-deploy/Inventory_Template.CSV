@@ -1,3 +1,5 @@
 SCENE_NUM,4,EXTRA,,MEF,MEF-only,,
 *Character,*DeviceIP,*ssh_user,ssh_pass,ssh_become_pass,HostName,*k8s_api_server_ip,kube_interface
-mef,xx.xx.xx.xx,root,AAA@1111,,master-1,xx.xx.xx.xx,ebf=asd
+master,xx.xx.xx.xx,root,AAA@1111,,master-1,xx.xx.xx.xx,xxx
+worker,xx.xx.xx.xx,root,AAA@1111,,worker-1,xx.xx.xx.xx,xxx
+mef,xx.xx.xx.xx,root,AAA@1111,,,xx.xx.xx.xx,xxx

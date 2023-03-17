@@ -98,7 +98,8 @@ MEF场景下配置Inventory_Template.CSV
 第一行SCENE_NUM后填4，对应MEF安装场景，EXTRA后不填，MEF后填MEF-ONLY（只安装MEF）或者MEF-ALL（包括DOCKER和K8S）
 ```
 *Character *DeviceIP    *ssh_user  ssh_pass ssh_become_pass  HostName  *k8s_api_server_ip  kube_interface
-mef（固定） xx.xx.xx.xx  root       111111                    master    xx.xx.xx.xx         
+master     xx.xx.xx.xx  root       111111                    (k8s主机名)xx.xx.xx.xx   
+mef        xx.xx.xx.xx  root                                 (不填)            
 
 ```
 
