@@ -1,9 +1,10 @@
-from ansible.plugins.callback.default import CallbackModule as default
-from ansible import constants as C
+import os.path
 import sys
 
-sys.path.append("..")
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from scripts import common_log
+from ansible.plugins.callback.default import CallbackModule as default
+from ansible import constants as C
 
 COMPAT_OPTIONS = (('display_skipped_hosts', C.DISPLAY_SKIPPED_HOSTS),
                   ('display_ok_hosts', True),
@@ -45,7 +46,10 @@ class CallbackModule(default):
             setattr(self, option, value)
 
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        log_stdout.error(str(result._task) + " failed")
+        if ignore_errors:
+            log_stdout.info("ignore error:%s", str(result._task))
+        else:
+            log_stdout.error(str(result._task) + " failed")
         result._result['_ansible_verbose_always'] = True
         log_write.error("failed: [%s -> %s]" % (result._host.get_name(), self._dump_results(result._result)))
 
