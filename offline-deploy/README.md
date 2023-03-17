@@ -288,7 +288,7 @@ vi inventory_file
 
 ```
  **方法2** ：通过修改csv文件的方式，csv的模板参照文件Inventory_Template.CSV进行配置，相应项与inventory_file一一对应
-第一行：SCENE_NUM 后填需要的#安装场景，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller
+第一行：SCENE_NUM 后填需要的#安装场景，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller，MEF后填no（需要MEF的用户请看MEF-README）
 第二行是接下来的节点所需的属性，带*的为必填项
 如
 ```
@@ -299,6 +299,8 @@ master     xx.xx.xx.xx  root       111111                    master    xx.xx.xx.
 
 
 ## 步骤4：执行安装
+ **注意**
+以下一键安装适用于步骤3中方法2的用户，选择方法1的请选择自己需要的脚本执行
 
 运行如下指令进行安装, 请提前将指令中的示例时间设置为当前时间:
 
