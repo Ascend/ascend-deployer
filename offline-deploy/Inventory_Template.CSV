@@ -1,5 +1,5 @@
 SCENE_NUM,1,EXTRA,,MEF,no,,,,,,
-*character,*deviceIP,*ssh_user,ssh_pass,ssh_become_pass,host_name,*k8s_api_server_ip,kube_interface,mode,device_netmask,detect_ip,device_ips
-master,xx.xx.xx.xx,root,AAA@1111,,master,xx.xx.xx.xx,xxx,,,,
+*group,*ssh_host,*ssh_user,ssh_pass,ssh_become_pass,host_name,*k8s_api_server_ip,kube_interface,mode,device_netmask,detect_ip,device_ips
+master,xx.xx.xx.xx,root,AAA@1111,,master,xx.xx.xx.xx,ebf=asd,,,,
 mef,xx.xx.xx.xx,user1,AAA@1111,,xxx,,,,,,
-worker,xx.xx.xx.xx,user2,AAA@1111,,xxx,,,SMP,255.255.255.0,xx.xx.xx.xx,192.168.100.1/192.168.100.2/192.168.100.3
+worker,xx.xx.xx.xx,user2,AAA@1111,,xxx,,,SMP,255.255.255.0,dd.dd.dd.dd,192.168.100.1/192.168.100.2/192.168.100.3
