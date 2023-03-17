@@ -465,8 +465,8 @@ bash scripts/upgrade.sh
      export current_arch=$(arch)
      cd ${HOME}/offline-deploy/tools/report
      ./k8s_status_report_$current_arch -h #查看帮助说明
-     ./k8s_status_report_$current_arch -inventoryFilePath ${HOME}/offline-deploy/inventory_file -path /root -format csv   # 运行样例
-     # 运行以上命令后，即可在本目录下生成nodeData.csv文件，可以查看相关节点和pod，容器等信息,将上述命令中的format改为json，
+     ./k8s_status_report_$current_arch -inventoryFilePath ${HOME}/offline-deploy/inventory_file -outputFileName /root/out -format csv   # 运行样例
+     # 运行以上命令后，会输出集群结果是否正常，同时会在/root下生成的out.csv文件，若需要查看相关节点和pod，容器等信息,将上述命令中的format改为json，
      # 会在本地生成master.json与work.json节点对应信息
      # 查看hccn,driver,docker等相关系统描述信息，可以执行scripts/machine_report.sh，会在/root目录下生成report_temp.txt文件, 运行命令如下
      cd ${HOME}/offline-deploy/scripts
