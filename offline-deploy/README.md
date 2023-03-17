@@ -288,7 +288,7 @@ vi inventory_file
 
 ```
  **方法2** ：通过修改csv文件的方式，csv的模板参照文件Inventory_Template.CSV进行配置，相应项与inventory_file一一对应
-第一行：SCENE_NUM 后填需要的安装场景，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller，MEF后填no（需要MEF的用户请看MEF-README）
+第一行：SCENE_NUM 后填需要的安装场景(#安装场景)，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller，MEF后填no（需要MEF的用户请看MEF-README）
 第二行是接下来的节点所需的属性，带*的为必填项
 如
 ```
