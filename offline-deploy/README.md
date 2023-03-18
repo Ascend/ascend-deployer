@@ -3,18 +3,10 @@
   - [运行环境要求](#运行环境要求)
   - [软件支持列表](#软件支持列表)
   - [硬件支持列表](#硬件支持列表)
-- [安装场景](#安装场景)
 - [安装步骤](#安装步骤)
-  - [步骤1：准备登录各台服务器的账号](#步骤1准备登录各台服务器的账号)
-  - [步骤2：下载离线软件包](#步骤2下载离线软件包)
-  - [步骤3：配置安装信息](#步骤3配置安装信息)
-  - [步骤4：执行安装](#步骤4执行安装)
-- [安装后状态查看](#安装后状态查看)
-- [MEF-Center离线安装场景](#mef-center离线安装场景)
-  - [步骤1：配置安装节点信息](#步骤1配置安装节点信息)
-  - [步骤2：导入MEF-Center软件包](#步骤2导入mef-center软件包)
-  - [步骤3：安装MEF-Center](#步骤3安装mef-center)
-  - [确认安装成功](#确认安装成功)
+  - [步骤1：下载离线软件包](#步骤2下载离线软件包)
+  - [步骤2：配置安装信息](#步骤3配置安装信息)
+  - [步骤3：执行安装](#步骤4执行安装)
 - [组件升级](#组件升级)
 - [安装脚本对系统的修改](#安装脚本对系统的修改)
 - [常用操作](#常用操作)
@@ -26,18 +18,79 @@
 - [CHANGELOG](#changelog)
 
 # 功能简介
-本软件使用基于Ansible的脚本， 进行批量安装。 简要来说， 具有如下功能：
+本软件提供MindX组件及其依赖的批量离线安装功能，具体适用场景及安装组件说明如下（可选组件默认不安装）：
 
-1. MindX DL全栈安装, 包括集群调度组件、以及运行集群调度组件依赖的软件（Docker、kubernetes）（对应的SCENE_NUM为1）。
-2. K8s集群扩容 (纳管工作节点, 对应的SCENE_NUM为2和3， 具体区别请参考[安装场景](#安装场景)）。
-3. 纯k8s集群安装 (目前仅用于MEF-Center场景的前置k8s安装, 对应的SCENE_NUM为4）。
-4. MEF-Center场景的安装(具体请参考[MEF-Center离线安装场景](#mef-center离线安装场景) )。
-5. 配置HCCN网络(具体请参考[常用操作6](#常用操作)).
-6. K8s集群状态查询(具体请参考[常用操作7](#常用操作)).
+<table>
+<thead>
+  <tr>
+    <th align="left">场景</th>
+    <th align="left">安装组件</th>
+    <th align="left">说明</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="8">MindX DL全栈安装(集群调度场景, 全栈）</td>
+    <td rowspan="8">Docker，Kubernetes，Ascend Docker Runtime，Ascend Device Plugin，Volcano，NodeD，HCCL-Controller，NPU-Exporter</li></td>
+    <td rowspan="8">该场景适用于你有一台或者多台NPU服务器，需要使用Kubernetes管理。使用该场景会完成NPU服务器的Docker、Kubernetes和NPU集群调度组件的安装。在inventory_file中对应场景一</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td rowspan="6">K8s集群扩容(集群调度场景)</td>
+    <td rowspan="6">Ascend Docker Runtime，Ascend Device Plugin，Volcano，NodeD(可选)，HCCL-Controller(可选)，NPU-Exporter(可选)</li></td>
+    <td rowspan="6">该场景适用于你已经有一个部署好的Kubernetes集群，需要纳管新的NPU服务器。使用该场景时，需要在已有的Kubernetes集群的master节点部署NPU管理组件，新接入的NPU机器上部署worker节点的NPU管理组件。在inventory_file中对应场景二</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td rowspan="3">K8s集群扩容(设备纳管场景)</td>
+    <td rowspan="3">Ascend Docker Runtime，Ascend Device Plugin，NPU-Exporter(可选)</li></td>
+    <td rowspan="3">该场景适用于你已经有一个部署好的Kubernetes集群，希望使用自己的调度器部署NPU任务。使用该场景时，需要在新接入的NPU服务器上部署worker节点的NPU管理组件。在inventory_file中对应场景三</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td rowspan="3">MEF-Center离线安装场景</td>
+    <td rowspan="4">Docker，Kubernetes，KubeEdge，MEF-Center</li></td>
+    <td rowspan="3">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四，相关操作请查看MEF_README</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+  </tr>
+</tbody>
+</table>
 
-不同的场景应安装不同的组件，具体请参考[安装场景](#安装场景)中的说明， 并通过设置配置文件`inventory_file`中的SCENE_NUM参数生效。 安装前请阅读[环境依赖](#环境依赖)确认环境符合预期；
-
-请按照[安装步骤](#安装步骤)逐步执行。
+安装前请阅读[环境依赖](#环境依赖)确认环境符合预期；
 
 # 环境依赖
 ## 运行环境要求
@@ -158,147 +211,89 @@
 | 服务器（插Atlas 300V 训练解析卡） |
 
 
-
-# 安装场景
-可选组件默认不安装
-<table>
-<thead>
-  <tr>
-    <th align="left">场景</th>
-    <th align="left">安装组件</th>
-    <th align="left">说明</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td rowspan="8">MindX DL全栈安装(集群调度场景, 全栈）</td>
-    <td rowspan="8"><li>Docker</li><br /><li>Kubernetes</li><br /><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>Volcano</li><br /><li>NodeD</li><br /><li>HCCL-Controller</li><br /><li>NPU-Exporter</li></td>
-    <td rowspan="8">该场景适用于你有一台或者多台NPU服务器，需要使用Kubernetes管理。使用该场景会完成NPU服务器的Docker、Kubernetes和NPU集群调度组件的安装。在inventory_file中对应场景一</td>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-    <td rowspan="6">K8s集群扩容(集群调度场景)</td>
-    <td rowspan="6"><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>Volcano</li><br /><li>NodeD(可选)</li><br /><li>HCCL-Controller(可选)</li><br /><li>NPU-Exporter(可选)</li></td>
-    <td rowspan="6">该场景适用于你已经有一个部署好的Kubernetes集群，需要纳管新的NPU服务器。使用该场景时，需要在已有的Kubernetes集群的master节点部署NPU管理组件，新接入的NPU机器上部署worker节点的NPU管理组件。在inventory_file中对应场景二</td>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-    <td rowspan="3">K8s集群扩容(设备纳管场景)</td>
-    <td rowspan="3"><li>Ascend Docker Runtime</li><br /><li>Ascend Device Plugin</li><br /><li>NPU-Exporter(可选)</li></td>
-    <td rowspan="3">该场景适用于你已经有一个部署好的Kubernetes集群，希望使用自己的调度器部署NPU任务。使用该场景时，需要在新接入的NPU服务器上部署worker节点的NPU管理组件。在inventory_file中对应场景三</td>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-    <td rowspan="3">MEF-Center离线安装场景</td>
-    <td rowspan="4"><li>Docker</li><br /><li>Kubernetes</li><br /><li>KubeEdge</li><br /><li>MEF-Center</li></td>
-    <td rowspan="3">该场景的MEF-Center支持部署在边缘设备或者服务器上，需要确保设备的操作系统为ubuntu和OpenEuler，其中ubuntu版本为20.04，OpenEuler为22.03。在inventory_file中对应场景四，相关操作请查看MEF_README</td>
-  </tr>
-  <tr>
-  </tr>
-  <tr>
-  </tr>
-</tbody>
-</table>
-
-
-
 # 安装步骤
 
-## 步骤1：准备登录各台服务器的账号
+在各节点安装时，本工具仅支持root账号和配置了sudo权限的普通账号运行。
 
-安装部署脚本需要通过ssh登录各台服务器执行命令，支持的ssh登录方式有如下两种：
-- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。如果要安装驱动，请使用该方式。
-- 使用ssh账号、密码登录的方式, 这种方式将把密码直接写入inventory_file文件, 具体方式请参考[步骤3：配置安装信息](#步骤3配置安装信息)
+## 步骤1：下载离线软件包
+在有网络访问权限的主机上，下载离线安装包resources.zip, 并将其放置在Linux节点解压缩到/root/resources目录。
 
-支持ssh登录的账号有如下两种：
-- root账号
-- 配置了sudo权限的普通账号
+- 下载离线软件安装压缩包resources.zip
 
+  对于Linux主机，可以执行以下命令下载，其它系统请使用系统自带的下载工具。以下链接仅为示例，具体版本下载链接参考[历史版本](#历史版本)中的地址。
 
-## 步骤2：下载离线软件包
-选择其中一种方式准备离线安装包, 请确保包下载完整, 注意网络波动.
+  请确保包下载完整，注意网络波动。
 
- - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.zip包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的url替换成[历史版本](#历史版本)中所需版本的resources.zip的地址，然后执行如下命令
 ```bash
-# resources.zip解压出的内容必须放置在家目录下
-cd
 wget https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/3.0.0/resources.zip
 ```
 
-然后执行解压操作
+- 进入resources.zip所在目录，执行以下命令解压
+
 ```bash
-cd
-mv resources ~/resources.$(date +%s) 2>/dev/null
-unzip resources.zip
-mv ~/offline-deploy ~/offline-deploy.$(date +%s) 2>/dev/null
+# resources.zip解压出的内容必须放在在家目录下
+unzip resources.zip -d /root/resources
+
+# copy offline-deploy
 cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
-
 ```
-在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/x86_64/unzip) 并上传到执行安装命令服务器上的家目录， 并采用如下指令完成相应resource包的解压
-```
-cd
-mv resources ~/resources.$(date +%s) 2>/dev/null
-chmod 700 unzip 
-mkdir -p resources && ./unzip resources.zip .
-mv ~/offline-deploy ~/offline-deploy.$(date +%s) 2>/dev/null
-cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
+在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/x86_64/unzip) 并上传到执行节点使用。
+## 步骤2：配置安装信息
+安装部署脚本需要通过ssh登录各台服务器执行命令，支持如下登陆方式：
 
-````
+- 使用ssh免密的方式登录，配置方式可参考[常用操作5](#常用操作)。推荐使用该方式在所有主机上对执行节点执行免登录。
+- 使用ssh账号、密码登录的方式
+  - root账号需要配置登录密码
+  - 非root账号需要有sudo权限，并指定sudo密码
 
-## 步骤3：配置安装信息
- **方法1** ：通过修改inventory_file的方式修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构**。特别注意配置SCENE_NUM和master/worker下的节点配置, 建议分别以master/worker其下的示例一为模板, 逐项填写; 如果采用提供非免密登陆方式, 用户还需要增加填写`ansible_ssh_pass`等项和相应的密码. 
+目前支持以下两种配置方式：
+
+ **方法1** ：修改inventory_file
 
 配置项的具体含义请参考`inventory_file`文件中的注释;
 
 ```bash
 cd ~/offline-deploy
 vi inventory_file
+```
+ **方法2** ：修改csv文件（/root/offline-deploy/Inventory_Template.CSV)
 
 ```
- **方法2** ：通过修改csv文件的方式，csv的模板参照文件Inventory_Template.CSV进行配置，相应项与inventory_file一一对应
-第一行：SCENE_NUM 后填需要的[安装场景](#安装场景)，EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller，MEF后填no（需要MEF的用户请看MEF-README）
-第二行是接下来的节点所需的属性，带*的为必填项
-如
-```
-*Character *DeviceIP    *ssh_user  ssh_pass ssh_become_pass  HostName  *k8s_api_server_ip  kube_interface
-master     xx.xx.xx.xx  root       111111                    master    xx.xx.xx.xx         
-
+SCENE_NUM,1,EXTRA,,MEF,no,,,,,,
+*group,*ssh_host,*ssh_user,ssh_pass,ssh_become_pass,host_name,*k8s_api_server_ip,kube_interface,mode,device_netmask,detect_ip,device_ips
+master,10.10.10.10,root,password,,master,10.10.10.10,,,,,
+worker,10.10.10.11,root,password,,worker,10.10.10.11,,SMP,255.255.255.0,192.168.100.108,192.168.100.100/192.168.100.101/192.168.100.102/192.168.100.103/192.168.100.104/192.168.100.105/192.168.100.106/192.168.100.107
 ```
 
+第一行为全局配置信息：
 
-## 步骤4：执行安装
+- SCENE_NUM 后填需要的安装场景序号
+- EXTRA后填希望的额外组件，如npu-exporter,noded,hccl-controller；
+- MEF：安装MEF方式
+  - 场景1，2，3时该项填no，表示不安装MEF
+  - 场景4时：
+    - mef-only，仅安装MEF本身
+    - mef-all，安装MEF及其依赖（docker，k8s等）
+
+第二行为主机节点配置字段信息，带*的为必填项
+
+其余行为主机配置信息
+
+- group列为主机分组，目前支持master，worker，mef三个分组；
+- ssh_host为主机IP；
+- ssh_user为主机账号；
+- ssh_pass为主机密码；
+- ssh_become_pass为sudo执行时的密码，当ssh_user为root时，该项可为空；
+- host_name为安装k8s时对该node设置的host_name;
+- k8s_api_server_ip为k8s主控节点的api_server_ip;
+- kube_interface为网卡名；
+- mode为npu的工作模式，仅worker节点为训练节点时可以配置，取值范围为AMP，SMP，NA；
+- device_netmask为RoCE网卡的子网掩码；
+- detect_ip为RoCE网卡的检测对象IP；
+- device_ips为8张RoCE网卡的ip，以"/"分隔；
+
+## 步骤3：执行安装
+
  **注意**
 以下一键安装适用于步骤3中方法2的用户，选择方法1的请选择自己需要的脚本执行
 
@@ -306,9 +301,7 @@ master     xx.xx.xx.xx  root       111111                    master    xx.xx.xx.
 
 ```bash
 cd ~/offline-deploy
-ansible -i inventory_file all -m shell -b -a "date -s '2022-06-01 08:00:00'; hwclock -w"
 python scripts/ascend-deploy.py <相应的csv位置，如/root/Inventory_Template.CSV>
-
 ```
 如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理.
 
@@ -317,8 +310,8 @@ python scripts/ascend-deploy.py <相应的csv位置，如/root/Inventory_Templat
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
 - 用户也可以通过在`~/offline-deploy`目录下执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
 
-  
-# 安装后状态查看
+
+安装后状态查看
 
 使用命令`kubectl get nodes`检查kubernetes节点，如下所示表示正常
 
@@ -415,37 +408,50 @@ bash scripts/upgrade.sh
     ansible -i inventory_file all -m ping
     ```
     回显中无“UNREACHABLE”表示连通，否则参考[常见安装问题1](#常见安装问题)进行处理
+
  3. 查看Ascend Docker Runtime是否生效，请执行命令`docker info 2>/dev/null | grep Runtime`，回显中出现“ascend”表示生效，回显示例如下。
 
     ```
     Runtimes: ascend runc
     Default Runtime: ascend
     ```
+
  4. 执行如下命令可以将inventory_file中配置的所有节点的k8s都重置（reset）
-	```
-    cd /root/offline-deploy
-    ansible-playbook -i inventory_file yamls/k8s_reset.yaml -vv
-    ```
+  ```
+  cd /root/offline-deploy
+  ansible-playbook -i inventory_file yamls/k8s_reset.yaml -vv
+  ```
+
  5. 配置免密登录
- 	```
-    ssh-keygen # 生成公钥，请按提示进行，在要求输入加密口令时输入复杂度符合所在组织安全规定的口令
-    ssh-copy-id <user>@<ip>   # 将管理节点的公钥拷贝到所有节点的机器上(包括本机)，<user>替换成要登录的账号，<ip>替换成要拷贝到的对应节点的ip。
-    # 在完成所有节点的免密配置后， 使用ssh-agent做口令缓存, 下面的  ~/.ssh/id_rsa  请根据ssh-keygen时的实际情况替换
-    ssh-agent bash
-    ssh-add ~/.ssh/id_rsa  
-     
-    ```
-	注意事项: 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险,安装完成后请删除控制节点~/.ssh/目录下的id_rsa和id_rsa_pub文件，和其他节点~/.ssh目录下的authorized_keys文件。
+
+    1. 生成公钥，请按提示进行，再要求输入加密口令时输入复杂度符合所在组织安全规定的口令
+
+       ```
+       ssh-keygen
+       ```
+
+    2. 将管理节点的公钥拷贝到所有节点的机器上(包括本机)，<user>替换成要登录的账号，<ip>替换成要拷贝到的对应节点的ip。
+
+       ```
+       ssh-copy-id <user>@<ip>
+       ```
+
+    3. 在完成所有节点的免密配置后， 使用ssh-agent做口令缓存, 下面的  ~/.ssh/id_rsa  请根据ssh-keygen时的实际情况替换
+
+       ```
+       ssh-agent bash
+       ssh-add ~/.ssh/id_rsa  
+       ```
+
+       注意事项: 请用户注意ssh密钥和密钥密码在使用和保管过程中的风险,安装完成后请删除控制节点~/.ssh/目录下的id_rsa和id_rsa_pub文件，和其他节点~/.ssh目录下的authorized_keys文件。
+
  6. hccn_tool网络配置（仅支持训练环境使用，详情可参考[配置device的网卡IP](https://www.hiascend.com/document/detail/zh/canncommercial/60RC1/envdeployment/instg/instg_000039.html)）
- 	```
-    下载文档中历史版本中最新的resources包，解压后将resources目录放置于root下
 
+    修改/root/offline-deploy/hccn_inventory_file后，执行以下命令完成指定设备的npu卡的ip网络配置
+
+    ```
     cd ${HOME}/offline-deploy
-    vi hccn_inventory_file
-    # 进入offline-deploy目录，编辑hccn_inventory_file文件,新增待配置设备的ip地址、用户名、action（执行配置<config>或者查看当前设备配置信息<view>）、mode（工作模式<SMP>、<AMP>）、ip（npu卡所配ip）、detectip（对端检测ip）、netmask（子网掩码）。格式参考inventory_file。
-
-    bash hccn_set.sh
-    # 在offline-deploy/scripts目录下执行bash hccn_set.sh，完成指定设备的npu卡的ip网络配置。
+    bash scripts/hccn_set.sh
     ```
 
     注意事项: 
@@ -456,46 +462,52 @@ bash scripts/upgrade.sh
 
     3、hccn_inventory_file中ip、detectip配置格式有两种：
 
-        <1>输入一个ip，工具自行生成后续ip，例如ip=10.0.0.1，工具会内部自行生成八个ip，10.0.0.1、10.0.1.1、10.0.2.1、10.0.3.1、10.0.0.2、10.0.1.2、10.0.2.2、10.0.3.2（该方法仅限于八卡环境）；
-        <2>按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
-    4、hccn_inventory_file其他配置可直接参考hccn_inventory_file中的样例;
+    1. 输入一个ip，工具自行生成后续ip，例如ip=10.0.0.1，工具会内部自行生成八个ip，10.0.0.1、10.0.1.1、10.0.2.1、10.0.3.1、10.0.0.2、10.0.1.2、10.0.2.2、10.0.3.2（该方法仅限于八卡环境）；
+    2. 按照hccn配置官方文档要求，例如八卡环境上，ip=10.0.0.1,10.0.1.1,10.0.2.1,10.0.3.1,10.0.0.2,10.0.1.2,10.0.2.2,10.0.3.2（逗号必须为英文）。detectip类似输入。
 
- 7. DL离线安装组件报告查看工具查看集群状态, 注意该功能仅能在master节点上运行;
-    ```
-     export current_arch=$(arch)
-     cd ${HOME}/offline-deploy/tools/report
-     ./k8s_status_report_$current_arch -h #查看帮助说明
-     ./k8s_status_report_$current_arch -inventoryFilePath ${HOME}/offline-deploy/inventory_file -outputFileName /root/out -format csv   # 运行样例
-     # 运行以上命令后，会输出集群结果是否正常，同时会在/root下生成的out.csv文件，若需要查看相关节点和pod，容器等信息,将上述命令中的format改为json，
-     # 会在本地生成master.json与work.json节点对应信息
-     # 查看hccn,driver,docker等相关系统描述信息，可以执行scripts/machine_report.sh，会在/root目录下生成report_temp.txt文件, 运行命令如下
-     cd ${HOME}/offline-deploy/scripts
-     bash machine_report.sh
-     cat /root/report_temp.txt # 查看docker, driver, hccn等相关信息
-    
-    ```
+ 7. DL离线安装组件报告查看工具查看集群状态
+
+    注意该功能仅能在master节点上运行;
+
+    - 到处集群状态报告
+
+      ```
+      cd ${HOME}/offline-deploy/tools/report
+      ./k8s_status_report_$(arch) -inventoryFilePath ${HOME}/offline-deploy/inventory_file -path /root -format csv
+      ```
+
+      运行以上命令后，会输出集群结果是否正常，同时会在/root下生成的out.csv文件，若需要查看相关节点和pod，容器等信息,将上述命令中的format改为json，
+      则会在本地生成master.json与work.json节点对应信息
+
+    - 查看docker, driver, hccn等相关信息
+
+      ```
+       cd ${HOME}/offline-deploy/scripts
+       bash machine_report.sh
+       cat /root/report_temp.txt
+      ```
 
  8. 驱动、固件安装说明
+
+    批量安装驱动、固件需编辑当前目录的inventory_file文件中的worker节点, 将需要安装驱动设备加入，建议以worker其下的示例一为模板, 逐项填写, 并提前配置好免密登陆
+
     ```
     cd /root/offline-deploy
-    # 批量安装驱动、固件需编辑当前目录的inventory_file文件中的worker节点, 将需要安装驱动设备加入，建议以worker其下的示例一为模板, 逐项填写, 并提前配置好免密登陆
     bash install_npu.sh                   # 安装驱动、固件
     # bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
     ```
 
-    注意事项：
-    1. 若执行批量配置，需提前配置免密登录。
-  
-9. 导入镜像
- 	```
-    
-    cd ${HOME}/offline-deploy
-    vi inventory_file
-    # 进入offline-deploy目录，编辑inventory_file文件。格式参考inventory_file。
+ 9. 导入镜像
 
+    进入offline-deploy目录，编辑inventory_file文件。
+
+    在~/offline-deploy/scripts目录下执行image_load.sh <镜像路径> <待安装节点> ，提供的镜像应为docker save导出的tar格式镜像, 待安装节点取值范围为master/worker/all/mef, 对应inventory_file中对应项, 完成镜像的导入。
+
+    可执行bash image_load.sh或bash image_load.sh -h查看help信息
+
+    ```
+    cd ${HOME}/offline-deploy
     bash image_load.sh <镜像路径> <待安装节点> 
-    # 在~/offline-deploy/scripts目录下执行image_load.sh <镜像路径> <待安装节点> ，提供的镜像应为docker save导出的tar格式镜像, 待安装节点取值范围为master/worker/all/mef, 对应inventory_file中对应项, 完成镜像的导入。
-    # 可执行bash image_load.sh或bash image_load.sh -h查看help信息
     ```
 
     注意事项: 
@@ -514,14 +526,15 @@ bash scripts/upgrade.sh
         "msg": "Failed to connect to the host via ssh: \nAuthorized users only. All activities may be monitored and reported.\nroot@172.0.0.100: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).", 
         "unreachable": true
     }
-
-     ```
+    
+    ```
      **原因**：<br />
      ansible脚本无法ssh登录到inventory_file中配置的服务器上
 
      **解决方法**：<br />
      请检查对应服务器的ssh配置是否正确，ssh服务是否启动，以及inventory_file文件配置是否正确
  2. 安装说明
+
  	- 安装脚本对Docker和Kubernetes的处理逻辑
  		- 场景包含的安装组件中没有Docker或Kubernetes时，脚本不会执行安装，以及初始化、加入集群等操作。
  		- 场景包含的安装组件中有Docker或Kubernetes时
@@ -538,50 +551,52 @@ bash scripts/upgrade.sh
  	- 使用集群调度场景(全栈)部署时，inventory_file配置文件`[master]`下配置的节点个数必须为奇数，如1,3,5...
 
  3. 使用Harbor时，docker login失败了，运行日志出现如下内容
+
  	```
-    ...
-    TASK [faild to login] *************************************************************************************************************
-    task path: /root/offline-deploy/tset.yaml:19
-    fatal: [172.0.0.99]: FAILED! => {"changed": false, "msg": "login harbor failed, please check whether docker proxy is set"}
-    ...
-    ```
-
-  	**原因**：<br />
-    节点的Docker配置了代理，`docker login`命令无法连接到Harbor
-
-    **解决方法**：<br />
-    通过命令`docker info`依次查看登录失败的服务器是否配置了代理，回显如下表示本节点配置了代理
-    ```
-    ...
-    HTTP Proxy: http://proxy.example.com:80/
-    HTTPS Proxy: http://proxy.example.com:80/
-    ...
-    ```
-    找到本节点上Docker配置代理的文件，如`/etc/systemd/system/docker.service.d/proxy.conf`，为Harbor地址（如：**192.168.0.2:7443**）配置`NO_PROXY`，示例如下
-    ```
-    [Service]
-    ...
-    Environment="NO_PROXY=192.168.0.2:7443"
-    ...
-    ```
-    然后重启Docker服务，再进行安装
-    ```
-    systemctl daemon-reload
-    systemctl restart docker
-    ```
+ 	...
+ 	TASK [faild to login] *************************************************************************************************************
+ 	task path: /root/offline-deploy/tset.yaml:19
+ 	fatal: [172.0.0.99]: FAILED! => {"changed": false, "msg": "login harbor failed, please check whether docker proxy is set"}
+ 	...
+ 	```
+ 	
+ 	**原因**：<br />
+ 	节点的Docker配置了代理，`docker login`命令无法连接到Harbor
+ 	
+ 	**解决方法**：<br />
+ 	通过命令`docker info`依次查看登录失败的服务器是否配置了代理，回显如下表示本节点配置了代理
+ 	```
+ 	...
+ 	HTTP Proxy: http://proxy.example.com:80/
+ 	HTTPS Proxy: http://proxy.example.com:80/
+ 	...
+ 	```
+ 	找到本节点上Docker配置代理的文件，如`/etc/systemd/system/docker.service.d/proxy.conf`，为Harbor地址（如：**192.168.0.2:7443**）配置`NO_PROXY`，示例如下
+ 	```
+ 	[Service]
+ 	...
+ 	Environment="NO_PROXY=192.168.0.2:7443"
+ 	...
+ 	```
+ 	然后重启Docker服务，再进行安装
+ 	```
+ 	systemctl daemon-reload
+ 	systemctl restart docker
+ 	```
  4. 回显信息出现`Missing sudo password`
- 	```
-    TASK [create mindx-dl image pull secret]
-    ****************************************************************************************************************************************
-    task path: /root/offline-deploy/tset.yaml:12
-    fatal: [172.0.0.100]: FAILED! => {"msg": "Missing sudo password"}
-    ```
-	**原因**：<br />
-    inventory_file中配置的非root账号登录，且未在对应节点/etc/sudoers中为账号配置NOPASSWD，
 
-    **解决方法**：<br />
-    - 参考inventory_file中的注释，配置`ansible_become_password`参数
-    - 在/etc/sudoers文件中为账号配置NOPASSWD
+ 	```
+ 	TASK [create mindx-dl image pull secret]
+ 	****************************************************************************************************************************************
+ 	task path: /root/offline-deploy/tset.yaml:12
+ 	fatal: [172.0.0.100]: FAILED! => {"msg": "Missing sudo password"}
+ 	```
+ 	**原因**：<br />
+ 	inventory_file中配置的非root账号登录，且未在对应节点/etc/sudoers中为账号配置NOPASSWD，
+ 	
+ 	**解决方法**：<br />
+ 	- 参考inventory_file中的注释，配置`ansible_become_password`参数
+ 	- 在/etc/sudoers文件中为账号配置NOPASSWD
  5. 如果安装时选择了安装K8s，脚本运行过程中，出现K8s加入集群失败相关错误，建议执行reset命令后再重新安装，reset命令会重置inventory_file中配置的master和worker节点的K8s集群，请确认后再操作。命令执行参考[常用操作4](#常用操作)。
  6. 如果安装部署过程出现K8s的master与worker通信异常，如打标签失败，通信超时等问题导致脚本执行失败，可以按照如下思路手动进行排查处理。
     1. 先排查K8s节点之间网络是否连通，是否因为网络代理原因的影响。
@@ -589,22 +604,23 @@ bash scripts/upgrade.sh
     3. 解决错误之后，可再次执行安装部署命令。
  7. 使用本工具部署时，如果/etc/ansible/facts-cache/ 目录存在，请先删除后再开始部署。
  8. 安装部署脚本执行时，master或者worker节点加入K8s集群，或者执行kubectl命令时出现类似如下错误信息
- 	```
-    read: connection reset by peer\nerror: unexpected error when reading response body. Please retry.
-    ```
-	**原因**：<br />
-    可能由于节点之间网络通信不稳定，server端关闭了连接，导致申请加入集群的节点，或者发送kubectl命令的节点无法收到响应。
 
-    **解决方法**：<br />
-    1. 如果是加入集群时出现该错误，请在成功的master节点使用命令`kubectl get node`确认失败的节点是否加入成功
-    	- 如果节点加入失败了，建议在对应节点上将K8s重置之后再执行安装命令，命令为`kubeadm reset -f && rm -rf $HOME/.kube /etc/cni/net.d`
-    	- 如果worker节点加入成功了，则重新执行安装命令即可
-    	- 如果master节点加入成功了，则需要执行下面命令，解除master隔离后，再重新执行安装命令
-          ```
-          # {nodename}为节点在K8s中的名字
-          kubectl taint nodes {nodename} node-role.kubernetes.io/master-
-          ```
-    2. 如果是执行`kubectl`命令时失败了，根据回显的信息处理完错误后再执行安装命令。
+ 	```
+ 	read: connection reset by peer\nerror: unexpected error when reading response body. Please retry.
+ 	```
+ 	**原因**：<br />
+ 	可能由于节点之间网络通信不稳定，server端关闭了连接，导致申请加入集群的节点，或者发送kubectl命令的节点无法收到响应。
+ 	
+ 	**解决方法**：<br />
+ 	1. 如果是加入集群时出现该错误，请在成功的master节点使用命令`kubectl get node`确认失败的节点是否加入成功
+ 		- 如果节点加入失败了，建议在对应节点上将K8s重置之后再执行安装命令，命令为`kubeadm reset -f && rm -rf $HOME/.kube /etc/cni/net.d`
+ 		- 如果worker节点加入成功了，则重新执行安装命令即可
+ 		- 如果master节点加入成功了，则需要执行下面命令，解除master隔离后，再重新执行安装命令
+ 	      ```
+ 	      # {nodename}为节点在K8s中的名字
+ 	      kubectl taint nodes {nodename} node-role.kubernetes.io/master-
+ 	      ```
+ 	2. 如果是执行`kubectl`命令时失败了，根据回显的信息处理完错误后再执行安装命令。
 
 ## 其他问题
 
