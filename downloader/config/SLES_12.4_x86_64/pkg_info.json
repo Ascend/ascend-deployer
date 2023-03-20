@@ -3,6 +3,9 @@
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "glibc-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "libopenssl-devel", "used_by": [ "python3.7.5" ]
     },
     {

@@ -468,7 +468,7 @@ class Yum(object):
         self.to_be_download = {}
         res = [self.build_to_be_download(name, ver, rel)]
         for name, pkg in self.to_be_download.items():
-            if name.startswith('glibc') or name.startswith('systemd') or name.startswith('filesystem'):
+            if name.startswith('systemd') or name.startswith('filesystem'):
                 continue
             if name in self.downloaded:
                 continue
