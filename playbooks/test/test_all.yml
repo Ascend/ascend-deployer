@@ -9,6 +9,18 @@
 - name: test toolbox
   import_playbook: test_toolbox.yml
 
+- name: test nnae
+  import_playbook: test_nnae.yml
+
+- name: test nnrt
+  import_playbook: test_nnrt.yml
+
+- name: test tfplugin
+  import_playbook: test_tfplugin.yml
+
+- name: test toolkit
+  import_playbook: test_toolkit.yml
+
 - name: test tensorflow
   import_playbook: test_tensorflow.yml
 

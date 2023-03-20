@@ -1,0 +1,38 @@
+- name: test if toolbox installed
+  find:
+    paths:
+      - "{{ ascend_install_path }}/toolbox"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "ascend-dmi"
+  register: ascend_dmi
+
+- name: test if nnrt installed
+  find:
+    paths:
+      - "{{ ascend_install_path }}/nnrt"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "ascend_nnrt_install.info"
+  register: nnrt
+
+- name: message
+  debug:
+    msg:
+    - "toolbox or nnrt not installed, please install first"
+  when: ascend_dmi.matched == 0 or nnrt.matched == 0
+
+- name: execute ascend-dmi -c
+  shell: ascend-dmi -c | grep nnrt | awk '{print $6}'
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:{{ ascend_install_path }}/nnae/latest/opp/fwkacllib/lib64:{{ ascend_install_path }}/nnrt/latest/acllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+    ASCEND_OPP_PATH: "{{ ascend_install_path }}/nnae/latest/opp:{{ ascend_install_path }}/nnrt/latest/opp"
+  when: ascend_dmi.matched > 0 and nnrt.matched > 0
+  register: nnrt_status
+
+- name: print nnrt status
+  debug: var=nnrt_status
+  when: ascend_dmi.matched > 0 and nnrt.matched > 0

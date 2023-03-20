@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test toolkit
+    include_tasks: case_toolkit.yml

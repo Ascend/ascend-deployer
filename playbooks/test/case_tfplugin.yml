@@ -1,0 +1,38 @@
+- name: test if toolbox installed
+  find:
+    paths:
+      - "{{ ascend_install_path }}/toolbox"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "ascend-dmi"
+  register: ascend_dmi
+
+- name: test if tfplugin installed
+  find:
+    paths:
+      - "{{ ascend_install_path }}/tfplugin"
+    recurse: yes
+    file_type: file
+    use_regex: yes
+    patterns: "ascend_tfplugin_install.info"
+  register: tfplugin
+
+- name: message
+  debug:
+    msg:
+    - "toolbox or tfplugin not installed, please install first"
+  when: ascend_dmi.matched == 0 or tfplugin.matched == 0
+
+- name: execute ascend-dmi -c
+  shell: ascend-dmi -c | grep tfplugin | awk '{print $6}'
+  environment:
+    PATH: "{{ local_path }}/{{ python_version }}/bin:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ local_path }}/{{ python_version }}/lib:{{ ascend_install_path }}/toolbox/latest/Ascend-DMI/lib64:/usr/local/dcmi:{{ ascend_install_path }}/nnae/latest/opp/fwkacllib/lib64:{{ ascend_install_path }}/nnrt/latest/acllib/lib64:{{ local_path }}/gcc7.3.0/lib64:{{ ascend_install_path }}/add-ons:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver"
+    ASCEND_OPP_PATH: "{{ ascend_install_path }}/nnae/latest/opp:{{ ascend_install_path }}/nnrt/latest/opp"
+  when: ascend_dmi.matched > 0 and tfplugin.matched > 0
+  register: tfplugin_status
+
+- name: print tfplugin status
+  debug: var=tfplugin_status
+  when: ascend_dmi.matched > 0 and tfplugin.matched > 0
