@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test tfplugin
+    include_tasks: case_tfplugin.yml

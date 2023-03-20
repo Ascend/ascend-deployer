@@ -1,0 +1,4 @@
+- hosts: '{{ hosts_name }}'
+  tasks:
+  - name: test nnae
+    include_tasks: case_nnae.yml
