@@ -256,6 +256,7 @@ def run_install(scene_num, mef_option):
     ansible_plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/../ansible_plugin"
     working_env['ANSIBLE_CALLBACK_PLUGINS'] = ansible_plugin_path
     working_env['ANSIBLE_STDOUT_CALLBACK'] = "ansible_log"
+    working_env['ANSIBLE_LOAD_CALLBACK_PLUGINS'] = "True"
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
     err_flag = False
     log_list = ['CRITICAL', 'FATAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']
