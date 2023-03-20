@@ -33,6 +33,12 @@
         "name": "cpp", "used_by": [ "driver", "cann", "framework" ]
     },
     {
+        "name": "glibc-headers", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
+        "name": "glibc-devel", "used_by": [ "driver", "cann", "framework" ]
+    },
+    {
         "name": "libgcc", "used_by": [ "driver", "cann", "framework" ]
     },
     {
