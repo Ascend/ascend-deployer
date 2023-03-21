@@ -5,14 +5,20 @@ import subprocess
 import sys
 import common_log
 
-PARAMETER_DICT = {'group': 0, 'ssh_host': 1, 'user': 2, 'pwd': 3, 'become_pwd': 4, 'host': 5, 'api': 6, 'interface': 7,
-                  'hccn_mode': 8, 'device_netmask': 9, 'detect_ip': 10, 'device_ips': 11}
-
+INVENTORY_DICT = {'group': 0, 'ssh_host': 1, 'ssh_user': 2, 'ssh_pass': 3, 'ssh_become_pass': 4, 'host_name': 5,
+                  'k8s_api_server_ip': 6, 'kube_interface': 7,
+                  }
+HCCN_INVENTORY_DICT = {'hccn_mode': 8, 'device_netmask': 9, 'detect_ip': 10, 'device_ips': 11}
+ROW1_DICT = {'scene_num': 1, 'extra_component': 3, 'mef_option': 5, 'pod_network_cidr': 7, 'kube_vip': 9,
+             'harbor_server': 11, 'harbor_admin_user': 13, 'harbor_admin_password': 15, 'harbor_public_project': 17,
+             'harbor_ca_file': 19}
 CSV_SIZE = 1024 * 1024
 SCENE_LIST = ['1', '2', '3', '4']
 TOOLS_LIST = ['npu-exporter', 'noded', 'hccl-controller']
 MEF_OPTIONS = {'no': 0, 'mef-only': 1, "mef-all": 2}
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+OFFLINE_DEPLOY_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 ANSIBLE_PATH = os.path.join(SCRIPT_PATH, "install_ansible.sh")
 BASH = " bash "
 AND = " && "
@@ -20,6 +26,7 @@ HCCN_PATH = os.path.join(SCRIPT_PATH, "hccn_set.sh")
 NPU_PATH = os.path.join(SCRIPT_PATH, "install_npu.sh")
 INSTALL_PATH = os.path.join(SCRIPT_PATH, "install.sh")
 KUBEEDGE_PATH = os.path.join(SCRIPT_PATH, "install_kubeedge.sh")
+REPORT_PATH = os.path.join(SCRIPT_PATH, "machine_report")
 INVENTORY_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
@@ -79,24 +86,24 @@ SCENE_NUM={sn}
 # 	noded            表示安装NodeD组件
 # 	hccl-controller  表示安装HCCL-Controller组件
 # 配置示例：EXTRA_COMPONENT="npu-exporter,noded,hccl-controller"
-EXTRA_COMPONENT="{extra}"
+EXTRA_COMPONENT="{extra_component}"
 
 # k8s集群使用的子网IP网段，如果与服务器IP网段重合，需要修改下面的值为其他私有网段。如：192.168.0.0/16
-POD_NETWORK_CIDR="192.168.0.0/16"
+POD_NETWORK_CIDR="{pod_network_cidr}"
 
 # 多master场景下配置虚拟IP，kube_vip需跟k8s集群节点ip在同一子网，且为闲置、未被他人使用的ip
-KUBE_VIP=""
+KUBE_VIP="{kube_vip}"
 
 # 使用harbor镜像仓时配置
 # harbor服务地址，格式为ip:port，不含协议，如"192.0.0.1:1234"
-HARBOR_SERVER=""
+HARBOR_SERVER="{harbor_server}"
 # 配置harbor管理员账号信息，用于在harbor中创建名为项目，以及推送、拉取k8s相关、MindX DL相关的镜像
-HARBOR_ADMIN_USER=""
-HARBOR_ADMIN_PASSWORD=""
+HARBOR_ADMIN_USER="{harbor_admin_user}"
+HARBOR_ADMIN_PASSWORD="{harbor_admin_password}"
 # MindX DL相关镜像的项目公开状态，默认为私有，可选值false或true
-HARBOR_PUBLIC_PROJECT="false"
+HARBOR_PUBLIC_PROJECT="{harbor_public_project}"
 # 使用https协议时，配置harbor镜像仓根CA文件路径
-HARBOR_CA_FILE=""
+HARBOR_CA_FILE="{harbor_ca_file}"
 """
 HCCN_INVENTORY_FILE = """
 [tools]
@@ -114,14 +121,102 @@ ansible_ssh_user='root'
 
 class InventoryDTO:
     def __init__(self):
-        self.inventory_param = {"group": "", "ssh_host": "", "user": "", "pwd": "", "become_pwd": "", "host_name": "",
-                                "api": "", "interface": ""}
-        self.hccn_inventory_param = {"mode": "", "device_netmask": "", "detect_ip": "", "device_ips": ""}
+        self.inventory_param = self.init_inventory_param(INVENTORY_DICT)
+        self.hccn_inventory_param = self.init_inventory_param(HCCN_INVENTORY_DICT)
+        self.row1_param = self.init_inventory_param(ROW1_DICT)
 
         self.master = ""
         self.worker = ""
         self.mef = ""
         self.hccn_tool = ""
+        self.run_hccn_set = False
+
+    @staticmethod
+    def init_inventory_param(param_dict):
+        gen_dict = {}
+        for k, _ in param_dict.items():
+            gen_dict[k] = ""
+        return gen_dict
+
+    def append_node(self, group):
+        attr_str = ''
+        if self.inventory_param["ssh_host"] == '':
+            return
+        attr_str += self.inventory_param["ssh_host"]
+        attr_str += self.get_item("ansible_ssh_user", self.inventory_param["ssh_user"])
+        attr_str += self.get_item("ansible_ssh_pass", self.inventory_param["ssh_pass"])
+        attr_str += self.get_item("ansible_ssh_become", self.inventory_param["ssh_become_pass"])
+        attr_str += self.get_item("set_hostname", self.inventory_param["host_name"])
+        if group == 'master':
+            attr_str += self.get_item("k8s_api_server_ip", self.inventory_param["k8s_api_server_ip"])
+            attr_str += self.get_item("kube_interface", self.inventory_param["kube_interface"]) + '\n'
+            self.master += attr_str
+        if group == 'worker':
+            if self.verify_hccn_param(self.hccn_inventory_param):
+                self.run_hccn_set = True
+                hccn_str = ''
+                hccn_str += self.inventory_param["ssh_host"]
+                hccn_str += self.get_item("ansible_ssh_user", self.inventory_param["ssh_user"])
+                hccn_str += " action=config"
+                hccn_str += self.get_item("mode", self.hccn_inventory_param["hccn_mode"])
+                hccn_str += self.get_item("ip", self.hccn_inventory_param["device_ips"])
+                hccn_str += self.get_item("detectip", self.hccn_inventory_param["detect_ip"])
+                hccn_str += self.get_item("netmask", self.hccn_inventory_param["device_netmask"])
+                hccn_str += '\n'
+                self.hccn_tool += hccn_str
+            attr_str += '\n'
+            self.worker += attr_str
+        if group == 'mef':
+            attr_str += '\n'
+            self.mef += attr_str
+
+    @staticmethod
+    def verify_hccn_param(param):
+        if param["hccn_mode"] != 'SMP' and param["hccn_mode"] != 'AMP':
+            return False
+        if param["hccn_mode"] == '' or param["device_netmask"] == '' or param["detect_ip"] == '' or param[
+            "device_ips"] == '':
+            return False
+        return True
+
+    @staticmethod
+    def get_item(item_name, item_value):
+        if item_value.strip() != "":
+            if item_name == 'ip':
+                item_value = item_value.replace('/', ',')
+            item = ' {}="{}"'.format(item_name, item_value)
+        else:
+            return ""
+        return item
+
+    def parse_other_row_info(self, row):
+        for k, v in INVENTORY_DICT.items():
+            self.inventory_param[k] = row[v]
+
+        for k, v in HCCN_INVENTORY_DICT.items():
+            self.hccn_inventory_param[k] = row[v]
+        self.solve_device()
+
+    def parse_row1_info(self, row):
+        for k, v in ROW1_DICT.items():
+            if k == "harbor_ca_file" and row[v] == "no":
+                self.row1_param[k] = ""
+            else:
+                self.row1_param[k] = row[v]
+        self.row1_param['mef_option'] = self.mef_check(self.row1_param['scene_num'], self.row1_param['mef_option'])
+
+    @staticmethod
+    def mef_check(scene_num, mef_option):
+        mef_key = mef_option.strip().lower()
+        if MEF_OPTIONS.get(mef_key) is None:
+            hwlog.error("mef option not valid !")
+            sys.exit(1)
+        if scene_num == '4' and MEF_OPTIONS[mef_key] == 0:
+            hwlog.error("mef option not fit !")
+            sys.exit(1)
+        if scene_num != '4':
+            mef_key = 'no'
+        return mef_key
 
     def solve_device(self):
         if self.inventory_param["group"] == 'master':
@@ -141,90 +236,45 @@ class InventoryDTO:
         for k, _ in self.hccn_inventory_param.items():
             self.hccn_inventory_param[k] = ''
 
-    def append_node(self, group):
-        attr_str = ''
-        if self.inventory_param["ssh_host"] == '':
-            return
-        attr_str += self.inventory_param["ssh_host"]
-        attr_str += self.get_item("ansible_ssh_user", self.inventory_param["user"])
-        attr_str += self.get_item("ansible_ssh_pass", self.inventory_param["pwd"])
-        attr_str += self.get_item("ansible_ssh_become", self.inventory_param["become_pwd"])
-        attr_str += self.get_item("set_hostname", self.inventory_param["host_name"])
-        if group == 'master':
-            attr_str += self.get_item("k8s_api_server_ip", self.inventory_param["api"])
-            attr_str += self.get_item("kube_interface", self.inventory_param["interface"]) + '\n'
-            self.master += attr_str
-        if group == 'worker':
-            if self.verify_hccn_param(self.hccn_inventory_param):
-                hccn_str = ''
-                hccn_str += self.inventory_param["ssh_host"]
-                hccn_str += self.get_item("ansible_ssh_user", self.inventory_param["user"])
-                hccn_str += " action=config"
-                hccn_str += self.get_item("mode", self.hccn_inventory_param["mode"])
-                hccn_str += self.get_item("ip", self.hccn_inventory_param["device_ips"])
-                hccn_str += self.get_item("detectip", self.hccn_inventory_param["detect_ip"])
-                hccn_str += self.get_item("netmask", self.hccn_inventory_param["device_netmask"])
-                hccn_str += '\n'
-                self.hccn_tool += hccn_str
-            attr_str += '\n'
-            self.worker += attr_str
-        if group == 'mef':
-            attr_str += '\n'
-            self.mef += attr_str
+    def append_inventory(self):
+        if self.row1_param['scene_num'] != '4':
+            result = self.verify_parameter()
+            if result != '':
+                hwlog.error(result)
+                sys.exit(1)
+        self.do_append_inventory()
 
-    @staticmethod
-    def verify_hccn_param(param):
-        if param["mode"] != 'SMP' and param["mode"] != 'AMP':
-            return False
-        if param["mode"] == '' or param["device_netmask"] == '' or param["detect_ip"] == '' or param[
-            "device_ips"] == '':
-            return False
-        return True
+    def verify_parameter(self):
+        if self.row1_param['scene_num'] not in SCENE_LIST:
+            return 'scene_num invalid !'
+        tool_list = self.row1_param['extra_component'].split(',')
+        for tool in tool_list:
+            tool = tool.lower()
+            if tool not in TOOLS_LIST and tool != "":
+                return 'EXTRA_COMPONENT name incorrect !'
+        master = self.master
+        if len(master.split('\n')) % 2 == 1:
+            return 'master num not illegal !'
+        return ''
 
-    @staticmethod
-    def get_item(item_name, item_value):
-        if item_value.strip() != "":
-            if item_name == 'ip':
-                item_value = item_value.replace('/', ',')
-            item = ' {}="{}"'.format(item_name, item_value)
-        else:
-            return ""
-        return item
-
-
-def verify_parameter(num, tools, obj):
-    if num not in SCENE_LIST:
-        return 'scene_num invalid !'
-    tool_list = tools.split(',')
-    for tool in tool_list:
-        tool = tool.lower()
-        if tool not in TOOLS_LIST and tool != "":
-            return 'EXTRA_COMPONENT name incorrect !'
-    master = obj.master
-    if len(master.split('\n')) % 2 == 1:
-        return 'master num not illegal !'
-    return ''
-
-
-def append_inventory(num, tools, obj):
-    if num != '4':
-        result = verify_parameter(num, tools, obj)
-        if result != '':
-            hwlog.error(result)
-            sys.exit(1)
-    do_append_inventory(num, tools, obj)
-
-
-def do_append_inventory(num, tools, obj):
-    offline_deploy_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    raw_inventory_file = INVENTORY_FILE.format(master=obj.master, worker=obj.worker, mef=obj.mef, sn=num, extra=tools)
-    with open(offline_deploy_path+"/inventory_file", mode="w") as file:
-        for line in raw_inventory_file:
-            file.write(line)
-    raw_hccn_inventory_file = HCCN_INVENTORY_FILE.format(hccn_tools=obj.hccn_tool)
-    with open(offline_deploy_path+"/hccn_inventory_file", mode="w") as file:
-        for line in raw_hccn_inventory_file:
-            file.write(line)
+    def do_append_inventory(self):
+        raw_inventory_file = INVENTORY_FILE.format(master=self.master, worker=self.worker, mef=self.mef,
+                                                   sn=self.row1_param['scene_num'],
+                                                   extra_component=self.row1_param['extra_component'],
+                                                   pod_network_cidr=self.row1_param['pod_network_cidr'],
+                                                   kube_vip=self.row1_param['kube_vip'],
+                                                   harbor_server=self.row1_param['harbor_server'],
+                                                   harbor_admin_user=self.row1_param['harbor_admin_user'],
+                                                   harbor_admin_password=self.row1_param['harbor_admin_password'],
+                                                   harbor_public_project=self.row1_param['harbor_public_project'],
+                                                   harbor_ca_file=self.row1_param['harbor_ca_file'])
+        with open(OFFLINE_DEPLOY_PATH + "/inventory_file", mode="w") as file:
+            for line in raw_inventory_file:
+                file.write(line)
+        raw_hccn_inventory_file = HCCN_INVENTORY_FILE.format(hccn_tools=self.hccn_tool)
+        with open(OFFLINE_DEPLOY_PATH + "/hccn_inventory_file", mode="w") as file:
+            for line in raw_hccn_inventory_file:
+                file.write(line)
 
 
 def file_check(file):
@@ -238,29 +288,44 @@ def file_check(file):
     return real_path
 
 
-def run_install(scene_num, mef_option):
+def time_synchronize():
+    time_synchronize_cmd = "ansible -i " + OFFLINE_DEPLOY_PATH + "/inventory_file" \
+                           + " all -m shell -b -a \'hwclock -w\'"
+    hwlog.info("starting run time synchronize")
+    time_process = subprocess.Popen(time_synchronize_cmd, shell=True, stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT, )
+    err_flag = False
+    for line in iter(time_process.stdout.readline, b''):
+        line = line.decode('utf-8')
+        stdout_line = str(line).strip()
+        if stdout_line.find("[WARNING]:") != -1 or stdout_line.find("UNREACHABLE!"):
+            err_flag = True
+        print(stdout_line)
+    if err_flag:
+        hwlog.error("Seems like something went wrong, please check the logs")
+        sys.exit(1)
+    else:
+        hwlog.info("time synchronize success")
+
+
+def run_install(mef_option, run_hccn_set, scene_num):
     working_env = os.environ.copy()
     log_path = "{}/.log/ascend-deployer-dl.log".format(working_env.get("HOME", "/root"))
     folder = os.path.exists(os.path.dirname(log_path))
     if not folder:
         os.makedirs(os.path.dirname(log_path))
-    cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + HCCN_PATH + AND + BASH + INSTALL_PATH
-    if scene_num == '4':
-        if mef_option == 1:
-            cmd = BASH + ANSIBLE_PATH + AND + BASH + KUBEEDGE_PATH
-        if mef_option == 2:
-            cmd = BASH + ANSIBLE_PATH + AND + BASH + INSTALL_PATH + AND + BASH + KUBEEDGE_PATH
-
+    install_cmd = get_install_cmd(mef_option, run_hccn_set, scene_num)
     hwlog.info("starting run install script")
     working_env['ANSIBLE_LOG_PATH'] = log_path
     ansible_plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/../ansible_plugin"
     working_env['ANSIBLE_CALLBACK_PLUGINS'] = ansible_plugin_path
     working_env['ANSIBLE_STDOUT_CALLBACK'] = "ansible_log"
     working_env['ANSIBLE_LOAD_CALLBACK_PLUGINS'] = "True"
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=working_env)
+    install_process = subprocess.Popen(install_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       env=working_env)
     err_flag = False
     log_list = ['CRITICAL', 'FATAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']
-    for line in iter(process.stdout.readline, b''):
+    for line in iter(install_process.stdout.readline, b''):
         line = line.decode('utf-8')
         stdout_line = str(line).strip()
         if stdout_line.find("ascend_deployer [ERROR]") != -1:
@@ -273,59 +338,42 @@ def run_install(scene_num, mef_option):
         sys.stdout.flush()
     if err_flag:
         hwlog.error("Seems like something went wrong, please check the logs")
+        sys.exit(1)
     else:
         hwlog.info("Ascend deploy install success")
 
 
-def mef_check(scene_num, mef_option):
-    mef_key = mef_option.strip().lower()
-    if MEF_OPTIONS.get(mef_key) is None:
-        hwlog.error("mef option not valid !")
-        sys.exit(1)
-    if scene_num == '4' and MEF_OPTIONS[mef_key] == 0:
-        hwlog.error("mef option not fit !")
-        sys.exit(1)
-    if scene_num != '4':
-        mef_key = 'no'
-    return mef_key
-
-
-def parse_row_into_dto(row, dto):
-    dto.inventory_param["group"] = row[PARAMETER_DICT['group']]
-    dto.inventory_param["ssh_host"] = row[PARAMETER_DICT['ssh_host']]
-    dto.inventory_param["user"] = row[PARAMETER_DICT['user']]
-    dto.inventory_param["pwd"] = row[PARAMETER_DICT['pwd']]
-    dto.inventory_param["become_pwd"] = row[PARAMETER_DICT['become_pwd']]
-    dto.inventory_param["host_name"] = row[PARAMETER_DICT['host']]
-    dto.inventory_param["api"] = row[PARAMETER_DICT['api']]
-    dto.inventory_param["interface"] = row[PARAMETER_DICT['interface']]
-
-    dto.hccn_inventory_param["mode"] = row[PARAMETER_DICT['hccn_mode']]
-    dto.hccn_inventory_param["device_netmask"] = row[PARAMETER_DICT['device_netmask']]
-    dto.hccn_inventory_param["detect_ip"] = row[PARAMETER_DICT['detect_ip']]
-    dto.hccn_inventory_param["device_ips"] = row[PARAMETER_DICT['device_ips']]
-    dto.solve_device()
+def get_install_cmd(mef_option, run_hccn_set, scene_num):
+    if run_hccn_set:
+        install_cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + HCCN_PATH + AND + BASH + INSTALL_PATH + AND \
+                      + BASH + REPORT_PATH
+    else:
+        install_cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + INSTALL_PATH + AND + BASH + REPORT_PATH
+    if scene_num == '4':
+        if mef_option == 1:
+            install_cmd = BASH + ANSIBLE_PATH + AND + BASH + KUBEEDGE_PATH + AND + BASH + REPORT_PATH
+        if mef_option == 2:
+            install_cmd = BASH + ANSIBLE_PATH + AND + BASH + INSTALL_PATH + AND + BASH + KUBEEDGE_PATH \
+                          + AND + BASH + REPORT_PATH
+    return install_cmd
 
 
 def main(inv_file):
     hwlog.info("starting parse csv file")
     with open(inv_file) as f:
         reader = csv.reader(f)
-        top = next(reader)
-        if len(top) < 6:
-            hwlog.error("missing parameter !")
-            sys.exit(1)
-        scene_num = top[1]
-        extra_component = top[3]
-        mef_option = top[5]
-        mef_option = mef_check(scene_num, mef_option)
-        next(reader)
         dto = InventoryDTO()
         for row in reader:
-            parse_row_into_dto(row, dto)
+            if row[0] == "SCENE_NUM":
+                dto.parse_row1_info(row)
+            elif row[0] == "*group":
+                pass
+            else:
+                dto.parse_other_row_info(row)
         hwlog.info("starting gen inventory file")
-        append_inventory(scene_num, extra_component, dto)
-    run_install(scene_num, MEF_OPTIONS[mef_option])
+        dto.append_inventory()
+    run_install(MEF_OPTIONS[dto.row1_param['mef_option']], dto.run_hccn_set, dto.row1_param['scene_num'])
+    time_synchronize()
 
 
 if __name__ == '__main__':
