@@ -6,7 +6,7 @@ yamls_dir=$(cd $current_dir/..; pwd)
 read -n2 -p "This operation will cause other Kubernetes and Docker associated services to be unavailable. Do you want to continue[Y/N]" answer
 
 run_ansible() {
-  ansible-playbook -i $inventory_file_path $yamls_dir/playbooks/uninstall_mef_releate.yaml -vv
+  ansible-playbook -i $inventory_file_path $yamls_dir/playbooks/uninstall_mef_releate.yaml
 }
 
 case $answer in
