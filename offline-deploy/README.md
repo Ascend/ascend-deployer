@@ -301,18 +301,43 @@ other,10.10.10.11,root,password,,worker,10.10.10.11,,SMP,255.255.255.0,192.168.1
 
 ## 步骤3：执行安装
 
- **注意**
-以下一键安装适用于步骤3中方法2的用户，选择方法1的请选择自己需要的脚本执行
+根据上一步选择方法的不同，可以选择不同的安装方式
 
-运行如下指令进行安装, 请提前将指令中的示例时间设置为当前时间:
+**方法1**：可以按需选择执行具体的脚本：
+
+```
+bash scripts/backup.sh # 备份resources目录和安装工具软件
+bash scripts/hccn_set.sh # 如果需要配置查看hccn网络时，可以执行该脚本
+bash scripts/install_ansible.sh # 如当前环境没有ansible，需要安装，可以执行该脚本安装
+bash scripts/install_kubeedge.sh # 直接安装或卸载MEF
+bash scripts/install_npu.sh # 如需安装npu驱动，可以执行该脚本
+bash scripts/install.sh # 如果需要根据inventory_file中场景（SCENE_NUM）执行具体的安装任务，可以执行该脚本
+bash scripts/machine_report.sh # 查看worker节点主机上npu，hccn_tool等状态并生成报告文件
+bash scripts/uninstall_mef_release.sh # 卸载MEF及其相关的依赖，docker，k8s等
+bash scripts/upgrade.sh # 升级软件包组件脚本
+```
+
+**方法2**： 根据具体场景进行一键安装：
 
 ```bash
 cd ~/offline-deploy
-python scripts/ascend-deploy.py <相应的csv位置，如/root/Inventory_Template.CSV>
+python scripts/ascend-deploy.py <相应的csv位置，如/root/offline-deploy/Inventory_Template.CSV>
 ```
+上述命令将根据场景的不同，按需分别执行以下任务的组合：
+
+1. 将按照当前执行节点的时间，对其他节点进行时间同步；
+2. 执行节点未安装ansible时，进行ansible安装；
+3. 对worker节点安装npu驱动；
+4. 安装系统依赖，docker，k8s, mindx_dl等；
+5. 生成查询报告；
+6. 安装MEF；
+
 如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理.
 
 说明：
+
+- 当前软件基于ansible实现，默认并非为50，即同时最多在50个节点上同时执行，如需修改，可编辑/etc/ansible/ansible.cfg，修改参数forks的值并保存；
+
 - NPU-Exporter可提供HTTPS或HTTP服务，使用安装脚本仅支持HTTP服务，如对安全性需求较高可参考《MindX DL用户指南》中安装NPU-Exporter的章节，手动部署提供HTTPS服务的NPU-Exporter，升级时仅支持使用HTTP部署的方式。
 - 使用安装脚本部署的HCCL-Controller、NodeD、Ascend Device Plugin均使用ServiceAccount授权方式与K8s进行通信，如需使用更加安全的方式与K8s进行通信如通过证书导入工具导入KubeConfig文件，则请参考《MindX DL用户指南》中的“导入证书和KubeConfig”章节，升级时仅支持使用ServiceAccount授权的方式。
 - 用户也可以通过在`~/offline-deploy`目录下执行 `scripts/install_ansible.sh`(安装ansible), `scripts/install_npu.sh`(安装驱动), `scripts/install.sh`(按场景安装k8s和DL组件) 分步安装;
