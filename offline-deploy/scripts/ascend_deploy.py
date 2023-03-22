@@ -233,7 +233,7 @@ class InventoryDTO:
         elif self.inventory_param["group"] == 'other':
             self.append_node('other')
         else:
-            hwlog.error("group must be one of master,worker,mef")
+            hwlog.error("group must be one of master,worker,mef,other")
             sys.exit(1)
         self.clear_inventory_param()
 
