@@ -268,7 +268,7 @@ def download_ms_whl(os_item, software, dst):
                     (item['filename'], item.get('python'), implement_flag))
                     continue
                 A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
-                if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8"]:
+                if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04","Ubuntu_22.04", "CentOS_7.6", "EulerOS_2.8", "OpenEuler_22.03LTS"]:
                     dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
                     if os.path.exists(dest_file) and 'sha256' in item:
                         file_hash = calc_sha256(dest_file)
