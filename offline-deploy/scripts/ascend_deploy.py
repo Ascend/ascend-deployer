@@ -26,7 +26,7 @@ HCCN_PATH = os.path.join(SCRIPT_PATH, "hccn_set.sh")
 NPU_PATH = os.path.join(SCRIPT_PATH, "install_npu.sh")
 INSTALL_PATH = os.path.join(SCRIPT_PATH, "install.sh")
 KUBEEDGE_PATH = os.path.join(SCRIPT_PATH, "install_kubeedge.sh")
-REPORT_PATH = os.path.join(SCRIPT_PATH, "machine_report")
+REPORT_PATH = os.path.join(SCRIPT_PATH, "machine_report.sh")
 INVENTORY_FILE = """#           *********************主机变量配置区域*********************
 # 配置信息示例:10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
 # 示例说明:
