@@ -259,10 +259,11 @@ vi inventory_file
  **方法2** ：修改csv文件（/root/offline-deploy/Inventory_Template.CSV)
 
 ```
-SCENE_NUM,1,EXTRA,,MEF,no,,,,,,
+SCENE_NUM,1,EXTRA,,MEF,no,POD_NETWORK_CIDR,192.168.0.0/16,KUBE_VIP,,HARBOR_SERVER,,HARBOR_ADMIN_USER,,HARBOR_ADMIN_PASSWORD,,HARBOR_PUBLIC_PROJECT,false,HARBOR_CA_FILE,no
 *group,*ssh_host,*ssh_user,ssh_pass,ssh_become_pass,host_name,*k8s_api_server_ip,kube_interface,mode,device_netmask,detect_ip,device_ips
 master,10.10.10.10,root,password,,master,10.10.10.10,,,,,
 worker,10.10.10.11,root,password,,worker,10.10.10.11,,SMP,255.255.255.0,192.168.100.108,192.168.100.100/192.168.100.101/192.168.100.102/192.168.100.103/192.168.100.104/192.168.100.105/192.168.100.106/192.168.100.107
+other,10.10.10.11,root,password,,worker,10.10.10.11,,SMP,255.255.255.0,192.168.100.108,192.168.100.100/192.168.100.101/192.168.100.102/192.168.100.103/192.168.100.104/192.168.100.105/192.168.100.106/192.168.100.107
 ```
 
 第一行为全局配置信息：
@@ -274,12 +275,18 @@ worker,10.10.10.11,root,password,,worker,10.10.10.11,,SMP,255.255.255.0,192.168.
   - 场景4时：
     - mef-only，仅安装MEF本身
     - mef-all，安装MEF及其依赖（docker，k8s等）
-
+- POD_NETWORK_CIDR:k8s集群使用的子网IP网段
+- KUBE_VIP:多master场景下配置虚拟IP，kube_vip需跟k8s集群节点ip在同一子网，且为闲置、未被他人使用的ip
+- HARBOR_SERVER:harbor服务地址，格式为ip:port，不含协议，如"192.0.0.1:1234"
+- HARBOR_ADMIN_USER:harbor管理员用户名
+- HARBOR_ADMIN_PASSWORD：harbor管理员用户密码
+- HARBOR_PUBLIC_PROJECT:MindX DL相关镜像的项目公开状态，可选false或true
+- HARBOR_CA_FILE:使用https协议时，配置harbor镜像仓根CA文件路径，若无填no
 第二行为主机节点配置字段信息，带*的为必填项
 
 其余行为主机配置信息
 
-- group列为主机分组，目前支持master，worker，mef三个分组；
+- group列为主机分组，目前支持master，worker，mef,other四个分组；
 - ssh_host为主机IP；
 - ssh_user为主机账号；
 - ssh_pass为主机密码；
