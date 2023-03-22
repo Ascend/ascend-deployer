@@ -90,7 +90,7 @@
 # resources.zip解压出的内容必须放置在/root目录下
 cd /root
 wget https://example
-unzip -xf resources.zip
+unzip resources.zip
 ```
 
 ## 步骤3：配置相关信息
@@ -232,7 +232,7 @@ ascend-edge-manager          v1    456f438bac6    44 hours ago   158MB
    ```
    cd /root/offline-deploy/scripts
    bash install_kubeedge.sh              # 安装kubeedge
-   bash uninstall_mef_k8s_docker.sh && bash uninstall_mef_releate.sh  # 卸载kubeedge
+   bash uninstall_mef_releate.sh         # 卸载kubeedge
    ```
    注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
   
