@@ -41,6 +41,7 @@ function install_ansible()
     else
         echo -e "[INFO]\t$(date +"%Y-%m-%d %H:%M:%S")\t ansible is already installed\n"
     fi
+    sed -i "s?#forks.*?forks = 50?" /etc/ansible/ansible.cfg
     sed -i "s?#gathering = implicit?gathering = smart?" /etc/ansible/ansible.cfg
     sed -i "s?#fact_caching = memory?fact_caching = jsonfile?" /etc/ansible/ansible.cfg
     sed -i "s?#fact_caching_connection=/tmp?fact_caching_connection=/etc/ansible/facts-cache?" /etc/ansible/ansible.cfg
