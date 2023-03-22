@@ -39,6 +39,17 @@
     - os_name != "OpenEuler"
     - docker_config.stdout == '0'
 
+- name: create /etc/docker/daemon.json - dnf
+  shell:
+    cmd: |
+      cat <<EOF >/etc/docker/daemon.json
+      {
+      }
+      EOF
+  when:
+    - os_name == "OpenEuler"
+    - docker_config.stdout == '0'
+
 - name: docker load config and restart
   shell: systemctl daemon-reload && systemctl restart docker
   when:
