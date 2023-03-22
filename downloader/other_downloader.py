@@ -240,7 +240,7 @@ def download_ms_whl(os_item, software, dst):
                 if ret:
                     print(item['filename'].ljust(60), 'download success')
                 results.append(ret)
-        if os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8", "OpenEuler_20.03LTS", "Kylin_V10Tercel"]:
+        if os_name in ["Ubuntu_18.04", "Ubuntu_22.04", "CentOS_7.6", "EulerOS_2.8", "OpenEuler_20.03LTS", "OpenEuler_22.03LTS", "Kylin_V10Tercel"]:
             whl_list = get_software_mindspore(formal_name, "linux_{}".format(arch), version)
             for item in whl_list:
                 if item.get('python', 'cp37') != implement_flag:

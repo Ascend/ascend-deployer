@@ -8,7 +8,7 @@
   register: mindspore_whl_310
   when:
     - ansible_local.npu_info.scene == "infer"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'Ubuntu_22.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_22.03LTS' in os_and_arch"
 
 - name: find Ascend910 mindspore wheel package
   find:
@@ -19,8 +19,8 @@
     patterns: "mindspore_ascend.*{{ ansible_architecture }}.whl"
   register: mindspore_whl_910
   when:
-    - ansible_local.npu_info.scene == "train"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
+    - ansible_local.npu_info.scene == "train" or ansible_local.npu_info.scene == "a910b"
+    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'Ubuntu_22.04' in os_and_arch  or 'EulerOS_2.8' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'OpenEuler_22.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
 - name: install mindspore_ascend 310
   shell: python3 -m pip install {{ mindspore_whl_310.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
