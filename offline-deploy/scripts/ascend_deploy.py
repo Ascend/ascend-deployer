@@ -66,6 +66,7 @@ INVENTORY_FILE = """#           *********************主机变量配置区域***
 
 # k8s集群中存在与master节点架构不一致的服务器时，并且该节点(或多个异构节点)会部署MindX DL，任选其中一台异构节点配置到如下主机组即可，配置参考注释
 [other_build_image]
+{other}
 #10.10.10.11 ansible_ssh_user="test" ansible_ssh_pass="test1234" ansible_become_password="test1234" ansible_ssh_port=9090
 #           *********************以下为worker变量配置区域**************************
 [worker:vars]
@@ -128,6 +129,7 @@ class InventoryDTO:
         self.master = ""
         self.worker = ""
         self.mef = ""
+        self.other = ""
         self.hccn_tool = ""
         self.run_hccn_set = False
 
@@ -151,7 +153,7 @@ class InventoryDTO:
             attr_str += self.get_item("k8s_api_server_ip", self.inventory_param["k8s_api_server_ip"])
             attr_str += self.get_item("kube_interface", self.inventory_param["kube_interface"]) + '\n'
             self.master += attr_str
-        if group == 'worker':
+        if group == 'worker' or group == 'other':
             if self.verify_hccn_param(self.hccn_inventory_param):
                 self.run_hccn_set = True
                 hccn_str = ''
@@ -165,7 +167,10 @@ class InventoryDTO:
                 hccn_str += '\n'
                 self.hccn_tool += hccn_str
             attr_str += '\n'
-            self.worker += attr_str
+            if group == 'worker':
+                self.worker += attr_str
+            else:
+                self.other += attr_str
         if group == 'mef':
             attr_str += '\n'
             self.mef += attr_str
@@ -225,6 +230,8 @@ class InventoryDTO:
             self.append_node('worker')
         elif self.inventory_param["group"] == 'mef':
             self.append_node('mef')
+        elif self.inventory_param["group"] == 'other':
+            self.append_node('other')
         else:
             hwlog.error("group must be one of master,worker,mef")
             sys.exit(1)
@@ -259,6 +266,7 @@ class InventoryDTO:
 
     def do_append_inventory(self):
         raw_inventory_file = INVENTORY_FILE.format(master=self.master, worker=self.worker, mef=self.mef,
+                                                   other=self.other,
                                                    sn=self.row1_param['scene_num'],
                                                    extra_component=self.row1_param['extra_component'],
                                                    pod_network_cidr=self.row1_param['pod_network_cidr'],
@@ -345,8 +353,8 @@ def run_install(mef_option, run_hccn_set, scene_num):
 
 def get_install_cmd(mef_option, run_hccn_set, scene_num):
     if run_hccn_set:
-        install_cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + HCCN_PATH + AND + BASH + INSTALL_PATH + AND \
-                      + BASH + REPORT_PATH
+        install_cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + HCCN_PATH + AND + BASH \
+                      + INSTALL_PATH + AND + BASH + REPORT_PATH
     else:
         install_cmd = BASH + ANSIBLE_PATH + AND + BASH + NPU_PATH + AND + BASH + INSTALL_PATH + AND + BASH + REPORT_PATH
     if scene_num == '4':
