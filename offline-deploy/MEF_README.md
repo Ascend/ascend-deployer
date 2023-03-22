@@ -84,13 +84,13 @@
 ## 步骤2：下载离线软件包
 选择其中一种方式准备离线安装包
 
- - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.tar.gz包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令
+ - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.zip包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
+ - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.zip的地址，然后执行如下命令
 ```bash
-# resources.tar.gz解压出的内容必须放置在/root目录下
+# resources.zip解压出的内容必须放置在/root目录下
 cd /root
 wget https://example
-tar -xf resources.tar.gz
+unzip -xf resources.zip
 ```
 
 ## 步骤3：配置相关信息
@@ -119,7 +119,6 @@ MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾�
 ```bash
 NAME             STATUS   ROLES    AGE   VERSION
 master           Ready    master   60s   v1.19.16
-worker-1         Ready    worker   60s   v1.19.16
 ```
 
 使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
@@ -233,7 +232,7 @@ ascend-edge-manager          v1    456f438bac6    44 hours ago   158MB
    ```
    cd /root/offline-deploy/scripts
    bash install_kubeedge.sh              # 安装kubeedge
-   bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+   bash uninstall_mef_k8s_docker.sh && bash uninstall_mef_releate.sh  # 卸载kubeedge
    ```
    注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
   
