@@ -53,6 +53,8 @@ def remove_package(meta):
 def delete_python_package(installed_files):
     for file in glob.glob(installed_files):
         base_dir = os.path.dirname(file)
+        if installed_files.endswith("RECORD"):
+            base_dir = base_dir + "/../"
         with open(file) as fid:
             lines = fid.readlines()
         try:
