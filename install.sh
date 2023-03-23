@@ -487,6 +487,9 @@ function install_sys_packages() {
 
     echo "install system packages are listed as follows:" >>${BASE_DIR}/install.log
     echo "$(ls ${BASE_DIR}/resources/${g_os_ver_arch} | grep -E "\.(rpm|deb)$")" >>${BASE_DIR}/install.log
+    if [ $(command -v docker | wc -l) -eq 1 ];then
+        log_warning "Docker is already installed on the system, and errors may occur when installing system dependencies"
+    fi
     if [ ${have_rpm} -eq 1 ]; then
         rpm -ivh --force --nodeps --replacepkgs ${BASE_DIR}/resources/${g_os_ver_arch}/*.rpm
     else

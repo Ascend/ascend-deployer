@@ -1,3 +1,13 @@
+- name: check docker exists
+  shell: command -v docker | wc -l
+  register: docker_status
+
+- name: message
+  debug:
+    msg: "[WARNING] Docker is already installed on the system, and errors may occur when installing system dependencies"
+  changed_when: true
+  when: docker_status.stdout != "0"
+
 - name: install system packages
   include_tasks: "task_sys_{{ansible_pkg_mgr}}.yml"
 

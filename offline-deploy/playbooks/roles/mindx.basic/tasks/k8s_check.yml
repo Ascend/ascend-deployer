@@ -1,3 +1,13 @@
+- name: check k8s config exits
+  shell: if [ -d /etc/cni ] || [ -d /etc/kubernetes ] || [ -d /etc/systemd/system/kubelet.service.d ];then echo 1;else echo 0;fi
+  register: k8s_exists
+
+- name: message
+  debug:
+    msg: "[WARNING] The configuration file directory for k8s exists on the system"
+  changed_when: true
+  when: k8s_exists.stdout == "1"
+
 # 检查master节点必须存在k8s_api_server_ip的ip
 - name: check k8s_api_server_ip must configured
   fail:
