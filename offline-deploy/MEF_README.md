@@ -231,8 +231,8 @@ ascend-edge-manager          v1    456f438bac6    44 hours ago   158MB
    ```
    ```
    cd /root/offline-deploy/scripts
-   bash install_kubeedge.sh              # 安装kubeedge
-   bash uninstall_mef_releate.sh         # 卸载kubeedge
+   python ascend-deploy.py <CSV路径>     # 安装kubeedge
+   bash uninstall_mef_releate.sh         # 卸载kubeedge及docker、k8s所有的组件
    ```
    注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
   
