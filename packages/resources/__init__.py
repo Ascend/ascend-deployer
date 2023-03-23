@@ -29,7 +29,8 @@ def uninstall_function():
             res = subprocess.check_output(commands.split(), stderr=subprocess.STDOUT, shell=False)
             print(str(res.decode()))
             if meta["pip_info"]["name"] == "ascend_driver":
-                res = subprocess.check_output("bash /usr/local/Ascend/firmware/script/uninstall.sh".split(), stderr=subprocess.STDOUT, shell=False)
+                res = subprocess.check_output("bash /usr/local/Ascend/firmware/script/uninstall.sh".split(),
+                                              stderr=subprocess.STDOUT, shell=False)
                 print(str(res.decode()))
             remove_package(meta)
 
@@ -41,9 +42,16 @@ def uninstall_function():
 
 
 def remove_package(meta):
-    for file in glob.glob("{}/{}-{}-*egg-info/installed-files.txt".format(
-            os.path.dirname(os.path.dirname(meta_path)),
-            meta["pip_info"]["name"], meta["pip_info"]["version"])):
+    delete_python_package("{}/{}-{}-*egg-info/installed-files.txt".format(os.path.dirname(os.path.dirname(meta_path)),
+                                                                          meta["pip_info"]["name"],
+                                                                          meta["pip_info"]["version"]))
+    delete_python_package("{}/{}-{}*dist-info/RECORD".format(os.path.dirname(os.path.dirname(meta_path)),
+                                                                          meta["pip_info"]["name"],
+                                                                          meta["pip_info"]["version"]))
+
+
+def delete_python_package(installed_files):
+    for file in glob.glob(installed_files):
         base_dir = os.path.dirname(file)
         with open(file) as fid:
             lines = fid.readlines()
@@ -52,12 +60,12 @@ def remove_package(meta):
         except OSError:
             pass
         for line in lines:
-            full_path = os.path.join(base_dir, line.rstrip())
+            full_path = os.path.join(base_dir, line.rstrip().split(",")[0])
             try:
                 os.remove(full_path)
             except OSError:
                 pass
-            if not len(os.listdir(os.path.dirname(full_path))):
+            if os.path.exists(os.path.dirname(full_path)) and not len(os.listdir(os.path.dirname(full_path))):
                 try:
                     os.rmdir(os.path.dirname(full_path))
                 except OSError:
