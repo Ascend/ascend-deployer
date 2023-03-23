@@ -1,0 +1,35 @@
+{
+  "pip_info": {
+    "name": "ascend_tfplugin",
+    "packages": ["ascend_tfplugin"],
+    "version": "6.0.1",
+    "platforms": ["Linux"],
+    "description": "ascend tfplugin",
+    "url": "https://hiascend.com",
+    "install_requires": [],
+    "python_requires": ""
+  },
+  "system_requires": {
+    "ubuntu_18.04": [
+    ],
+    "ubuntu_20.04": [
+    ],
+    "openeuler_20.03":[
+    ],
+    "openeuler_22.03":[
+    ],
+    "centos_7":[
+    ]
+  },
+  "download_url": [
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-tfplugin_6.0.1_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "234550a7401e063d578e8f8256527f3a4c35bcaa73d4eb5e2d861089e78b3117"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-tfplugin_6.0.1_linux-x86_64.zip", "arch":  "x86_64", "sha256sum":  "db7b3c283badb512688775d37d8a4d650529ff5440c25593277268bbb080eabc"}
+  ],
+  "install_path": {
+    "root": "/usr/local/Ascend/tfplugin/6.0.1/",
+    "none-root": "~/Ascend/tfplugin/6.0.1/"
+  },
+  "commands": {
+    "uninstall": "{path}/script/uninstall.sh"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "pip_info": {
+    "name": "ascend_toolbox",
+    "packages": ["ascend_toolbox"],
+    "version": "3.0.0",
+    "platforms": ["Linux"],
+    "description": "ascend toolbox",
+    "url": "https://hiascend.com",
+    "install_requires": [],
+    "python_requires": ""
+  },
+  "system_requires": {
+    "ubuntu_18.04": [
+      {"name":  "unzip"},
+      {"name":  "pciutils"}
+    ],
+    "ubuntu_20.04": [
+      {"name":  "unzip"},
+      {"name":  "pciutils"}
+    ],
+    "openeuler_20.03":[
+      { "name": "unzip" },
+      { "name": "pciutils" }
+    ],
+    "openeuler_22.03":[
+      { "name": "unzip" },
+      { "name": "pciutils" }
+    ],
+    "centos_7": [
+      { "name": "unzip" },
+      { "name": "pciutils" }
+    ]
+  },
+  "download_url": [
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindx-toolbox_3.0.0_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "826f315dd2f59fc0cd3dba3b801467520e6b57793ce0ae4492c22cbd284ed3a7"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/MindX/MindX%203.0.0/Ascend-mindx-toolbox_3.0.0_linux-x86_64.zip", "arch":  "x86_64", "sha256sum":  "a577d6a28168f547112cc455c60ccf36053a1b220eeb21fa55e6bbe030d17b2b"}
+  ],
+  "install_path": {
+    "root": "/usr/local/Ascend/toolbox/3.0.0/",
+    "none-root": "~/Ascend/toolbox/3.0.0/"
+  },
+  "commands": {
+    "uninstall": "{path}/script/uninstall.sh"
+  }
+}
