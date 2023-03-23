@@ -1,0 +1,12 @@
+- name: copy uninstall bash file to remote hosts
+  copy:
+    src: "/root/offline-deploy/scripts/uninstall_mef_kubeedge.sh"
+    dest: "{{ ansible_env.HOME}}/offline-deploy/scripts/"
+    mode: 0700
+    force: yes
+
+- name: uninstall mef, kubeedge on remote hosts
+  shell:
+    cmd:
+      bash {{ ansible_env.HOME}}/offline-deploy/scripts/uninstall_mef_kubeedge.sh
+  failed_when: false
