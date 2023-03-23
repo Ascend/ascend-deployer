@@ -2,7 +2,8 @@
 set -e
 current_dir=$(cd $(dirname $0); pwd)
 . $current_dir/utils.sh
-
+time="$(date +"%Y-%m-%d %H:%M:%S")"
+ansible -i $inventory_file_path all -m shell -a "date -s '$time'; hwclock -w"
 ansible -i $inventory_file_path all -m ping
 
 ansible-playbook -i $inventory_file_path $inventory_file_dir/yamls/gather_facts.yaml -vv
