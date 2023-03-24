@@ -316,7 +316,7 @@ def run_install(mef_option, run_hccn_set, scene_num):
     for line in iter(install_process.stdout.readline, b''):
         line = line.decode('utf-8')
         stdout_line = str(line).strip()
-        if stdout_line.find("ascend_deployer [ERROR]") != -1:
+        if stdout_line.find("[ERROR]") != -1 or stdout_line.find("not support") != -1:
             err_flag = True
         if stdout_line != "":
             for str_list in log_list:
