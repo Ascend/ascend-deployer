@@ -1,0 +1,13 @@
+- name: copy uninstall bash file to remote hosts
+  copy:
+    src: "/root/offline-deploy/scripts/uninstall_k8s_docker.sh"
+    dest: "{{ ansible_env.HOME}}/offline-deploy/scripts/"
+    mode: 0700
+    force: yes
+
+- name: uninstall k8s, docker on remote hosts
+  shell:
+    cmd:
+      bash {{ ansible_env.HOME}}/offline-deploy/scripts/uninstall_k8s_docker.sh
+  failed_when: false
+    
