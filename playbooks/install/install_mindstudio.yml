@@ -134,7 +134,7 @@
       when:
         - ms.matched > 0
         - ansible_user_uid == 0
-        - "'Ubuntu' in os_and_arch"
+        - "'Ubuntu_18.04' in os_and_arch"
 
     - name: create symbolic link {{ python_version }}
       file:

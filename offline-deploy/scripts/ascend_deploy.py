@@ -296,26 +296,6 @@ def file_check(file):
     return real_path
 
 
-def time_synchronize():
-    time_synchronize_cmd = "ansible -i " + OFFLINE_DEPLOY_PATH + "/inventory_file" \
-                           + " all -m shell -b -a \'hwclock -w\'"
-    hwlog.info("starting run time synchronize")
-    time_process = subprocess.Popen(time_synchronize_cmd, shell=True, stdout=subprocess.PIPE,
-                                    stderr=subprocess.STDOUT, )
-    err_flag = False
-    for line in iter(time_process.stdout.readline, b''):
-        line = line.decode('utf-8')
-        stdout_line = str(line).strip()
-        if stdout_line.find("[WARNING]:") != -1 or stdout_line.find("UNREACHABLE!"):
-            err_flag = True
-        print(stdout_line)
-    if err_flag:
-        hwlog.error("Seems like something went wrong, please check the logs")
-        sys.exit(1)
-    else:
-        hwlog.info("time synchronize success")
-
-
 def run_install(mef_option, run_hccn_set, scene_num):
     working_env = os.environ.copy()
     log_path = "{}/.log/ascend-deployer-dl.log".format(working_env.get("HOME", "/root"))
@@ -336,7 +316,7 @@ def run_install(mef_option, run_hccn_set, scene_num):
     for line in iter(install_process.stdout.readline, b''):
         line = line.decode('utf-8')
         stdout_line = str(line).strip()
-        if stdout_line.find("ascend_deployer [ERROR]") != -1:
+        if stdout_line.find("[ERROR]") != -1 or stdout_line.find("not support") != -1:
             err_flag = True
         if stdout_line != "":
             for str_list in log_list:
@@ -381,7 +361,6 @@ def main(inv_file):
         hwlog.info("starting gen inventory file")
         dto.append_inventory()
     run_install(MEF_OPTIONS[dto.row1_param['mef_option']], dto.run_hccn_set, dto.row1_param['scene_num'])
-    time_synchronize()
 
 
 if __name__ == '__main__':

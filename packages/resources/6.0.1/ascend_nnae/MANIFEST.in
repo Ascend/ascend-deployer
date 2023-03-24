@@ -1,0 +1,2 @@
+recursive-include ascend_nnae *
+include ascend_nnae/meta_info.json

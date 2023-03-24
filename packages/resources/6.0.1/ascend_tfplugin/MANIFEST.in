@@ -1,0 +1,2 @@
+recursive-include ascend_tfplugin *
+include ascend_tfplugin/meta_info.json
