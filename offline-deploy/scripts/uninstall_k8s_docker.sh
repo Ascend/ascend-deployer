@@ -13,6 +13,7 @@ else
 fi
 # 卸载K8S
 systemctl restart docker
+kubeadm reset -f
 UNINSTALL kubeadm kubectl kubelet kubernetes-cni
 
 # 卸载docker
