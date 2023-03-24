@@ -27,25 +27,25 @@
     "openeuler_20.03": [
       {"name":  "dkms"},
       {"name":  "gcc"},
-      {"name":  "kernel-headers"},
+      {"name":  "kernel-headers-$(uname -r)"},
       { "name": "pciutils" },
       { "name": "net-tools" },
-      { "name": "kernel-devel" }
+      { "name": "kernel-devel-$(uname -r)" }
     ],
     "openeuler_22.03": [
       {"name":  "dkms"},
       {"name":  "gcc"},
-      {"name":  "kernel-headers"},
+      {"name":  "kernel-headers-$(uname -r)"},
       { "name": "pciutils" },
       { "name": "net-tools" },
-      { "name": "kernel-devel" }
+      { "name": "kernel-devel-$(uname -r)" }
     ],
     "centos_7": [
       {"name":  "gcc"},
-      {"name":  "kernel-headers"},
+      {"name":  "kernel-headers-$(uname -r)"},
       { "name": "pciutils" },
       { "name": "net-tools" },
-      { "name": "kernel-devel" }
+      { "name": "kernel-devel-$(uname -r)" }
     ]
   },
   "download_url": [
