@@ -1424,11 +1424,8 @@ function prepare_environment() {
         export ANSIBLE_STDOUT_CALLBACK=${STDOUT_CALLBACK}
     fi
 }
-function get_os_name() {
-    local os_name=$(grep -oP "^ID=\"?\K\w+" /etc/os-release)
-    echo ${os_name}
-}
 main() {
+    local os_name=$(grep -oP "^ID=\"?\K\w+" /etc/os-release)
     if type python >/dev/null 2>&1; then
         local python='python'
     elif type python3 >/dev/null 2>&1; then
@@ -1437,7 +1434,6 @@ main() {
         echo "python or python3 must be installed"
         exit 1
     fi
-    local os_name=$(get_os_name)
     case ${os_name} in
     ubuntu)
         dpkg -l >previous_dpkg.txt
