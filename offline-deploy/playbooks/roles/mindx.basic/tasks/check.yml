@@ -1,3 +1,23 @@
+- name: check docker exists
+  shell: command -v docker | wc -l
+  register: docker_status
+
+- name: message
+  debug:
+    msg: "[WARNING] Docker is already installed on the system, and errors may occur when installing docker"
+  changed_when: true
+  when: docker_status.stdout != "0"
+
+- name: check docker config exists
+  shell: ls /etc/docker 2>/dev/null | wc -l
+  register: docker_exists
+
+- name: message
+  debug:
+    msg: "[WARNING] The configuration file directory for docker exists on the system"
+  changed_when: true
+  when: docker_exists.stdout != "0"
+
 - name: check os
   fail:
     msg: "Unsupported OS, OS is {{ os_package_name }}"
