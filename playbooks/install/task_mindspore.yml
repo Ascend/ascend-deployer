@@ -4,11 +4,10 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "mindspore_ascend.*{{ ansible_architecture }}.whl"
+    patterns: "mindspore.*{{ ansible_architecture }}.whl"
   register: mindspore_whl_310
   when:
     - ansible_local.npu_info.scene == "infer"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'Ubuntu_22.04' in os_and_arch or 'EulerOS_2.8' in os_and_arch or 'EulerOS_2.10' in os_and_arch or 'OpenEuler_22.03LTS' in os_and_arch"
 
 - name: find Ascend910 mindspore wheel package
   find:
@@ -16,11 +15,10 @@
     recurse: no
     file_type: file
     use_regex: yes
-    patterns: "mindspore_ascend.*{{ ansible_architecture }}.whl"
+    patterns: "mindspore.*{{ ansible_architecture }}.whl"
   register: mindspore_whl_910
   when:
     - ansible_local.npu_info.scene == "train" or ansible_local.npu_info.scene == "a910b"
-    - "'CentOS_7.6' in os_and_arch or 'Ubuntu_18.04' in os_and_arch or 'Ubuntu_22.04' in os_and_arch  or 'EulerOS_2.8' in os_and_arch or 'EulerOS_2.10' in os_and_arch or 'OpenEuler_20.03LTS' in os_and_arch or 'OpenEuler_22.03LTS' in os_and_arch or 'Kylin_V10Tercel' in os_and_arch"
 
 - name: install mindspore_ascend 310
   shell: python3 -m pip install {{ mindspore_whl_310.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
@@ -48,7 +46,6 @@
   register: mindspore_whl_cpu
   when:
     - ansible_local.npu_info.scene == ""
-    - "'Ubuntu_18.04' in os_and_arch"
 
 - name: install mindspore_cpu
   shell: python3 -m pip install {{ mindspore_whl_cpu.files[0].path }} --no-index --find-links {{ resources_dir }}/pylibs {{ pip_install_option }}
@@ -62,7 +59,7 @@
   debug:
     msg:
       - "os: {{ os_and_arch }}, scene: {{ ansible_local.npu_info.scene }}, mindspore install skipped"
-      - "maybe you should check mindspore whl package in dir: ascend-deployer/resources/{{ os_and_arch }}/Ascend910(or Ascend310)/"
+      - "maybe you should check mindspore whl package in dir: ascend-deployer/resources/{{ os_and_arch }}/Ascend910(or Ascend310 or CPU)/"
   when:
     - mindspore_whl_310.skipped is true
     - mindspore_whl_910.skipped is true
