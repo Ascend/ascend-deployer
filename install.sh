@@ -1429,6 +1429,16 @@ function get_os_name() {
     echo ${os_name}
 }
 main() {
+    if type python >/dev/null 2>&1; then
+        echo 'python ok'
+        local python='python'
+    elif type python3 >/dev/null 2>&1; then
+        echo 'python3 ok'
+        local python='python3'
+    else
+        echo "python or python3 must be installed"
+        exit 1
+    fi
     local os_name=$(get_os_name)
     case ${os_name} in
     ubuntu)
@@ -1540,15 +1550,15 @@ main() {
     case ${os_name} in
     ubuntu)
         dpkg -l >current_dpkg.txt
-        python report.py dpkg
+        ${python} report.py dpkg
         ;;
     openEuler)
         rpm -qa >current_rpm.txt
-        python report.py rpm
+        ${python} report.py rpm
         ;;
     centos)
         rpm -qa >current_rpm.txt
-        python report.py rpm
+        ${python} report.py rpm
         ;;
     esac
 }
