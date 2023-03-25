@@ -294,6 +294,8 @@ function get_os_version() {
             version="2.8"
         elif [ "${ver}" == "2.0" ] && [[ "${codename}" =~ SP9 ]]; then
             version="2.9"
+        elif [ "${ver}" == "2.0" ] && [[ "${codename}" =~ SP10 ]]; then
+            version="2.10"
         fi
     fi
 
@@ -376,8 +378,10 @@ function install_kernel_header_devel_euler() {
     local euler=""
     if [[ "${g_os_ver_arch}" =~ 2.8 ]]; then
         euler="eulerosv2r8.${arch}"
-    else
+    elif [[ "${g_os_ver_arch}" =~ 2.9 ]]; then
         euler="eulerosv2r9.${arch}"
+    else
+        euler="eulerosv2r10.${arch}"
     fi
     local kh=$(rpm -qa kernel-headers | wc -l)
     local kd=$(rpm -qa kernel-devel | wc -l)
@@ -1424,12 +1428,17 @@ function prepare_environment() {
         export ANSIBLE_STDOUT_CALLBACK=${STDOUT_CALLBACK}
     fi
 }
-function get_os_name() {
-    local os_name=$(grep -oP "^ID=\"?\K\w+" /etc/os-release)
-    echo ${os_name}
-}
+
 main() {
-    local os_name=$(get_os_name)
+    local os_name=$(grep -oP "^ID=\"?\K\w+" /etc/os-release)
+    if type python >/dev/null 2>&1; then
+        local python='python'
+    elif type python3 >/dev/null 2>&1; then
+        local python='python3'
+    else
+        echo "python or python3 must be installed"
+        exit 1
+    fi
     case ${os_name} in
     ubuntu)
         dpkg -l >previous_dpkg.txt
@@ -1540,15 +1549,15 @@ main() {
     case ${os_name} in
     ubuntu)
         dpkg -l >current_dpkg.txt
-        python report.py dpkg
+        ${python} report.py dpkg
         ;;
     openEuler)
         rpm -qa >current_rpm.txt
-        python report.py rpm
+        ${python} report.py rpm
         ;;
     centos)
         rpm -qa >current_rpm.txt
-        python report.py rpm
+        ${python} report.py rpm
         ;;
     esac
 }

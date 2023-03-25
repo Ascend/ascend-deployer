@@ -31,6 +31,7 @@ code_name_dict:
     "SP8": ".8"
     "SP9": ".9"
     "SP9x86": ".9"
+    "SP10x86": ".10"
   kylin:
     "Tercel": "Tercel"
     "juniper": "juniper"
