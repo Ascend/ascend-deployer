@@ -1430,10 +1430,8 @@ function get_os_name() {
 }
 main() {
     if type python >/dev/null 2>&1; then
-        echo 'python ok'
         local python='python'
     elif type python3 >/dev/null 2>&1; then
-        echo 'python3 ok'
         local python='python3'
     else
         echo "python or python3 must be installed"
