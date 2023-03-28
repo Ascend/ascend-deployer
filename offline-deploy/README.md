@@ -235,7 +235,7 @@ wget https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/3.0.0/
 unzip resources.zip -d /root
 
 # copy offline-deploy
-cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
+cp resources/ascend-deployer/offline-deploy /root/offline-deploy -a
 ```
 在部分os上， 默认没有unzip组件， 用户可以提前下载 [arm版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/aarch64/unzip) 或者 [x86_64版unzip](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/x86_64/unzip) 并上传到执行节点使用。
 ## 步骤2：配置安装信息
@@ -253,7 +253,7 @@ cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 配置项的具体含义请参考`inventory_file`文件中的注释;
 
 ```bash
-cd ~/offline-deploy
+cd /root/offline-deploy
 vi inventory_file
 ```
 参数说明：
@@ -365,7 +365,7 @@ bash scripts/upgrade.sh # 升级软件包组件脚本
 **方法2**： 根据具体场景进行一键安装：
 
 ```bash
-cd ~/offline-deploy
+cd /root/offline-deploy
 python scripts/ascend-deploy.py <相应的csv位置，如/root/offline-deploy/Inventory_Template.CSV>
 ```
 上述命令将根据场景的不同，按需分别执行以下任务的组合：
@@ -436,6 +436,7 @@ cd /root/upgrade
 unzip resources.zip
 
 # 备份旧的resources解压出的内容
+cp /root/upgrade/resources/ascend-deployer/offline-deploy /root/upgrade/offline-deploy -a
 cd /root/upgrade/offline-deploy
 bash scripts/backup.sh
 ```
@@ -464,7 +465,7 @@ bash scripts/upgrade.sh
  1. 保证安装Kubernetes的各节点的时间一致，避免因为时间问题导致kubernetes集群出现问题。
 
     **前提条件**：
-    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd ~/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
+    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd /root/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
     2. [配置inventory\_file](#步骤3配置安装信息)
     3. 节点已连通，可参考[常用操作2](#常用操作)
 
@@ -477,7 +478,7 @@ bash scripts/upgrade.sh
  2. 查看安装脚本执行节点能否访问inventory_file中的其他节点，即检查连通性。
 
     **前提条件**：
-    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd ~/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
+    1. ansible已安装(用户可以通过在完成[步骤2：下载离线软件包](#步骤2下载离线软件包)后运行 `cd /root/offline-deploy; bash scripts/install_ansible.sh` 安装ansible)
     2. [配置inventory\_file](#步骤3配置安装信息)
 
     **执行命令**：
@@ -527,7 +528,7 @@ bash scripts/upgrade.sh
     修改/root/offline-deploy/hccn_inventory_file后，执行以下命令完成指定设备的npu卡的ip网络配置
 
     ```
-    cd ${HOME}/offline-deploy
+    cd /root/offline-deploy
     bash scripts/hccn_set.sh
     ```
 
@@ -549,8 +550,8 @@ bash scripts/upgrade.sh
     - 到处集群状态报告
 
       ```
-      cd ${HOME}/offline-deploy/tools/report
-      ./k8s_status_report_$(arch) -inventoryFilePath ${HOME}/offline-deploy/inventory_file -path /root -format csv
+      cd /root/offline-deploy/tools/report
+      ./k8s_status_report_$(arch) -inventoryFilePath /root/offline-deploy/inventory_file -path /root -format csv
       ```
 
       运行以上命令后，会输出集群结果是否正常，同时会在/root下生成的out.csv文件，若需要查看相关节点和pod，容器等信息,将上述命令中的format改为json，
@@ -559,7 +560,7 @@ bash scripts/upgrade.sh
     - 查看docker, driver, hccn等相关信息
 
       ```
-       cd ${HOME}/offline-deploy/scripts
+       cd /root/offline-deploy/scripts
        bash machine_report.sh
        cat /root/report_temp.txt
       ```
@@ -570,21 +571,21 @@ bash scripts/upgrade.sh
 
     ```
     cd /root/offline-deploy
-    bash install_npu.sh                   # 安装驱动、固件
-    # bash install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
+    bash scripts/install_npu.sh                   # 安装驱动、固件
+    # bash scripts/install_npu.sh --type=run        # 默认使用zip包安装，可指定为用run包安装
     ```
 
  9. 导入镜像
 
     进入offline-deploy目录，编辑inventory_file文件。
 
-    在~/offline-deploy/scripts目录下执行image_load.sh <镜像路径> <待安装节点> ，提供的镜像应为docker save导出的tar格式镜像, 待安装节点取值范围为master/worker/all/mef, 对应inventory_file中对应项, 完成镜像的导入。
+    在/root/offline-deploy/scripts目录下执行image_load.sh <镜像路径> <待安装节点> ，提供的镜像应为docker save导出的tar格式镜像, 待安装节点取值范围为master/worker/all/mef, 对应inventory_file中对应项, 完成镜像的导入。
 
     可执行bash image_load.sh或bash image_load.sh -h查看help信息
 
     ```
-    cd ${HOME}/offline-deploy
-    bash image_load.sh <镜像路径> <待安装节点> 
+    cd /root/offline-deploy
+    bash scripts/image_load.sh <镜像路径> <待安装节点> 
     ```
 
     注意事项: 
