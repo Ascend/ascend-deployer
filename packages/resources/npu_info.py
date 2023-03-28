@@ -1,4 +1,3 @@
-#!{{ ansible_python.executable }}
 import glob
 import json
 import os
@@ -37,8 +36,6 @@ CHIPS_DICT = {
                  'x86_64'): 'A300T-9000',
     ChipMetaData('0x19e5', '0xd802', '0x0200', '0x0100',
                  'aarch64'): 'A900T',
-    ChipMetaData('0x19e5', '0xd802', '0x0200', '0x0100',
-                 'x86_64'): 'A900T',
     ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0100',
                  'aarch64'): 'A300i-pro',
     ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0100',
@@ -72,8 +69,6 @@ def get_profile_model(arch, model):
         model = 'A300-3000'
     if model == 'A800-3010':
         model = 'A300-3010'
-    if model in ['A900T']:
-        scene = 'a910b'
 
     return model
 
@@ -307,7 +302,7 @@ ALL_MODEL_DICT = {
 }
 
 
-def main():
+def get_npu():
     arch = platform.machine()
     model = get_model()
     profile_model = get_profile_model(arch, model)
@@ -321,7 +316,9 @@ def main():
         "model_number": get_model_number(model),
         "all_model_dict": ALL_MODEL_DICT
     }
-    json.dump(ret, sys.stdout, indent=2)
+    return ret
 
-
-main()
+def is_installed():
+    if os.path.exists("/usr/local/Ascend/driver"):
+        return True
+    return False

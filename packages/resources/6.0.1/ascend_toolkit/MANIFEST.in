@@ -1,0 +1,2 @@
+recursive-include ascend_toolkit *
+include ascend_toolkit/meta_info.json

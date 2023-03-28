@@ -1,0 +1,2 @@
+recursive-include ascend_driver *
+include ascend_driver/meta_info.json

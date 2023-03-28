@@ -1,0 +1,68 @@
+{
+  "pip_info": {
+    "name": "ascend_driver",
+    "packages": ["ascend_driver"],
+    "version": "6.0.0",
+    "platforms": ["Linux"],
+    "description": "ascend toolbox",
+    "url": "https://hiascend.com",
+    "install_requires": [],
+    "python_requires": ""
+  },
+  "system_requires": {
+    "ubuntu_18.04": [
+      {"name":  "dkms"},
+      {"name":  "gcc"},
+      {"name":  "linux-headers-$(uname -r)"},
+      { "name": "pciutils" },
+      { "name": "net-tools" }
+    ],
+    "ubuntu_20.04": [
+      {"name":  "dkms"},
+      {"name":  "gcc"},
+      {"name":  "linux-headers-$(uname -r)"},
+      { "name": "pciutils" },
+      { "name": "net-tools" }
+    ],
+    "openeuler_20.03": [
+      {"name":  "dkms"},
+      {"name":  "gcc"},
+      {"name":  "kernel-headers-$(uname -r)"},
+      { "name": "pciutils" },
+      { "name": "net-tools" },
+      { "name": "kernel-devel-$(uname -r)" }
+    ],
+    "openeuler_22.03": [
+      {"name":  "dkms"},
+      {"name":  "gcc"},
+      {"name":  "kernel-headers-$(uname -r)"},
+      { "name": "pciutils" },
+      { "name": "net-tools" },
+      { "name": "kernel-devel-$(uname -r)" }
+    ],
+    "centos_7": [
+      {"name":  "gcc"},
+      {"name":  "kernel-headers-$(uname -r)"},
+      { "name": "pciutils" },
+      { "name": "net-tools" },
+      { "name": "kernel-devel-$(uname -r)" }
+    ]
+  },
+  "download_url": [
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/A300-3010-npu_6.0.0_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "54b0aa0ef0ed3a9a590a37501612f9144db9470401ee4dfb73ec26e0473fa484", "type":  "infer"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/A300-3010-npu_6.0.0_linux-x86_64.zip", "arch":  "x86_64", "sha256sum":  "bbe942cf149a27fe3e5162de78d61672522e9ad4831473ba6df2684a3f23a8ca", "type":  "infer"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "7d881af4802ee426aefa8d3a52e45ad7571cb85b7227276284559e7377961bb5", "type":  "a300i"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-x86-64.zip", "arch":  "x86_64", "sha256sum":  "a72764be304f1deb00d078f5278d3b9ad05eec5449eec2a98e2cadbc7fe2e99e", "type":  "a300i"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "7d881af4802ee426aefa8d3a52e45ad7571cb85b7227276284559e7377961bb5", "type":  "a300iduo"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-310p-npu_6.0.0_linux-x86-64.zip", "arch":  "x86_64", "sha256sum":  "a72764be304f1deb00d078f5278d3b9ad05eec5449eec2a98e2cadbc7fe2e99e", "type":  "a300iduo"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-910-npu_6.0.0_linux-aarch64.zip", "arch":  "aarch64", "sha256sum":  "6548d59b30464ea909581df28e6ba61c5cf2922faa7436b76353d3c8157a2cd7", "type":  "train"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2022.0.0/Ascend-hdk-910-npu_6.0.0_linux-x86-64.zip", "arch":  "x86_64", "sha256sum":  "4796c0700b0da0c2301246e9f3408b88de55ed7146c790b2484ef0231b17ce46", "type":  "train"}
+  ],
+  "install_path": {
+    "root": "/usr/local/Ascend/driver/",
+    "none-root": ""
+  },
+  "commands": {
+    "uninstall": "{path}/script/uninstall.sh"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "pip_info": {
+    "name": "ascend_kernels",
+    "packages": ["ascend_kernels"],
+    "version": "6.0.1",
+    "platforms": ["Linux"],
+    "description": "ascend cann kernels",
+    "url": "https://hiascend.com",
+    "install_requires": [],
+    "python_requires": ""
+  },
+  "system_requires": {
+    "ubuntu_18.04": [],
+    "ubuntu_20.04": [],
+    "openeuler_20.03":[],
+    "openeuler_22.03":[],
+    "centos_7":[]
+  },
+  "download_url": [
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-kernels-910_6.0.1_linux.zip", "arch":  "aarch64", "sha256sum":  "b3fe79d017fbe0190bdbf9fb38b69cf4a3528dd17f5c5d92e2b43e92d3095670"},
+    {"url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%206.0.1/Ascend-cann-kernels-910_6.0.1_linux.zip", "arch":  "x86_64", "sha256sum":  "b3fe79d017fbe0190bdbf9fb38b69cf4a3528dd17f5c5d92e2b43e92d3095670"}
+  ],
+  "install_path": {
+    "root": "-",
+    "none-root": "-"
+  },
+  "commands": {
+    "uninstall": "no-way-to-uninstall"
+  }
+}

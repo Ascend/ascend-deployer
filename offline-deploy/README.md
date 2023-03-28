@@ -232,7 +232,7 @@ wget https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/3.0.0/
 
 ```bash
 # resources.zip解压出的内容必须放在在家目录下
-unzip resources.zip -d /root/resources
+unzip resources.zip -d /root
 
 # copy offline-deploy
 cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
@@ -256,6 +256,51 @@ cp resources/ascend-deployer/offline-deploy ~/offline-deploy -a
 cd ~/offline-deploy
 vi inventory_file
 ```
+参数说明：
+
+用户需要将相关节点的主机信息填写在分组下边，目前主机分组为master，worker，mef，other_build_image。
+
+分组说明：
+
+- master：k8s的默认控制节点，如果该分组中包含多行主机信息的话，首行主机作为多master节点的的主master
+
+- worker：k8s的工作节点主机
+- mef：需要安装MEF-center的主机节点，通常需要为k8s的主控节点
+- build_other_image: 如果k8s集群中存在与master节点架构不一致的主机，则配置其中一台的节点信息即可，该节点也会部署MindX DL
+
+当选择包含配置k8s, MindX DL的场景时需要配置master和worker节点的主机；
+
+对于安装MEF-Center场景，还需要配置mef分组；
+
+如果存在异构节点，还需要配置build_other_image分组。
+
+配置信息示例如下
+
+```
+[master]
+10.10.10.10 ansible_ssh_user="test" ansible_become_password="test1234" set_hostname=master-1 k8s_api_server_ip=10.10.10.10 kube_interface=enp125s0f0
+```
+
+示例说明（配置master节点的主机为k8s的默认控制节点）:
+
+- **10.10.10.10**：服务器的IP地址；
+
+- **ansible_ssh_user**：ssh登录远程服务器的账号，普通账号和root账号均可，但普通账号必须有sudo权限，且权限与root相近；
+
+- **ansible_ssh_pass**：ssh登录远程服务器账号的密码，如果配置了免密登录且root用户可以登录，则无需配置；
+
+- **ansible_ssh_port**：ssh连接的端口，如果使用了非默认的22端口，则需要配置；
+
+- **ansible_become_password**：普通账号执行sudo命令时输入的密码，该变量与账号ssh登录时输入的密码一致。root账号无须配置，如果ansible_ssh_user中配置的是普通账号且/etc/sudoers中账号配置了NOPASSWD选项，则该变量可不设置，否则必须设置
+
+- **set_hostname**：设置节点在K8s集群中的节点名字,建议用“[a-z]-[0-9]”的格式；如果已有K8s集群，则该名字需要为节点在K8s中的名字，不可随意填写。
+
+- **k8s_api_server_ip**：k8s对外提供服务的入口，配置为master节点的IP地址。
+
+- **kube_interface**：对应服务器ip地址网卡名字，单master场景下可以不设置
+
+如果使用harbor服务，则需要配置harbor相关的信息，具体见inventory_file本身注释。
+
  **方法2** ：修改csv文件（/root/offline-deploy/Inventory_Template.CSV)
 
 ```
