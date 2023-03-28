@@ -206,8 +206,14 @@ class InventoryDTO:
         for k, v in ROW1_DICT.items():
             if k == "harbor_ca_file" and row[v] == "no":
                 self.row1_param[k] = ""
+            elif k == "harbor_public_project" and (row[v].lower() == "false" or row[v].lower() == "true"):
+                self.row1_param[k] = row[v].lower()
+            elif k == "harbor_public_project" and row[v].lower() != "false" and row[v].lower() != "true":
+                hwlog.error("harbor_public_project must be true or false!")
+                sys.exit(1)
             else:
                 self.row1_param[k] = row[v]
+
         self.row1_param['mef_option'] = self.mef_check(self.row1_param['scene_num'], self.row1_param['mef_option'])
 
     @staticmethod
