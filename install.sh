@@ -114,7 +114,6 @@ OS_MAP["ubuntu"]="Ubuntu"
 OS_MAP["centos"]="CentOS"
 OS_MAP["euleros"]="EulerOS"
 OS_MAP["debian"]="Debian"
-OS_MAP["sles"]="SLES"
 OS_MAP["kylin"]="Kylin"
 OS_MAP["bclinux"]="BCLinux"
 OS_MAP["Linx"]="Linx"
@@ -276,7 +275,7 @@ function get_os_version() {
     local codename=${3}
     local version=${ver}
 
-    # Ubuntu, bclinux, SLES no need specific handle
+    # Ubuntu, bclinux no need specific handle
 
     # CentOS
     if [ "${id}" == "CentOS" ]; then
@@ -464,7 +463,7 @@ function install_sys_packages() {
 
     local have_rpm=0
     case ${g_os_name} in
-    CentOS | EulerOS | SLES | Kylin | BCLinux | Tlinux | OpenEuler)
+    CentOS | EulerOS | Kylin | BCLinux | Tlinux | OpenEuler)
         local have_rpm=1
         ;;
     Ubuntu | Debian | Linx | UOS)

@@ -141,16 +141,6 @@
 - set_fact: driver_run={{driver_pkg.files[0].path}}
   when: run_dir_stat.stat.exists and driver_pkg.matched > 0
 
-- name: set /etc/modprobe.d/10-unsupported-modules.conf allow_unsupported_modules 1
-  lineinfile:
-    dest: /etc/modprobe.d/10-unsupported-modules.conf
-    regexp: "^allow_unsupported_modules"
-    line: "allow_unsupported_modules 1"
-    state: present
-  when:
-    - (driver_run is defined) and (driver_run|length > 0)
-    - "'SLES' in os_and_arch"
-
 - name: upgrade driver
   shell: "bash {{driver_run|default(driver_pro_run)}} --nox11 --upgrade --quiet"
   register: driver_up_result

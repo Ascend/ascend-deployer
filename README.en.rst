@@ -100,14 +100,6 @@ Description of the supported operating system
 |           |            |                  | installed by       |
 |           |            |                  | default.           |
 +-----------+------------+------------------+--------------------+
-| SLES      | 12.4       | x86_64           | A minimal image is |
-|           |            |                  | installed by       |
-|           |            |                  | default.           |
-+-----------+------------+------------------+--------------------+
-| SLES      | 12.5       | x86_64           | A minimal image is |
-|           |            |                  | installed by       |
-|           |            |                  | default.           |
-+-----------+------------+------------------+--------------------+
 | Tlinux    | 2.4        | aarch64          | A server image is  |
 |           |            |                  | installed by       |
 |           |            |                  | default.           |
@@ -216,11 +208,6 @@ Precautions
 -  Kylin V10 GFB system downloads kylin when the system is dependent\_
    V10Tercel\_ Aarch64 is enough.
 
--  If the sles system dependency download fails, please modify the
-   source of opensuse by yourself. For example, for sles12.4 system,
-   please modify the
-   ``downloader/config/SLES_12.4_x86_64/source.repo``.
-
 -  The offline installation tool supports only the default environment
    after the OS image is successfully installed. Do not install or
    uninstall software after the OS is installed. If some system software
@@ -275,11 +262,6 @@ Precautions
    ``--download=CANN`` does not include the NPU package of Atlas200 EP.
    Please prepare it yourself.
 
--  When installing the SLES driver, the offline installer will set
-   “allow_unsupported_modules” in /etc/modprob.
-   d/10-unsupported-modules.conf to “1”, which means that non-native
-   drivers are allowed to be loaded during system boot.
-
 -  By default, the **root** user is not allowed to remotely log in to
    OSs such as EulerOS. Therefore, you need to set **PermitRootLogin**
    to **yes** in the **sshd_config** file before using this
@@ -332,7 +314,7 @@ Precautions
    please configure the GUI interface in advance and directly run the
    download instruction.
 
--  Euleros, SLES, Debian and other systems may trigger driver source
+-  Euleros, Debian and other systems may trigger driver source
    compilation when installing the driver. Users are required to install
    the kernel header package consistent with the kernel version of the
    system (which can be viewed through ‘uname -r’ command). The details
@@ -358,14 +340,6 @@ Precautions
 |           |                                                | component    |
 |           |                                                | that comes   |
 |           |                                                | with the     |
-|           |                                                | corresponding|
-|           |                                                | OS           |
-+-----------+------------------------------------------------+--------------+
-| SLES      | kernel-default-``<version>``\ 、               | Contact the  |
-|           | kernel-default-devel-``<version>``             | OS vendor,   |
-|           |                                                | or look it   |
-|           |                                                | up in the    |
-|           |                                                | image of the |
 |           |                                                | corresponding|
 |           |                                                | OS           |
 +-----------+------------------------------------------------+--------------+

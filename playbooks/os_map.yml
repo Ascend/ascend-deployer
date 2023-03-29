@@ -3,7 +3,6 @@ os_dict:
   ubuntu: "Ubuntu"
   euleros: "EulerOS"
   debian: "Debian"
-  sles: "SLES"
   kylin: "Kylin"
   bclinux: "BCLinux"
   Linx: "Linx"
