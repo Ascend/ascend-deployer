@@ -334,7 +334,7 @@ def run_install(mef_option, run_hccn_set, scene_num):
         hwlog.error("Seems like something went wrong, please check the logs")
         sys.exit(1)
     else:
-        hwlog.info("Ascend deploy install success")
+        hwlog.info("Ascend deploy success")
 
 
 def get_install_cmd(mef_option, run_hccn_set, scene_num):

@@ -150,7 +150,7 @@ class CallbackModule(default):
         log_write.info("ok: [%s -> %s]" % (result._host.get_name(), self._dump_results(result._result)))
 
     def v2_runner_item_on_failed(self, result):
-        log_stdout.error(str(result._task) + " failed")
+        log_stdout.warning("some items in " + str(result._task) + " failed")
         result._result['_ansible_verbose_always'] = True
         log_write.error("failed: [%s -> %s]" % (result._host.get_name(), self._dump_results(result._result)))
 
