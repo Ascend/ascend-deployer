@@ -27,7 +27,6 @@
     "openeuler_20.03": [
       {"name":  "dkms"},
       {"name":  "gcc"},
-      {"name":  "kernel-headers-$(uname -r)"},
       { "name": "pciutils" },
       { "name": "net-tools" },
       { "name": "kernel-devel-$(uname -r)" }
