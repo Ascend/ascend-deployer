@@ -3,20 +3,19 @@ import logging.handlers
 import os
 import stat
 
-
+PERMS_600 = stat.S_IRUSR | stat.S_IWUSR
 class RotatingFileHandler(logging.handlers.RotatingFileHandler):
     """
     rewrite RotatingFileHandler, chmod 600 downloader.log and chmod 400 downloader.log.*
     """
 
     def doRollover(self):
-        self.baseFilename = os.path.abspath(__file__)
         largest_backfile = "{}.{}".format(self.baseFilename, 5)
         if os.path.exists(largest_backfile):
-            os.chmod(largest_backfile, mode=0o600)
-        os.chmod(self.baseFilename, mode=0o400)
+            os.chmod(largest_backfile, PERMS_600)
+        os.chmod(self.baseFilename, stat.S_IRUSR)
         logging.handlers.RotatingFileHandler.doRollover(self)
-        os.chmod(self.baseFilename, mode=0o600)
+        os.chmod(self.baseFilename, PERMS_600)
 
 
 class BasicLogConfig(object):
