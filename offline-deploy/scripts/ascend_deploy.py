@@ -187,7 +187,7 @@ class InventoryDTO:
     @staticmethod
     def get_item(item_name, item_value):
         if item_value.strip() != "":
-            if item_name == 'ip':
+            if item_name == 'ip' or item_name == 'detectip':
                 item_value = item_value.replace('/', ',')
             item = ' {}="{}"'.format(item_name, item_value)
         else:
