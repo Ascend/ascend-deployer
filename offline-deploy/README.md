@@ -358,7 +358,7 @@ bash scripts/install_kubeedge.sh # 直接安装或卸载MEF
 bash scripts/install_npu.sh # 如需安装npu驱动，可以执行该脚本
 bash scripts/install.sh # 如果需要根据inventory_file中场景（SCENE_NUM）执行具体的安装任务，可以执行该脚本
 bash scripts/machine_report.sh # 查看worker节点主机上npu，hccn_tool等状态并生成报告文件
-bash scripts/uninstall_mef_release.sh # 卸载MEF及其相关的依赖，docker，k8s等
+bash scripts/uninstall_mef_related.sh # 卸载MEF及其相关的依赖，docker，k8s等
 bash scripts/upgrade.sh # 升级软件包组件脚本
 ```
 
