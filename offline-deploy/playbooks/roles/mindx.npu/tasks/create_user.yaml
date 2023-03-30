@@ -10,7 +10,7 @@
 - name: create user
   shell: |
     groupadd -g 1000 {{group}}
-    useradd -g {{group}} -d /home/{{user}} -m {{user}} -s /bin/bash
+    useradd -g {{group}} -u 1000 -d /home/{{user}} -m {{user}} -s /bin/bash
   when: "'0' in user_info.stdout and '0' in id_info.stdout"
 
 - name: message
