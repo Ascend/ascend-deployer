@@ -119,7 +119,7 @@
   <tbody>
     <tr>
       <td rowspan="2">Ubuntu </td>
-      <td rowspan="2">18.04、20.04</td>
+      <td rowspan="2">18.04、20.04、22.04</td>
       <td>aarch64</td>
     </tr>
     <tr>
