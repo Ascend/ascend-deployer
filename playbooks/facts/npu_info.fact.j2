@@ -93,6 +93,8 @@ def get_scene(profile_model):
 
 
 def get_chip_info(vid, did, svid, sdid, arch):
+    if did == '0xd802':
+        return 'A900T'
     chip_meta_data = ChipMetaData(vid.lower(), did.lower(), svid, sdid, arch)
     return CHIPS_DICT.get(chip_meta_data, '--')
 
