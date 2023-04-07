@@ -3,7 +3,7 @@ set -e
 readonly INFER_PRODUCT_LIST="A300-3000,A300-3010"
 readonly A310P_PRODUCT_LIST="Ascend-hdk-310p"
 readonly TRAIN_PRODUCT_LIST="Ascend-hdk-910"
-readonly TRAIN_910B_PRODUCT_LIST="Ascend-hdk-910B,Ascend910B-hdk"
+readonly TRAIN_910B_PRODUCT_LIST="Ascend-hdk-910b,Ascend910B-hdk"
 readonly NPU_ZIP_DIR="/root/resources/npu/zip"
 readonly NPU_RUN_DIR="/root/resources/npu/run"
 CUR_DIR=$(dirname "$(readlink -f $0)")
