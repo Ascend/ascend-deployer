@@ -37,6 +37,8 @@ CHIPS_DICT = {
                  'x86_64'): 'A300T-9000',
     ChipMetaData('0x19e5', '0xd802', '0x0200', '0x0100',
                  'aarch64'): 'A900T',
+    ChipMetaData('0x19e5', '0xd802', '0x0200', '0x0100',
+                 'x86_64'): 'A900T',
     ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0100',
                  'aarch64'): 'A300i-pro',
     ChipMetaData('0x19e5', '0xd500', '0x0200', '0x0100',
@@ -93,6 +95,8 @@ def get_scene(profile_model):
 
 
 def get_chip_info(vid, did, svid, sdid, arch):
+    if did == '0xd802':
+        return 'A900T'
     chip_meta_data = ChipMetaData(vid.lower(), did.lower(), svid, sdid, arch)
     return CHIPS_DICT.get(chip_meta_data, '--')
 

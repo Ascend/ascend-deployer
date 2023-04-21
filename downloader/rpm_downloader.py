@@ -468,6 +468,8 @@ class Yum(object):
         self.to_be_download = {}
         res = [self.build_to_be_download(name, ver, rel)]
         for name, pkg in self.to_be_download.items():
+            if name.startswith('systemd') or name.startswith('filesystem'):
+                continue
             if name in self.downloaded:
                 continue
             file_name = os.path.basename(pkg.get_url())

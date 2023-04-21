@@ -35,18 +35,22 @@ function install_ansible()
             ;;
         centos)
             rpm -i --nodeps --force /root/resources/ansible/CentOS_7.6/${arch}/*.rpm 1>/dev/null
-            ;;    
+            ;;
+        kylin)
+            rpm -i --nodeps --force /root/resources/ansible/Kylin_V10/${arch}/*.rpm 1>/dev/null
+            ;;      
         esac
         echo -e "\n[INFO]\t$(date +"%Y-%m-%d %H:%M:%S")\t successfully installed ansible\n"
     else
         echo -e "[INFO]\t$(date +"%Y-%m-%d %H:%M:%S")\t ansible is already installed\n"
     fi
+    sed -i "s?#forks.*?forks = 50?" /etc/ansible/ansible.cfg
     sed -i "s?#gathering = implicit?gathering = smart?" /etc/ansible/ansible.cfg
     sed -i "s?#fact_caching = memory?fact_caching = jsonfile?" /etc/ansible/ansible.cfg
     sed -i "s?#fact_caching_connection=/tmp?fact_caching_connection=/etc/ansible/facts-cache?" /etc/ansible/ansible.cfg
     sed -i "s?#host_key_checking = False?host_key_checking = False?" /etc/ansible/ansible.cfg
 
-    ansible --version
+    ansible --version >/dev/null 2>&1
 }
 
 function checkAnsible() {

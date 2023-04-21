@@ -9,6 +9,6 @@ match: "ok"
 
 not_match: "bad"
 
-os_support: ["CentOS_7.6","Ubuntu_18.04","Ubuntu_20.04", "Ubuntu_22.04","OpenEuler_20.03_LTS", "OpenEuler_22.03_LTS"]
+os_support: ["CentOS_7.6","Ubuntu_18.04","Ubuntu_20.04", "Ubuntu_22.04","OpenEuler_20.03_LTS", "OpenEuler_22.03_LTS","Kylin_V10"]
 
 STDOUT_KEY: "stdout"

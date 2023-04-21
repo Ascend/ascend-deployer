@@ -37,6 +37,9 @@ func isDir(path string) bool {
 }
 
 func main() {
+	if len(os.Args) != 3 || os.Args[1] == "-h" || os.Args[1] == "--help" {
+		log.Fatal("Use './unzip source.zip target_dir' to unzip your package")
+	}
 	zipReader, _ := zip.OpenReader(os.Args[1])
 	for _, file := range zipReader.Reader.File {
 		zipFile, err := file.Open()

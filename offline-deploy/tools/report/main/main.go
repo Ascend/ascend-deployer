@@ -8,15 +8,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-ini/ini"
+	"gitlab.com/tingshuo/go-diskstate/diskstate"
 	"io"
-	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -24,13 +23,18 @@ import (
 )
 
 const (
-	masterNode            = "MASTER"
-	workerNode            = "WORKER"
-	csvFileName           = "nodesData.csv"
-	FileMode              = 0644
-	maxStringLength       = 999
-	jsonFileNameForMaster = "master.json"
-	jsonFileNameForWorker = "worker.json"
+	masterNode      = "MASTER"
+	workerNode      = "WORKER"
+	csvFileSuffix   = ".csv"
+	FileMode        = 0644
+	maxStringLength = 999
+	jsonFileSuffix  = ".json"
+	ContainersReady = "ContainersReady"
+	PodInitialized  = "Initialized"
+	PodReady        = "Ready"
+	PodScheduled    = "PodScheduled"
+	ConditionTrue   = "True"
+	minSpaceForSave = 1 // min space for save output 1MB
 )
 
 var (
@@ -87,19 +91,19 @@ var (
 		"kube-proxy",
 	}
 	workerExtraComponent = []string{"npu-exporter", "noded"}
-	output               string
+	outputFileName       string
 	format               string
 )
 
 type nodeSummary struct {
-	Name        string
-	Status      string
-	RunningPods []string
-	FailingPods []string
-	MissingPods []string
-	Npu         string
-	Components  []string
-	NodeType    string
+	Name                  string
+	Status                string
+	RunningPods           []string
+	CompleteOrFailingPods []string
+	MissingPods           []string
+	Npu                   string
+	Components            []string
+	NodeType              string
 }
 
 var totalMasterNodesSummary = map[string]*nodeSummary{}
@@ -112,6 +116,15 @@ func find(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+func isDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false
+
+	}
+	return s.IsDir()
 }
 
 func homeDir() string {
@@ -326,22 +339,46 @@ func initkubeConfig() *kubernetes.Clientset {
 	return client
 }
 
+func GetPodStatus(pod *v1.Pod) string {
+	for _, cond := range pod.Status.Conditions {
+		if string(cond.Type) == ContainersReady {
+			if string(cond.Status) != ConditionTrue {
+				return "Unavailable"
+			}
+		} else if string(cond.Type) == PodInitialized && string(cond.Status) != ConditionTrue {
+			return "Initializing"
+		} else if string(cond.Type) == PodReady {
+			if string(cond.Status) != ConditionTrue {
+				return "Unavailable"
+			}
+			for _, containerState := range pod.Status.ContainerStatuses {
+				if !containerState.Ready {
+					return "Unavailable"
+				}
+			}
+		} else if string(cond.Type) == PodScheduled && string(cond.Status) != ConditionTrue {
+			return "Scheduling"
+		}
+	}
+	return string(pod.Status.Phase)
+}
+
 func updatePodsSummary(pods *v1.PodList, summary map[string]*nodeSummary) {
 	for _, pod := range pods.Items {
 		podName := pod.ObjectMeta.Name
 		nodeName := pod.Spec.NodeName
-		podStatus := string(pod.Status.Phase)
+		podIsReady := GetPodStatus(&pod)
 		for key, vaule := range summary {
 			if vaule.Name != nodeName {
 				continue
 			}
-			if strings.Compare(podStatus, "Running") == 0 {
+			if podIsReady == "Running" {
 				runningPods := summary[key]
 				runningPods.RunningPods = append(runningPods.RunningPods, podName)
 				continue
 			}
 			failingPods := summary[key]
-			failingPods.FailingPods = append(failingPods.FailingPods, podName)
+			failingPods.CompleteOrFailingPods = append(failingPods.CompleteOrFailingPods, podName)
 		}
 	}
 
@@ -484,7 +521,7 @@ func saveRes2File(saveFilePath string, isJson string) bool {
 	switch isJson {
 	case "csv":
 		if err := savRes2Csv(saveFilePath); err != nil {
-			fmt.Println("save result to cvs failed")
+			fmt.Println("save result to csv failed")
 			return false
 		}
 	case "json":
@@ -500,39 +537,43 @@ func saveRes2File(saveFilePath string, isJson string) bool {
 }
 
 func saveRes2Json(saveFilePath string) error {
-	data, _ := json.MarshalIndent(&totalMasterNodesSummary, "", "  ")
-	err := ioutil.WriteFile(path.Join(saveFilePath, jsonFileNameForMaster), data, FileMode)
-	if err != nil {
-		fmt.Println("save master to json failed")
-		return err
-	}
-	data, _ = json.MarshalIndent(&totalWorkerNodesSummary, "", "  ")
-	err = ioutil.WriteFile(path.Join(saveFilePath, jsonFileNameForWorker), data, FileMode)
-	if err != nil {
-		fmt.Println("save worker to json failed")
-		return err
-	}
-	return nil
-}
-
-func savRes2Csv(saveFilePath string) error {
-	file, err := os.OpenFile(path.Join(saveFilePath, csvFileName), syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, FileMode)
+	masterData, _ := json.MarshalIndent(&totalMasterNodesSummary, "", "  ")
+	workerData, _ := json.MarshalIndent(&totalWorkerNodesSummary, "", "  ")
+	filePath := saveFilePath + jsonFileSuffix
+	file, err := os.OpenFile(filePath, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, FileMode)
 	defer file.Close()
 	if err != nil {
 		return err
 	}
 	w := csv.NewWriter(file)
 	defer w.Flush()
-	row := []string{"IP", "nodeName", "status", "OK pods", "Missing pods", "Failed pods", "NPU", "Component", "NodeType"}
+	jsonData := []string{string(masterData), string(workerData)}
+	if err = w.Write(jsonData); err != nil {
+		fmt.Println("write json data to json file failed")
+		return err
+	}
+	return nil
+}
+
+func savRes2Csv(saveFilePath string) error {
+	filePath := saveFilePath + csvFileSuffix
+	file, err := os.OpenFile(filePath, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, FileMode)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+	w := csv.NewWriter(file)
+	defer w.Flush()
+	row := []string{"IP", "nodeName", "status", "OK pods", "Missing pods", "Completed or Failed pods", "NPU", "Component", "NodeType"}
 	if err := w.Write(row); err != nil {
 		return err
 	}
 	for key, value := range totalMasterNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
 		missingPods := strings.Join(value.MissingPods, "\n")
-		failingPods := strings.Join(value.FailingPods, "\n")
+		completeOrFailingPods := strings.Join(value.CompleteOrFailingPods, "\n")
 		components := strings.Join(value.Components, "\n")
-		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
+		row := []string{key, value.Name, value.Status, runningPods, missingPods, completeOrFailingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
 			return err
 		}
@@ -540,9 +581,9 @@ func savRes2Csv(saveFilePath string) error {
 	for key, value := range totalWorkerNodesSummary {
 		runningPods := strings.Join(value.RunningPods, "\n")
 		missingPods := strings.Join(value.MissingPods, "\n")
-		failingPods := strings.Join(value.FailingPods, "\n")
+		completeOrFailingPods := strings.Join(value.CompleteOrFailingPods, "\n")
 		components := strings.Join(value.Components, "\n")
-		row := []string{key, value.Name, value.Status, runningPods, missingPods, failingPods, value.Npu, components, value.NodeType}
+		row := []string{key, value.Name, value.Status, runningPods, missingPods, completeOrFailingPods, value.Npu, components, value.NodeType}
 		if err = w.Write(row); err != nil {
 			return err
 		}
@@ -550,11 +591,40 @@ func savRes2Csv(saveFilePath string) error {
 	return nil
 }
 
+func checkNode() bool {
+	allNodeNormal := true
+	for _, value := range totalMasterNodesSummary {
+		if value.Status == "Failed" {
+			allNodeNormal = false
+		}
+	}
+	if !allNodeNormal {
+		return allNodeNormal
+	}
+	for _, value := range totalWorkerNodesSummary {
+		if value.Status == "Failed" {
+			allNodeNormal = false
+		}
+	}
+	return allNodeNormal
+}
+
 func main() {
-	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path")
-	flag.StringVar(&output, "path", "", "path to save json file")
-	flag.StringVar(&format, "format", "csv", "format, csv or json")
+	flag.StringVar(&inventoryFilePath, "inventoryFilePath", "", "inventory file path, should not be a directory")
+	flag.StringVar(&outputFileName, "outputFileName", "", "output file name, example: -outputFileName nodeRes -format json, will generate a result nodeRes.json")
+	flag.StringVar(&format, "format", "csv", "output file format, csv or json")
 	flag.Parse()
+	if isDir(outputFileName) || isDir(inventoryFilePath) {
+		fmt.Println("filePath or inventoryFilePath is directory, please check it")
+		return
+	}
+	subDir := filepath.Dir(outputFileName)
+	diskState := diskstate.DiskUsage(subDir)
+	availableSpace := diskState.Available / diskstate.MB
+	if availableSpace < minSpaceForSave {
+		fmt.Println("space size is small than 1MB, please check")
+		return
+	}
 	client := initkubeConfig()
 	if client == nil {
 		fmt.Println("init kube config failed.")
@@ -565,8 +635,14 @@ func main() {
 		fmt.Println("check node failed")
 		return
 	}
-	if saveChecker := saveRes2File(output, format); !saveChecker {
+	if saveChecker := saveRes2File(outputFileName, format); !saveChecker {
 		fmt.Println("save nodes data to csv failed")
 		return
 	}
+	if !checkNode() {
+		fmt.Println("some of pod's status is abnormal, please check the output file for detail.")
+		return
+	}
+	fmt.Println("All nodes running normally, for detail please check output file.")
+
 }

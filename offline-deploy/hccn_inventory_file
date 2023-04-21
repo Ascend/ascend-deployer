@@ -1,5 +1,4 @@
 [tools]
-localhost ansible_connection='local'
 # localhost ansible_connection='local' action=config mode=SMP ip=192.168.100.106 detectip=192.168.100.108 netmask=255.255.255.0
 # 10.10.10.10 ansible_ssh_user='root' action=config mode=SMP ip=192.168.100.101 detectip=192.168.100.1 netmask=255.255.255.0
 # 10.10.10.11 ansible_ssh_user='root' action=config mode=SMP ip=192.168.100.108 detectip=192.168.100.1 netmask=255.255.255.0

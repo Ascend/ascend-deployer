@@ -1,0 +1,2 @@
+recursive-include ascend_nnrt *
+include ascend_nnrt/meta_info.json

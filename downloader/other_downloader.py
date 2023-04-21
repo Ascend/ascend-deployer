@@ -191,100 +191,82 @@ def download_ms_whl(os_item, software, dst):
     formal_name, version = get_software_name_version(software)
     download_dir = os.path.join(dst, "resources", "{}".format(os_item))
     results = []
-    if version in ["1.2.1", "1.1.1"]:
-        whl_list = get_software_mindspore(formal_name, os_item, version)
-        for item in whl_list:
-            dest_file = os.path.join(download_dir, item["dst_dir"], os.path.basename(item['url']))
+    os_item_split = os_item.split("_")
+    os_name, arch = "_".join(os_item_split[:2]), "_".join(os_item_split[2:])
+    specified_python = get_specified_python()
+    implement_flag = "cp37"
+    if "Python-3.7" in specified_python:
+        implement_flag = "cp37"
+    if "Python-3.8" in specified_python:
+        implement_flag = "cp38"
+    if "Python-3.9" in specified_python:
+        implement_flag = "cp39"
+
+    whl_list = get_software_mindspore(formal_name, "linux_cpu_{}".format(arch), version)
+    for item in whl_list:
+        if item.get('python', 'cp37') != implement_flag:
+            print("Try to get {} on {}, but it does not match {}".format
+            (item['filename'], item.get('python'), implement_flag))
+            continue
+        dest_file = os.path.join(download_dir, "CPU", os.path.basename(item['url']))
+        if os.path.exists(dest_file) and 'sha256' in item:
+            file_hash = calc_sha256(dest_file)
+            url_hash = item['sha256']
+            if file_hash == url_hash:
+                print(item['filename'].ljust(60), 'exists')
+                LOG.info('{0} no need download again'.format(item['filename']))
+                continue
+            else:
+                LOG.info('{0} need download again'.format(item['filename']))
+        ret = DOWNLOAD_INST.download(item['url'], dest_file)
+        if ret:
+            print(item['filename'].ljust(60), 'download success')
+        results.append(ret)
+    
+    whl_list = get_software_mindspore(formal_name, "linux_{}".format(arch), version)
+    for item in whl_list:
+        if item.get('python', 'cp37') != implement_flag:
+            print("Try to get {} on {}, but it does not match {}".format
+            (item['filename'], item.get('python'), implement_flag))
+            continue
+        dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
+        if os.path.exists(dest_file) and 'sha256' in item:
+            file_hash = calc_sha256(dest_file)
+            url_hash = item['sha256']
+            if file_hash == url_hash:
+                print(item['filename'].ljust(60), 'exists')
+                LOG.info('{0} no need download again'.format(item['filename']))
+                continue
+            else:
+                LOG.info('{0} need download again'.format(item['filename']))
+        ret = DOWNLOAD_INST.download(item['url'], dest_file)
+        if ret:
+            print(item['filename'].ljust(60), 'download success')
+        results.append(ret)
+    
+    for item in whl_list:
+        if item.get('python', 'cp37') != implement_flag:
+            print("Try to get {} on {}, but it does not match {}".format
+            (item['filename'], item.get('python'), implement_flag))
+            continue
+        A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
+        if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04","Ubuntu_22.04", "CentOS_7.6", "EulerOS_2.8", "EulerOS_2.10", "OpenEuler_22.03LTS"]:
+            dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
             if os.path.exists(dest_file) and 'sha256' in item:
                 file_hash = calc_sha256(dest_file)
                 url_hash = item['sha256']
                 if file_hash == url_hash:
-                    print(item['filename'].ljust(60), 'exists')
-                    LOG.info('{0} no need download again'.format(item['filename']))
-                    continue
+                    LOG.info('{0} exist, no need copy again'.format(os.path.basename(dest_file)))
                 else:
-                    LOG.info('{0} need download again'.format(item['filename']))
-            ret = DOWNLOAD_INST.download(item['url'], dest_file)
-            if ret:
-                print(item['filename'].ljust(60), 'download success')
-            results.append(ret)
-    else:
-        os_item_split = os_item.split("_")
-        os_name, arch = "_".join(os_item_split[:2]), "_".join(os_item_split[2:])
-        specified_python = get_specified_python()
-        implement_flag = "cp37"
-        if "Python-3.7" in specified_python:
-            implement_flag = "cp37"
-        if "Python-3.8" in specified_python:
-            implement_flag = "cp38"
-        if "Python-3.9" in specified_python:
-            implement_flag = "cp39"
-        if os_name == "Ubuntu_18.04":
-            whl_list = get_software_mindspore(formal_name, "{}".format(os_item), version)
-            for item in whl_list:
-                if item.get('python', 'cp37') != implement_flag:
-                    print("Try to get {} on {}, but it does not match {}".format
-                    (item['filename'], item.get('python'), implement_flag))
-                    continue
-                dest_file = os.path.join(download_dir, "CPU", os.path.basename(item['url']))
-                if os.path.exists(dest_file) and 'sha256' in item:
-                    file_hash = calc_sha256(dest_file)
-                    url_hash = item['sha256']
-                    if file_hash == url_hash:
-                        print(item['filename'].ljust(60), 'exists')
-                        LOG.info('{0} no need download again'.format(item['filename']))
-                        continue
-                    else:
-                        LOG.info('{0} need download again'.format(item['filename']))
-                ret = DOWNLOAD_INST.download(item['url'], dest_file)
-                if ret:
-                    print(item['filename'].ljust(60), 'download success')
-                results.append(ret)
-        if os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8", "OpenEuler_20.03LTS", "Kylin_V10Tercel"]:
-            whl_list = get_software_mindspore(formal_name, "linux_{}".format(arch), version)
-            for item in whl_list:
-                if item.get('python', 'cp37') != implement_flag:
-                    print("Try to get {} on {}, but it does not match {}".format
-                    (item['filename'], item.get('python'), implement_flag))
-                    continue
-                dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
-                if os.path.exists(dest_file) and 'sha256' in item:
-                    file_hash = calc_sha256(dest_file)
-                    url_hash = item['sha256']
-                    if file_hash == url_hash:
-                        print(item['filename'].ljust(60), 'exists')
-                        LOG.info('{0} no need download again'.format(item['filename']))
-                        continue
-                    else:
-                        LOG.info('{0} need download again'.format(item['filename']))
-                ret = DOWNLOAD_INST.download(item['url'], dest_file)
-                if ret:
-                    print(item['filename'].ljust(60), 'download success')
-                results.append(ret)
-            
-            for item in whl_list:
-                if item.get('python', 'cp37') != implement_flag:
-                    print("Try to get {} on {}, but it does not match {}".format
-                    (item['filename'], item.get('python'), implement_flag))
-                    continue
-                A910_dest_file = os.path.join(download_dir, "Ascend910", os.path.basename(item['url']))
-                if os.path.exists(A910_dest_file) and os_name in ["Ubuntu_18.04", "CentOS_7.6", "EulerOS_2.8"]:
-                    dest_file = os.path.join(download_dir, "Ascend310", os.path.basename(item['url']))
-                    if os.path.exists(dest_file) and 'sha256' in item:
-                        file_hash = calc_sha256(dest_file)
-                        url_hash = item['sha256']
-                        if file_hash == url_hash:
-                            LOG.info('{0} exist, no need copy again'.format(os.path.basename(dest_file)))
-                        else:
-                            LOG.info('{0} exist but not completed, need copy again'.format(os.path.basename(dest_file)))
-                            os.remove(dest_file)
-                            shutil.copy(A910_dest_file, dest_file)
-                    else:
-                        parent_dir = os.path.dirname(dest_file)
-                        if not os.path.exists(parent_dir):
-                            os.makedirs(parent_dir, mode=0o750, exist_ok=True)
-                        LOG.info('{0} not exist, copy from Ascend910'.format(os.path.basename(dest_file)))
-                        shutil.copy(A910_dest_file, dest_file)
+                    LOG.info('{0} exist but not completed, need copy again'.format(os.path.basename(dest_file)))
+                    os.remove(dest_file)
+                    shutil.copy(A910_dest_file, dest_file)
+            else:
+                parent_dir = os.path.dirname(dest_file)
+                if not os.path.exists(parent_dir):
+                    os.makedirs(parent_dir, mode=0o750, exist_ok=True)
+                LOG.info('{0} not exist, copy from Ascend910'.format(os.path.basename(dest_file)))
+                shutil.copy(A910_dest_file, dest_file)
     return all(results)
 
 

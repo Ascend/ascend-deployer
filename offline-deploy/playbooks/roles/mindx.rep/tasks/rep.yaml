@@ -43,7 +43,7 @@
 - name: fetch back file
   fetch:
     src: "{{ ansible_env.HOME }}/report_temp.txt"
-    dest: "reports/results-{{ inventory_hostname }}.txt"
+    dest: "/root/offline-deploy/reports/results-{{ inventory_hostname }}.txt"
     flat: true
 
 - name: print lossing parts

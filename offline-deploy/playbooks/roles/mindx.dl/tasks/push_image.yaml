@@ -74,6 +74,7 @@
   shell:
     cmd:
       manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      chmod 755 {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }};
       {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest rm "${manifest_name}" > /dev/null 2>&1 || true;
   loop: "{{ master_dl_images['results'] }}"
   environment:
@@ -116,6 +117,7 @@
   shell:
     cmd:
       manifest_name="{{ HARBOR_MINDX_PREFIX }}/{{ item.stdout.replace('_'+master_arch+':', ':') }}";
+      chmod 755 {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }};
       {{ docker_20_bin_dir }}/docker-{{ ansible_architecture }} manifest push -p --insecure "${manifest_name}";
   loop: "{{ master_dl_images['results'] }}"
   environment:

@@ -50,7 +50,7 @@
                 "sha256":"a4f6e6c8a470e1c0086d3d97b447d2dc639e8580e72c061da30b3f4f3b302295"
             }]
         },
-        {"system":"Ubuntu_18.04_aarch64",
+        {"system":"linux_cpu_aarch64",
             "whl":[
             {
                 "filename":"mindspore-1.9.0-cp39-cp39-linux_aarch64.whl",
@@ -74,7 +74,7 @@
                 "sha256":"e0aec18d84484a5d33bdb02562a1fda4be576b8227b78fe4f435fac270bb712e"
             }]
         },
-        {"system":"Ubuntu_18.04_x86_64",
+        {"system":"linux_cpu_x86_64",
             "whl":[
             {
                 "filename":"mindspore-1.9.0-cp39-cp39-linux_x86_64.whl",

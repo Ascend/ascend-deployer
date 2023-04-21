@@ -1,0 +1,7 @@
+- hosts:
+    - mef
+  gather_facts: true
+  become: yes
+  tasks:
+    - include_tasks: roles/mindx.uninstall_mef_relate/task/mindx.uninstall_mef_kubeedge.yaml
+    - include_tasks: roles/mindx.uninstall_mef_relate/task/mindx.uninstall_k8s_docker.yaml

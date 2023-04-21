@@ -117,11 +117,41 @@
   when:
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
 
-- name: get version
-  shell: cat /root/resources/version.json | sed 's/,/\n/g' | grep "version" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g'
-  register: resource_version
+- name: stat version version
+  stat:
+    path: "/root/resources/version.json"
+  register: version_stat
 
-- name: execute_sed
+
+- name: get version
+  shell: cat /root/resources/version.json
+  register: resource_version
+  when: version_stat.stat.exists
+
+
+- name: set the json data to a variable as fact
+  set_fact:
+    jsondata: "{{resource_version.stdout | from_json}}"
+  when: version_stat.stat.exists
+
+
+
+- name: execute with version is not exist
+  shell:
+    cmd: |
+      npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
+      npu_exporter_yaml_PATH={{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}}/$npu_exporter_yaml;
+      sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
+  loop: "{{dl_package.stdout_lines}}"
+  when:
+    - not version_stat.stat.exists
+    - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
+    - item.endswith("zip")
+    - NPU_EXPORTER_COMPONENT in item
+
+
+
+- name: execute_sed_with300
   shell: 
     cmd: |
       npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
@@ -129,13 +159,13 @@
       sed -i "s/updateTime=5\s*$/updateTime=5 -enableHTTP=true /" $npu_exporter_yaml_PATH;
   loop: "{{dl_package.stdout_lines}}"
   when:
-     - resource_version.stdout == "" or resource_version.stdout == "3.0.0"
+     - version_stat.stat.exists and (jsondata.version == "" or jsondata.version == "3.0.0")
      - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
      - item.endswith("zip")
      - NPU_EXPORTER_COMPONENT in item
 
 
-- name: execute_sed_no300
+- name: execute_sed_with50RC1
   shell: 
     cmd: |
       npu_exporter_yaml="$(ls {{mindxdl_deploy_package_dir}}/{{ansible_architecture}}/{{item | replace('.zip', '')}} | grep yaml | grep -v 1usoc)";
@@ -143,7 +173,7 @@
       sed -i "s/updateTime=5\s*$/updateTime=5 /" $npu_exporter_yaml_PATH;
   loop: "{{dl_package.stdout_lines}}"
   when:
-    - resource_version.stdout != "" and resource_version.stdout != "3.0.0"
+    - version_stat.stat.exists and jsondata.version != "" and jsondata.version != "3.0.0"
     - inventory_hostname in groups['other_build_image'] or inventory_hostname in groups['master'][0]
     - item.endswith("zip")
     - NPU_EXPORTER_COMPONENT in item

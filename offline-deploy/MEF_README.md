@@ -5,11 +5,8 @@
 - [安装步骤](#安装步骤)
   - [步骤1：准备登录各台服务器的账号](#步骤1准备登录各台服务器的账号)
   - [步骤2：下载离线软件包](#步骤2下载离线软件包)
-  - [步骤3：安装Ansible](#步骤3安装ansible)
-  - [步骤4：配置安装信息](#步骤4配置安装信息)
-  - [步骤5：执行安装](#步骤5执行安装)
-  - [步骤6：导入镜像](#步骤6导入MEF-Center依赖镜像)
-  - [步骤7：安装MEF](#步骤7安装MEF-Center)
+  - [步骤3：配置相关信息](#步骤3配置相关信息)
+  - [步骤4：执行安装脚本](#步骤4执行安装脚本)
 - [安装后状态查看](#安装后状态查看)
 - [安装脚本对系统的修改](#安装脚本对系统的修改)
 - [常用操作](#常用操作)
@@ -87,70 +84,30 @@
 ## 步骤2：下载离线软件包
 选择其中一种方式准备离线安装包
 
- - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.tar.gz包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
- - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.tar.gz的地址，然后执行如下命令
+ - 在Window或其他机器上下载[历史版本](#历史版本)中的resources.zip包，将离线包上传到执行安装命令服务器的/root目录下，然后解压。
+ - 登录执行安装命令服务器，将下面`wget`命令后的`https://example`替换成[历史版本](#历史版本)中某个版本的resources.zip的地址，然后执行如下命令
 ```bash
-# resources.tar.gz解压出的内容必须放置在/root目录下
+# resources.zip解压出的内容必须放置在/root目录下
 cd /root
 wget https://example
-tar -xf resources.tar.gz
+unzip resources.zip
 ```
 
-## 步骤3：安装Ansible
-如果已经安装过Ansible，也需要执行下面的命令，不会覆盖已有的Ansible，仅修改Ansible部分配置。
-```bash
-cd /root/offline-deploy
-bash scripts/install_ansible.sh
+## 步骤3：配置相关信息
+MEF场景下配置Inventory_Template.CSV
+第一行SCENE_NUM后填4，对应MEF安装场景，EXTRA后不填，MEF后填MEF-ONLY（只安装MEF）或者MEF-ALL（包括DOCKER和K8S）
 ```
-出现类似下面的回显，表示ansible安装成功
-```
-[INFO]	2022-07-28 22:53:09	 start install ansible...
-...
-[INFO]	2022-07-28 22:53:24	 successfully installed ansible
+*Character *DeviceIP    *ssh_user  ssh_pass ssh_become_pass  HostName  *k8s_api_server_ip  kube_interface
+master     xx.xx.xx.xx  root       111111                    (k8s主机名)xx.xx.xx.xx   
+mef        xx.xx.xx.xx  root                                 (不填)            
 
-ansible 2.9.27
-  config file = /etc/ansible/ansible.cfg
-  configured module search path = [u'/root/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python2.7/dist-packages/ansible
-  executable location = /usr/bin/ansible
-  python version = 2.7.17 (default, Jul  1 2022, 15:56:32) [GCC 7.5.0]
 ```
 
-## 步骤4：配置安装信息
 
-修改配置文件参数，用户可根据配置文件注释自行设置，**请勿修改配置文件中的结构，MEF单机的情况下请不要配置worker**。
-
-```bash
-cd /root/offline-deploy
-vi inventory_file
+## 步骤4：执行安装脚本
+编译执行相关py脚本，加上CSV路径作为参数
 ```
-
-## 步骤5：执行安装
-
-在[步骤4](#步骤4配置安装信息)同级目录中执行下面的安装命令。如果安装过程出现错误，请根据回显中的信息进行排查处理，也可查看[常见问题](#常见问题)进行处理，手动处理完毕后再执行如下命令进行安装。
-```
-bash scripts/install.sh
-```
-
-## 步骤6：导入MEF-Center依赖镜像
-  MEF-Center安装依赖`ubuntu_2204， openresty_buster`两个镜像，需要提前下载导入[点此获取依赖镜像](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
-```bash
-  mkdir -p /root/resources/mef
-  cp mef.tar /root/resources/mef
-  cp Ascend-mindxedge-mefcenter_x86_64.zip /root/resources/mef #移动mef.tar与Ascend-mindxedge-mefcenter_x86_64.zip至resource下的mef文件夹
-  至resource目录下的mef目录
-  cd /root/resources/mef # 移动下载的mef.tar文件至该目录
-  tar xvf mef.tar 
-  docker load -i ubuntu_2204_x86_64.tar # 导入相关依赖镜像
-  docker load -i openresty_buster_x86_64.tar
-   ```
-
-## 步骤7：安装MEF-Center
-注意：当前MEF-Center安装脚本已集成至Kubeedge中，运行`scripts/install_kubeedge.sh`脚本会同步安装MEF-Center
-```
-cd /root/offline-deploy/scripts
-bash install_kubeedge.sh              # 安装kubeedge，MEF-Center会在安装kubeedge时同步安装
-bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+python ascend-deploy.py <CSV路径>
 ```
 
 MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾社区上获取，MEF-Center相关安装依赖镜像[点此获取](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/MindXDL/5.0.RC1/mef.tar)
@@ -162,7 +119,6 @@ MEF相关安装包Ascend-mindxedge-mefcenter_x86/arm64.zip，请到华为昇腾�
 ```bash
 NAME             STATUS   ROLES    AGE   VERSION
 master           Ready    master   60s   v1.19.16
-worker-1         Ready    worker   60s   v1.19.16
 ```
 
 使用命令`kubectl get pods --all-namespaces`检查kubernetes pods，如下所示表示正常
@@ -275,8 +231,8 @@ ascend-edge-manager          v1    456f438bac6    44 hours ago   158MB
    ```
    ```
    cd /root/offline-deploy/scripts
-   bash install_kubeedge.sh              # 安装kubeedge
-   bash install_kubeedge.sh --uninstall  # 卸载kubeedge
+   python ascend-deploy.py <CSV路径>     # 安装kubeedge
+   bash uninstall_mef_releate.sh         # 卸载kubeedge及docker、k8s所有的组件
    ```
    注意事项：安装kubeedge须在执行完`bash scripts/install.sh`操作后。
   

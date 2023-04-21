@@ -1,0 +1,2 @@
+recursive-include ascend_kernels *
+include ascend_kernels/meta_info.json
